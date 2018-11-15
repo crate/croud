@@ -17,36 +17,37 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import os
 
-import argh
+from json import JSONDecodeError
+from typing import Optional
 
-from croud.gql import run_query
-from croud.printer import print_format
+import requests
+
+from croud.printer import print_error
+
+CLOUD_DEV_HOST: str = "cratedb-dev.cloud"
+CLOUD_PROD_HOST: str = "cratedb.cloud"
 
 
-@argh.arg(
-    "-r",
-    "--region",
-    choices=["westeurope.azure", "eastus.azure", "bregenz.a1"],
-    default="bregenz.a1",
-    type=str,
-)
-@argh.arg("--env", choices=["dev", "prod"], default="prod", type=str)
-@argh.arg("-o", "--output-fmt", choices=["json"], default="json", type=str)
-def me(region=None, env=None, output_fmt=None) -> None:
-    """
-    Prints the current logged in user
-    """
-    # Todo: Return the current logged in user
-    query = """
-{
-  me {
-    email
-    username
-    name
-  }
-}
-    """
-    resp = run_query(query, region, env, os.getenv("CLOUD_SESSION", ""))
-    print_format(resp["me"], output_fmt)
+def run_query(query: str, region: str, env: str, session: str) -> Optional[str]:
+    host = CLOUD_PROD_HOST
+    if env.lower() == "dev":
+        host = CLOUD_DEV_HOST
+
+    resp = requests.post(
+        f"https://{region}.{host}/graphql",
+        json={"query": query},
+        cookies=dict(session=session),
+    )
+
+    if resp.ok:
+        try:
+            resp = resp.json()
+            return resp["data"]
+        except (JSONDecodeError, TypeError):
+            print_error("Unauthorized. Use `croud login` to login to CrateDB Cloud")
+            exit(1)
+    else:
+        raise Exception(
+            f"Query failed to run by returning code of {resp.status_code}. {query}"
+        )

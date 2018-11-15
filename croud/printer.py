@@ -17,36 +17,31 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import os
+import json
 
-import argh
-
-from croud.gql import run_query
-from croud.printer import print_format
+from colorama import Fore, Style
 
 
-@argh.arg(
-    "-r",
-    "--region",
-    choices=["westeurope.azure", "eastus.azure", "bregenz.a1"],
-    default="bregenz.a1",
-    type=str,
-)
-@argh.arg("--env", choices=["dev", "prod"], default="prod", type=str)
-@argh.arg("-o", "--output-fmt", choices=["json"], default="json", type=str)
-def me(region=None, env=None, output_fmt=None) -> None:
-    """
-    Prints the current logged in user
-    """
-    # Todo: Return the current logged in user
-    query = """
-{
-  me {
-    email
-    username
-    name
-  }
-}
-    """
-    resp = run_query(query, region, env, os.getenv("CLOUD_SESSION", ""))
-    print_format(resp["me"], output_fmt)
+def print_format(res: dict, format: str = "json") -> None:
+    printer = FormatPrinter()
+    printer.print_resultset(res, format)
+
+
+def print_error(text: str):
+    print(Fore.RED + "==> Error: " + Style.RESET_ALL + text)
+
+
+class FormatPrinter:
+    def __init__(self):
+        self.supported_formats: dict = {"json": self._json}
+
+    def print_resultset(self, res: dict, format: str) -> None:
+        try:
+            print_method = self.supported_formats[format]
+        except KeyError as e:
+            print_error(f"This print method is not supported: {e!s}")
+            exit(1)
+        print(print_method(res))
+
+    def _json(self, res: dict) -> str:
+        return json.dumps(res, sort_keys=False, indent=2)

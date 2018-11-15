@@ -21,9 +21,9 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import argparse
-
 import argh
+import colorama
+
 from croud import __version__
 from croud.login import login
 from croud.logout import logout
@@ -31,7 +31,9 @@ from croud.me import me
 
 
 def main():
-    p = argh.ArghParser(prog="croud", formatter_class=argparse.RawTextHelpFormatter)
+    colorama.init()
+
+    p = argh.ArghParser(prog="CROUD")
     p.add_argument("--version", action="version", version="%(prog)s " + __version__)
     p.add_commands([me, login, logout])
     p.dispatch()
