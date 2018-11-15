@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# PYTHON_ARGCOMPLETE_OK
-#
 # Licensed to CRATE Technology GmbH ("Crate") under one or more contributor
 # license agreements.  See the NOTICE file distributed with this work for
 # additional information regarding copyright ownership.  Crate licenses
@@ -21,21 +17,10 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import argparse
 
-import argh
-from croud import __version__
-from croud.login import login
-from croud.logout import logout
-from croud.me import me
+def login() -> None:
+    """
+    Performs an OAuth2 Login to CrateDB Cloud
+    """
 
-
-def main():
-    p = argh.ArghParser(prog="croud", formatter_class=argparse.RawTextHelpFormatter)
-    p.add_argument("--version", action="version", version="%(prog)s " + __version__)
-    p.add_commands([me, login, logout])
-    p.dispatch()
-
-
-if __name__ == "__main__":
-    main()
+    pass
