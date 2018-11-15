@@ -17,36 +17,17 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import os
+import pytest
 
-import argh
-
-from croud.gql import run_query
-from croud.printer import print_format
+from croud.printer import FormatPrinter
 
 
-@argh.arg(
-    "-r",
-    "--region",
-    choices=["westeurope.azure", "eastus.azure", "bregenz.a1"],
-    default="bregenz.a1",
-    type=str,
-)
-@argh.arg("--env", choices=["dev", "prod"], default="prod", type=str)
-@argh.arg("-o", "--output-fmt", choices=["json"], default="json", type=str)
-def me(region=None, env=None, output_fmt=None) -> None:
-    """
-    Prints the current logged in user
-    """
-    # Todo: Return the current logged in user
-    query = """
-{
-  me {
-    email
-    username
-    name
-  }
-}
-    """
-    resp = run_query(query, region, env, os.getenv("CLOUD_SESSION", ""))
-    print_format(resp["me"], output_fmt)
+class TestFormatPrinter(object):
+    printer = FormatPrinter()
+
+    @pytest.fixture(autouse=True)
+    def test_json_format(self, capsys):
+        sample = {"a": "foo", "b": 1, "c": True}
+        self.printer.print_resultset(sample, format="json")
+        out, err = capsys.readouterr()
+        assert out == """{\n  "a": "foo",\n  "b": 1,\n  "c": true\n}\n"""

@@ -28,6 +28,15 @@ Run it::
 
     croud -h
 
+Environment Variables
+---------------------
+
+:``CLOUD_SESSION``: The session-cookie that is used to authenticate a user
+                    against CrateDB Cloud. As long as the OAuth2 mechanism in
+                    ``CROUD`` is not in place this needs to be set to simulate
+                    the login. Copy the value of the cookie ``session`` from
+                    the browser that has been used for OAuth on CrateDB cloud.
+
 
 Testing
 -------
