@@ -37,7 +37,7 @@ setup(
     long_description=readme,
     entry_points={"console_scripts": ["croud = croud.__main__:main"]},
     packages=["croud"],
-    install_requires=["argh", "requests", "colorama"],
+    install_requires=["argh", "aiohttp", "requests", "colorama", "appdirs"],
     extras_require={
         "testing": [
             "pytest>=3,<4",
@@ -46,10 +46,11 @@ setup(
             "pytest-isort",
             "pytest-black",
             "pytest-mypy",
+            "pytest-aiohttp",
             "mypy",
-            "black==18.6b4",
+            "black",
         ],
-        "development": ["black==18.6b4"],
+        "development": ["black"],
     },
     python_requires=">=3.6",
     classifiers=[

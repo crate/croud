@@ -17,37 +17,28 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import argh
+import os
+from pathlib import Path
 
-from croud.config import Configuration
-from croud.gql import run_query
-from croud.printer import print_format
+from appdirs import user_config_dir
 
 
-@argh.arg(
-    "-r",
-    "--region",
-    choices=["westeurope.azure", "eastus.azure", "bregenz.a1"],
-    default="bregenz.a1",
-    type=str,
-)
-@argh.arg("--env", choices=["dev", "prod"], default="prod", type=str)
-@argh.arg("-o", "--output-fmt", choices=["json"], default="json", type=str)
-def me(region=None, env=None, output_fmt=None) -> None:
-    """
-    Prints the current logged in user
-    """
-    # Todo: Return the current logged in user
-    query = """
-{
-  me {
-    email
-    username
-    name
-  }
-}
-    """
+class Configuration:
 
-    token = Configuration.read_token()
-    resp = run_query(query, region, env, token)
-    print_format(resp["me"], output_fmt)
+    USER_CONFIG_DIR: Path = Path(user_config_dir("Crate"))
+    CONFIG_FILE_NAME: str = "cloud_token"
+    CONFIG_PATH: Path = USER_CONFIG_DIR / CONFIG_FILE_NAME
+
+    @staticmethod
+    def write_token(token: str) -> None:
+        os.makedirs(os.path.dirname(Configuration.CONFIG_PATH), exist_ok=True)
+        with open(Configuration.CONFIG_PATH, "w") as f:
+            f.write(token)
+
+    @staticmethod
+    def read_token() -> str:
+        if Configuration.CONFIG_PATH.exists():
+            with open(Configuration.CONFIG_PATH) as f:
+                return f.readline()
+        else:
+            return ""
