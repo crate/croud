@@ -33,6 +33,10 @@ def print_error(text: str):
     print(Fore.RED + "==> Error: " + Style.RESET_ALL + text)
 
 
+def print_info(text: str):
+    print(Fore.CYAN + "==> Info: " + Style.RESET_ALL + text)
+
+
 class FormatPrinter:
     def __init__(self):
         self.supported_formats: dict = {"json": self._json}

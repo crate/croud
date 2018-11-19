@@ -20,7 +20,9 @@
 import unittest
 from unittest import mock
 
+from croud.login import login
 from croud.me import me
+from croud.server import Server
 
 
 class TestMe(unittest.TestCase):
@@ -37,3 +39,38 @@ class TestMe(unittest.TestCase):
         mock_run_query.return_value = user
         me("eastus.azure", env="dev", output_fmt="json")
         mock_print_format.assert_called_once_with(user["me"], "json")
+
+
+class TestLogin(unittest.TestCase):
+    @mock.patch.object(Server, "stop")
+    @mock.patch.object(Server, "start")
+    @mock.patch("croud.login.asyncio.get_event_loop")
+    @mock.patch("croud.login.can_launch_browser", return_value=True)
+    @mock.patch("croud.login.open_page_in_browser")
+    @mock.patch("croud.login.print_info")
+    def test_login_success(
+        self,
+        mock_print_info,
+        mock_open_page_in_browser,
+        mock_can_launch_browser,
+        mock_loop,
+        mock_start,
+        mock_stop,
+    ):
+        login(env="dev")
+        calls = [
+            mock.call("A browser tab has been launched for you to login."),
+            mock.call("Login successful."),
+        ]
+        mock_print_info.assert_has_calls(calls)
+
+    @mock.patch("croud.login.can_launch_browser", return_value=False)
+    @mock.patch("croud.login.print_error")
+    def test_login_no_valid_browser(self, mock_print_error, mock_can_launch_browser):
+        with self.assertRaises(SystemExit) as cm:
+            login(env="dev")
+
+        mock_print_error.assert_called_once_with(
+            "Login only works with a valid browser installed."
+        )
+        self.assertEqual(cm.exception.code, 1)
