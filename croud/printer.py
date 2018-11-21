@@ -21,8 +21,10 @@ import json
 
 from colorama import Fore, Style
 
+from croud.typing import JsonDict
 
-def print_format(res: dict, format: str = "json") -> None:
+
+def print_format(res: JsonDict, format: str = "json") -> None:
     printer = FormatPrinter()
     printer.print_resultset(res, format)
 
@@ -35,7 +37,7 @@ class FormatPrinter:
     def __init__(self):
         self.supported_formats: dict = {"json": self._json}
 
-    def print_resultset(self, res: dict, format: str) -> None:
+    def print_resultset(self, res: JsonDict, format: str) -> None:
         try:
             print_method = self.supported_formats[format]
         except KeyError as e:
@@ -43,5 +45,5 @@ class FormatPrinter:
             exit(1)
         print(print_method(res))
 
-    def _json(self, res: dict) -> str:
+    def _json(self, res: JsonDict) -> str:
         return json.dumps(res, sort_keys=False, indent=2)

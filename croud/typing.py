@@ -17,37 +17,6 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+from typing import Any, Dict
 
-from json import JSONDecodeError
-
-import requests
-
-from croud.printer import print_error
-from croud.typing import JsonDict
-
-CLOUD_DEV_HOST: str = "cratedb-dev.cloud"
-CLOUD_PROD_HOST: str = "cratedb.cloud"
-
-
-def run_query(query: str, region: str, env: str, session: str) -> JsonDict:
-    host = CLOUD_PROD_HOST
-    if env.lower() == "dev":
-        host = CLOUD_DEV_HOST
-
-    resp = requests.post(
-        f"https://{region}.{host}/graphql",
-        json={"query": query},
-        cookies=dict(session=session),
-    )
-
-    if resp.ok:
-        try:
-            body = resp.json()
-            return body["data"]
-        except (JSONDecodeError, TypeError):
-            print_error("Unauthorized. Use `croud login` to login to CrateDB Cloud")
-            exit(1)
-    else:
-        raise Exception(
-            f"Query failed to run by returning code of {resp.status_code}. {query}"
-        )
+JsonDict = Dict[str, Any]

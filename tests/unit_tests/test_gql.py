@@ -19,12 +19,14 @@
 
 import json
 import unittest
+from typing import Union
 from unittest import mock
 
 import requests
 from requests.models import Response
 
 from croud.gql import run_query
+from croud.typing import JsonDict
 
 me_query = """
 {
@@ -37,10 +39,10 @@ me_query = """
 """
 
 
-def _mock_query_response(content: dict, status_code: int) -> Response:
+def _mock_query_response(content: Union[str, JsonDict], status_code: int) -> Response:
     resp = Response()
     resp.status_code = status_code
-    resp._content = bytes(json.dumps(content), encoding="ascii")
+    resp._content = bytes(json.dumps(content), encoding="ascii")  # type: ignore
     return resp
 
 
