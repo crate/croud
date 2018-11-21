@@ -45,6 +45,8 @@ setup(
             "pytest-mock",
             "pytest-isort",
             "pytest-black",
+            "pytest-mypy",
+            "mypy",
             "black==18.6b4",
         ],
         "development": ["black==18.6b4"],
