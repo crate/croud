@@ -18,10 +18,12 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 
-from json import JSONDecodeError
+import asyncio
+from typing import Dict
 
-import requests
+from aiohttp import ClientSession, ContentTypeError, TCPConnector  # type: ignore
 
+from croud.config import Configuration
 from croud.printer import print_error
 from croud.typing import JsonDict
 
@@ -29,25 +31,39 @@ CLOUD_DEV_HOST: str = "cratedb-dev.cloud"
 CLOUD_PROD_HOST: str = "cratedb.cloud"
 
 
-def run_query(query: str, region: str, env: str, session: str) -> JsonDict:
+def run_query(query: str, region: str, env: str) -> JsonDict:
     host = CLOUD_PROD_HOST
     if env.lower() == "dev":
         host = CLOUD_DEV_HOST
 
-    resp = requests.post(
-        f"https://{region}.{host}/graphql",
-        json={"query": query},
-        cookies=dict(session=session),
-    )
+    url = f"https://{region}.{host}/graphql"
 
-    if resp.ok:
-        try:
-            body = resp.json()
-            return body["data"]
-        except (JSONDecodeError, TypeError):
-            print_error("Unauthorized. Use `croud login` to login to CrateDB Cloud")
-            exit(1)
-    else:
-        raise Exception(
-            f"Query failed to run by returning code of {resp.status_code}. {query}"
-        )
+    conn = TCPConnector()
+    loop = asyncio.get_event_loop()
+    result = loop.run_until_complete(_query(url, query, conn, headers={}))
+    return result
+
+
+async def _query(url: str, query: str, conn: TCPConnector, headers: Dict[str, str]):
+    session = Configuration.read_token()
+    async with ClientSession(
+        cookies=dict(session=session), connector=conn, headers=headers
+    ) as client:
+        result = await _fetch(client, url, query)
+        return result["data"]
+
+
+async def _fetch(client: ClientSession, url: str, query: str) -> JsonDict:
+    async with client.post(url, json={"query": query}) as resp:
+        if resp.status == 200:
+            try:
+                return await resp.json()
+            except ContentTypeError:
+                print_error(
+                    "Unauthorized. Use `croud login` to login to CrateDB Cloud."
+                )
+                exit(1)
+        else:
+            raise Exception(
+                f"Query failed to run by returning code of {resp.status}. {query}"
+            )

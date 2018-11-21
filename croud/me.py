@@ -19,7 +19,6 @@
 
 import argh
 
-from croud.config import Configuration
 from croud.gql import run_query
 from croud.printer import print_format
 
@@ -48,6 +47,5 @@ def me(region=None, env=None, output_fmt=None) -> None:
 }
     """
 
-    token = Configuration.read_token()
-    resp = run_query(query, region, env, token)
+    resp = run_query(query, region, env)
     print_format(resp["me"], output_fmt)
