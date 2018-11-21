@@ -17,16 +17,15 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import json
+import asyncio
 import unittest
-from typing import Union
 from unittest import mock
 
-import requests
-from requests.models import Response
+import aiohttp
+from util.fake_server import FakeCrateDBCloud, FakeResolver
 
-from croud.gql import run_query
-from croud.typing import JsonDict
+from croud.config import Configuration
+from croud.gql import _query
 
 me_query = """
 {
@@ -38,66 +37,53 @@ me_query = """
 }
 """
 
-
-def _mock_query_response(content: Union[str, JsonDict], status_code: int) -> Response:
-    resp = Response()
-    resp.status_code = status_code
-    resp._content = bytes(json.dumps(content), encoding="ascii")  # type: ignore
-    return resp
+me_response = {
+    "me": {
+        "email": "sheldon@crate.io",
+        "username": "Google_1234",
+        "name": "Sheldon Cooper",
+    }
+}
 
 
 class TestGql(unittest.TestCase):
-    @mock.patch.object(requests, "post")
-    def test_successful_query_response(self, mock_requests):
-        gql_response = {
-            "data": {
-                "me": {
-                    "email": "sheldon@crate.io",
-                    "username": "Google_1234",
-                    "name": "Sheldon Cooper",
-                }
-            }
-        }
-        mock_requests.return_value = _mock_query_response(gql_response, 200)
-        resp = run_query(me_query, "eastus.azure", "dev", "")
-        assert resp == gql_response["data"]
-
-    @mock.patch.object(requests, "post")
-    @mock.patch("croud.gql.print_error")
-    def test_unauthorized_query_response(self, mock_print_error, mock_requests):
-        mock_requests.return_value = _mock_query_response("", 200)
-        with self.assertRaises(SystemExit) as cm:
-            run_query(me_query, "eastus.azure", "dev", "")
-        self.assertEqual(cm.exception.code, 1)
-        mock_print_error.assert_called_once_with(
-            "Unauthorized. Use `croud login` to login to CrateDB Cloud"
+    def setUp(self):
+        self.loop = asyncio.get_event_loop()
+        self.fake_cloud = FakeCrateDBCloud(loop=self.loop)
+        info = self.loop.run_until_complete(self.fake_cloud.start())
+        resolver = FakeResolver(info, loop=self.loop)
+        self.connector = aiohttp.TCPConnector(
+            loop=self.loop, resolver=resolver, ssl=True
         )
 
-    @mock.patch.object(requests, "post")
-    @mock.patch("croud.gql.print_error")
-    def test_unauthorized_invalid_json_response(self, mock_print_error, mock_requests):
-        resp = Response()
-        resp.status_code = 200
-        resp._content = b"<html></html>"
+    def tearDown(self):
+        self.loop.run_until_complete(self.fake_cloud.stop())
 
-        mock_requests.return_value = resp
-        with self.assertRaises(SystemExit) as cm:
-            run_query(me_query, "eastus.azure", "dev", "")
-        self.assertEqual(cm.exception.code, 1)
-        mock_print_error.assert_called_once_with(
-            "Unauthorized. Use `croud login` to login to CrateDB Cloud"
-        )
-
-    @mock.patch.object(requests, "post")
-    def test_unexpected_response(self, mock_requests):
-        resp = Response()
-        resp.status_code = 500
-        resp._content = b"Server error"
-
-        mock_requests.return_value = resp
-        try:
-            run_query(me_query, "eastus.azure", "dev", "")
-        except Exception as ex:
-            self.assertEqual(
-                str(ex), f"Query failed to run by returning code of 500. {me_query}"
+    @mock.patch.object(Configuration, "read_token", return_value="eyJraWQiOiIx")
+    def test_query_success(self, mock_token):
+        async def test_query():
+            result = await _query(
+                "https://cratedb.cloud/graphql", me_query, self.connector, headers
             )
+            self.assertEqual(result, me_response)
+
+        # testing-only: tell the graphql endpoint which query is tested
+        headers = {"query": "me"}
+        self.loop.run_until_complete(test_query())
+
+    @mock.patch.object(Configuration, "read_token", return_value="")
+    @mock.patch("croud.gql.print_error")
+    def test_query_unauthorized(self, mock_print_error, mock_token):
+        async def test_query():
+            with self.assertRaises(SystemExit) as cm:
+                await _query(
+                    "https://cratedb.cloud/graphql", me_query, self.connector, headers
+                )
+            mock_print_error.assert_called_once_with(
+                "Unauthorized. Use `croud login` to login to CrateDB Cloud."
+            )
+            self.assertEqual(cm.exception.code, 1)
+
+        # testing-only: tell the graphql endpoint which query is tested
+        headers = {"query": "me"}
+        self.loop.run_until_complete(test_query())

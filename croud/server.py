@@ -27,7 +27,7 @@ from croud.config import Configuration
 class Server:
     LOGIN_MSG: str = """
     <b>You have successfully logged into CrateDB Cloud!</b>
-    <p>This windows can be closed.</p>"""
+    <p>This window can be closed.</p>"""
 
     PORT: int = 8400
 
