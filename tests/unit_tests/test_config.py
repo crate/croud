@@ -20,31 +20,25 @@
 import unittest
 from unittest import mock
 
-from croud.config import Configuration
+from croud.config import load_config, write_config
 
 
 class TestConfiguration(unittest.TestCase):
-    def test_write_token(self):
+    @mock.patch("yaml.load")
+    def test_load_config(self, mock_yaml_load):
         m = mock.mock_open()
         with mock.patch("croud.config.open", m, create=True):
-            Configuration.write_token("eyJraWQiOiIxZTlnZGs3IiwiYWxnIjoiUlMyNTYifQ")
+            load_config()
 
-        m.assert_called_once_with(Configuration.CONFIG_PATH, "w")
-        handle = m()
-        handle.write.assert_called_once_with(
-            "eyJraWQiOiIxZTlnZGs3IiwiYWxnIjoiUlMyNTYifQ"
-        )
+        mock_yaml_load.assert_called_once_with(m())
 
-    @mock.patch("pathlib.Path.exists", return_value=True)
-    def test_read_token_exists(self, mock_path_exists):
-        m = mock.mock_open(read_data="eyJraWQiOiIxZTlnZGs3IiwiYWxnIjoiUlMyNTYifQ")
+    @mock.patch("yaml.dump")
+    def test_write_config(self, mock_yaml_dump):
+        config = {"env": "dev", "token": "eyJraWQiOiIxZTlnZGs3IiwiYWxnIjoiUlMyNTYifQ"}
+        m = mock.mock_open()
         with mock.patch("croud.config.open", m, create=True):
-            token = Configuration.read_token()
+            write_config(config)
 
-        m.assert_called_once_with(Configuration.CONFIG_PATH)
-        self.assertEqual(token, "eyJraWQiOiIxZTlnZGs3IiwiYWxnIjoiUlMyNTYifQ")
-
-    @mock.patch("pathlib.Path.exists", return_value=False)
-    def test_read_token_not_exists(self, mock_path_exists):
-        token = Configuration.read_token()
-        self.assertEqual(token, "")
+        mock_yaml_dump.assert_called_once_with(
+            config, m(), default_flow_style=False, allow_unicode=True
+        )

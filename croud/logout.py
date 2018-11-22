@@ -17,10 +17,24 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import asyncio
+
+from croud.config import Configuration
+from croud.printer import print_info
+from croud.session import HttpSession
+
 
 def logout() -> None:
     """
     Performs a logout of the current logged in User
     """
 
-    pass
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(make_request())
+
+    Configuration.set_token("")
+    print_info("You have been logged out.")
+
+async def make_request() -> None:
+    async with HttpSession() as session:
+        await session.logout()
