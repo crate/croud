@@ -36,20 +36,19 @@ class HttpSession:
     def __init__(
         self,
         region: str = "bregenz.a1",
-        env: str = "prod",
         url: Optional[str] = None,
         conn: Optional[TCPConnector] = None,
         headers: Dict[str, str] = {},
     ) -> None:
         if not url:
             host = CLOUD_PROD_DOMAIN
-            if env.lower() == "dev":
+            if Configuration.get_env() == "dev":
                 host = CLOUD_DEV_DOMAIN
             url = f"https://{region}.{host}/graphql"
 
         self.url = url
 
-        token = Configuration.read_token()
+        token = Configuration.get_token()
 
         if conn is None:
             ssl_context = ssl.create_default_context(cafile=certifi.where())
@@ -75,6 +74,14 @@ class HttpSession:
             raise Exception(
                 f"Query failed to run by returning code of {resp.status}. {query}"
             )
+
+    async def logout(self):
+        domain = "cratedb.cloud"
+        if Configuration.get_env() == "dev":
+            domain = "cratedb-dev.cloud"
+
+        url = f"https://bregenz.a1.{domain}/oauth2/logout"
+        await self.client.get(url)
 
     async def __aenter__(self) -> "HttpSession":
         return self
