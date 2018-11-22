@@ -17,10 +17,13 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import asyncio
+
 import argh
 
-from croud.gql import run_query
 from croud.printer import print_format
+from croud.session import HttpSession
+from croud.typing import JsonDict
 
 
 @argh.arg(
@@ -39,13 +42,18 @@ def me(region=None, env=None, output_fmt=None) -> None:
     # Todo: Return the current logged in user
     query = """
 {
-  me {
-    email
-    username
-    name
-  }
+    me {
+        email
+        username
+        name
+    }
 }
     """
 
-    resp = run_query(query, region, env)
-    print_format(resp["me"], output_fmt)
+    async def fetch_data() -> JsonDict:
+        async with HttpSession(region, env) as session:
+            return await session.fetch(query)
+
+    loop = asyncio.get_event_loop()
+    result = loop.run_until_complete(fetch_data())
+    print_format(result["me"], output_fmt)

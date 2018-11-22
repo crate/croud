@@ -21,24 +21,7 @@ import unittest
 from unittest import mock
 
 from croud.login import login
-from croud.me import me
 from croud.server import Server
-
-
-class TestMe(unittest.TestCase):
-    @mock.patch("croud.me.run_query")
-    @mock.patch("croud.me.print_format")
-    def test_me_subcommand(self, mock_print_format, mock_run_query):
-        user = {
-            "me": {
-                "email": "lucius@crate.io",
-                "username": "Google_1234",
-                "name": "Lucius Pelton",
-            }
-        }
-        mock_run_query.return_value = user
-        me("eastus.azure", env="dev", output_fmt="json")
-        mock_print_format.assert_called_once_with(user["me"], "json")
 
 
 class TestLogin(unittest.TestCase):
