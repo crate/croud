@@ -17,9 +17,8 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-
-import asyncio
-from typing import Dict
+from types import TracebackType
+from typing import Dict, Optional, Type
 
 from aiohttp import ClientSession, ContentTypeError, TCPConnector  # type: ignore
 
@@ -27,43 +26,59 @@ from croud.config import Configuration
 from croud.printer import print_error
 from croud.typing import JsonDict
 
-CLOUD_DEV_HOST: str = "cratedb-dev.cloud"
-CLOUD_PROD_HOST: str = "cratedb.cloud"
+CLOUD_DEV_DOMAIN: str = "cratedb-dev.cloud"
+CLOUD_PROD_DOMAIN: str = "cratedb.cloud"
 
 
-def run_query(query: str, region: str, env: str) -> JsonDict:
-    host = CLOUD_PROD_HOST
-    if env.lower() == "dev":
-        host = CLOUD_DEV_HOST
+class HttpSession:
+    def __init__(
+        self,
+        region: str = "bregenz.a1",
+        env: str = "prod",
+        url: Optional[str] = None,
+        conn: Optional[TCPConnector] = None,
+        headers: Dict[str, str] = {},
+    ) -> None:
+        if not url:
+            host = CLOUD_PROD_DOMAIN
+            if env.lower() == "dev":
+                host = CLOUD_DEV_DOMAIN
+            url = f"https://{region}.{host}/graphql"
 
-    url = f"https://{region}.{host}/graphql"
+        self.url = url
 
-    conn = TCPConnector()
-    loop = asyncio.get_event_loop()
-    result = loop.run_until_complete(_query(url, query, conn, headers={}))
-    return result
+        token = Configuration.read_token()
+        self.client = ClientSession(
+            cookies={"session": token}, connector=conn, headers=headers
+        )
 
-
-async def _query(url: str, query: str, conn: TCPConnector, headers: Dict[str, str]):
-    session = Configuration.read_token()
-    async with ClientSession(
-        cookies=dict(session=session), connector=conn, headers=headers
-    ) as client:
-        result = await _fetch(client, url, query)
-        return result["data"]
-
-
-async def _fetch(client: ClientSession, url: str, query: str) -> JsonDict:
-    async with client.post(url, json={"query": query}) as resp:
+    async def fetch(self, query: str) -> JsonDict:
+        resp = await self.client.post(self.url, json={"query": query})
         if resp.status == 200:
             try:
-                return await resp.json()
+                result = await resp.json()
+                return result["data"]
             except ContentTypeError:
                 print_error(
                     "Unauthorized. Use `croud login` to login to CrateDB Cloud."
                 )
+                await self.client.close()
                 exit(1)
         else:
             raise Exception(
                 f"Query failed to run by returning code of {resp.status}. {query}"
             )
+
+    async def __aenter__(self) -> "HttpSession":
+        return self
+
+    async def close(self) -> None:
+        await self.client.close()
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
+        await self.close()

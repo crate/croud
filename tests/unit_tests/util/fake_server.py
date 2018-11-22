@@ -74,7 +74,7 @@ class FakeCrateDBCloud:
         await self.runner.setup()
         site = web.TCPSite(self.runner, "localhost", port, ssl_context=self.ssl_context)
         await site.start()
-        return {"cratedb.cloud": port}
+        return {"cratedb.local": port}
 
     async def stop(self) -> None:
         await self.runner.cleanup()
