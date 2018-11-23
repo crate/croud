@@ -25,10 +25,11 @@ import argh
 import colorama
 
 from croud import __version__
+from croud.config import Configuration
 from croud.login import login
 from croud.logout import logout
 from croud.me import me
-from croud.config import Configuration
+
 
 def main():
     Configuration.create()
