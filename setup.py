@@ -37,7 +37,7 @@ setup(
     long_description=readme,
     entry_points={"console_scripts": ["croud = croud.__main__:main"]},
     packages=["croud"],
-    install_requires=["argh", "aiohttp", "colorama", "appdirs"],
+    install_requires=["argh", "aiohttp", "colorama", "appdirs", "certifi"],
     extras_require={
         "testing": [
             "pytest>=3,<4",

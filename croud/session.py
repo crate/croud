@@ -17,9 +17,11 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import ssl
 from types import TracebackType
 from typing import Dict, Optional, Type
 
+import certifi
 from aiohttp import ClientSession, ContentTypeError, TCPConnector  # type: ignore
 
 from croud.config import Configuration
@@ -48,6 +50,11 @@ class HttpSession:
         self.url = url
 
         token = Configuration.read_token()
+
+        if conn is None:
+            ssl_context = ssl.create_default_context(cafile=certifi.where())
+            conn = TCPConnector(ssl_context=ssl_context)
+
         self.client = ClientSession(
             cookies={"session": token}, connector=conn, headers=headers
         )
