@@ -21,10 +21,11 @@ import asyncio
 
 import argh
 
+from croud.config import Configuration
 from croud.printer import print_error, print_info
 from croud.server import Server
 from croud.util import can_launch_browser, open_page_in_browser
-from croud.config import Configuration
+
 
 @argh.arg("--env", choices=["dev", "prod"], default="prod", type=str)
 def login(env=None) -> None:

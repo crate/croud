@@ -18,45 +18,50 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import os
-import yaml
 
-from pathlib import Path
+import yaml
 from appdirs import user_config_dir
 
+
 class Configuration:
-    USER_CONFIG_DIR: Path = Path(user_config_dir("crate/croud"))
+    USER_CONFIG_DIR: str = user_config_dir("crate/croud")
     FILENAME: str = "config.yaml"
     FILEPATH: str = f"{USER_CONFIG_DIR}/{FILENAME}"
 
     @staticmethod
     def create() -> None:
+        if not os.path.exists(Configuration.USER_CONFIG_DIR):
+            os.makedirs(Configuration.USER_CONFIG_DIR)
+
         if not os.path.isfile(Configuration.FILEPATH):
-            write_config({'env': 'prod', 'token': ''})
+            write_config({"env": "prod", "token": ""})
 
     @staticmethod
     def get_env() -> str:
-        return load_config().get('env')
+        return load_config().get("env") or "prod"
 
     @staticmethod
     def set_env(env: str) -> None:
-        set_property('env', env)
+        set_property("env", env)
 
     @staticmethod
     def get_token() -> str:
-        return load_config().get('token')
+        return load_config().get("token") or ""
 
     @staticmethod
     def set_token(token: str) -> None:
-        set_property('token', token)
+        set_property("token", token)
 
 
 def load_config() -> dict:
-    with open(Configuration.FILEPATH, 'r') as f:
-        return yaml.load(f)
+    with open(Configuration.FILEPATH, "r") as f:
+        return yaml.load(f) or {}
+
 
 def write_config(config: dict) -> None:
-    with open(Configuration.FILEPATH, 'w', encoding='utf8') as f:
+    with open(Configuration.FILEPATH, "w", encoding="utf8") as f:
         yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
+
 
 def set_property(property: str, value: str):
     config = load_config()

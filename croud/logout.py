@@ -35,6 +35,7 @@ def logout() -> None:
     Configuration.set_token("")
     print_info("You have been logged out.")
 
+
 async def make_request() -> None:
     async with HttpSession() as session:
         await session.logout()
