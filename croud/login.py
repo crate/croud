@@ -23,7 +23,7 @@ import argh
 
 from croud.printer import print_error, print_info
 from croud.server import Server
-from croud.util import can_launch_browser, open_page_in_browser
+from croud.util import can_launch_browser, open_page_in_browser, unused_port
 
 
 @argh.arg("--env", choices=["dev", "prod"], default="prod", type=str)
@@ -33,7 +33,8 @@ def login(env=None) -> None:
     """
     if can_launch_browser():
         loop = asyncio.get_event_loop()
-        server = Server(loop)
+        port = unused_port()
+        server = Server(loop, port)
         server.create_web_app()
         loop.run_until_complete(server.start())
 
@@ -41,7 +42,7 @@ def login(env=None) -> None:
         if env.lower() == "dev":
             domain = "cratedb-dev.cloud"
 
-        login_url = f"https://bregenz.a1.{domain}/oauth2/login?cli=true"
+        login_url = f"https://bregenz.a1.{domain}/oauth2/login?cli=true&port={port}"
         open_page_in_browser(login_url)
         print_info("A browser tab has been launched for you to login.")
 

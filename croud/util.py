@@ -19,6 +19,7 @@
 
 import os
 import platform
+import socket
 import subprocess
 import webbrowser
 from typing import Tuple
@@ -76,3 +77,10 @@ def open_page_in_browser(url: str) -> int:
         except FileNotFoundError:  # WSL might be too old
             pass
     return webbrowser.open_new_tab(url)
+
+
+def unused_port() -> int:
+    """Return a port that is unused on the current host."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]

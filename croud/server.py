@@ -29,10 +29,9 @@ class Server:
     <b>You have successfully logged into CrateDB Cloud!</b>
     <p>This window can be closed.</p>"""
 
-    PORT: int = 8400
-
-    def __init__(self, loop: asyncio.AbstractEventLoop):
+    def __init__(self, loop: asyncio.AbstractEventLoop, port: int):
         self.loop = loop
+        self.port = port
 
     def create_web_app(self) -> web.Application:
         app = web.Application()
@@ -59,7 +58,7 @@ class Server:
     async def start(self) -> None:
         """Start a local HTTP server"""
         await self.runner.setup()
-        site = web.TCPSite(self.runner, "localhost", Server.PORT)
+        site = web.TCPSite(self.runner, "localhost", self.port)
         await site.start()
 
     async def stop(self) -> None:
