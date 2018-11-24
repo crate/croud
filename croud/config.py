@@ -24,8 +24,8 @@ from appdirs import user_config_dir
 
 
 class Configuration:
-    USER_CONFIG_DIR: str = user_config_dir("crate/croud")
-    FILENAME: str = "config.yaml"
+    USER_CONFIG_DIR: str = user_config_dir("Crate")
+    FILENAME: str = "croud.yaml"
     FILEPATH: str = f"{USER_CONFIG_DIR}/{FILENAME}"
 
     @staticmethod

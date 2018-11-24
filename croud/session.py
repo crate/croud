@@ -76,9 +76,9 @@ class HttpSession:
             )
 
     async def logout(self):
-        domain = "cratedb.cloud"
+        domain = CLOUD_PROD_DOMAIN
         if Configuration.get_env() == "dev":
-            domain = "cratedb-dev.cloud"
+            domain = CLOUD_DEV_DOMAIN
 
         url = f"https://bregenz.a1.{domain}/oauth2/logout"
         await self.client.get(url)
