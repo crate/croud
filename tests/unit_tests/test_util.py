@@ -94,13 +94,9 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(key, "thenestedkey")
 
         data = {"key": {"nestedkey": {"reallynestedkey": "thenestedvalue"}}}
-        with self.assertRaises(KeyError) as error:
+        with self.assertRaises(KeyError):
             nested_dict_value(data, "key.nestedkey.doesnotexist")
 
-        self.assertIsInstance(error.exception, KeyError)
-
         data = {"key": {"nestedkey": 1}}
-        with self.assertRaises(TypeError) as error:
+        with self.assertRaises(TypeError):
             nested_dict_value(data, "key.nestedkey.foo")
-
-        self.assertIsInstance(error.exception, TypeError)

@@ -81,11 +81,6 @@ def open_page_in_browser(url: str) -> int:
 def nested_dict_value(data: dict, key: str):
     cursor = data
     for k in key.split("."):
-        if type(cursor) is not dict:
-            raise TypeError
-        if k in cursor:
-            cursor = cursor[k]
-        else:
-            raise KeyError
+        cursor = cursor[k]
 
     return cursor
