@@ -56,7 +56,7 @@ def login(env=None) -> None:
             loop.run_until_complete(server.stop())
         loop.close()
 
-        Configuration.set_env(env.lower())
+        Configuration.set_context(env.lower())
     else:
         print_error("Login only works with a valid browser installed.")
         exit(1)

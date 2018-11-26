@@ -20,12 +20,15 @@
 import unittest
 from unittest import mock
 
+from croud.config import Configuration
+from croud.env import env
 from croud.login import login
 from croud.logout import logout
 from croud.server import Server
 
 
 class TestLogin(unittest.TestCase):
+    @mock.patch("croud.config.load_config")
     @mock.patch.object(Server, "stop")
     @mock.patch.object(Server, "start")
     @mock.patch("croud.login.asyncio.get_event_loop")
@@ -40,7 +43,9 @@ class TestLogin(unittest.TestCase):
         mock_loop,
         mock_start,
         mock_stop,
+        mock_load_config,
     ):
+        mock_load_config.return_value = Configuration.DEFAULT_CONFIG
         m = mock.mock_open()
         with mock.patch("croud.config.open", m, create=True):
             login(env="dev")
@@ -66,10 +71,24 @@ class TestLogin(unittest.TestCase):
 class TestLogout(unittest.TestCase):
     @mock.patch("croud.logout.Configuration.set_token")
     @mock.patch("croud.logout.print_info")
-    def test_logout(self, mock_print_info, mock_set_token):
+    @mock.patch("croud.config.load_config")
+    def test_logout(self, mock_load_config, mock_print_info, mock_set_token):
         m = mock.mock_open()
         with mock.patch("croud.config.open", m, create=True):
             logout()
 
+        mock_load_config.return_value = Configuration.DEFAULT_CONFIG
         mock_set_token.assert_called_once_with("")
         mock_print_info.assert_called_once_with("You have been logged out.")
+
+
+class TestEnv(unittest.TestCase):
+    @mock.patch("croud.env.Configuration.set_context")
+    @mock.patch("croud.env.print_info")
+    def test_env(self, mock_print_info, mock_set_context):
+        m = mock.mock_open()
+        with mock.patch("croud.config.open", m, create=True):
+            env("dev")
+
+        mock_set_context.assert_called_once_with("dev")
+        mock_print_info.assert_called_once_with('Environment switched to "dev"')

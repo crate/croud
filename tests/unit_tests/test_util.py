@@ -24,6 +24,7 @@ from croud.util import (
     can_launch_browser,
     get_platform_info,
     is_wsl,
+    nested_dict_value,
     open_page_in_browser,
 )
 
@@ -86,3 +87,8 @@ class TestUtils(unittest.TestCase):
             env_mock.get.return_value = "foo"
             result = can_launch_browser()
             self.assertFalse(result)
+
+    def test_nested_dict_value(self):
+        data = {"key": {"nestedkey": {"reallynestedkey": "thenestedkey"}}}
+        key = nested_dict_value(data, "key.nestedkey.reallynestedkey")
+        self.assertEqual(key, "thenestedkey")
