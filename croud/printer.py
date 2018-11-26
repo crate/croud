@@ -18,15 +18,17 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import json
+from typing import List, Union
 
 from colorama import Fore, Style
+from tabulate import tabulate
 
 from croud.typing import JsonDict
 
 
-def print_format(res: JsonDict, format: str = "json") -> None:
+def print_format(rows: Union[List[JsonDict], JsonDict], format: str = "json") -> None:
     printer = FormatPrinter()
-    printer.print_resultset(res, format)
+    printer.print_rows(rows, format)
 
 
 def print_error(text: str):
@@ -39,15 +41,48 @@ def print_info(text: str):
 
 class FormatPrinter:
     def __init__(self):
-        self.supported_formats: dict = {"json": self._json}
+        self.supported_formats: dict = {"json": self._json, "table": self._tabular}
 
-    def print_resultset(self, res: JsonDict, format: str) -> None:
+    def print_rows(self, rows: Union[List[JsonDict], JsonDict], format: str) -> None:
         try:
             print_method = self.supported_formats[format]
         except KeyError as e:
             print_error(f"This print method is not supported: {e!s}")
             exit(1)
-        print(print_method(res))
+        print(print_method(rows))
 
-    def _json(self, res: JsonDict) -> str:
-        return json.dumps(res, sort_keys=False, indent=2)
+    def _transform_field(self, field):
+        """transform field for displaying"""
+        if isinstance(field, (list, dict)):
+            return json.dumps(field, sort_keys=True, ensure_ascii=False)
+        elif isinstance(field, bool):
+            return "TRUE" if field else "FALSE"
+        else:
+            return field
+
+    def _json(self, rows: Union[List[JsonDict], JsonDict]) -> str:
+        return json.dumps(rows, sort_keys=False, indent=2)
+
+    def _tabular(self, rows: Union[List[JsonDict], JsonDict]) -> str:
+        if isinstance(rows, list):
+            # ensure that keys are mapped to their values
+            # e.g. Rows, generated with
+            # [{"a": "foo", "b": 1}, {"b": 2, "a": "bar"}]
+            # should get printed same as
+            # [{"a": "foo", "b": 1}, {"a": "bar", "b": "1"}]
+            # +-----+-----+
+            # | a   |   b |
+            # |-----+-----+
+            # | foo |   1 |
+            # +-----+-----+
+            # | bar |   2 |
+            # +-----+-----+
+            headers = list(map(str, iter(rows[0].keys())))
+            values = [
+                [self._transform_field(row[header]) for header in headers]
+                for row in rows
+            ]
+        else:
+            headers = list(map(str, iter(rows.keys())))
+            values = [list(map(self._transform_field, rows.values()))]
+        return tabulate(values, headers=headers, tablefmt="psql", missingval="NULL")

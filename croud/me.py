@@ -18,10 +18,11 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import asyncio
+from typing import List, Union
 
 import argh
 
-from croud.printer import print_format
+from croud.printer import print_error, print_format
 from croud.session import HttpSession
 from croud.typing import JsonDict
 
@@ -33,7 +34,7 @@ from croud.typing import JsonDict
     default="bregenz.a1",
     type=str,
 )
-@argh.arg("-o", "--output-fmt", choices=["json"], default="json", type=str)
+@argh.arg("-o", "--output-fmt", choices=["json", "table"], default="json", type=str)
 def me(region=None, output_fmt=None) -> None:
     """
     Prints the current logged in user
@@ -49,10 +50,17 @@ def me(region=None, output_fmt=None) -> None:
 }
     """
 
-    async def fetch_data() -> JsonDict:
+    async def fetch_data() -> Union[List[JsonDict], JsonDict]:
         async with HttpSession(region) as session:
             return await session.fetch(query)
 
     loop = asyncio.get_event_loop()
-    result = loop.run_until_complete(fetch_data())
-    print_format(result["me"], output_fmt)
+    rows = loop.run_until_complete(fetch_data())
+
+    if rows:
+        if isinstance(rows, dict):
+            print_format(rows["me"], output_fmt)
+        else:
+            print_error("Result has no proper format to print.")
+    else:
+        print_error("Result contained no data to print.")
