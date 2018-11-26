@@ -8,34 +8,33 @@ Usage
 =====
 
 Use the command ``croud -h`` to list all available subcommands or
-``croud <subcommand> -h`` to see the their detailed usage.
+``croud <subcommand> -h`` to see the their detailed usage::
+
+    $ croud [subcommand] {parameters}
 
 
-Development
-===========
+Contributing
+============
 
-Python >= 3.6 is required. Run ``croud`` within a virtual python environment::
+This project is primarily maintained by Crate.io_, but we welcome community
+contributions!
 
-    python -m venv env
-    source env/bin/activate
-
-Install the ``croud`` package::
-
-    pip install -e .
-    pip install -e ".[development]"
-
-Run it::
-
-    croud -h
+See the `developer docs`_ and the `contribution docs`_ for more information.
 
 
-Testing
--------
+Help
+====
 
-Install the dependencies used for testing::
+Looking for more help?
 
-    pip install -e ".[testing]"
+- Check `StackOverflow`_ for common problems
+- Chat with us on `Slack`_
+- Get `paid support`_
 
-Tests run with `pytest <https://docs.pytest.org/en/latest/>`_::
 
-    pytest tests/
+.. _contribution docs: CONTRIBUTING.rst
+.. _developer docs: DEVELOP.rst
+.. _Crate.io: http://crate.io/
+.. _StackOverflow: https://stackoverflow.com/tags/crate
+.. _Slack: https://crate.io/docs/support/slackin/
+.. _paid support: https://crate.io/pricing/
