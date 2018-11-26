@@ -21,14 +21,21 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import importlib
+from typing import Callable
+
 import argh
 import colorama
+import pkg_resources
 
 from croud import __version__
 from croud.config import Configuration
-from croud.login import login
-from croud.logout import logout
-from croud.me import me
+
+
+def _lookup_command(entry_point: pkg_resources.EntryPoint) -> Callable:
+    module = importlib.import_module(entry_point.module_name)
+    command: Callable = getattr(module, entry_point.attrs[0])
+    return command
 
 
 def main():
@@ -37,7 +44,11 @@ def main():
 
     p = argh.ArghParser(prog="CROUD")
     p.add_argument("--version", action="version", version="%(prog)s " + __version__)
-    p.add_commands([me, login, logout])
+    commands = [
+        _lookup_command(entry_point)
+        for entry_point in pkg_resources.iter_entry_points("croud_commands")
+    ]
+    p.add_commands(commands)
     p.dispatch()
 
 

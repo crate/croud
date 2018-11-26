@@ -35,7 +35,14 @@ setup(
     url="https://github.com/crate/croud",
     description="A command line interface for CrateDB Cloud",
     long_description=readme,
-    entry_points={"console_scripts": ["croud = croud.__main__:main"]},
+    entry_points={
+        "console_scripts": ["croud = croud.__main__:main"],
+        "croud_commands": [
+            "login = croud.login:login",
+            "logout = croud.logout:logout",
+            "me = croud.me:me",
+        ],
+    },
     packages=["croud"],
     install_requires=[
         "argh",
