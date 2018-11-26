@@ -17,7 +17,6 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import pytest
 
 from croud.printer import FormatPrinter
 
@@ -25,9 +24,40 @@ from croud.printer import FormatPrinter
 class TestFormatPrinter(object):
     printer = FormatPrinter()
 
-    @pytest.fixture(autouse=True)
     def test_json_format(self, capsys):
         sample = {"a": "foo", "b": 1, "c": True}
-        self.printer.print_resultset(sample, format="json")
+        self.printer.print_rows(sample, format="json")
         out, err = capsys.readouterr()
         assert out == """{\n  "a": "foo",\n  "b": 1,\n  "c": true\n}\n"""
+
+    def test_tabular_format_dict(self, capsys):
+        sample = {"a": "foo", "b": 1, "c": True}
+        self.printer.print_rows(sample, format="table")
+        out, err = capsys.readouterr()
+        assert (
+            out
+            == """+-----+-----+------+
+| a   |   b | c    |
+|-----+-----+------|
+| foo |   1 | TRUE |
++-----+-----+------+
+"""
+        )
+
+    def test_tabular_format_multi_row(self, capsys):
+        sample = [
+            {"a": "foo", "b": 1, "c": True},
+            {"b": 2, "c": False, "a": {"bar": [{"value": 0}, {"value": 1}]}},
+        ]
+        self.printer.print_rows(sample, format="table")
+        out, err = capsys.readouterr()
+        assert (
+            out
+            == """+---------------------------------------+-----+-------+
+| a                                     |   b | c     |
+|---------------------------------------+-----+-------|
+| foo                                   |   1 | TRUE  |
+| {"bar": [{"value": 0}, {"value": 1}]} |   2 | FALSE |
++---------------------------------------+-----+-------+
+"""
+        )

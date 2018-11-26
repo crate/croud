@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added a tabular format to the list of possible output formats in subcommands.
+
 - Added subcommand `me` that allows to print info about the current
   logged-in user.
 
