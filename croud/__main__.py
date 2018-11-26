@@ -25,12 +25,14 @@ import argh
 import colorama
 
 from croud import __version__
+from croud.config import Configuration
 from croud.login import login
 from croud.logout import logout
 from croud.me import me
 
 
 def main():
+    Configuration.create()
     colorama.init()
 
     p = argh.ArghParser(prog="CROUD")

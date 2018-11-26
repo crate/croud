@@ -33,9 +33,8 @@ from croud.typing import JsonDict
     default="bregenz.a1",
     type=str,
 )
-@argh.arg("--env", choices=["dev", "prod"], default="prod", type=str)
 @argh.arg("-o", "--output-fmt", choices=["json"], default="json", type=str)
-def me(region=None, env=None, output_fmt=None) -> None:
+def me(region=None, output_fmt=None) -> None:
     """
     Prints the current logged in user
     """
@@ -51,7 +50,7 @@ def me(region=None, env=None, output_fmt=None) -> None:
     """
 
     async def fetch_data() -> JsonDict:
-        async with HttpSession(region, env) as session:
+        async with HttpSession(region) as session:
             return await session.fetch(query)
 
     loop = asyncio.get_event_loop()

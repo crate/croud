@@ -47,7 +47,7 @@ me_response = {
 
 
 class TestHttpSession(unittest.TestCase):
-    @mock.patch.object(Configuration, "read_token", return_value="eyJraWQiOiIx")
+    @mock.patch.object(Configuration, "get_token", return_value="eyJraWQiOiIx")
     def test_query_success(self, mock_token):
         with loop_context() as loop:
 
@@ -68,7 +68,7 @@ class TestHttpSession(unittest.TestCase):
             loop.run_until_complete(test_query())
             loop.run_until_complete(fake_cloud.stop())
 
-    @mock.patch.object(Configuration, "read_token", return_value="")
+    @mock.patch.object(Configuration, "get_token", return_value="")
     @mock.patch("croud.session.print_error")
     def test_query_unauthorized(self, mock_print_error, mock_token):
         with loop_context() as loop:

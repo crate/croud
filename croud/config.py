@@ -18,27 +18,52 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import os
-from pathlib import Path
 
+import yaml
 from appdirs import user_config_dir
 
 
 class Configuration:
-
-    USER_CONFIG_DIR: Path = Path(user_config_dir("Crate"))
-    CONFIG_FILE_NAME: str = "cloud_token"
-    CONFIG_PATH: Path = USER_CONFIG_DIR / CONFIG_FILE_NAME
-
-    @staticmethod
-    def write_token(token: str) -> None:
-        os.makedirs(os.path.dirname(Configuration.CONFIG_PATH), exist_ok=True)
-        with open(Configuration.CONFIG_PATH, "w") as f:
-            f.write(token)
+    USER_CONFIG_DIR: str = user_config_dir("Crate")
+    FILENAME: str = "croud.yaml"
+    FILEPATH: str = f"{USER_CONFIG_DIR}/{FILENAME}"
 
     @staticmethod
-    def read_token() -> str:
-        if Configuration.CONFIG_PATH.exists():
-            with open(Configuration.CONFIG_PATH) as f:
-                return f.readline()
-        else:
-            return ""
+    def create() -> None:
+        if not os.path.exists(Configuration.USER_CONFIG_DIR):
+            os.makedirs(Configuration.USER_CONFIG_DIR)
+
+        if not os.path.isfile(Configuration.FILEPATH):
+            write_config({"env": "prod", "token": ""})
+
+    @staticmethod
+    def get_env() -> str:
+        return load_config().get("env") or "prod"
+
+    @staticmethod
+    def set_env(env: str) -> None:
+        set_property("env", env)
+
+    @staticmethod
+    def get_token() -> str:
+        return load_config().get("token") or ""
+
+    @staticmethod
+    def set_token(token: str) -> None:
+        set_property("token", token)
+
+
+def load_config() -> dict:
+    with open(Configuration.FILEPATH, "r") as f:
+        return yaml.load(f) or {}
+
+
+def write_config(config: dict) -> None:
+    with open(Configuration.FILEPATH, "w", encoding="utf8") as f:
+        yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
+
+
+def set_property(property: str, value: str):
+    config = load_config()
+    config[property] = value
+    write_config(config)

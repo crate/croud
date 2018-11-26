@@ -21,6 +21,7 @@ import unittest
 from unittest import mock
 
 from croud.login import login
+from croud.logout import logout
 from croud.server import Server
 
 
@@ -40,7 +41,10 @@ class TestLogin(unittest.TestCase):
         mock_start,
         mock_stop,
     ):
-        login(env="dev")
+        m = mock.mock_open()
+        with mock.patch("croud.config.open", m, create=True):
+            login(env="dev")
+
         calls = [
             mock.call("A browser tab has been launched for you to login."),
             mock.call("Login successful."),
@@ -57,3 +61,15 @@ class TestLogin(unittest.TestCase):
             "Login only works with a valid browser installed."
         )
         self.assertEqual(cm.exception.code, 1)
+
+
+class TestLogout(unittest.TestCase):
+    @mock.patch("croud.logout.Configuration.set_token")
+    @mock.patch("croud.logout.print_info")
+    def test_logout(self, mock_print_info, mock_set_token):
+        m = mock.mock_open()
+        with mock.patch("croud.config.open", m, create=True):
+            logout()
+
+        mock_set_token.assert_called_once_with("")
+        mock_print_info.assert_called_once_with("You have been logged out.")

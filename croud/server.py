@@ -44,7 +44,7 @@ class Server:
     def handle_session(self, req: web.Request) -> web.Response:
         """Token handler that receives the session token from query param"""
         try:
-            Configuration.write_token(req.rel_url.query["token"])
+            Configuration.set_token(req.rel_url.query["token"])
         except KeyError as ex:
             return web.Response(status=500, text=f"No query param {ex!s} in request")
         return web.Response(status=200, text=Server.LOGIN_MSG, content_type="text/html")

@@ -21,6 +21,7 @@ import asyncio
 
 import argh
 
+from croud.config import Configuration
 from croud.printer import print_error, print_info
 from croud.server import Server
 from croud.util import can_launch_browser, open_page_in_browser
@@ -53,6 +54,8 @@ def login(env=None) -> None:
         finally:
             loop.run_until_complete(server.stop())
         loop.close()
+
+        Configuration.set_env(env.lower())
     else:
         print_error("Login only works with a valid browser installed.")
         exit(1)

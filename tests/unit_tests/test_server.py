@@ -27,7 +27,7 @@ from croud.server import Server
 
 
 class TestLocalServer(object):
-    @mock.patch.object(Configuration, "write_token")
+    @mock.patch.object(Configuration, "set_token")
     def test_token_handler_and_login(self, mock_write_token):
         with loop_context() as loop:
             server = Server(loop)
@@ -45,7 +45,7 @@ class TestLocalServer(object):
             loop.run_until_complete(test_get_route())
             loop.run_until_complete(client.close())
 
-    @mock.patch.object(Configuration, "write_token")
+    @mock.patch.object(Configuration, "set_token")
     def test_token_missing_for_login(self, mock_write_token):
         with loop_context() as loop:
             server = Server(loop)
