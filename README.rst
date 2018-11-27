@@ -1,6 +1,6 @@
-=========
-Cloud-CLI
-=========
+=====
+Croud
+=====
 
 A command line interface for CrateDB Cloud ☁
 
