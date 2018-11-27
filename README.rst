@@ -4,6 +4,21 @@ Cloud-CLI
 
 A command line interface for CrateDB Cloud ☁
 
+Install
+=======
+
+Using git
+---------
+
+Alternatively, you can "git clone" this repository to any directory, create a
+virtual environment and link the binary in your ``PATH``::
+
+    $ git clone git@github.com:crate/croud.git && cd croud/
+    $ python3.6 -m venv env
+    $ env/bin/pip install -e .
+    $ ln -s $(pwd)/env/bin/croud /usr/local/bin/croud
+
+
 Usage
 =====
 
