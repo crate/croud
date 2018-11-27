@@ -28,6 +28,8 @@ class Configuration:
     FILENAME: str = "croud.yaml"
     FILEPATH: str = f"{USER_CONFIG_DIR}/{FILENAME}"
 
+    _using_context = None
+
     @staticmethod
     def create() -> None:
         if not os.path.exists(Configuration.USER_CONFIG_DIR):
@@ -53,6 +55,10 @@ class Configuration:
     @staticmethod
     def set_token(token: str) -> None:
         set_property("token", token)
+
+    @staticmethod
+    def override_context(env: str) -> None:
+        Configuration._using_context = env
 
 
 def load_config() -> dict:

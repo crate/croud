@@ -14,6 +14,10 @@ Unreleased
 
 - Added a tabular format to the list of possible output formats in subcommands.
 
+- Added ``env`` flag to commands to temporarily override auth context
+
+- Added a subcommand `env` that allows you to switch env (so you can be logged into multiple environments. E.g. ``croud env prod``
+
 - Added subcommand `me` that allows to print info about the current
   logged-in user.
 
