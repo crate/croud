@@ -26,7 +26,7 @@ from croud.printer import print_info
 from croud.session import HttpSession
 
 
-@argh.arg("--env", default=None, type=str)
+@argh.arg("--env", choices=["prod", "dev"], default=None, type=str)
 def logout(env=None) -> None:
     """
     Performs a logout of the current logged in User

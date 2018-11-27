@@ -18,16 +18,11 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import asyncio
-from typing import List, Union
 
 import argh
 
-<<<<<<< HEAD
-from croud.printer import print_error, print_format
-=======
 from croud.config import Configuration
-from croud.printer import print_format
->>>>>>> Added env flag to each command to override auth context
+from croud.printer import print_error, print_format
 from croud.session import HttpSession
 from croud.typing import JsonDict
 
@@ -39,14 +34,9 @@ from croud.typing import JsonDict
     default="bregenz.a1",
     type=str,
 )
-<<<<<<< HEAD
-@argh.arg("-o", "--output-fmt", choices=["json", "table"], default="json", type=str)
-def me(region=None, output_fmt=None) -> None:
-=======
 @argh.arg("-o", "--output-fmt", choices=["json"], default="json", type=str)
-@argh.arg("--env", default=None, type=str)
+@argh.arg("--env", choices=["prod", "env"], default=None, type=str)
 def me(region=None, output_fmt=None, env=None) -> None:
->>>>>>> Added env flag to each command to override auth context
     """
     Prints the current logged in user
     """
@@ -61,14 +51,10 @@ def me(region=None, output_fmt=None, env=None) -> None:
 }
     """
 
-<<<<<<< HEAD
-    async def fetch_data() -> Union[List[JsonDict], JsonDict]:
-=======
     if env is not None:
         Configuration.override_context(env)
 
     async def fetch_data() -> JsonDict:
->>>>>>> Added env flag to each command to override auth context
         async with HttpSession(region) as session:
             return await session.fetch(query)
 
