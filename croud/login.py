@@ -33,7 +33,7 @@ def login(env=None) -> None:
     Performs an OAuth2 Login to CrateDB Cloud
     """
     if can_launch_browser():
-        Configuration.override_context(env.lower())
+        Configuration.override_context(env)
         loop = asyncio.get_event_loop()
         server = Server(loop)
         server.create_web_app()
