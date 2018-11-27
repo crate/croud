@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+- Load croud commands from a ``croud_commands`` `entry points
+  <https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins>`__
+  section.
+
 - Added a tabular format to the list of possible output formats in subcommands.
 
 - Added subcommand `me` that allows to print info about the current
