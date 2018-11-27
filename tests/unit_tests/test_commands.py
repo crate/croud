@@ -90,4 +90,4 @@ class TestEnv(unittest.TestCase):
             env("dev")
 
         mock_set_context.assert_called_once_with("dev")
-        mock_print_info.assert_called_once_with('Environment switched to "dev"')
+        mock_print_info.assert_called_once_with("Environment switched to dev")

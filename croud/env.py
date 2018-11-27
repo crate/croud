@@ -23,4 +23,4 @@ from croud.printer import print_info
 
 def env(env: str):
     Configuration.set_context(env)
-    print_info(f'Environment switched to "{env}"')
+    print_info(f"Environment switched to {env}")
