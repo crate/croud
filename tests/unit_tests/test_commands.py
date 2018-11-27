@@ -71,13 +71,12 @@ class TestLogin(unittest.TestCase):
 class TestLogout(unittest.TestCase):
     @mock.patch("croud.logout.Configuration.set_token")
     @mock.patch("croud.logout.print_info")
-    @mock.patch("croud.config.load_config")
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     def test_logout(self, mock_load_config, mock_print_info, mock_set_token):
         m = mock.mock_open()
         with mock.patch("croud.config.open", m, create=True):
             logout()
 
-        mock_load_config.return_value = Configuration.DEFAULT_CONFIG
         mock_set_token.assert_called_once_with("")
         mock_print_info.assert_called_once_with("You have been logged out.")
 
