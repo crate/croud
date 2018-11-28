@@ -4,19 +4,26 @@ Croud
 
 A command line interface for CrateDB Cloud ☁
 
-Install
-=======
+Installation
+============
+
+Using pip
+---------
+
+``croud`` can be installed using pip_::
+
+    $ python3 -m pip install --user -U croud
 
 Using git
 ---------
 
-Alternatively, you can "git clone" this repository to any directory, create a
-virtual environment and link the binary in your ``PATH``::
+Alternatively, you can clone this repository, install it into a virtualenv_ and
+add the executable to your ``PATH`` environment variable::
 
     $ git clone git@github.com:crate/croud.git && cd croud/
     $ python3.6 -m venv env
     $ env/bin/pip install -e .
-    $ ln -s $(pwd)/env/bin/croud /usr/local/bin/croud
+    $ export PATH=$PATH:$(pwd)/env/bin/croud
 
 
 Usage
@@ -47,6 +54,8 @@ Looking for more help?
 - Get `paid support`_
 
 
+.. _pip: https://pip.pypa.io/en/stable/
+.. _virtualenv: https://virtualenv.pypa.io/en/latest/
 .. _contribution docs: https://github.com/crate/croud/blob/master/CONTRIBUTING.rst
 .. _developer docs: https://github.com/crate/croud/blob/master/DEVELOP.rst
 .. _Crate.io: http://crate.io/
