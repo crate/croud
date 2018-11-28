@@ -47,8 +47,8 @@ Looking for more help?
 - Get `paid support`_
 
 
-.. _contribution docs: CONTRIBUTING.rst
-.. _developer docs: DEVELOP.rst
+.. _contribution docs: https://github.com/crate/croud/blob/master/CONTRIBUTING.rst
+.. _developer docs: https://github.com/crate/croud/blob/master/DEVELOP.rst
 .. _Crate.io: http://crate.io/
 .. _StackOverflow: https://stackoverflow.com/tags/crate
 .. _Slack: https://crate.io/docs/support/slackin/
