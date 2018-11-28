@@ -30,7 +30,7 @@ except IOError:
 
 setup(
     name="croud",
-    author="CRATE Technology GmbH",
+    author="Crate.io",
     author_email="office@crate.io",
     url="https://github.com/crate/croud",
     description="A command line interface for CrateDB Cloud",
