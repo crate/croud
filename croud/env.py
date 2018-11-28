@@ -19,7 +19,7 @@
 
 from sys import exit
 
-from croud.config import Configuration
+from croud.config import Configuration, load_config
 from croud.printer import print_info
 
 
@@ -28,9 +28,11 @@ def env(env: str) -> None:
     Changes the auth environment for subsequent commands
     """
 
-    if env.lower() != "prod" and env.lower() != "dev":
-        print(f"Unrecognized env '{env}'. Available options are:\n  1. prod\n  2. dev")
-        exit()
+    config = load_config()
+    if env.lower() not in config["auth"]["contexts"]:
+        options = ", ".join(config["auth"]["contexts"])
+        print(f"Unrecognized env '{env}'. Available options are: {options}")
+        exit(1)
 
     Configuration.set_context(env)
     print_info(f"Environment switched to {env}")

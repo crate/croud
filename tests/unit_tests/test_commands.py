@@ -82,9 +82,10 @@ class TestLogout(unittest.TestCase):
 
 
 class TestEnv(unittest.TestCase):
+    @mock.patch("croud.env.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch("croud.env.Configuration.set_context")
     @mock.patch("croud.env.print_info")
-    def test_env(self, mock_print_info, mock_set_context):
+    def test_env(self, mock_print_info, mock_set_context, mock_load_config):
         m = mock.mock_open()
         with mock.patch("croud.config.open", m, create=True):
             env("dev")
