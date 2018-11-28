@@ -17,10 +17,20 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+from sys import exit
+
 from croud.config import Configuration
 from croud.printer import print_info
 
 
-def env(env: str):
+def env(env: str) -> None:
+    """
+    Changes the auth environment for subsequent commands
+    """
+
+    if env.lower() != "prod" and env.lower() != "dev":
+        print(f"Unrecognized env '{env}'. Available options are:\n  1. prod\n  2. dev")
+        exit()
+
     Configuration.set_context(env)
     print_info(f"Environment switched to {env}")

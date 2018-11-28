@@ -76,11 +76,3 @@ def open_page_in_browser(url: str) -> int:
         except FileNotFoundError:  # WSL might be too old
             pass
     return webbrowser.open_new_tab(url)
-
-
-def nested_dict_value(data: dict, key: str):
-    cursor = data
-    for k in key.split("."):
-        cursor = cursor[k]
-
-    return cursor
