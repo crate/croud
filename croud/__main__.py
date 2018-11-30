@@ -33,7 +33,9 @@ def main():
     Configuration.create()
     colorama.init()
 
-    p = argh.ArghParser(prog="CROUD")
+    p = argh.ArghParser(
+        prog="croud", description="A command line interface for CrateDB Cloud"
+    )
     p.add_argument("--version", action="version", version="%(prog)s " + __version__)
     commands = [
         entry_point.load()
