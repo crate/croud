@@ -8,15 +8,15 @@ Unreleased
 0.1.0 - 2018/11/28
 ==================
 
+- Added `env` flag to commands to temporarily override auth context
+
+- Added a subcommand `env` that allows you to switch env (so you can be logged into multiple environments. E.g. ``croud env prod``
+
 - Load croud commands from a ``croud_commands`` `entry points
   <https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins>`__
   section.
 
 - Added a tabular format to the list of possible output formats in subcommands.
-
-- Added ``env`` flag to commands to temporarily override auth context
-
-- Added a subcommand `env` that allows you to switch env (so you can be logged into multiple environments. E.g. ``croud env prod``
 
 - Added subcommand `me` that allows to print info about the current
   logged-in user.

@@ -27,8 +27,14 @@ class Configuration:
     USER_CONFIG_DIR: str = user_config_dir("Crate")
     FILENAME: str = "croud.yaml"
     FILEPATH: str = f"{USER_CONFIG_DIR}/{FILENAME}"
+    DEFAULT_CONFIG: dict = {
+        "auth": {
+            "current_context": "prod",
+            "contexts": {"prod": {"token": ""}, "dev": {"token": ""}},
+        }
+    }
 
-    _using_context = None
+    current_context: str = ""
 
     @staticmethod
     def create() -> None:
@@ -37,28 +43,44 @@ class Configuration:
 
         if not os.path.isfile(Configuration.FILEPATH):
             # create a config template with user r+w permissions
-            write_config({"env": "prod", "token": ""})
+
+            write_config(Configuration.DEFAULT_CONFIG)
             os.chmod(Configuration.FILEPATH, 0o600)
 
     @staticmethod
     def get_env() -> str:
-        return load_config().get("env") or "prod"
+        if not Configuration.current_context:
+            return Configuration.current_context
+
+        config = load_config()
+        return config["auth"]["current_context"]
 
     @staticmethod
-    def set_env(env: str) -> None:
-        set_property("env", env)
+    def set_context(env: str) -> None:
+        config = load_config()
+        config["auth"]["current_context"] = env
+
+        write_config(config)
 
     @staticmethod
     def get_token() -> str:
-        return load_config().get("token") or ""
+        return get_auth_context().get("token", "")
 
     @staticmethod
     def set_token(token: str) -> None:
-        set_property("token", token)
+        config = load_config()
+
+        context = Configuration.current_context
+        if not context:
+            context = config["auth"]["current_context"]
+
+        config["auth"]["contexts"][context]["token"] = token
+
+        write_config(config)
 
     @staticmethod
     def override_context(env: str) -> None:
-        Configuration._using_context = env
+        Configuration.current_context = env
 
 
 def load_config() -> dict:
@@ -66,12 +88,22 @@ def load_config() -> dict:
         return yaml.load(f) or {}
 
 
+def set_property(property: str, value: str):
+    config = load_config()
+    config[property] = value
+    write_config(config)
+
+
 def write_config(config: dict) -> None:
     with open(Configuration.FILEPATH, "w", encoding="utf8") as f:
         yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
 
 
-def set_property(property: str, value: str):
+def get_auth_context() -> dict:
     config = load_config()
-    config[property] = value
-    write_config(config)
+
+    context = Configuration.current_context
+    if not context:
+        context = config["auth"]["current_context"]
+
+    return config["auth"]["contexts"][context]
