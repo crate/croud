@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# PYTHON_ARGCOMPLETE_OK
-#
 # Licensed to CRATE Technology GmbH ("Crate") under one or more contributor
 # license agreements.  See the NOTICE file distributed with this work for
 # additional information regarding copyright ownership.  Crate licenses
@@ -22,32 +18,20 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import argh
-import colorama
-
-from croud import __version__
-from croud.config import Configuration
-from croud.login import login
-from croud.logout import logout
-from croud.me import me
-from croud.projects.list import list
 
 
-def main():
-    Configuration.create()
-    colorama.init()
+@argh.arg(
+    "-r",
+    "--region",
+    choices=["westeurope.azure", "eastus.azure", "bregenz.a1"],
+    default="bregenz.a1",
+    type=str,
+)
+@argh.arg("-o", "--output-fmt", choices=["json"], default="json", type=str)
+@argh.arg("--env", choices=["prod", "dev"], default=None, type=str)
+def list(region=None, output_fmt=None, env=None) -> None:
+    """
+    Lists all projects for the current user in the specified region
+    """
 
-    p = argh.ArghParser(
-        prog="croud", description="A command line interface for CrateDB Cloud"
-    )
-    p.add_argument("--version", action="version", version="%(prog)s " + __version__)
-    p.add_commands([me, login, logout])
-
-    namespaced_commands: dict = {"projects": [list]}
-    for namespace, commands in namespaced_commands.items():
-        p.add_commands(commands, namespace=namespace)
-
-    p.dispatch()
-
-
-if __name__ == "__main__":
-    main()
+    # Todo: Return list of projects for logged in user in specified region
