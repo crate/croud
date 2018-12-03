@@ -35,7 +35,7 @@ from croud.typing import JsonDict
     type=str,
 )
 @argh.arg("-o", "--output-fmt", choices=["json"], default="json", type=str)
-@argh.arg("--env", choices=["prod", "env"], default=None, type=str)
+@argh.arg("--env", choices=["prod", "dev"], default=None, type=str)
 def me(region=None, output_fmt=None, env=None) -> None:
     """
     Prints the current logged in user

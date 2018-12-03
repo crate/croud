@@ -49,7 +49,7 @@ class Configuration:
 
     @staticmethod
     def get_env() -> str:
-        if not Configuration.current_context:
+        if Configuration.current_context:
             return Configuration.current_context
 
         config = load_config()
