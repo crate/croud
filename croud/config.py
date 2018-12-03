@@ -34,7 +34,9 @@ class Configuration:
             os.makedirs(Configuration.USER_CONFIG_DIR)
 
         if not os.path.isfile(Configuration.FILEPATH):
+            # create a config template with user r+w permissions
             write_config({"env": "prod", "token": ""})
+            os.chmod(Configuration.FILEPATH, 0o600)
 
     @staticmethod
     def get_env() -> str:
