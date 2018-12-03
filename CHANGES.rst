@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Removed name field from `me` subcommand
+
 0.1.0 - 2018/11/28
 ==================
 
