@@ -45,7 +45,6 @@ def me(region=None, output_fmt=None) -> None:
     me {
         email
         username
-        name
     }
 }
     """
