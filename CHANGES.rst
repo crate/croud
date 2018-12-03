@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Fix: Give the config read+write permissions only.
+
 0.1.0 - 2018/11/28
 ==================
 
