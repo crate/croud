@@ -38,6 +38,7 @@ setup(
     entry_points={
         "console_scripts": ["croud = croud.__main__:main"],
         "croud_commands": [
+            "env = croud.env:env",
             "login = croud.login:login",
             "logout = croud.logout:logout",
             "me = croud.me:me",

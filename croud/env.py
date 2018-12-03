@@ -17,31 +17,22 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import asyncio
+from sys import exit
 
-import argh
-
-from croud.config import Configuration
+from croud.config import Configuration, load_config
 from croud.printer import print_info
-from croud.session import HttpSession
 
 
-@argh.arg("--env", choices=["prod", "dev"], default=None, type=str)
-def logout(env=None) -> None:
+def env(env: str) -> None:
     """
-    Performs a logout of the current logged in User
+    Changes the auth environment for subsequent commands
     """
 
-    if env is not None:
-        Configuration.override_context(env)
+    config = load_config()
+    if env.lower() not in config["auth"]["contexts"]:
+        options = ", ".join(config["auth"]["contexts"])
+        print(f"Unrecognized env '{env}'. Available options are: {options}")
+        exit(1)
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(make_request())
-
-    Configuration.set_token("")
-    print_info("You have been logged out.")
-
-
-async def make_request() -> None:
-    async with HttpSession() as session:
-        await session.logout()
+    Configuration.set_context(env)
+    print_info(f"Environment switched to {env}")

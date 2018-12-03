@@ -19,7 +19,7 @@
 
 import ssl
 from types import TracebackType
-from typing import Dict, List, Optional, Type, Union
+from typing import Dict, Optional, Type
 
 import certifi
 from aiohttp import ClientSession, ContentTypeError, TCPConnector  # type: ignore
@@ -58,7 +58,7 @@ class HttpSession:
             cookies={"session": token}, connector=conn, headers=headers
         )
 
-    async def fetch(self, query: str) -> Union[List[JsonDict], JsonDict]:
+    async def fetch(self, query: str) -> JsonDict:
         resp = await self.client.post(self.url, json={"query": query})
         if resp.status == 200:
             try:
