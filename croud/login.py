@@ -19,28 +19,22 @@
 
 import asyncio
 
-import argh
-
+from argparse import Namespace
 from croud.config import Configuration
 from croud.printer import print_error, print_info
 from croud.server import Server
 from croud.util import can_launch_browser, open_page_in_browser
 
-
-@argh.arg("--env", choices=["dev", "prod"], default="prod", type=str)
-def login(env=None) -> None:
-    """
-    Performs an OAuth2 Login to CrateDB Cloud
-    """
+def login(args: Namespace) -> None:
     if can_launch_browser():
-        Configuration.override_context(env)
+        Configuration.override_context(args.env)
         loop = asyncio.get_event_loop()
         server = Server(loop)
         server.create_web_app()
         loop.run_until_complete(server.start())
 
         domain = "cratedb.cloud"
-        if env.lower() == "dev":
+        if args.env.lower() == "dev":
             domain = "cratedb-dev.cloud"
 
         login_url = f"https://bregenz.a1.{domain}/oauth2/login?cli=true"
@@ -56,7 +50,7 @@ def login(env=None) -> None:
             loop.run_until_complete(server.stop())
         loop.close()
 
-        Configuration.set_context(env.lower())
+        Configuration.set_context(args.env.lower())
     else:
         print_error("Login only works with a valid browser installed.")
         exit(1)

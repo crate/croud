@@ -19,21 +19,16 @@
 
 import asyncio
 
-import argh
+
+from argparse import Namespace
 
 from croud.config import Configuration
 from croud.printer import print_info
 from croud.session import HttpSession
 
-
-@argh.arg("--env", choices=["prod", "dev"], default=None, type=str)
-def logout(env=None) -> None:
-    """
-    Performs a logout of the current logged in User
-    """
-
-    if env is not None:
-        Configuration.override_context(env)
+def logout(args: Namespace) -> None:
+    if args.env is not None:
+        Configuration.override_context(args.env)
 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(make_request())

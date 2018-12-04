@@ -21,33 +21,16 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import argh
 import colorama
 
-from croud import __version__
 from croud.config import Configuration
-from croud.login import login
-from croud.logout import logout
-from croud.me import me
-from croud.projects.list import list
-
+from croud.cmd import CMD
 
 def main():
     Configuration.create()
     colorama.init()
 
-    p = argh.ArghParser(
-        prog="croud", description="A command line interface for CrateDB Cloud"
-    )
-    p.add_argument("--version", action="version", version="%(prog)s " + __version__)
-    p.add_commands([me, login, logout])
-
-    namespaced_commands: dict = {"projects": [list]}
-    for namespace, commands in namespaced_commands.items():
-        p.add_commands(commands, namespace=namespace)
-
-    p.dispatch()
-
+    CMD()
 
 if __name__ == "__main__":
     main()

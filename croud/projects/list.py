@@ -17,21 +17,9 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import argh
+from argparse import Namespace
 
 
-@argh.arg(
-    "-r",
-    "--region",
-    choices=["westeurope.azure", "eastus.azure", "bregenz.a1"],
-    default="bregenz.a1",
-    type=str,
-)
-@argh.arg("-o", "--output-fmt", choices=["json"], default="json", type=str)
-@argh.arg("--env", choices=["prod", "dev"], default=None, type=str)
-def list(region=None, output_fmt=None, env=None) -> None:
-    """
-    Lists all projects for the current user in the specified region
-    """
-
-    # Todo: Return list of projects for logged in user in specified region
+def projects_list(args: Namespace) -> None:
+    print(args)
+    pass
