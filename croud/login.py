@@ -18,14 +18,19 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import asyncio
-
 from argparse import Namespace
+
 from croud.config import Configuration
 from croud.printer import print_error, print_info
 from croud.server import Server
 from croud.util import can_launch_browser, open_page_in_browser
 
+
 def login(args: Namespace) -> None:
+    """
+    Performs an OAuth2 Login to CrateDB Cloud
+    """
+
     if can_launch_browser():
         Configuration.override_context(args.env)
         loop = asyncio.get_event_loop()

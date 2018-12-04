@@ -18,8 +18,8 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import asyncio
-
 from argparse import Namespace
+
 from croud.config import Configuration
 from croud.printer import print_error, print_format
 from croud.session import HttpSession
@@ -27,6 +27,10 @@ from croud.typing import JsonDict
 
 
 def me(args: Namespace) -> None:
+    """
+    Prints the current logged in user
+    """
+
     query = """
 {
     me {

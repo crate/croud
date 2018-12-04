@@ -23,14 +23,70 @@
 
 import colorama
 
+from croud.cmd import CMD, output_fmt_arg, region_arg
 from croud.config import Configuration
-from croud.cmd import CMD
+from croud.env import env
+from croud.login import login
+from croud.logout import logout
+from croud.me import me
+from croud.projects.list import projects_list
+
 
 def main():
     Configuration.create()
     colorama.init()
 
-    CMD()
+    commands: dict = {
+        "me": {
+            "description": "Prints the current logged in user",
+            "usage": "croud me [-h] [--env {prod,dev}]\n\t\t"
+            "[-r {westeurope.azure,eastus.azure,bregenz.a1}] "
+            "[-o {json}]",
+            "extra_args": [region_arg, output_fmt_arg],
+            "calls": me,
+        },
+        "login": {
+            "description": "Performs an OAuth2 Login to CrateDB Cloud",
+            "usage": "croud login [-h] [--env {prod,dev}]",
+            "calls": login,
+        },
+        "logout": {
+            "description": "Performs a logout of the current logged in user",
+            "usage": "croud logout [-h] [--env {prod,dev}]",
+            "calls": logout,
+        },
+        "env": {
+            "description": "Switches auth context",
+            "usage": "croud env [-h] {prod,dev}",
+            "sub_commands": {
+                "prod": {
+                    "description": "Switch auth context to prod",
+                    "usage": "croud env prod",
+                    "calls": env("prod"),
+                },
+                "dev": {
+                    "description": "Switch auth context to dev",
+                    "usage": "croud env dev",
+                    "calls": env("dev"),
+                },
+            },
+        },
+        "projects": {
+            "description": "Project sub commands",
+            "usage": "croud projects [-h] {list,create}",
+            "sub_commands": {
+                "list": {
+                    "description": "Lists all projects for the current "
+                    "user in the specified region",
+                    "usage": "croud projects list [-h] [--env {prod,dev}] [-o {json}]",
+                    "extra_args": [output_fmt_arg],
+                    "calls": projects_list,
+                }
+            },
+        },
+    }
+    CMD(commands)
+
 
 if __name__ == "__main__":
     main()

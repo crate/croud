@@ -18,13 +18,12 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import asyncio
-
-
 from argparse import Namespace
 
 from croud.config import Configuration
 from croud.printer import print_info
 from croud.session import HttpSession
+
 
 def logout(args: Namespace) -> None:
     if args.env is not None:

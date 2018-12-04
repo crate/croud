@@ -1,97 +1,50 @@
 import argparse
 import sys
-
-from argparse import ArgumentParser
-from argparse import Namespace
-from croud.login import login
-from croud.logout import logout
-from croud.me import me
-from croud.projects.list import projects_list
+from argparse import ArgumentParser, Namespace
+from typing import Callable
 
 
 class CMD:
-    def __init__(self):
-        parser = argparse.ArgumentParser()
-        subparser = parser.add_subparsers()
+    def __init__(self, commands: dict):
+        parser: ArgumentParser = argparse.ArgumentParser()
+        self.create_parent_cmd(parser, 1, commands)
 
-        context_name = sys.argv[1]
+    def create_parent_cmd(self, parser: ArgumentParser, depth: int, commands: dict):
+        subparser = parser.add_subparsers()
         context: ArgumentParser
-        has_defaults: bool = True
-        commands: dict = {
-            "me": {
-                "description": "Prints the current logged in user",
-                "usage": "croud me [-h] [--env {prod,dev}]\n\t\t"
-                         "[-r {westeurope.azure,eastus.azure,bregenz.a1}] "
-                         "[-o {json}]"
-            },
-            "login": {
-                "description": "Performs an OAuth2 Login to CrateDB Cloud",
-                "usage": "croud login [-h] [--env {prod,dev}]"
-            },
-            "logout": {
-                "description": "Performs a logout of the current logged in user",
-                "usage": "croud logout [-h] [--env {prod,dev}]"
-            },
-            "projects": {
-                "description": "Project sub commands",
-                "usage": "croud projects [-h] {list,create}",
-                "sub_command": True
-            }
-        }
+        call: Callable
+
+        try:
+            context_name = sys.argv[depth]
+        except IndexError:
+            context_name = sys.argv[depth - 1]
 
         for key, command in commands.items():
             subparser.add_parser(key)
             if key == context_name:
                 context = argparse.ArgumentParser(
-                    description=command["description"],
-                    usage=command["usage"]
+                    description=command["description"], usage=command["usage"]
                 )
-                has_defaults = "sub_command" not in command
 
-        parser.parse_args(sys.argv[1:2])
+                if "extra_args" in command:
+                    for arg_def in command["extra_args"]:
+                        arg_def(context)
 
-        if has_defaults:
-            add_default_args(context)
+                if "sub_commands" in command:
+                    self.create_parent_cmd(context, depth + 1, command["sub_commands"])
+                    return
+                else:
+                    add_default_args(context)
+                    call = command["calls"]
+                break
 
-        getattr(self, sys.argv[1])(context)
+        parser.parse_args(sys.argv[depth : depth + 1])
 
-    def me(self, parser: ArgumentParser):
-        add_region_arg(parser)
-        add_output_fmt_arg(parser)
-
-        me(parse_args(parser, 2))
-
-    def login(self, parser):
-        login(parse_args(parser, 2))
-
-    def logout(self, parser):
-        logout(parse_args(parser, 2))
-
-    def projects(self, parser):
-        subparsers: [str] = ["list"]
-        subparser = parser.add_subparsers()
-
-        for sp in subparsers:
-            subparser.add_parser(sp)
-
-        if len(sys.argv) < 3:
+        try:
+            call(parse_args(context, depth + 1))
+        except UnboundLocalError:
             parser.print_help()
-            sys.exit(1)
-
-        parser.parse_args(sys.argv[2:3])
-        getattr(self, f"projects_{sys.argv[2]}")()
-
-
-    def projects_list(self):
-        parser = argparse.ArgumentParser(
-            description="Lists all projects for the current user in the specified region",
-            usage="croud projects list [-h] [--env {prod,dev}] [-o {json}]"
-        )
-
-        add_default_args(parser)
-        add_output_fmt_arg(parser)
-
-        projects_list(parse_args(parser, 3))
+            exit(1)
 
 
 def parse_args(parser: ArgumentParser, position: int) -> Namespace:
@@ -101,35 +54,36 @@ def parse_args(parser: ArgumentParser, position: int) -> Namespace:
 
 
 def add_default_args(parser: ArgumentParser) -> None:
-    add_env_arg(parser)
+    env_arg(parser)
 
 
-def add_env_arg(parser: ArgumentParser):
+def env_arg(parser: ArgumentParser):
     parser.add_argument(
         "--env",
         choices=["prod", "dev"],
         default=None,
         type=str,
-        help="Switches auth context"
+        help="Switches auth context",
     )
 
 
-def add_region_arg(parser: ArgumentParser):
+def region_arg(parser: ArgumentParser):
     parser.add_argument(
-        "-r", "--region",
+        "-r",
+        "--region",
         choices=["westeurope.azure", "eastus.azure", "bregenz.a1"],
         default="bregenz.a1",
         type=str,
-        help="Switch region that command will be run on"
+        help="Switch region that command will be run on",
     )
 
 
-def add_output_fmt_arg(parser: ArgumentParser):
+def output_fmt_arg(parser: ArgumentParser):
     parser.add_argument(
         "-o",
         "--output-fmt",
         choices=["json"],
         default="json",
         type=str,
-        help="Switches output format"
+        help="Switches output format",
     )

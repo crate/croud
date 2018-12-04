@@ -21,5 +21,7 @@ from argparse import Namespace
 
 
 def projects_list(args: Namespace) -> None:
-    print(args)
+    """
+    Lists all projects for the current user in the specified region
+    """
     pass
