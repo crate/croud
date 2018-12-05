@@ -39,7 +39,7 @@ def main():
     commands: dict = {
         "me": {
             "description": "Prints the current logged in user",
-            "extra_args": [region_arg, output_fmt_arg],
+            "extra_args": [output_fmt_arg, region_arg],
             "calls": me,
         },
         "login": {
@@ -69,7 +69,7 @@ def main():
                 "list": {
                     "description": "Lists all projects for the current "
                     "user in the specified region",
-                    "extra_args": [output_fmt_arg],
+                    "extra_args": [output_fmt_arg, region_arg],
                     "calls": projects_list,
                 }
             },
