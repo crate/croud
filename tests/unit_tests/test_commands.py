@@ -18,10 +18,10 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import unittest
+from argparse import Namespace
 from unittest import mock
 
 from croud.config import Configuration
-from croud.env import env
 from croud.login import login
 from croud.logout import logout
 from croud.server import Server
@@ -48,7 +48,7 @@ class TestLogin(unittest.TestCase):
         mock_load_config.return_value = Configuration.DEFAULT_CONFIG
         m = mock.mock_open()
         with mock.patch("croud.config.open", m, create=True):
-            login(env="dev")
+            login(Namespace(env="dev"))
 
         calls = [
             mock.call("A browser tab has been launched for you to login."),
@@ -60,7 +60,7 @@ class TestLogin(unittest.TestCase):
     @mock.patch("croud.login.print_error")
     def test_login_no_valid_browser(self, mock_print_error, mock_can_launch_browser):
         with self.assertRaises(SystemExit) as cm:
-            login(env="dev")
+            login(Namespace(env="dev"))
 
         mock_print_error.assert_called_once_with(
             "Login only works with a valid browser installed."
@@ -75,20 +75,7 @@ class TestLogout(unittest.TestCase):
     def test_logout(self, mock_load_config, mock_print_info, mock_set_token):
         m = mock.mock_open()
         with mock.patch("croud.config.open", m, create=True):
-            logout()
+            logout(Namespace(env="dev"))
 
         mock_set_token.assert_called_once_with("")
         mock_print_info.assert_called_once_with("You have been logged out.")
-
-
-class TestEnv(unittest.TestCase):
-    @mock.patch("croud.env.load_config", return_value=Configuration.DEFAULT_CONFIG)
-    @mock.patch("croud.env.Configuration.set_context")
-    @mock.patch("croud.env.print_info")
-    def test_env(self, mock_print_info, mock_set_context, mock_load_config):
-        m = mock.mock_open()
-        with mock.patch("croud.config.open", m, create=True):
-            env("dev")
-
-        mock_set_context.assert_called_once_with("dev")
-        mock_print_info.assert_called_once_with("Environment switched to dev")

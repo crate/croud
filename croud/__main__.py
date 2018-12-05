@@ -21,28 +21,61 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import argh
 import colorama
-import pkg_resources
 
-from croud import __version__
+from croud.cmd import CMD, output_fmt_arg, region_arg
 from croud.config import Configuration
+from croud.env import env
+from croud.login import login
+from croud.logout import logout
+from croud.me import me
+from croud.projects.list import projects_list
 
 
 def main():
     Configuration.create()
     colorama.init()
 
-    p = argh.ArghParser(
-        prog="croud", description="A command line interface for CrateDB Cloud"
-    )
-    p.add_argument("--version", action="version", version="%(prog)s " + __version__)
-    commands = [
-        entry_point.load()
-        for entry_point in pkg_resources.iter_entry_points("croud_commands")
-    ]
-    p.add_commands(commands)
-    p.dispatch()
+    commands: dict = {
+        "me": {
+            "description": "Prints the current logged in user",
+            "extra_args": [region_arg, output_fmt_arg],
+            "calls": me,
+        },
+        "login": {
+            "description": "Performs an OAuth2 Login to CrateDB Cloud",
+            "calls": login,
+        },
+        "logout": {
+            "description": "Performs a logout of the current logged in user",
+            "calls": logout,
+        },
+        "env": {
+            "description": "Switches auth context",
+            "sub_commands": {
+                "prod": {
+                    "description": "Switch auth context to prod",
+                    "calls": env("prod"),
+                },
+                "dev": {
+                    "description": "Switch auth context to dev",
+                    "calls": env("dev"),
+                },
+            },
+        },
+        "projects": {
+            "description": "Project sub commands",
+            "sub_commands": {
+                "list": {
+                    "description": "Lists all projects for the current "
+                    "user in the specified region",
+                    "extra_args": [output_fmt_arg],
+                    "calls": projects_list,
+                }
+            },
+        },
+    }
+    CMD(commands)
 
 
 if __name__ == "__main__":

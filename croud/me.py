@@ -18,8 +18,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import asyncio
-
-import argh
+from argparse import Namespace
 
 from croud.config import Configuration
 from croud.printer import print_error, print_format
@@ -27,20 +26,11 @@ from croud.session import HttpSession
 from croud.typing import JsonDict
 
 
-@argh.arg(
-    "-r",
-    "--region",
-    choices=["westeurope.azure", "eastus.azure", "bregenz.a1"],
-    default="bregenz.a1",
-    type=str,
-)
-@argh.arg("-o", "--output-fmt", choices=["json"], default="json", type=str)
-@argh.arg("--env", choices=["prod", "env"], default=None, type=str)
-def me(region=None, output_fmt=None, env=None) -> None:
+def me(args: Namespace) -> None:
     """
     Prints the current logged in user
     """
-    # Todo: Return the current logged in user
+
     query = """
 {
     me {
@@ -50,19 +40,19 @@ def me(region=None, output_fmt=None, env=None) -> None:
 }
     """
 
-    if env is not None:
-        Configuration.override_context(env)
+    if args.env is not None:
+        Configuration.override_context(args.env)
 
-    async def fetch_data() -> JsonDict:
+    async def fetch_data(region: str) -> JsonDict:
         async with HttpSession(region) as session:
             return await session.fetch(query)
 
     loop = asyncio.get_event_loop()
-    rows = loop.run_until_complete(fetch_data())
+    rows = loop.run_until_complete(fetch_data(args.region))
 
     if rows:
         if isinstance(rows, dict):
-            print_format(rows["me"], output_fmt)
+            print_format(rows["me"], args.output_fmt)
         else:
             print_error("Result has no proper format to print.")
     else:
