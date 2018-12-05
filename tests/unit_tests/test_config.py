@@ -20,12 +20,18 @@
 import unittest
 from unittest import mock
 
-from croud.config import load_config, write_config
+from croud.config import (
+    Configuration,
+    IncompatibleConfigException,
+    load_config,
+    write_config,
+)
 
 
 class TestConfiguration(unittest.TestCase):
+    @mock.patch.object(Configuration, "validate", return_value={})
     @mock.patch("yaml.load")
-    def test_load_config(self, mock_yaml_load):
+    def test_load_config(self, mock_yaml_load, mock_validate):
         m = mock.mock_open()
         with mock.patch("croud.config.open", m, create=True):
             load_config()
@@ -42,3 +48,10 @@ class TestConfiguration(unittest.TestCase):
         mock_yaml_dump.assert_called_once_with(
             config, m(), default_flow_style=False, allow_unicode=True
         )
+
+    def test_incompatible_schema(self):
+        config = {"incompatible": "", "schema": ""}
+        with self.assertRaises(IncompatibleConfigException) as cm:
+            Configuration.validate(config)
+
+        self.assertTrue("Incompatible storage format" in str(cm.exception))

@@ -34,6 +34,12 @@ Use the command ``croud -h`` to list all available subcommands or
 
     $ croud [subcommand] {parameters}
 
+.. note::
+
+    ``Croud`` stores the login credentials inside ``<UserDataDir>/Crate/croud.yaml``.
+    The storage format across versions < 1.x is incompatible. This means that it
+    might be necessary to remove the config after an upgrade.
+
 
 Contributing
 ============

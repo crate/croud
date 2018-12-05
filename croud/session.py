@@ -24,7 +24,6 @@ from typing import Dict, Optional, Type
 import certifi
 from aiohttp import ClientSession, ContentTypeError, TCPConnector  # type: ignore
 
-from croud.config import Configuration
 from croud.printer import print_error
 from croud.typing import JsonDict
 
@@ -35,27 +34,29 @@ CLOUD_PROD_DOMAIN: str = "cratedb.cloud"
 class HttpSession:
     def __init__(
         self,
+        env: str,
+        token: str,
         region: str = "bregenz.a1",
         url: Optional[str] = None,
         conn: Optional[TCPConnector] = None,
         headers: Dict[str, str] = {},
     ) -> None:
+        self.env = env
+        self.token = token
+
         if not url:
             host = CLOUD_PROD_DOMAIN
-            if Configuration.get_env() == "dev":
+            if self.env == "dev":
                 host = CLOUD_DEV_DOMAIN
             url = f"https://{region}.{host}/graphql"
 
         self.url = url
-
-        token = Configuration.get_token()
-
         if conn is None:
             ssl_context = ssl.create_default_context(cafile=certifi.where())
             conn = TCPConnector(ssl_context=ssl_context)
 
         self.client = ClientSession(
-            cookies={"session": token}, connector=conn, headers=headers
+            cookies={"session": self.token}, connector=conn, headers=headers
         )
 
     async def fetch(self, query: str) -> JsonDict:
@@ -77,9 +78,8 @@ class HttpSession:
 
     async def logout(self):
         domain = CLOUD_PROD_DOMAIN
-        if Configuration.get_env() == "dev":
+        if self.env == "dev":
             domain = CLOUD_DEV_DOMAIN
-
         url = f"https://bregenz.a1.{domain}/oauth2/logout"
         await self.client.get(url)
 

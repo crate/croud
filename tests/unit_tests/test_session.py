@@ -47,13 +47,20 @@ me_response = {
 
 
 class TestHttpSession(unittest.TestCase):
+    @mock.patch.object(Configuration, "get_env", return_value="dev")
     @mock.patch.object(Configuration, "get_token", return_value="eyJraWQiOiIx")
-    def test_query_success(self, mock_token):
+    def test_query_success(self, mock_token, mock_env):
         with loop_context() as loop:
 
             async def test_query():
+                env = Configuration.get_env()
+                token = Configuration.get_token()
                 async with HttpSession(
-                    url="https://cratedb.local/graphql", conn=connector, headers=headers
+                    env,
+                    token,
+                    url="https://cratedb.local/graphql",
+                    conn=connector,
+                    headers=headers,
                 ) as session:
                     result = await session.fetch(me_query)
                     self.assertEqual(result, me_response)
@@ -68,14 +75,19 @@ class TestHttpSession(unittest.TestCase):
             loop.run_until_complete(test_query())
             loop.run_until_complete(fake_cloud.stop())
 
+    @mock.patch.object(Configuration, "get_env", return_value="dev")
     @mock.patch.object(Configuration, "get_token", return_value="")
     @mock.patch("croud.session.print_error")
-    def test_query_unauthorized(self, mock_print_error, mock_token):
+    def test_query_unauthorized(self, mock_print_error, mock_token, mock_env):
         with loop_context() as loop:
 
             async def test_query():
+                env = Configuration.get_env()
+                token = Configuration.get_token()
                 with self.assertRaises(SystemExit) as cm:
                     async with HttpSession(
+                        env,
+                        token,
                         url="https://cratedb.local/graphql",
                         conn=connector,
                         headers=headers,
