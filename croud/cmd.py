@@ -30,9 +30,9 @@ class CMD:
         for key, command in commands.items():
             subparser.add_parser(key)
             if key == context_name:
-                context = argparse.ArgumentParser(
-                    description=command["description"], usage=command["usage"]
-                )
+                context = argparse.ArgumentParser()
+                if "description" in command:
+                    context.description = command["description"]
 
                 if "extra_args" in command:
                     for arg_def in command["extra_args"]:
@@ -46,13 +46,15 @@ class CMD:
                     call = command["calls"]
                 break
 
-        parser.parse_args(sys.argv[depth : depth + 1])
-
         try:
-            call(parse_args(context, depth + 1))
+            format_usage(context, depth + 1)
         except UnboundLocalError:
+            format_usage(parser, depth + 1)
             parser.print_help()
             exit(1)
+
+        parser.parse_args(sys.argv[depth : depth + 1])
+        call(parse_args(context, depth + 1))
 
 
 def parse_args(parser: ArgumentParser, position: int) -> Namespace:
@@ -65,7 +67,7 @@ def add_default_args(parser: ArgumentParser) -> None:
     env_arg(parser)
 
 
-def env_arg(parser: ArgumentParser):
+def env_arg(parser: ArgumentParser) -> None:
     parser.add_argument(
         "--env",
         choices=["prod", "dev"],
@@ -75,7 +77,7 @@ def env_arg(parser: ArgumentParser):
     )
 
 
-def region_arg(parser: ArgumentParser):
+def region_arg(parser: ArgumentParser) -> None:
     parser.add_argument(
         "-r",
         "--region",
@@ -86,7 +88,7 @@ def region_arg(parser: ArgumentParser):
     )
 
 
-def output_fmt_arg(parser: ArgumentParser):
+def output_fmt_arg(parser: ArgumentParser) -> None:
     parser.add_argument(
         "-o",
         "--output-fmt",
@@ -95,3 +97,12 @@ def output_fmt_arg(parser: ArgumentParser):
         type=str,
         help="Switches output format",
     )
+
+
+def format_usage(parser: ArgumentParser, depth: int) -> None:
+    usage = parser.format_usage()
+    args = list(filter(lambda arg: arg != "-h" and arg != "--help", sys.argv[:depth]))
+    args[0] = "croud"
+
+    nusg = " ".join(args)
+    parser.usage = usage.replace("usage: croud", nusg, 1)
