@@ -44,6 +44,7 @@ setup(
         "pyyaml",
         "certifi",
         "tabulate",
+        "schema",
     ],
     extras_require={
         "testing": [

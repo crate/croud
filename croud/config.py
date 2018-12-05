@@ -21,6 +21,13 @@ import os
 
 import yaml
 from appdirs import user_config_dir
+from schema import Schema, SchemaError
+
+from croud.printer import print_error
+
+
+class IncompatibleConfigException(Exception):
+    pass
 
 
 class Configuration:
@@ -35,6 +42,24 @@ class Configuration:
     }
 
     current_context: str = ""
+
+    @staticmethod
+    def validate(config: dict) -> dict:
+        schema = Schema(
+            {
+                "auth": {
+                    "current_context": str,
+                    "contexts": {"prod": {"token": str}, "dev": {"token": str}},
+                }
+            }
+        )
+        try:
+            return schema.validate(config)
+        except SchemaError as e:
+            raise IncompatibleConfigException(
+                f"Incompatible storage format in {Configuration.FILEPATH}. "
+                "Please remove the config and try again."
+            ) from e
 
     @staticmethod
     def create() -> None:
@@ -84,8 +109,15 @@ class Configuration:
 
 
 def load_config() -> dict:
+    config: dict = {}
     with open(Configuration.FILEPATH, "r") as f:
-        return yaml.load(f) or {}
+        config = yaml.load(f)
+
+    try:
+        return Configuration.validate(config)
+    except IncompatibleConfigException as e:
+        print_error(str(e))
+        exit(1)
 
 
 def set_property(property: str, value: str):

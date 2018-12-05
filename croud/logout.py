@@ -30,12 +30,15 @@ def logout(args: Namespace) -> None:
         Configuration.override_context(args.env)
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(make_request())
+    env = Configuration.get_env()
+    token = Configuration.get_token()
 
+    loop.run_until_complete(make_request(env, token))
     Configuration.set_token("")
+
     print_info("You have been logged out.")
 
 
-async def make_request() -> None:
-    async with HttpSession() as session:
+async def make_request(env: str, token: str) -> None:
+    async with HttpSession(env, token) as session:
         await session.logout()
