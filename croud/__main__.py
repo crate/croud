@@ -62,12 +62,12 @@ def main():
                 "prod": {
                     "description": "Switch auth context to prod",
                     "usage": "croud env prod",
-                    "calls": env,
+                    "calls": env("prod"),
                 },
                 "dev": {
                     "description": "Switch auth context to dev",
                     "usage": "croud env dev",
-                    "calls": env,
+                    "calls": env("dev"),
                 },
             },
         },

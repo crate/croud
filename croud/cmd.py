@@ -3,10 +3,18 @@ import sys
 from argparse import ArgumentParser, Namespace
 from typing import Callable
 
+from croud import __version__
+
 
 class CMD:
     def __init__(self, commands: dict):
-        parser: ArgumentParser = argparse.ArgumentParser()
+        parser: ArgumentParser = argparse.ArgumentParser(
+            usage="A command line interface for CrateDB Cloud"
+        )
+        parser.add_argument(
+            "-v", "--version", action="version", version="%(prog)s " + __version__
+        )
+
         self.create_parent_cmd(parser, 1, commands)
 
     def create_parent_cmd(self, parser: ArgumentParser, depth: int, commands: dict):
