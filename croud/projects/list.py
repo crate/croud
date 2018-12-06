@@ -35,7 +35,6 @@ def projects_list(args: Namespace) -> None:
             name
             region
             organizationId
-            fqdn
         }
     }
 }
