@@ -31,15 +31,17 @@ def login(args: Namespace) -> None:
     Performs an OAuth2 Login to CrateDB Cloud
     """
 
+    env = "prod" if args.env is None else args.env
+
     if can_launch_browser():
-        Configuration.override_context(args.env)
+        Configuration.override_context(env)
         loop = asyncio.get_event_loop()
         server = Server(loop)
         server.create_web_app()
         loop.run_until_complete(server.start())
 
         domain = "cratedb.cloud"
-        if args.env.lower() == "dev":
+        if env.lower() == "dev":
             domain = "cratedb-dev.cloud"
 
         login_url = f"https://bregenz.a1.{domain}/oauth2/login?cli=true"
@@ -55,7 +57,7 @@ def login(args: Namespace) -> None:
             loop.run_until_complete(server.stop())
         loop.close()
 
-        Configuration.set_context(args.env.lower())
+        Configuration.set_context(env.lower())
     else:
         print_error("Login only works with a valid browser installed.")
         exit(1)
