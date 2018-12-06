@@ -89,12 +89,16 @@ def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
     if args.env is not None:
         Configuration.override_context(args.env)
 
-    async def fetch_data(region: str) -> JsonDict:
-        async with HttpSession(region) as session:
+    async def fetch_data() -> JsonDict:
+        async with HttpSession(env, token, region) as session:
             return await session.fetch(query)
 
+    env = Configuration.get_env()
+    token = Configuration.get_token()
+    region = args.region
+
     loop = asyncio.get_event_loop()
-    rows = loop.run_until_complete(fetch_data(args.region))
+    rows = loop.run_until_complete(fetch_data())
 
     if rows:
         if isinstance(rows, dict):
