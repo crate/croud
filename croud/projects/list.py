@@ -17,13 +17,9 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import asyncio
 from argparse import Namespace
 
-from croud.config import Configuration
-from croud.printer import print_error, print_format
-from croud.session import HttpSession
-from croud.typing import JsonDict
+from croud.util import get_entity_list
 
 
 def projects_list(args: Namespace) -> None:
@@ -39,33 +35,10 @@ def projects_list(args: Namespace) -> None:
             name
             region
             organizationId
+            fqdn
         }
     }
 }
     """
 
-    if args.env is not None:
-        Configuration.override_context(args.env)
-
-    async def fetch_data(region: str) -> JsonDict:
-        async with HttpSession(region) as session:
-            return await session.fetch(query)
-
-    loop = asyncio.get_event_loop()
-    rows = loop.run_until_complete(fetch_data(args.region))
-
-    if rows:
-        if isinstance(rows, dict):
-            data = rows["allProjects"]["data"]
-            if len(data) == 0:
-                print_no_data()
-            else:
-                print_format(data, args.output_fmt)
-        else:
-            print_error("Result has no proper format to print.")
-    else:
-        print_no_data()
-
-
-def print_no_data():
-    print_error("Result contained no data to print.")
+    get_entity_list(query, args, "allProjects")
