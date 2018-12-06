@@ -26,7 +26,7 @@ from argparse import Namespace
 from typing import Tuple
 
 from croud.config import Configuration
-from croud.printer import print_error, print_format
+from croud.printer import print_error, print_format, print_info
 from croud.session import HttpSession
 from croud.typing import JsonDict
 
@@ -103,6 +103,8 @@ def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
     if rows:
         if isinstance(rows, dict):
             data = rows[data_key]
+            # some queries have two levels to access data
+            # e.g. {allProjects: {data: [{projects}]}} vs. {me: {data})
             if "data" in data:
                 data = data["data"]
 
@@ -117,4 +119,4 @@ def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
 
 
 def print_no_data():
-    print_error("Result contained no data to print.")
+    print_info("Result contained no data to print.")
