@@ -17,11 +17,18 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import asyncio
 import os
 import platform
 import subprocess
 import webbrowser
+from argparse import Namespace
 from typing import Tuple
+
+from croud.config import Configuration
+from croud.printer import print_error, print_format, print_info
+from croud.session import HttpSession
+from croud.typing import JsonDict
 
 
 # This function was copied from the <https://github.com/Azure/azure-cli>
@@ -76,3 +83,40 @@ def open_page_in_browser(url: str) -> int:
         except FileNotFoundError:  # WSL might be too old
             pass
     return webbrowser.open_new_tab(url)
+
+
+def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
+    if args.env is not None:
+        Configuration.override_context(args.env)
+
+    async def fetch_data() -> JsonDict:
+        async with HttpSession(env, token, region) as session:
+            return await session.fetch(query)
+
+    env = Configuration.get_env()
+    token = Configuration.get_token()
+    region = args.region
+
+    loop = asyncio.get_event_loop()
+    rows = loop.run_until_complete(fetch_data())
+
+    if rows:
+        if isinstance(rows, dict):
+            data = rows[data_key]
+            # some queries have two levels to access data
+            # e.g. {allProjects: {data: [{projects}]}} vs. {me: {data})
+            if "data" in data:
+                data = data["data"]
+
+            if len(data) == 0:
+                print_no_data()
+            else:
+                print_format(data, args.output_fmt)
+        else:
+            print_error("Result has no proper format to print.")
+    else:
+        print_no_data()
+
+
+def print_no_data():
+    print_info("Result contained no data to print.")

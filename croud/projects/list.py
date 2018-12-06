@@ -19,9 +19,25 @@
 
 from argparse import Namespace
 
+from croud.util import get_entity_list
+
 
 def projects_list(args: Namespace) -> None:
     """
     Lists all projects for the current user in the specified region
     """
-    pass
+
+    query = """
+{
+    allProjects {
+        data {
+            id
+            name
+            region
+            organizationId
+        }
+    }
+}
+    """
+
+    get_entity_list(query, args, "allProjects")

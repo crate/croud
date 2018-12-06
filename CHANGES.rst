@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added subcommand `projects list` that prints project details within a specified region (for logged in user)
+
 - Removed name field from `me` subcommand
 
 0.1.0 - 2018/11/28
