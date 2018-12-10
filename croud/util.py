@@ -95,7 +95,7 @@ def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
 
     env = Configuration.get_env()
     token = Configuration.get_token()
-    region = args.region
+    region = args.region or ""
 
     loop = asyncio.get_event_loop()
     rows = loop.run_until_complete(fetch_data())
