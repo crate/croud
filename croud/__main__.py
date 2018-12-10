@@ -86,7 +86,8 @@ def main():
             },
         },
     }
-    CMD(commands)
+    croud_cmd = CMD()
+    croud_cmd.create_parent_cmd(1, commands)
 
 
 if __name__ == "__main__":

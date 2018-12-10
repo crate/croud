@@ -34,7 +34,7 @@ def print_region(args: Namespace):
     print(args.region)
 
 
-class TestLogout(unittest.TestCase):
+class TestCmd(unittest.TestCase):
     commands: dict = {
         "say-hi": {"calls": print_hello},
         "print-env": {"calls": print_env},
@@ -45,27 +45,45 @@ class TestLogout(unittest.TestCase):
     @mock.patch("builtins.print", autospec=True, side_effect=print)
     def test_commands_registered(self, mock_print):
         sys.argv = ["croud", "say-hi"]
-        CMD(self.commands)
+        croud_cmd = CMD()
+        croud_cmd.create_parent_cmd(1, self.commands)
 
         mock_print.assert_called_once_with("Hello!")
 
     @mock.patch("builtins.print", autospec=True, side_effect=print)
     def test_commands_have_env_arg(self, mock_print):
         sys.argv = ["croud", "print-env", "--env", "dev"]
-        CMD(self.commands)
+        croud_cmd = CMD()
+        croud_cmd.create_parent_cmd(1, self.commands)
 
         mock_print.assert_called_once_with("dev")
 
     @mock.patch("builtins.print", autospec=True, side_effect=print)
     def test_extra_args_registered(self, mock_print):
         sys.argv = ["croud", "print-region", "--region", "westeurope.azure"]
-        CMD(self.commands)
+        croud_cmd = CMD()
+        croud_cmd.create_parent_cmd(1, self.commands)
 
         mock_print.assert_called_once_with("westeurope.azure")
 
     @mock.patch("builtins.print", autospec=True, side_effect=print)
     def test_sub_commands_registered(self, mock_print):
         sys.argv = ["croud", "print", "hello"]
-        CMD(self.commands)
+        croud_cmd = CMD()
+        croud_cmd.create_parent_cmd(1, self.commands)
 
         mock_print.assert_called_once_with("Hello!")
+
+    def test_version(self):
+        sys.argv = ["croud", "--version"]
+        croud_cmd = CMD()
+        with mock.patch.object(croud_cmd.root_parser, "parse_args") as mock_parser:
+            croud_cmd.create_parent_cmd(1, self.commands)
+            mock_parser.assert_called_once_with(["--version"])
+
+    def test_no_args(self):
+        sys.argv = ["croud"]
+        croud_cmd = CMD()
+        with mock.patch.object(croud_cmd.root_parser, "print_help") as mock_help:
+            croud_cmd.create_parent_cmd(1, self.commands)
+            mock_help.assert_called_once()
