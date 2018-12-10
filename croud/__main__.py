@@ -23,7 +23,8 @@
 
 import colorama
 
-from croud.cmd import CMD, output_fmt_arg, region_arg
+from croud.clusters.list import clusters_list
+from croud.cmd import CMD, output_fmt_arg, project_id_arg, region_arg
 from croud.config import Configuration
 from croud.env import env
 from croud.login import login
@@ -71,6 +72,16 @@ def main():
                     "user in the specified region",
                     "extra_args": [output_fmt_arg, region_arg],
                     "calls": projects_list,
+                }
+            },
+        },
+        "clusters": {
+            "description": "Cluster sub commands",
+            "sub_commands": {
+                "list": {
+                    "description": "List all clusters for the current user",
+                    "extra_args": [output_fmt_arg, project_id_arg, region_arg],
+                    "calls": clusters_list,
                 }
             },
         },

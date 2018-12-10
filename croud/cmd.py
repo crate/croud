@@ -109,6 +109,10 @@ def region_arg(parser: ArgumentParser) -> None:
     )
 
 
+def project_id_arg(parser: ArgumentParser) -> None:
+    parser.add_argument("-p", "--project-id", type=str, help="Filter by project ID")
+
+
 def output_fmt_arg(parser: ArgumentParser) -> None:
     parser.add_argument(
         "-o",

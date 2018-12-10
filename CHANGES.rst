@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added subcommand `clusters list` that prints clusters from a region, and can be filtered by project ID
+
 - Added subcommand `projects list` that prints project details within a specified region (for logged in user)
 
 - Removed name field from `me` subcommand
