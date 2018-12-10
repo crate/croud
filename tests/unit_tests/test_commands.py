@@ -96,11 +96,12 @@ class TestClustersList(unittest.TestCase):
             crateVersion
             projectId
             username
+            fqdn
         }
     }
 }
     """
-        # pid = "60d398b4-455b-49dc-bfe9-04edf5bd3eb2"
+
         args: Namespace = Namespace(
             env=None, output_fmt="table", project_id=None, region="bregenz.a1"
         )
@@ -121,6 +122,7 @@ class TestClustersList(unittest.TestCase):
             crateVersion
             projectId
             username
+            fqdn
         }
     }
 }

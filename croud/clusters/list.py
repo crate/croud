@@ -38,6 +38,7 @@ def clusters_list(args: Namespace) -> None:
             crateVersion
             projectId
             username
+            fqdn
         }
     }
 }
