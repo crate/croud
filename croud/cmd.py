@@ -22,32 +22,38 @@
 import argparse
 import sys
 from argparse import ArgumentParser, Namespace
-from typing import Callable
+from typing import Callable, Optional
 
 from croud import __version__
 
 
 class CMD:
-    def __init__(self, commands: dict):
+    def __init__(self):
         parser: ArgumentParser = argparse.ArgumentParser(
             usage="A command line interface for CrateDB Cloud"
         )
         parser.add_argument(
             "-v", "--version", action="version", version="%(prog)s " + __version__
         )
+        self.root_parser = parser
 
-        self.create_parent_cmd(parser, 1, commands)
+    def create_parent_cmd(
+        self, depth: int, commands: dict, parent_parser: Optional[ArgumentParser] = None
+    ):
+        parser = self.root_parser
+        if parent_parser:
+            # a parent parser exists, so use it to parse it's subcommand(s)
+            parser = parent_parser
 
-    def create_parent_cmd(self, parser: ArgumentParser, depth: int, commands: dict):
         subparser = parser.add_subparsers()
-        context: ArgumentParser
-        call: Callable
 
         try:
             context_name = sys.argv[depth]
         except IndexError:
             context_name = sys.argv[depth - 1]
 
+        context: Optional[ArgumentParser] = None
+        call: Callable
         for key, command in commands.items():
             subparser.add_parser(key)
             if key == context_name:
@@ -60,27 +66,37 @@ class CMD:
                         arg_def(context)
 
                 if "sub_commands" in command:
-                    self.create_parent_cmd(context, depth + 1, command["sub_commands"])
+                    self.create_parent_cmd(
+                        depth + 1, command["sub_commands"], parent_parser=context
+                    )
                     return
                 else:
                     add_default_args(context)
                     call = command["calls"]
                 break
 
-        try:
-            format_usage(context, depth + 1)
-        except UnboundLocalError:
-            format_usage(parser, depth + 1)
-            parser.print_help()
-            exit(1)
-
-        parser.parse_args(sys.argv[depth : depth + 1])
-        call(parse_args(context, depth + 1))
+        cmd_args = sys.argv[depth : depth + 1]
+        if context:
+            # supported subcommand used
+            try:
+                format_usage(context, depth + 1)
+            except UnboundLocalError:
+                format_usage(parser, depth + 1)
+                parser.print_help()
+                exit(1)
+            parser.parse_args(cmd_args)
+            call(parse_args(context, depth + 1))
+        else:
+            if cmd_args:
+                # root level argument (e.g. --version)
+                parser.parse_args(cmd_args)
+            else:
+                # show help if no argument passed at all
+                parser.print_help()
 
 
 def parse_args(parser: ArgumentParser, position: int) -> Namespace:
     args = parser.parse_args(sys.argv[position:])
-
     return args
 
 
