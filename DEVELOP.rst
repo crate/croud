@@ -27,10 +27,17 @@ Install the dependencies used for testing::
 
     pip install -e ".[testing]"
 
-Tests run with `pytest`_::
+Tests run with `pytest`_ inside a `tox`_ environment.
 
-    pytest tests/
+To run linting and unit tests across the whole test suite with the supported
+python versions run::
 
+    tox
+
+Alongside ``--`` it's possible to pass ``pytest`` args e.g. to run only a
+fraction of tests with python3.6::
+
+    tox -e py36 -- tests/unit_tests/
 
 Release
 =======
@@ -53,3 +60,4 @@ metadata.
 
 .. _pytest: https://docs.pytest.org/en/latest/
 .. _setuptools_scm: https://github.com/pypa/setuptools_scm
+.. _tox: https://tox.readthedocs.io

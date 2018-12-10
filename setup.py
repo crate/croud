@@ -46,20 +46,7 @@ setup(
         "tabulate",
         "schema",
     ],
-    extras_require={
-        "testing": [
-            "pytest>=3,<4",
-            "pytest-flake8",
-            "pytest-mock",
-            "pytest-isort",
-            "pytest-black",
-            "pytest-mypy",
-            "pytest-aiohttp",
-            "mypy",
-            "black",
-        ],
-        "development": ["black"],
-    },
+    extras_require={"testing": ["tox"], "development": ["black"]},
     python_requires=">=3.6",
     classifiers=[
         "Development Status :: 4 - Beta",
