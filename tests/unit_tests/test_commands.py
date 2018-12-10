@@ -21,6 +21,7 @@ import unittest
 from argparse import Namespace
 from unittest import mock
 
+from croud.clusters.list import clusters_list
 from croud.config import Configuration
 from croud.login import login
 from croud.logout import logout
@@ -79,3 +80,59 @@ class TestLogout(unittest.TestCase):
 
         mock_set_token.assert_called_once_with("")
         mock_print_info.assert_called_once_with("You have been logged out.")
+
+
+class TestClustersList(unittest.TestCase):
+    @mock.patch("croud.clusters.list.get_entity_list")
+    def test_list_clusters_no_pid(self, get_entity_list):
+        query = """
+{
+    allClusters {
+        data {
+            id
+            name
+            numNodes
+            hardwareSpecs
+            crateVersion
+            projectId
+            username
+        }
+    }
+}
+    """
+        # pid = "60d398b4-455b-49dc-bfe9-04edf5bd3eb2"
+        args: Namespace = Namespace(
+            env=None, output_fmt="table", project_id=None, region="bregenz.a1"
+        )
+        clusters_list(args)
+        get_entity_list.assert_called_once_with(query, args, "allClusters")
+
+    @mock.patch("croud.clusters.list.get_entity_list")
+    def test_list_clusters_pid(self, get_entity_list):
+        query = (
+            """
+{
+    allClusters (filter: %s) {
+        data {
+            id
+            name
+            numNodes
+            hardwareSpecs
+            crateVersion
+            projectId
+            username
+        }
+    }
+}
+    """
+            % '{by: PROJECT_ID, op: EQ, value: "60d398b4-455b-49dc-bfe9-04edf5bd3eb2"}'
+        )
+
+        args: Namespace = Namespace(
+            env=None,
+            output_fmt="table",
+            project_id="60d398b4-455b-49dc-bfe9-04edf5bd3eb2",
+            region="bregenz.a1",
+        )
+        clusters_list(args)
+        get_entity_list.assert_called_once_with(query, args, "allClusters")
