@@ -92,7 +92,6 @@ class TestClustersList(unittest.TestCase):
             id
             name
             numNodes
-            hardwareSpecs
             crateVersion
             projectId
             username
@@ -118,7 +117,6 @@ class TestClustersList(unittest.TestCase):
             id
             name
             numNodes
-            hardwareSpecs
             crateVersion
             projectId
             username
