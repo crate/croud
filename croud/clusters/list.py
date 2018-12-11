@@ -34,7 +34,6 @@ def clusters_list(args: Namespace) -> None:
             id
             name
             numNodes
-            hardwareSpecs
             crateVersion
             projectId
             username
