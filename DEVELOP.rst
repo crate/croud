@@ -58,6 +58,14 @@ metadata.
     git push --tags
 
 
+Upload to `PyPI`_
+-----------------
+
+See the instructions for `Generating distribution archives`_ for more details.
+
+
 .. _pytest: https://docs.pytest.org/en/latest/
 .. _setuptools_scm: https://github.com/pypa/setuptools_scm
 .. _tox: https://tox.readthedocs.io
+.. _Generating distribution archives: https://packaging.python.org/tutorials/packaging-projects/#generating-distribution-archives
+.. _PyPI: https://pypi.org/project/croud/
