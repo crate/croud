@@ -36,7 +36,7 @@ setup(
     description="A command line interface for CrateDB Cloud",
     long_description=readme,
     entry_points={"console_scripts": ["croud = croud.__main__:main"]},
-    packages=["croud"],
+    packages=["croud", "croud.clusters", "croud.projects"],
     install_requires=[
         "aiohttp",
         "colorama",
