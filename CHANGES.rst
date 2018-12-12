@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+
+0.2.0 - 2018/12/12
+==================
+
 - Added subcommand `clusters list` that prints clusters from a region, and can be filtered by project ID
 
 - Added subcommand `projects list` that prints project details within a specified region (for logged in user)
