@@ -19,7 +19,7 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 try:
     with open("README.rst", "r", encoding="utf-8") as f:
@@ -36,7 +36,7 @@ setup(
     description="A command line interface for CrateDB Cloud",
     long_description=readme,
     entry_points={"console_scripts": ["croud = croud.__main__:main"]},
-    packages=["croud"],
+    packages=find_packages(),
     install_requires=[
         "aiohttp",
         "colorama",
