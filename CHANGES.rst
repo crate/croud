@@ -15,12 +15,12 @@ Unreleased
 
 - Removed name field from `me` subcommand
 
-0.1.0 - 2018/11/28
-==================
-
 - Added `env` flag to commands to temporarily override auth context
 
 - Added a subcommand `env` that allows you to switch env (so you can be logged into multiple environments. E.g. ``croud env prod``
+
+0.1.0 - 2018/11/28
+==================
 
 - Load croud commands from a ``croud_commands`` `entry points
   <https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins>`__
