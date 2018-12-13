@@ -45,8 +45,11 @@ class TestConfiguration(unittest.TestCase):
         )
 
     @mock.patch("croud.config.os.remove")
+    @mock.patch("croud.config.os.chmod")
     @mock.patch("croud.config.write_config")
-    def test_incompatible_schema_rewrites_config(self, mock_write_config, mock_remove):
+    def test_incompatible_schema_rewrites_config(
+        self, mock_write_config, mock_chmod, mock_remove
+    ):
         config = {"incompatible": "", "schema": ""}
 
         m = mock.mock_open()
