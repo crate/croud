@@ -61,6 +61,12 @@ class CMD:
                 if "description" in command:
                     context.description = command["description"]
 
+                if "noop_arg" in command:
+                    cmd = command["noop_arg"]
+                    context.add_argument(key, choices=cmd["choices"])
+                    call = command["calls"]
+                    break
+
                 if "extra_args" in command:
                     for arg_def in command["extra_args"]:
                         arg_def(context)
@@ -119,7 +125,6 @@ def region_arg(parser: ArgumentParser) -> None:
         "-r",
         "--region",
         choices=["westeurope.azure", "eastus.azure", "bregenz.a1"],
-        default="bregenz.a1",
         type=str,
         help="Switch region that command will be run on",
     )
@@ -134,7 +139,6 @@ def output_fmt_arg(parser: ArgumentParser) -> None:
         "-o",
         "--output-fmt",
         choices=["table", "json"],
-        default="table",
         type=str,
         help="Switches output format",
     )
