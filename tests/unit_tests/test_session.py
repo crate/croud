@@ -22,10 +22,10 @@ from unittest import mock
 
 import aiohttp
 from aiohttp.test_utils import loop_context
+from util.fake_server import FakeCrateDBCloud, FakeResolver
 
 from croud.config import Configuration
 from croud.session import HttpSession
-from util.fake_server import FakeCrateDBCloud, FakeResolver
 
 me_query = """
 {
