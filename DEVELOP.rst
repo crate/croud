@@ -63,9 +63,14 @@ Upload to `PyPI`_
 
 See the instructions for `Generating distribution archives`_ for more details.
 
+.. note::
+
+    It is recommended to upload the package to `Test PyPI`_ first which is intended
+    for experimentation and testing.
 
 .. _pytest: https://docs.pytest.org/en/latest/
 .. _setuptools_scm: https://github.com/pypa/setuptools_scm
 .. _tox: https://tox.readthedocs.io
 .. _Generating distribution archives: https://packaging.python.org/tutorials/packaging-projects/#generating-distribution-archives
 .. _PyPI: https://pypi.org/project/croud/
+.. _Test PyPI: https://packaging.python.org/guides/using-testpypi/
