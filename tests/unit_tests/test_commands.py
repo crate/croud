@@ -28,20 +28,10 @@ from croud.logout import logout
 from croud.server import Server
 
 
-def default_config() -> dict:
-    return {
-        "auth": {
-            "current_context": "prod",
-            "contexts": {"prod": {"token": ""}, "dev": {"token": ""}},
-        },
-        "region": "bregenz.a1",
-        "output_fmt": "table",
-    }
-
-
 class TestLogin(unittest.TestCase):
+    @mock.patch("croud.config.Configuration.set_context")
     @mock.patch("croud.config.Configuration.override_context")
-    @mock.patch("croud.config.load_config", return_value=default_config())
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Server, "stop")
     @mock.patch.object(Server, "start")
     @mock.patch("croud.login.asyncio.get_event_loop")
@@ -58,6 +48,7 @@ class TestLogin(unittest.TestCase):
         mock_stop,
         mock_load_config,
         mock_override_context,
+        mock_set_context,
     ):
         m = mock.mock_open()
         with mock.patch("croud.config.open", m, create=True):
@@ -85,7 +76,7 @@ class TestLogout(unittest.TestCase):
     @mock.patch("croud.config.Configuration.override_context")
     @mock.patch("croud.logout.Configuration.set_token")
     @mock.patch("croud.logout.print_info")
-    @mock.patch("croud.config.load_config", return_value=default_config())
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     def test_logout(
         self, mock_load_config, mock_print_info, mock_set_token, mock_override_context
     ):
@@ -154,13 +145,13 @@ class TestClustersList(unittest.TestCase):
 
 
 class TestConfigGet(unittest.TestCase):
-    @mock.patch("croud.config.load_config", return_value=default_config())
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch("builtins.print", autospec=True, side_effect=print)
     def test_get_env(self, mock_print, mock_load_config):
         config_get(Namespace(get="env"))
         mock_print.assert_called_once_with("prod")
 
-    @mock.patch("croud.config.load_config", return_value=default_config())
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch("builtins.print", autospec=True, side_effect=print)
     def test_get_top_level_setting(self, mock_print, mock_load_config):
         config_get(Namespace(get="region"))
@@ -169,7 +160,7 @@ class TestConfigGet(unittest.TestCase):
 
 class TestConfigSet(unittest.TestCase):
     @mock.patch("croud.config.write_config")
-    @mock.patch("croud.config.load_config", return_value=default_config())
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     def test_set_env(self, mock_load_config, mock_write_config):
         config = Configuration.DEFAULT_CONFIG
         config["auth"]["current_context"] = "prod"
@@ -178,7 +169,7 @@ class TestConfigSet(unittest.TestCase):
         mock_write_config.assert_called_once_with(config)
 
     @mock.patch("croud.config.write_config")
-    @mock.patch("croud.config.load_config", return_value=default_config())
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     def test_set_top_level_setting(self, mock_load_config, mock_write_config):
         config = Configuration.DEFAULT_CONFIG
         config["region"] = "eastus.azure"
