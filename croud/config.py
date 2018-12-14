@@ -18,12 +18,13 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import os
+from argparse import Namespace
 
 import yaml
 from appdirs import user_config_dir
 from schema import Schema, SchemaError
 
-from croud.printer import print_error
+from croud.printer import print_error, print_info
 
 
 class IncompatibleConfigException(Exception):
@@ -38,7 +39,14 @@ class Configuration:
         "auth": {
             "current_context": "prod",
             "contexts": {"prod": {"token": ""}, "dev": {"token": ""}},
-        }
+        },
+        "region": "bregenz.a1",
+        "output_fmt": "table",
+    }
+    CONFIG_NAMES: dict = {
+        "env": "Environment",
+        "output_fmt": "Output format",
+        "region": "Region",
     }
 
     current_context: str = ""
@@ -50,16 +58,18 @@ class Configuration:
                 "auth": {
                     "current_context": str,
                     "contexts": {"prod": {"token": str}, "dev": {"token": str}},
-                }
+                },
+                "region": str,
+                "output_fmt": str,
             }
         )
         try:
             return schema.validate(config)
-        except SchemaError as e:
-            raise IncompatibleConfigException(
-                f"Incompatible storage format in {Configuration.FILEPATH}. "
-                "Please remove the config and try again."
-            ) from e
+        except SchemaError:
+            os.remove(Configuration.FILEPATH)
+            create_default_config()
+
+            return schema.validate(Configuration.DEFAULT_CONFIG)
 
     @staticmethod
     def create() -> None:
@@ -67,10 +77,15 @@ class Configuration:
             os.makedirs(Configuration.USER_CONFIG_DIR)
 
         if not os.path.isfile(Configuration.FILEPATH):
-            # create a config template with user r+w permissions
+            create_default_config()
+        else:
+            load_config()
 
-            write_config(Configuration.DEFAULT_CONFIG)
-            os.chmod(Configuration.FILEPATH, 0o600)
+    @staticmethod
+    def get_setting(setting: str) -> str:
+        if setting == "env":
+            return Configuration.get_env()
+        return load_config()[setting]
 
     @staticmethod
     def get_env() -> str:
@@ -108,8 +123,12 @@ class Configuration:
         Configuration.current_context = env
 
 
+def create_default_config() -> None:
+    write_config(Configuration.DEFAULT_CONFIG)
+    os.chmod(Configuration.FILEPATH, 0o600)
+
+
 def load_config() -> dict:
-    config: dict = {}
     with open(Configuration.FILEPATH, "r") as f:
         config = yaml.load(f)
 
@@ -139,3 +158,28 @@ def get_auth_context() -> dict:
         context = config["auth"]["current_context"]
 
     return config["auth"]["contexts"][context]
+
+
+def config_get(args: Namespace):
+    """
+    Gets a default configuration setting
+    """
+
+    print(Configuration.get_setting(args.get))
+
+
+def config_set(args: Namespace):
+    """
+    Sets a default configuration setting
+    """
+
+    for key in vars(args):
+        setting = getattr(args, key)
+
+        if setting is not None:
+            if key == "env":
+                Configuration.set_context(setting)
+                print_info(f"Environment switched to {setting}")
+            else:
+                set_property(key, setting)
+                print_info(f"{Configuration.CONFIG_NAMES[key]} switched to {setting}")

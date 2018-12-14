@@ -22,14 +22,48 @@ from argparse import Namespace
 from unittest import mock
 
 from croud.clusters.list import clusters_list
-from croud.config import Configuration
+from croud.config import Configuration, config_get, config_set
 from croud.login import login
 from croud.logout import logout
 from croud.server import Server
 
 
+class TestConfigGet(unittest.TestCase):
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+    @mock.patch("builtins.print", autospec=True, side_effect=print)
+    def test_get_env(self, mock_print, mock_load_config):
+        config_get(Namespace(get="env"))
+        mock_print.assert_called_once_with("prod")
+
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+    @mock.patch("builtins.print", autospec=True, side_effect=print)
+    def test_get_top_level_setting(self, mock_print, mock_load_config):
+        config_get(Namespace(get="region"))
+        mock_print.assert_called_once_with("bregenz.a1")
+
+
+class TestConfigSet(unittest.TestCase):
+    @mock.patch("croud.config.write_config")
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+    def test_set_env(self, mock_load_config, mock_write_config):
+        config = Configuration.DEFAULT_CONFIG
+        config["auth"]["current_context"] = "prod"
+
+        config_set(Namespace(env="prod"))
+        mock_write_config.assert_called_once_with(config)
+
+    @mock.patch("croud.config.write_config")
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+    def test_set_top_level_setting(self, mock_load_config, mock_write_config):
+        config = Configuration.DEFAULT_CONFIG
+        config["region"] = "eastus.azure"
+
+        config_set(Namespace(region="eastus.azure"))
+        mock_write_config.assert_called_once_with(config)
+
+
 class TestLogin(unittest.TestCase):
-    @mock.patch("croud.config.load_config")
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Server, "stop")
     @mock.patch.object(Server, "start")
     @mock.patch("croud.login.asyncio.get_event_loop")
@@ -46,7 +80,6 @@ class TestLogin(unittest.TestCase):
         mock_stop,
         mock_load_config,
     ):
-        mock_load_config.return_value = Configuration.DEFAULT_CONFIG
         m = mock.mock_open()
         with mock.patch("croud.config.open", m, create=True):
             login(Namespace(env="dev"))

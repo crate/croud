@@ -25,8 +25,7 @@ import colorama
 
 from croud.clusters.list import clusters_list
 from croud.cmd import CMD, output_fmt_arg, project_id_arg, region_arg
-from croud.config import Configuration
-from croud.env import env
+from croud.config import Configuration, config_get, config_set
 from croud.login import login
 from croud.logout import logout
 from croud.me import me
@@ -51,16 +50,18 @@ def main():
             "description": "Performs a logout of the current logged in user",
             "calls": logout,
         },
-        "env": {
-            "description": "Switches auth context",
+        "config": {
+            "description": "Config sub commands",
             "sub_commands": {
-                "prod": {
-                    "description": "Switch auth context to prod",
-                    "calls": env("prod"),
+                "get": {
+                    "description": "Gets a default configuration setting",
+                    "calls": config_get,
+                    "noop_arg": {"choices": ["env", "region", "output-fmt"]},
                 },
-                "dev": {
-                    "description": "Switch auth context to dev",
-                    "calls": env("dev"),
+                "set": {
+                    "description": "Sets a default configuration setting",
+                    "extra_args": [output_fmt_arg, region_arg],
+                    "calls": config_set,
                 },
             },
         },

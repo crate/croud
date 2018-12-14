@@ -5,6 +5,12 @@ Changes for croud
 Unreleased
 ==========
 
+- Removed `env` subcommand (replaced with `config set --env [prod|env]`)
+
+- Added subcommand `config get` that prints out a specified default config setting
+
+- Added subcommand `config set` that sets a specified default config setting
+
 0.2.1 - 2018/12/12
 ==================
 

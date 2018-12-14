@@ -95,7 +95,7 @@ def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
 
     env = Configuration.get_env()
     token = Configuration.get_token()
-    region = args.region or ""
+    region = args.region or Configuration.get_setting("region")
 
     loop = asyncio.get_event_loop()
     rows = loop.run_until_complete(fetch_data())
@@ -111,7 +111,8 @@ def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
             if len(data) == 0:
                 print_no_data()
             else:
-                print_format(data, args.output_fmt)
+                fmt = args.output_fmt or Configuration.get_setting("output_fmt")
+                print_format(data, fmt)
         else:
             print_error("Result has no proper format to print.")
     else:
