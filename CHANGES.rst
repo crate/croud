@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Fix: Login page needs to be picked according to the env set in current_context.
+
 - Removed `env` subcommand (replaced with `config set --env [prod|env]`)
 
 - Added subcommand `config get` that prints out a specified default config setting
