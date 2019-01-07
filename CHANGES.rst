@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Fix: Login page needs to be picked according to the env set in current_context.
+
 0.2.1 - 2018/12/12
 ==================
 

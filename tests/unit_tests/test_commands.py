@@ -23,7 +23,7 @@ from unittest import mock
 
 from croud.clusters.list import clusters_list
 from croud.config import Configuration
-from croud.login import login
+from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
 from croud.server import Server
 
@@ -49,7 +49,7 @@ class TestLogin(unittest.TestCase):
         mock_load_config.return_value = Configuration.DEFAULT_CONFIG
         m = mock.mock_open()
         with mock.patch("croud.config.open", m, create=True):
-            login(Namespace(env="dev"))
+            login(Namespace(env=None))
 
         calls = [
             mock.call("A browser tab has been launched for you to login."),
@@ -57,16 +57,45 @@ class TestLogin(unittest.TestCase):
         ]
         mock_print_info.assert_has_calls(calls)
 
+    @mock.patch("croud.config.Configuration.get_env", return_value="dev")
     @mock.patch("croud.login.can_launch_browser", return_value=False)
     @mock.patch("croud.login.print_error")
-    def test_login_no_valid_browser(self, mock_print_error, mock_can_launch_browser):
+    def test_login_no_valid_browser(
+        self, mock_print_error, mock_can_launch_browser, mock_get_env
+    ):
         with self.assertRaises(SystemExit) as cm:
-            login(Namespace(env="dev"))
+            login(Namespace(env=None))
 
         mock_print_error.assert_called_once_with(
             "Login only works with a valid browser installed."
         )
         self.assertEqual(cm.exception.code, 1)
+
+    @mock.patch("croud.config.Configuration.override_context")
+    @mock.patch("croud.config.Configuration.get_env", return_value="dev")
+    def test_login_env_from_current_context(self, mock_get_env, mock_override_context):
+        env = _set_login_env(None)
+        self.assertEqual(env, "dev")
+
+    def test_login_env_override_context_from_argument(self):
+        env = _set_login_env("prod")
+        self.assertEqual(env, "prod")
+
+    def test_login_urls_from_valid_envs(self):
+        url = _login_url("dev")
+        self.assertEqual(
+            "https://bregenz.a1.cratedb-dev.cloud/oauth2/login?cli=true", url
+        )
+
+        url = _login_url("prod")
+        self.assertEqual("https://bregenz.a1.cratedb.cloud/oauth2/login?cli=true", url)
+
+        url = _login_url("PROD")
+        self.assertEqual("https://bregenz.a1.cratedb.cloud/oauth2/login?cli=true", url)
+
+    def test_env_fallback_url(self):
+        url = _login_url("invalid")
+        self.assertEqual("https://bregenz.a1.cratedb.cloud/oauth2/login?cli=true", url)
 
 
 class TestLogout(unittest.TestCase):
