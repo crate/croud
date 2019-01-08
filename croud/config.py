@@ -130,7 +130,7 @@ def create_default_config() -> None:
 
 def load_config() -> dict:
     with open(Configuration.FILEPATH, "r") as f:
-        config = yaml.load(f)
+        config = yaml.safe_load(f)
 
     try:
         return Configuration.validate(config)
