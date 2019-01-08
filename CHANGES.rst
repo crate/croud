@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- SECURITY: prevented arbitrary code execution when loading the config file
+  (ref. `CVE-2017-18342 <https://nvd.nist.gov/vuln/detail/CVE-2017-18342>`_)
+
 - Fix: Login page needs to be picked according to the env set in current_context.
 
 - Removed `env` subcommand (replaced with `config set --env [prod|env]`)
