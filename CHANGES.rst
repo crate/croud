@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.3.0 - 2018/01/09
+==================
+
 - SECURITY: prevented arbitrary code execution when loading the config file
   (ref. `CVE-2017-18342 <https://nvd.nist.gov/vuln/detail/CVE-2017-18342>`_)
 
