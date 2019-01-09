@@ -64,6 +64,8 @@ class HttpSession:
         if resp.status == 200:
             try:
                 result = await resp.json()
+                if "errors" in result:
+                    return result
                 return result["data"]
             except ContentTypeError:
                 print_error(
