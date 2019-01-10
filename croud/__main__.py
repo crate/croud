@@ -24,11 +24,19 @@
 import colorama
 
 from croud.clusters.list import clusters_list
-from croud.cmd import CMD, output_fmt_arg, project_id_arg, region_arg
+from croud.cmd import (
+    CMD,
+    org_name_arg,
+    org_plan_type_arg,
+    output_fmt_arg,
+    project_id_arg,
+    region_arg,
+)
 from croud.config import Configuration, config_get, config_set
 from croud.login import login
 from croud.logout import logout
 from croud.me import me
+from croud.organizations.create import organizations_create
 from croud.projects.list import projects_list
 
 
@@ -83,6 +91,16 @@ def main():
                     "description": "List all clusters for the current user",
                     "extra_args": [output_fmt_arg, project_id_arg, region_arg],
                     "calls": clusters_list,
+                }
+            },
+        },
+        "organizations": {
+            "description": "Organization sub commands",
+            "sub_commands": {
+                "create": {
+                    "description": "Creates an organization",
+                    "extra_args": [output_fmt_arg, org_name_arg, org_plan_type_arg],
+                    "calls": organizations_create,
                 }
             },
         },

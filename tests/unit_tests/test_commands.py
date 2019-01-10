@@ -25,6 +25,7 @@ from croud.clusters.list import clusters_list
 from croud.config import Configuration, config_get, config_set
 from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
+from croud.organizations.create import organizations_create
 from croud.server import Server
 
 
@@ -205,3 +206,42 @@ class TestConfigSet(unittest.TestCase):
 
         config_set(Namespace(region="eastus.azure"))
         mock_write_config.assert_called_once_with(config)
+
+
+class TestOrganizationsCreate(unittest.TestCase):
+    authd_response = {
+        "id": "60d398b4-455b-49dc-bfe9-04edf5bd3eb2",
+        "name": "testorg",
+        "planType": 1,
+    }
+    unauthd_response = {"errors": [{"message": "Missing privileges"}]}
+
+    @mock.patch("croud.organizations.create.print_error")
+    @mock.patch(
+        "croud.organizations.create.gql_mutation", return_value=unauthd_response
+    )
+    def test_create_non_superuser(self, mock_gql_mutation, mock_print_error):
+        mutation = """
+mutation {
+    createOrganization(input: {
+        name: \"testorg\",
+        planType: 1
+    }) {
+        id
+        name
+        planType
+    }
+}
+    """
+
+        args = Namespace(env="dev", name="testorg", output_fmt="json", plan_type=1)
+        organizations_create(args)
+        mock_gql_mutation.assert_called_once_with(mutation, args, "createOrganization")
+        mock_print_error.assert_called_once_with("Missing privileges")
+
+    @mock.patch("croud.organizations.create.print_format")
+    @mock.patch("croud.organizations.create.gql_mutation", return_value=authd_response)
+    def test_create_superuser(self, mock_gql_mutation, mock_print_format):
+        args = Namespace(env="dev", name="testorg", output_fmt="json", plan_type=1)
+        organizations_create(args)
+        mock_print_format.assert_called_once_with(self.authd_response, "json")

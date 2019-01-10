@@ -144,6 +144,16 @@ def output_fmt_arg(parser: ArgumentParser) -> None:
     )
 
 
+def org_name_arg(parser: ArgumentParser) -> None:
+    parser.add_argument("--name", type=str, help="Organization Name", required=True)
+
+
+def org_plan_type_arg(parser: ArgumentParser) -> None:
+    parser.add_argument(
+        "--plan-type", type=int, help="Plan type for organization", required=True
+    )
+
+
 def format_usage(parser: ArgumentParser, depth: int) -> None:
     usage = parser.format_usage()
     args = list(filter(lambda arg: arg != "-h" and arg != "--help", sys.argv[:depth]))

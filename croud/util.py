@@ -85,7 +85,7 @@ def open_page_in_browser(url: str) -> int:
     return webbrowser.open_new_tab(url)
 
 
-def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
+def send_to_gql(query: str, args: Namespace) -> JsonDict:
     if args.env is not None:
         Configuration.override_context(args.env)
 
@@ -95,10 +95,23 @@ def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
 
     env = Configuration.get_env()
     token = Configuration.get_token()
-    region = args.region or Configuration.get_setting("region")
+    region = _get_region(args)
 
     loop = asyncio.get_event_loop()
-    rows = loop.run_until_complete(fetch_data())
+
+    return loop.run_until_complete(fetch_data())
+
+
+def gql_mutation(query: str, args: Namespace, data_key: str) -> JsonDict:
+    result = send_to_gql(query, args)
+
+    if data_key in result:
+        return result[data_key]
+    return result
+
+
+def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
+    rows = send_to_gql(query, args)
 
     if rows:
         if isinstance(rows, dict):
@@ -121,3 +134,10 @@ def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
 
 def print_no_data():
     print_info("Result contained no data to print.")
+
+
+def _get_region(args: Namespace) -> str:
+    config_region = Configuration.get_setting("region")
+    if hasattr(args, "region"):
+        return args.region or config_region
+    return config_region
