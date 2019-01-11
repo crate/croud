@@ -47,7 +47,7 @@ def main():
     commands: dict = {
         "me": {
             "description": "Prints the current logged in user",
-            "extra_args": [output_fmt_arg, region_arg],
+            "extra_args": [output_fmt_arg],
             "calls": me,
         },
         "login": {

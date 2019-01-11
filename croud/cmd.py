@@ -150,7 +150,11 @@ def org_name_arg(parser: ArgumentParser) -> None:
 
 def org_plan_type_arg(parser: ArgumentParser) -> None:
     parser.add_argument(
-        "--plan-type", type=int, help="Plan type for organization", required=True
+        "--plan-type",
+        choices=[1, 2, 3, 4, 5, 6],
+        type=int,
+        help="Plan type for organization",
+        required=True,
     )
 
 
