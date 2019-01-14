@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Fixed `config get output-fmt` command
+
 - Added `organizations list` sub command that lists organizations
 
 - Removed region arg from `me` command

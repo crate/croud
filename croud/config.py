@@ -83,6 +83,7 @@ class Configuration:
 
     @staticmethod
     def get_setting(setting: str) -> str:
+        setting = setting.replace("-", "_")
         if setting == "env":
             return Configuration.get_env()
         return load_config()[setting]
