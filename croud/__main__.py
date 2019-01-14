@@ -37,6 +37,7 @@ from croud.login import login
 from croud.logout import logout
 from croud.me import me
 from croud.organizations.create import organizations_create
+from croud.organizations.list import organizations_list
 from croud.projects.list import projects_list
 
 
@@ -101,7 +102,12 @@ def main():
                     "description": "Creates an organization",
                     "extra_args": [output_fmt_arg, org_name_arg, org_plan_type_arg],
                     "calls": organizations_create,
-                }
+                },
+                "list": {
+                    "description": "List all organizations for the logged in user",
+                    "extra_args": [output_fmt_arg],
+                    "calls": organizations_list,
+                },
             },
         },
     }

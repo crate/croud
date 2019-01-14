@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added `organizations list` sub command that lists organizations
+
 - Removed region arg from `me` command
 
 - Added `organizations create` sub command that creates an organization (super users only)
