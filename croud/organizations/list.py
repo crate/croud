@@ -24,7 +24,7 @@ from croud.util import get_entity_list
 
 def organizations_list(args: Namespace) -> None:
     """
-    Creates an organization
+    Lists organizations
     """
 
     query = """
