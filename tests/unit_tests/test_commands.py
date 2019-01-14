@@ -26,6 +26,7 @@ from croud.config import Configuration, config_get, config_set
 from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
 from croud.organizations.create import organizations_create
+from croud.organizations.list import organizations_list
 from croud.server import Server
 
 
@@ -245,3 +246,29 @@ mutation {
         args = Namespace(env="dev", name="testorg", output_fmt="json", plan_type=1)
         organizations_create(args)
         mock_print_format.assert_called_once_with(self.authd_response, "json")
+
+
+class TestOrganizationsList(unittest.TestCase):
+    @mock.patch("croud.organizations.list.get_entity_list")
+    def test_list_organizations_no_superuser(self, get_entity_list):
+        query = """
+{
+    allOrganizations {
+        data {
+             name,
+             planType,
+             notification {
+               alert {
+                 email
+                 enabled
+               }
+             }
+           },
+           total
+    }
+}
+"""
+
+        args: Namespace = Namespace()
+        organizations_list(args)
+        get_entity_list.assert_called_once_with(query, args, "allOrganizations")

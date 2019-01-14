@@ -106,8 +106,8 @@ def main():
                 "list": {
                     "description": "List all organizations for the logged in user",
                     "extra_args": [output_fmt_arg],
-                    "calls": organizations_list
-                }
+                    "calls": organizations_list,
+                },
             },
         },
     }
