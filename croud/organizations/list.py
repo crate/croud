@@ -31,18 +31,17 @@ def organizations_list(args: Namespace) -> None:
 {
     allOrganizations {
         data {
-             name,
-             planType,
-             notification {
-               alert {
-                 email
-                 enabled
-               }
-             }
-           },
-           total
+            name,
+            planType,
+            notification {
+                alert {
+                    email,
+                    enabled
+                }
+            }
+        }
     }
 }
-    """
+"""
 
     get_entity_list(query, args, "allOrganizations")

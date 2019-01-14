@@ -255,16 +255,15 @@ class TestOrganizationsList(unittest.TestCase):
 {
     allOrganizations {
         data {
-             name,
-             planType,
-             notification {
-               alert {
-                 email
-                 enabled
-               }
-             }
-           },
-           total
+            name,
+            planType,
+            notification {
+                alert {
+                    email,
+                    enabled
+                }
+            }
+        }
     }
 }
 """
