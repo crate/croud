@@ -255,6 +255,7 @@ class TestOrganizationsList(unittest.TestCase):
 {
     allOrganizations {
         data {
+            id,
             name,
             planType,
             notification {

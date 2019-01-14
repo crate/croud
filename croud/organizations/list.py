@@ -31,6 +31,7 @@ def organizations_list(args: Namespace) -> None:
 {
     allOrganizations {
         data {
+            id,
             name,
             planType,
             notification {
