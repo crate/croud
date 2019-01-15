@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.4.0 - 2018/01/15
+==================
+
 - Added `users roles add` sub command that assigns a role to user (super users only).
 
 - Fixed `config get output-fmt` command
