@@ -31,6 +31,9 @@ from croud.cmd import (
     output_fmt_arg,
     project_id_arg,
     region_arg,
+    resource_id_arg,
+    role_fqn_arg,
+    user_id_arg,
 )
 from croud.config import Configuration, config_get, config_set
 from croud.login import login
@@ -39,6 +42,7 @@ from croud.me import me
 from croud.organizations.create import organizations_create
 from croud.organizations.list import organizations_list
 from croud.projects.list import projects_list
+from croud.users.roles.add import roles_add
 
 
 def main():
@@ -108,6 +112,26 @@ def main():
                     "extra_args": [output_fmt_arg],
                     "calls": organizations_list,
                 },
+            },
+        },
+        "users": {
+            "description": "User sub commands",
+            "sub_commands": {
+                "roles": {
+                    "description": "Role sub commands",
+                    "sub_commands": {
+                        "add": {
+                            "description": "Adds a role to a user",
+                            "extra_args": [
+                                lambda parser: resource_id_arg(parser, True),
+                                lambda parser: user_id_arg(parser, True),
+                                output_fmt_arg,
+                                role_fqn_arg,
+                            ],
+                            "calls": roles_add,
+                        }
+                    },
+                }
             },
         },
     }

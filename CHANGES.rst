@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added `users roles add` sub command that assigns a role to user (super users only).
+
 - Fixed `config get output-fmt` command
 
 - Added `organizations list` sub command that lists organizations
