@@ -158,6 +158,18 @@ def org_plan_type_arg(parser: ArgumentParser) -> None:
     )
 
 
+def resource_id_arg(parser: ArgumentParser, required: bool) -> None:
+    parser.add_argument("--resource", type=str, help="Resource ID", required=required)
+
+
+def role_fqn_arg(parser: ArgumentParser) -> None:
+    parser.add_argument("--role", type=str, help="Role FQN", required=True)
+
+
+def user_id_arg(parser: ArgumentParser, required: bool) -> None:
+    parser.add_argument("--user", type=str, help="User ID", required=required)
+
+
 def format_usage(parser: ArgumentParser, depth: int) -> None:
     usage = parser.format_usage()
     args = list(filter(lambda arg: arg != "-h" and arg != "--help", sys.argv[:depth]))

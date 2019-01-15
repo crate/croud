@@ -28,6 +28,7 @@ from croud.logout import logout
 from croud.organizations.create import organizations_create
 from croud.organizations.list import organizations_list
 from croud.server import Server
+from croud.users.roles.add import roles_add
 
 
 class TestLogin(unittest.TestCase):
@@ -272,3 +273,61 @@ class TestOrganizationsList(unittest.TestCase):
         args: Namespace = Namespace()
         organizations_list(args)
         get_entity_list.assert_called_once_with(query, args, "allOrganizations")
+
+
+class TestUsersRolesAdd(unittest.TestCase):
+    authd_response = {
+        "user": {
+            "uid": "60d398b4-455b-49dc-bfe9-04edf5bd3eb2",
+            "email": "test@crate.io",
+            "username": "cratey",
+            "organizationId": "99d398b4-465b-97dk-bfe9-04edf5ah3ei2",
+        }
+    }
+    unauthd_response = {"errors": [{"message": "Missing privileges"}]}
+
+    res_id = "99d398b4-465b-97dk-bfe9-04edf5ah3ei2"
+    role = "admin"
+    uid = "60d398b4-455b-49dc-bfe9-04edf5bd3eb2"
+    input_args = f'{{userId: "{uid}", roleFqn: "admin", resourceId: "{res_id}"}}'
+    mutation = f"""
+mutation {{
+    assignRoleToUser(input: {input_args}) {{
+        user {{
+            uid,
+            email,
+            username,
+            organizationId
+        }}
+    }}
+}}
+"""
+
+    @mock.patch("croud.users.roles.add.print_error")
+    @mock.patch("croud.users.roles.add.gql_mutation", return_value=unauthd_response)
+    def test_users_roles_add_no_superuser(self, mock_gql_mutation, mock_print_error):
+        args = Namespace(
+            env="dev",
+            output_fmt="json",
+            resource=self.res_id,
+            role=self.role,
+            user=self.uid,
+        )
+        roles_add(args)
+        mock_gql_mutation.assert_called_once_with(
+            self.mutation, args, "assignRoleToUser"
+        )
+        mock_print_error.assert_called_once_with("Missing privileges")
+
+    @mock.patch("croud.users.roles.add.print_format")
+    @mock.patch("croud.users.roles.add.gql_mutation", return_value=authd_response)
+    def test_users_roles_add_superuser(self, mock_gql_mutation, mock_print_format):
+        args = Namespace(
+            env="dev",
+            output_fmt="json",
+            resource=self.res_id,
+            role=self.role,
+            user=self.uid,
+        )
+        roles_add(args)
+        mock_print_format.assert_called_once_with(self.authd_response, "json")
