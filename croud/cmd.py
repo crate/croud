@@ -163,7 +163,12 @@ def resource_id_arg(parser: ArgumentParser, required: bool) -> None:
 
 
 def role_fqn_arg(parser: ArgumentParser) -> None:
-    parser.add_argument("--role", type=str, help="Role FQN", required=True)
+    parser.add_argument(
+        "--role",
+        type=str,
+        help="Role FQN. Run `croud roles list` for a list of available roles",
+        required=True,
+    )
 
 
 def user_id_arg(parser: ArgumentParser, required: bool) -> None:
