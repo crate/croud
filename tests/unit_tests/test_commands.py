@@ -29,6 +29,7 @@ from croud.organizations.create import organizations_create
 from croud.organizations.list import organizations_list
 from croud.server import Server
 from croud.users.roles.add import roles_add
+from croud.users.roles.list import roles_list
 
 
 class TestLogin(unittest.TestCase):
@@ -331,3 +332,22 @@ mutation {{
         )
         roles_add(args)
         mock_print_format.assert_called_once_with(self.authd_response, "json")
+
+
+class TestRolesList(unittest.TestCase):
+    @mock.patch("croud.users.roles.list.get_entity_list")
+    def test_list_roles(self, get_entity_list):
+        query = """
+{
+    allRoles {
+        data {
+            fqn
+            friendlyName
+        }
+    }
+}
+"""
+
+        args: Namespace = Namespace()
+        roles_list(args)
+        get_entity_list.assert_called_once_with(query, args, "allRoles")

@@ -43,6 +43,7 @@ from croud.organizations.create import organizations_create
 from croud.organizations.list import organizations_list
 from croud.projects.list import projects_list
 from croud.users.roles.add import roles_add
+from croud.users.roles.list import roles_list
 
 
 def main():
@@ -129,7 +130,11 @@ def main():
                                 role_fqn_arg,
                             ],
                             "calls": roles_add,
-                        }
+                        },
+                        "list": {
+                            "description": "Lists all roles of a user",
+                            "calls": roles_list,
+                        },
                     },
                 }
             },
