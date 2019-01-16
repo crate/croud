@@ -24,7 +24,7 @@ from croud.util import get_entity_list
 
 def roles_list(args: Namespace) -> None:
     """
-    Lists all roles for the current user
+    Lists all roles a user can be assigned to
     """
 
     query = """

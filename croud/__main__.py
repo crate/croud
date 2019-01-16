@@ -132,7 +132,8 @@ def main():
                             "calls": roles_add,
                         },
                         "list": {
-                            "description": "Lists all roles of a user",
+                            "description": "Lists all roles a user can be assigned to",
+                            "extra_args": [output_fmt_arg],
                             "calls": roles_list,
                         },
                     },
