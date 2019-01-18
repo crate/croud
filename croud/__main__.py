@@ -52,77 +52,71 @@ def main():
 
     commands: dict = {
         "me": {
-            "description": "Prints the current logged in user",
+            "help": "Prints information about the current logged in user.",
             "extra_args": [output_fmt_arg],
             "calls": me,
         },
-        "login": {
-            "description": "Performs an OAuth2 Login to CrateDB Cloud",
-            "calls": login,
-        },
-        "logout": {
-            "description": "Performs a logout of the current logged in user",
-            "calls": logout,
-        },
+        "login": {"help": "Log in to CrateDB Cloud.", "calls": login},
+        "logout": {"help": "Log out from CrateDB Cloud.", "calls": logout},
         "config": {
-            "description": "Config sub commands",
+            "help": "Manage croud default configuration values.",
             "sub_commands": {
                 "get": {
-                    "description": "Gets a default configuration setting",
+                    "help": "Get default configuration values.",
                     "calls": config_get,
                     "noop_arg": {"choices": ["env", "region", "output-fmt"]},
                 },
                 "set": {
-                    "description": "Sets a default configuration setting",
+                    "help": "Set default configuration values.",
                     "extra_args": [output_fmt_arg, region_arg],
                     "calls": config_set,
                 },
             },
         },
         "projects": {
-            "description": "Project sub commands",
+            "help": "Manage CrateDB Cloud projects.",
             "sub_commands": {
                 "list": {
-                    "description": "Lists all projects for the current "
-                    "user in the specified region",
+                    "help": "Lists all projects for the current "
+                    "user in the specified region.",
                     "extra_args": [output_fmt_arg, region_arg],
                     "calls": projects_list,
                 }
             },
         },
         "clusters": {
-            "description": "Cluster sub commands",
+            "help": "Manage CrateDB Cloud clusters.",
             "sub_commands": {
                 "list": {
-                    "description": "List all clusters for the current user",
+                    "help": "List all clusters for the current user.",
                     "extra_args": [output_fmt_arg, project_id_arg, region_arg],
                     "calls": clusters_list,
                 }
             },
         },
         "organizations": {
-            "description": "Organization sub commands",
+            "help": "Manage CrateDB Cloud organizations.",
             "sub_commands": {
                 "create": {
-                    "description": "Creates an organization",
+                    "help": "Creates an organization.",
                     "extra_args": [output_fmt_arg, org_name_arg, org_plan_type_arg],
                     "calls": organizations_create,
                 },
                 "list": {
-                    "description": "List all organizations for the logged in user",
+                    "help": "List all organizations for the logged in user.",
                     "extra_args": [output_fmt_arg],
                     "calls": organizations_list,
                 },
             },
         },
         "users": {
-            "description": "User sub commands",
+            "help": "Manage CrateDB Cloud users.",
             "sub_commands": {
                 "roles": {
-                    "description": "Role sub commands",
+                    "help": "Manage CrateDB Cloud user roles.",
                     "sub_commands": {
                         "add": {
-                            "description": "Adds a role to a user",
+                            "help": "Adds a role to a user.",
                             "extra_args": [
                                 lambda parser: resource_id_arg(parser, True),
                                 lambda parser: user_id_arg(parser, True),
@@ -132,7 +126,7 @@ def main():
                             "calls": roles_add,
                         },
                         "list": {
-                            "description": "Lists all roles a user can be assigned to",
+                            "help": "Lists all available roles.",
                             "extra_args": [output_fmt_arg],
                             "calls": roles_list,
                         },
