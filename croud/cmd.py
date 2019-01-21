@@ -259,6 +259,7 @@ def format_usage(parser: ArgumentParser, depth: int, invalid_args=None) -> None:
 
     if invalid_args:
         invalid_args = " ".join(invalid_args)
-        args.remove(invalid_args)
+        if invalid_args in args:
+            args.remove(invalid_args)
     nusg = " ".join(args)
     parser.usage = usage.replace(f"Usage: {parser.prog}", nusg, 1)

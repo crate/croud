@@ -87,3 +87,12 @@ class TestCmd(unittest.TestCase):
         with mock.patch.object(croud_cmd.root_parser, "print_help") as mock_help:
             croud_cmd.create_parent_cmd(1, self.commands)
             mock_help.assert_called_once()
+
+    def test_help(self):
+        sys.argv = ["croud", "--help"]
+        croud_cmd = CMD()
+        with mock.patch.object(croud_cmd.root_parser, "print_help") as mock_help:
+            with self.assertRaises(SystemExit) as cm:
+                croud_cmd.create_parent_cmd(1, self.commands)
+                mock_help.assert_called_once_with(["--help"])
+        self.assertEqual(cm.exception.code, 0)
