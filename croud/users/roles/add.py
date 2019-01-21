@@ -31,7 +31,7 @@ def roles_add(args: Namespace) -> None:
 
     mutation = """
 mutation {
-    assignRoleToUser(input: {userId: "uid", roleFqn: "rfqn", resourceId: "resid"}) {
+    addRoleToUser(input: {userId: "uid", roleFqn: "rfqn", resourceId: "resid"}) {
         user {
             uid,
             email,
@@ -46,7 +46,7 @@ mutation {
     mutation = mutation.replace("rfqn", args.role)
     mutation = mutation.replace("resid", args.resource)
 
-    data = gql_mutation(mutation, args, "assignRoleToUser")
+    data = gql_mutation(mutation, args, "addRoleToUser")
     if "errors" in data:
         print_error(data["errors"][0]["message"])
     else:

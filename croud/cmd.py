@@ -21,24 +21,89 @@
 
 import argparse
 import sys
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser, Namespace, _SubParsersAction
+from os.path import basename
 from typing import Callable, Optional
 
 from croud import __version__
 
+POSITIONALS_TITLE = "Available Commands"
+OPTIONALS_TITLE = "Optional Arguments"
+
+
+class CroudCliArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        sys.stderr.write(f"{message.capitalize()}\n\n")
+        self.print_help()
+        sys.exit(2)
+
+
+class CroudCliHelpFormatter(argparse.HelpFormatter):
+    def _format_action(self, action):
+        result = super()._format_action(action)
+        if isinstance(action, _SubParsersAction):
+            # Remove empty line
+            return "%*s%s" % (self._current_indent, "", result.lstrip())
+        return result
+
+    def _format_action_invocation(self, action):
+        if isinstance(action, _SubParsersAction):
+            # Remove metavar {command}
+            return ""
+        return super()._format_action_invocation(action)
+
+    def _iter_indented_subactions(self, action):
+        if isinstance(action, _SubParsersAction):
+            try:
+                get_subactions = action._get_subactions
+            except AttributeError:
+                pass
+            else:
+                # Remove indentation
+                yield from get_subactions()
+        else:
+            yield from super()._iter_indented_subactions(action)
+
+    def add_usage(self, usage, actions, groups, prefix=None):
+        if prefix is None:
+            prefix = "Usage: "
+
+        return super(CroudCliHelpFormatter, self).add_usage(
+            usage, actions, groups, prefix
+        )
+
 
 class CMD:
     def __init__(self):
-        parser: ArgumentParser = argparse.ArgumentParser(
-            usage="A command line interface for CrateDB Cloud"
+        parser: CroudCliArgumentParser = CroudCliArgumentParser(
+            description="A command line interface for CrateDB Cloud.",
+            usage="croud [subcommand] {parameters}",
+            formatter_class=CroudCliHelpFormatter,
+            add_help=False,
+        )
+        parser._positionals.title = POSITIONALS_TITLE
+        parser._optionals.title = OPTIONALS_TITLE
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="%(prog)s " + __version__,
+            help="Show program's version number and exit.",
         )
         parser.add_argument(
-            "-v", "--version", action="version", version="%(prog)s " + __version__
+            "-h",
+            "--help",
+            action="help",
+            default=argparse.SUPPRESS,
+            help="Show this help message and exit.",
         )
         self.root_parser = parser
 
     def create_parent_cmd(
-        self, depth: int, commands: dict, parent_parser: Optional[ArgumentParser] = None
+        self,
+        depth: int,
+        commands: dict,
+        parent_parser: Optional[CroudCliArgumentParser] = None,
     ):
         parser = self.root_parser
         if parent_parser:
@@ -51,15 +116,26 @@ class CMD:
             context_name = sys.argv[depth]
         except IndexError:
             context_name = sys.argv[depth - 1]
+        context_name = basename(context_name)
 
         context: Optional[ArgumentParser] = None
         call: Callable
         for key, command in commands.items():
-            subparser.add_parser(key)
+            subparser.add_parser(key, help=command.get("help"))
+
             if key == context_name:
-                context = argparse.ArgumentParser()
-                if "description" in command:
-                    context.description = command["description"]
+                context = CroudCliArgumentParser(
+                    formatter_class=CroudCliHelpFormatter, add_help=False
+                )
+                context._positionals.title = POSITIONALS_TITLE
+                context._optionals.title = OPTIONALS_TITLE
+                context.add_argument(
+                    "-h",
+                    "--help",
+                    action="help",
+                    default=argparse.SUPPRESS,
+                    help="Show this help message and exit.",
+                )
 
                 if "noop_arg" in command:
                     cmd = command["noop_arg"]
@@ -94,16 +170,17 @@ class CMD:
             call(parse_args(context, depth + 1))
         else:
             if cmd_args:
+                format_usage(parser, depth + 1, cmd_args)
                 # root level argument (e.g. --version)
                 parser.parse_args(cmd_args)
             else:
+                format_usage(parser, depth + 1)
                 # show help if no argument passed at all
                 parser.print_help()
 
 
 def parse_args(parser: ArgumentParser, position: int) -> Namespace:
-    args = parser.parse_args(sys.argv[position:])
-    return args
+    return parser.parse_args(sys.argv[position:])
 
 
 def add_default_args(parser: ArgumentParser) -> None:
@@ -116,7 +193,7 @@ def env_arg(parser: ArgumentParser) -> None:
         choices=["prod", "dev"],
         default=None,
         type=str,
-        help="Switches auth context",
+        help="Switches auth context.",
     )
 
 
@@ -126,12 +203,12 @@ def region_arg(parser: ArgumentParser) -> None:
         "--region",
         choices=["westeurope.azure", "eastus.azure", "bregenz.a1"],
         type=str,
-        help="Switch region that command will be run on",
+        help="Switch region that command will be run on.",
     )
 
 
 def project_id_arg(parser: ArgumentParser) -> None:
-    parser.add_argument("-p", "--project-id", type=str, help="Filter by project ID")
+    parser.add_argument("-p", "--project-id", type=str, help="Filter by project ID.")
 
 
 def output_fmt_arg(parser: ArgumentParser) -> None:
@@ -140,12 +217,12 @@ def output_fmt_arg(parser: ArgumentParser) -> None:
         "--output-fmt",
         choices=["table", "json"],
         type=str,
-        help="Switches output format",
+        help="Switches output format.",
     )
 
 
 def org_name_arg(parser: ArgumentParser) -> None:
-    parser.add_argument("--name", type=str, help="Organization Name", required=True)
+    parser.add_argument("--name", type=str, help="Organization Name.", required=True)
 
 
 def org_plan_type_arg(parser: ArgumentParser) -> None:
@@ -153,32 +230,35 @@ def org_plan_type_arg(parser: ArgumentParser) -> None:
         "--plan-type",
         choices=[1, 2, 3, 4, 5, 6],
         type=int,
-        help="Plan type for organization",
+        help="Plan type for organization.",
         required=True,
     )
 
 
 def resource_id_arg(parser: ArgumentParser, required: bool) -> None:
-    parser.add_argument("--resource", type=str, help="Resource ID", required=required)
+    parser.add_argument("--resource", type=str, help="Resource ID.", required=required)
 
 
 def role_fqn_arg(parser: ArgumentParser) -> None:
     parser.add_argument(
         "--role",
         type=str,
-        help="Role FQN. Run `croud roles list` for a list of available roles",
+        help="Role FQN. Run `croud roles list` for a list of available roles.",
         required=True,
     )
 
 
 def user_id_arg(parser: ArgumentParser, required: bool) -> None:
-    parser.add_argument("--user", type=str, help="User ID", required=required)
+    parser.add_argument("--user", type=str, help="User ID.", required=required)
 
 
-def format_usage(parser: ArgumentParser, depth: int) -> None:
+def format_usage(parser: ArgumentParser, depth: int, invalid_args=None) -> None:
     usage = parser.format_usage()
     args = list(filter(lambda arg: arg != "-h" and arg != "--help", sys.argv[:depth]))
-    args[0] = "croud"
+    args[0] = parser.prog
 
+    if invalid_args:
+        invalid_args = " ".join(invalid_args)
+        args.remove(invalid_args)
     nusg = " ".join(args)
-    parser.usage = usage.replace("usage: croud", nusg, 1)
+    parser.usage = usage.replace(f"Usage: {parser.prog}", nusg, 1)

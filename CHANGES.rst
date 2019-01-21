@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+- Improved help output.
+
+- refactored `assignRoleToUser` to `addRoleToUser`
+
 0.4.0 - 2018/01/15
 ==================
 
