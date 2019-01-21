@@ -293,7 +293,7 @@ class TestUsersRolesAdd(unittest.TestCase):
     input_args = f'{{userId: "{uid}", roleFqn: "admin", resourceId: "{res_id}"}}'
     mutation = f"""
 mutation {{
-    assignRoleToUser(input: {input_args}) {{
+    addRoleToUser(input: {input_args}) {{
         user {{
             uid,
             email,
@@ -315,9 +315,7 @@ mutation {{
             user=self.uid,
         )
         roles_add(args)
-        mock_gql_mutation.assert_called_once_with(
-            self.mutation, args, "assignRoleToUser"
-        )
+        mock_gql_mutation.assert_called_once_with(self.mutation, args, "addRoleToUser")
         mock_print_error.assert_called_once_with("Missing privileges")
 
     @mock.patch("croud.users.roles.add.print_format")
