@@ -23,6 +23,12 @@ To install using pip, simply run the following command:
 
     sh$ python3 -m pip install --user -U croud
 
+To update:
+
+.. code-block:: console
+
+   sh$ pip install -U croud
+
 .. _git:
 
 Git

@@ -2,6 +2,24 @@
 Croud
 =====
 
+.. image:: https://travis-ci.org/crate/croud.svg?branch=master
+    :target: https://travis-ci.org/crate/croud
+    :alt: Travis CI
+
+.. image:: https://badge.fury.io/py/croud.svg
+    :target: http://badge.fury.io/py/croud
+    :alt: Version
+
+.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
+    :target: https://crate.io/docs/cloud/en/latest/
+    :alt: Documentation
+
+.. image:: https://coveralls.io/repos/github/crate/croud/badge.svg?branch=master
+    :target: https://coveralls.io/github/crate/croud?branch=master
+    :alt: Coverage
+
+|
+
 *Croud* is a *command-line interface* (CLI) tool for CrateDB Cloud ☁.
 
 Installation
