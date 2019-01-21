@@ -75,3 +75,9 @@ env/
 !.vscode/launch.json
 !.vscode/extensions.json
 .idea
+
+# docs
+docs/.venv
+docs/get-pip.py
+docs/docs/out/
+docs/.idea

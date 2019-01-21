@@ -2,7 +2,7 @@
 Croud
 =====
 
-A command line interface for CrateDB Cloud ☁
+*Croud* is a *command-line interface* (CLI) tool for CrateDB Cloud ☁.
 
 Installation
 ============
@@ -14,17 +14,10 @@ Using pip
 
     $ python3 -m pip install --user -U croud
 
-Using git
----------
 
-Alternatively, you can clone this repository, install it into a virtualenv_ and
-add the executable to your ``PATH`` environment variable::
+To update, run::
 
-    $ git clone git@github.com:crate/croud.git && cd croud/
-    $ python3.6 -m venv env
-    $ env/bin/pip install -e .
-    $ export PATH=$PATH:$(pwd)/env/bin/croud
-
+    $ pip install -U croud
 
 Usage
 =====

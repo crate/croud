@@ -1,0 +1,458 @@
+========
+Commands
+========
+
+Croud has many commands that are able to interact with various CrateDB Cloud resources.
+
+.. NOTE::
+    Most commands are split by the resource that they interact with.
+
+.. rubric:: Table of Contents
+
+.. contents::
+   :local:
+
+Command-Line Options
+====================
+
++------------------------+--------------------------------------------------+
+| Argument               | Description                                      |
++------------------------+--------------------------------------------------+
+| ``-h``,                | Print the help message, then exits.              |
+| ``--help``             |                                                  |
++------------------------+--------------------------------------------------+
+| ``-v``,                | Prints the program's version number, then exits. |
+| ``--version``          |                                                  |
++------------------------+--------------------------------------------------+
+
+Sub-Commands
+============
+
+.. NOTE::
+    The `--env` flag can be passed to **all** commands.
+
+.. _login:
+
+``login``
+---------
+
+CrateDB Cloud uses OAuth2 for authentication.
+
+In order to interact with any of your CrateDB Cloud resources, you must first login.
+To do this, simply enter ``croud login`` into the CLI. This will open a browser window that will ask you
+to enter your credentials, and will then allow the CLI to access resources.
+
+Example:
+
+.. code-block:: console
+
+    sh$ croud login
+
+.. _logout:
+
+``logout``
+----------
+
+To logout, enter ``croud logout`` into the CLI. This will clear your access token and require you to login again
+before being able to access any resources.
+
+Example:
+
+.. code-block:: console
+
+    sh$ croud logout
+
+.. _me:
+
+``me``
+------
+
+The `me` command prints the username and email address of the currently authenticated user
+
+Example:
+
+.. code-block:: console
+
+    sh$ croud me
+
+.. _config:
+
+``config``
+----------
+
+Croud uses several environment variables that control different aspects of interacting with CrateDB Cloud
+
++-----------------+---------------------+---------------------------------------------------+
+| Name            | Value               | Description                                       |
++=================+=====================+===================================================+
+| region          | One of either:      | The region in which to run a command against      |
+|                 |                     | (some resources, e.g. projects, are stored in     |
+|                 | * westeurope.azure  | specific regions                                  |
+|                 | * eastus.azure      |                                                   |
+|                 | * bregenz.a1        |                                                   |
++-----------------+---------------------+---------------------------------------------------+
+| output-fmt      | One of either:      | The output format for commands that have an output|
+|                 |                     |                                                   |
+|                 |  * table            |                                                   |
+|                 |  * json             |                                                   |
++-----------------+---------------------+---------------------------------------------------+
+| env             | One of either:      | The authorization context to use when interacting |
+|                 |                     | with resources or logging in/out. **Note:** this  |
+|                 | * prod              | is only used by developers                        |
+|                 | * dev               |                                                   |
+|                 |                     |                                                   |
++-----------------+---------------------+---------------------------------------------------+
+
+.. _get:
+
+``get``
+~~~~~~~
+
+To see the value of an environment variable, you can use the `config get` command. The command has the following
+format: ``croud config get ENV_NAME`` where `ENV_NAME` is the name of the environment variable you wish to view.
+
+Example:
+
+.. code-block:: console
+
+    sh$ croud config get region
+
+This will return the default region used when querying or creating resources.
+
+.. _set:
+
+``set``
+~~~~~~~
+
+To change the default value of an environment variable (usually so you do not need to always pass it as an argument on each
+command), you can use ``croud config set --ENV_NAME ENV_VALUE`` where `ENV_NAME` is the name of the environment variable
+you wish to change, and `ENV_VALUE` is the new value for the variable.
+
+This command can be used to set multiple environment variables at once, or just a single varable.
+
+For example:
+
+.. code-block:: console
+
+    sh$ croud config set --region westeurope.azure --output-fmt table
+
+This will update both the region and the output format
+environment variable.
+
+.. code-block:: console
+
+    sh$ croud config set --output-fmt table
+
+This will only update the default output format.
+
+.. _organizations:
+
+``organizations``
+-----------------
+
+The organizations sub-commands allow you to create, modify and view organization resources.
+
+.. code-block:: console
+
+    sh$ croud organizations [subcommand] {parameters}
+
+For example:
+
+.. code-block:: console
+
+    sh$ croud organizations create --name "My Organizations" --plan-type 1
+
+.. _organizations.create:
+
+``create``
+~~~~~~~~~~
+
++-----------------------+----------+--------------------------------+
+| Option                | Required | Description                    |
++=======================+==========+================================+
+| ``--name <STRING>``   | Yes      | The desired organization name. |
++-----------------------+----------+--------------------------------+
+| ``--plan-type <INT>`` | Yes      | The desired plan type.         |
+|                       |          |                                |
+|                       |          | Options:                       |
+|                       |          |                                |
+|                       |          | - ``1``                        |
+|                       |          | - ``2``                        |
+|                       |          | - ``3``                        |
+|                       |          | - ``4``                        |
+|                       |          | - ``5``                        |
+|                       |          | - ``6``                        |
++-----------------------+----------+--------------------------------+
+
+Creates an organization. **Note:** this
+command is only usable by users with super
+user privileges.
+
+**Output**:
+
+.. code-block:: console
+
+    {
+        "id": str,
+        "name": str,
+        "planType": int
+
+    }
+
+.. _organizations.list:
+
+``list``
+~~~~~~~~
+
++---------------------------+----------+----------------------------+
+| Option                    | Required | Description                |
++===========================+==========+============================+
+| ``--output-fmt <STRING>`` | No       | The desired output format. |
+|                           |          |                            |
+|                           |          | Options:                   |
+|                           |          |                            |
+|                           |          | - ``json``                 |
+|                           |          | - ``table``                |
++---------------------------+----------+----------------------------+
+
+Lists all organizations that a user is part of.
+
+**Output**:
+
+.. code-block:: console
+
+    [
+       {
+           "id": str,
+           "name": str,
+           "planType": int,
+           "notification": {
+               "alert": {
+                   "email": str,
+                   "enabled": bool
+               }
+           }
+       }
+       ...
+   ]
+
+.. _projects:
+
+``projects``
+------------
+
+The projects sub-commands allow you to create, modify and view project resources.
+
+.. code-block:: console
+
+    sh$ croud projects [subcommand] {parameters}
+
+For example:
+
+.. code-block:: console
+
+    sh$ croud projects list --region westeurope.azure
+
+.. projects.list:
+
+``list``
+~~~~~~~~
+
++---------------------------+----------+----------------------------+
+| Option                    | Required | Description                |
++===========================+==========+============================+
+| ``--region <STRING>``     | Yes      | The specified region.      |
+|                           |          |                            |
+|                           |          | Options:                   |
+|                           |          |                            |
+|                           |          | - ``bregenz.a1`` (default) |
+|                           |          | - ``westeurope.azure``     |
+|                           |          | - ``eastus.azure``         |
++---------------------------+----------+----------------------------+
+| ``--output-fmt <STRING>`` | No       | The desired output format. |
+|                           |          |                            |
+|                           |          | Options:                   |
+|                           |          |                            |
+|                           |          | - ``json`` (default)       |
+|                           |          | - ``table``                |
++---------------------------+----------+----------------------------+
+
+Outputs a list of projects for the
+specified region that the user is part of.
+
+ **Output**:
+
+.. code-block:: console
+
+   [
+       {
+           "id": str,
+           "name": str,
+           "region": str,
+           "organizationId": str
+       }
+       ...
+   ]
+
+.. _clusters:
+
+``clusters``
+------------
+
+The clusters sub-commands allow you to create, modify and view cluster resources.
+
+.. code-block:: console
+
+    sh$ croud clusters [subcommand] {parameters}
+
+For example:
+
+.. code-block:: console
+
+    sh$ croud clusters list --region westeurope.azure
+
+.. clusters.list:
+
+``list``
+~~~~~~~~
+
++---------------------------+----------+----------------------------+
+| Option                    | Required | Description                |
++===========================+==========+============================+
+| ``--region <STRING>``     | Yes      | The specified region.      |
+|                           |          |                            |
+|                           |          | Options:                   |
+|                           |          |                            |
+|                           |          | - ``bregenz.a1`` (default) |
+|                           |          | - ``westeurope.azure``     |
+|                           |          | - ``eastus.azure``         |
++---------------------------+----------+----------------------------+
+| ``--project-id <STRING>`` | No       | The specified project ID.  |
++---------------------------+----------+----------------------------+
+| ``--output-fmt <STRING>`` | No       | The desired output format. |
+|                           |          |                            |
+|                           |          | Options:                   |
+|                           |          |                            |
+|                           |          | - ``json``                 |
+|                           |          | - ``table``                |
++---------------------------+----------+----------------------------+
+
+Outputs a list of clusters from projects
+of a specified region that the user is part
+of. The list is filterable by project ID.
+
+**Output**:
+
+.. code-block:: console
+
+   [
+       {
+           "id": str,
+           "name": str,
+           "numNodes": int,
+           "crateVersion": str,
+           "projectId": str,
+           "username": str,
+           "fqdn": str
+       }
+       ...
+   ]
+
+.. _users:
+
+``users``
+---------
+
+The users sub-commands allow you to create, modify and view project resources.
+
+.. code-block:: console
+
+    sh$ croud users [subcommand] {parameters}
+
+For example:
+
+.. code-block:: console
+
+    sh$ croud users list --region westeurope.azure
+
+.. users.roles:
+
+``roles``
+~~~~~~~~~
+
+.. users.roles.add:
+
+``add``
+^^^^^^^
+
++---------------------------+----------+------------------------------+
+| Option                    | Required | Description                  |
++===========================+==========+==============================+
+| ``--user <STRING>``       | Yes      | The specified username.      |
++---------------------------+----------+------------------------------+
+| ``--resource <STRING>``   | Yes      | The specified resource ID    |
+|                           |          | (organization or project).   |
++---------------------------+----------+------------------------------+
+| ``--role <STRING>``       | Yes      | The desired role type. This  |
+|                           |          | is the role FQN.             |
+|                           |          |                              |
+|                           |          | Options:                     |
+|                           |          |                              |
+|                           |          | See ``users roles list`` for |
+|                           |          | more information on viewing  |
+|                           |          | a list of available roles.   |
++---------------------------+----------+------------------------------+
+| ``--output-fmt <STRING>`` | No       | The desired output format.   |
+|                           |          |                              |
+|                           |          | Options:                     |
+|                           |          |                              |
+|                           |          | - ``json``                   |
+|                           |          | - ``table``                  |
++---------------------------+----------+------------------------------+
+
+Assigns a new role to a user. **Note**:
+this command is only usable by users with
+super user privileges
+
+**Output**:
+
+.. code-block:: console
+
+    {
+        "user": {
+            "uid": str,
+            "email": str,
+            "username": str,
+            "organizationId": str
+        }
+    }
+
+.. users.roles.list:
+
+``list``
+^^^^^^^^
+
++---------------------------+----------+----------------------------+
+| Option                    | Required | Description                |
++===========================+==========+============================+
+| ``--output-fmt <STRING>`` | No       | The desired output format. |
+|                           |          |                            |
+|                           |          | Options:                   |
+|                           |          |                            |
+|                           |          | - ``json``                 |
+|                           |          | - ``table``                |
++---------------------------+----------+----------------------------+
+
+Lists all roles a user can be assigned to.
+
+**Output**:
+
+.. code-block:: console
+
+    [
+        {
+            "fqn": str,
+            "friendlyName": str
+        }
+        ...
+    ]

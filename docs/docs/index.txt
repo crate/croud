@@ -1,0 +1,18 @@
+.. _index:
+
+===============
+Getting started
+===============
+
+*Croud* is a *command-line interface* (CLI) tool for CrateDB Cloud.
+
+.. rubric:: Table of Contents
+
+.. contents::
+   :local:
+
+.. toctree::
+   :maxdepth: 2
+
+   getting-started
+   commands

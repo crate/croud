@@ -5,6 +5,9 @@ Developer Guide
 Setup
 =====
 
+Pip
+---
+
 Python >= 3.6 is required. Run ``croud`` within a virtual python environment::
 
     python -m venv env
@@ -19,6 +22,16 @@ Run it::
 
     croud -h
 
+Git
+---
+
+Alternatively, you can clone this repository, install it into a virtualenv and add the executable to your PATH
+environment variable::
+
+    git clone git@github.com:crate/croud.git && cd croud/
+    python3.6 -m venv env
+    env/bin/pip install -e .
+    export PATH=$PATH:$(pwd)/env/bin/croud
 
 Testing
 -------
@@ -74,3 +87,28 @@ See the instructions for `Generating distribution archives`_ for more details.
 .. _Generating distribution archives: https://packaging.python.org/tutorials/packaging-projects/#generating-distribution-archives
 .. _PyPI: https://pypi.org/project/croud/
 .. _Test PyPI: https://packaging.python.org/guides/using-testpypi/
+
+
+Writing Documentation
+=====================
+
+The docs live under the ``docs`` directory.
+
+The docs are written with ReStructuredText_ and processed with Sphinx_.
+
+Build the docs by running::
+
+    $ bin/sphinx
+
+The output can then be found in the ``out/html`` directory.
+
+If you would like to live-reload the docs as you edit them, you can run::
+
+    $ bin/sphinx dev
+
+The docs are automatically built from Git by `Read the Docs`_ and there is
+nothing special you need to do to get the live docs to update.
+
+.. _Read the Docs: http://readthedocs.org
+.. _ReStructuredText: http://docutils.sourceforge.net/rst.html
+.. _Sphinx: http://sphinx-doc.org/
