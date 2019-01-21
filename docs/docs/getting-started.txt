@@ -1,0 +1,55 @@
+===============
+Getting started
+===============
+
+.. rubric:: Table of Contents
+
+.. contents::
+   :local:
+
+Installation
+============
+
+The Croud CLI can be installed using either `pip`_ or `git`_
+
+.. _pip:
+
+Pip
+---
+
+To install using pip, simply run the following command:
+
+.. code-block:: console
+
+    sh$ python3 -m pip install --user -U croud
+
+To update:
+
+.. code-block:: console
+
+   sh$ pip install -U croud
+
+.. _git:
+
+Git
+---
+
+Alternatively, you can clone this repository, install it into a virtualenv and add the executable to your PATH
+environment variable:
+
+.. code-block:: console
+
+    sh$ git clone git@github.com:crate/croud.git && cd croud/
+    sh$ python3.6 -m venv env
+    sh$ env/bin/pip install -e .
+    sh$ export PATH=$PATH:$(pwd)/env/bin/croud
+
+Usage
+=====
+
+Use the command ``croud -h`` to list all available subcommands or ``croud <subcommand> -h`` to see the their detailed
+usage:
+
+.. code-block:: console
+
+    sh$ croud [subcommand] {parameters}
