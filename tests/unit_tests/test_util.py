@@ -23,6 +23,7 @@ from unittest import mock
 
 from croud.util import (
     can_launch_browser,
+    get_entity_list,
     get_platform_info,
     gql_mutation,
     is_wsl,
@@ -33,6 +34,7 @@ from croud.util import (
 class TestUtils(unittest.TestCase):
     authd_mutation = {"mutationName": {"prop1": "propvalue"}}
     unauthd_mutation = {"errors": [{"message": "An error message"}]}
+    authd_entity_list = {"entityListName": {"data": [{"key": "value"}]}}
 
     # This function was copied from the <https://github.com/Azure/azure-cli>
     # project. See `LICENSE` for more information.
@@ -101,3 +103,21 @@ class TestUtils(unittest.TestCase):
         key = "mutationName"
         data = gql_mutation("", Namespace(), key)
         self.assertEqual(data, self.authd_mutation[key])
+
+    @mock.patch("croud.util.send_to_gql", return_value=authd_entity_list)
+    @mock.patch("croud.util.print_format")
+    def test_get_entity_list_no_error(self, mock_print_format, mock_send_to_gql):
+        get_entity_list("", Namespace(output_fmt="json"), "entityListName")
+
+        mock_print_format.assert_called_once_with(
+            self.authd_entity_list["entityListName"]["data"], "json"
+        )
+
+    @mock.patch("croud.util.send_to_gql", return_value=unauthd_mutation)
+    @mock.patch("croud.util.print_error")
+    def test_get_entity_list_has_error(self, mock_print_error, mock_send_to_gql):
+        get_entity_list("", Namespace(output_fmt="json"), "entityListName")
+
+        mock_print_error.assert_called_once_with(
+            self.unauthd_mutation["errors"][0]["message"]
+        )

@@ -115,10 +115,11 @@ def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
 
     if not rows:
         print_no_data()
+        return
 
     if not isinstance(rows, dict):
         print_error("Result has no proper format to print.")
-        exit(0)
+        return
 
     if "errors" not in rows:
         data = rows[data_key]
@@ -133,17 +134,11 @@ def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
             fmt = args.output_fmt or Configuration.get_setting("output_fmt")
             print_format(data, fmt)
     else:
-        print_error_message(rows)
-
-
-def print_error_message(rows: dict):
-    print_error(rows["errors"][0]["message"])
-    exit(0)
+        print_error(rows["errors"][0]["message"])
 
 
 def print_no_data():
     print_info("Result contained no data to print.")
-    exit(0)
 
 
 def _get_region(args: Namespace) -> str:
