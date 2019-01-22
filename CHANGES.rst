@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Fix: Delegate all occurring error messages to the console output
+
 - Added `users roles remove` sub command that allows to remove a role from a
   user.
 
