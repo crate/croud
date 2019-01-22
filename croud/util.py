@@ -113,27 +113,37 @@ def gql_mutation(query: str, args: Namespace, data_key: str) -> JsonDict:
 def get_entity_list(query: str, args: Namespace, data_key: str) -> None:
     rows = send_to_gql(query, args)
 
-    if rows:
-        if isinstance(rows, dict):
-            data = rows[data_key]
-            # some queries have two levels to access data
-            # e.g. {allProjects: {data: [{projects}]}} vs. {me: {data})
-            if "data" in data:
-                data = data["data"]
-
-            if len(data) == 0:
-                print_no_data()
-            else:
-                fmt = args.output_fmt or Configuration.get_setting("output_fmt")
-                print_format(data, fmt)
-        else:
-            print_error("Result has no proper format to print.")
-    else:
+    if not rows:
         print_no_data()
+
+    if not isinstance(rows, dict):
+        print_error("Result has no proper format to print.")
+        exit(0)
+
+    if "errors" not in rows:
+        data = rows[data_key]
+        # some queries have two levels to access data
+        # e.g. {allProjects: {data: [{projects}]}} vs. {me: {data})
+        if "data" in data:
+            data = data["data"]
+
+        if len(data) == 0:
+            print_no_data()
+        else:
+            fmt = args.output_fmt or Configuration.get_setting("output_fmt")
+            print_format(data, fmt)
+    else:
+        print_error_message(rows)
+
+
+def print_error_message(rows: dict):
+    print_error(rows["errors"][0]["message"])
+    exit(0)
 
 
 def print_no_data():
     print_info("Result contained no data to print.")
+    exit(0)
 
 
 def _get_region(args: Namespace) -> str:

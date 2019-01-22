@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Fix: Print the error message from graphql if a user haves no permission
+
 - Added `users roles remove` sub command that allows to remove a role from a
   user.
 
