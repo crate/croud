@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added `users roles remove` sub command that allows to remove a role from a
+  user.
+
 - Improved help output.
 
 - refactored `assignRoleToUser` to `addRoleToUser`
