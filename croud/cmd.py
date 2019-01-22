@@ -201,7 +201,7 @@ def region_arg(parser: ArgumentParser) -> None:
     parser.add_argument(
         "-r",
         "--region",
-        choices=["westeurope.azure", "eastus.azure", "bregenz.a1"],
+        choices=["westeurope.azure", "eastus.azure", "eastus2.azure", "bregenz.a1"],
         type=str,
         help="Switch region that command will be run on.",
     )

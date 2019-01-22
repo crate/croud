@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added eastus2 to available regions.
+
 0.5.0 - 2018/01/22
 ==================
 
