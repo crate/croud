@@ -44,6 +44,7 @@ from croud.organizations.list import organizations_list
 from croud.projects.list import projects_list
 from croud.users.roles.add import roles_add
 from croud.users.roles.list import roles_list
+from croud.users.roles.remove import roles_remove
 
 
 def main():
@@ -124,6 +125,16 @@ def main():
                                 role_fqn_arg,
                             ],
                             "calls": roles_add,
+                        },
+                        "remove": {
+                            "help": "Removes a role from a user.",
+                            "extra_args": [
+                                lambda parser: resource_id_arg(parser, True),
+                                lambda parser: user_id_arg(parser, True),
+                                output_fmt_arg,
+                                role_fqn_arg,
+                            ],
+                            "calls": roles_remove,
                         },
                         "list": {
                             "help": "Lists all available roles.",
