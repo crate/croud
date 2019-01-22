@@ -1,4 +1,4 @@
-from crate.theme.rtd.conf.cloud import *
+from crate.theme.rtd.conf.croud import *
 
 exclude_patterns = ["out/**"]
 
@@ -7,5 +7,5 @@ exclude_patterns = ["out/**"]
 # so it can't find the file
 html_favicon = None
 
-site_url = 'https://crate.io/docs/cloud/en/latest/'
+site_url = 'https://crate.io/docs/croud/en/latest/'
 extensions = ['sphinx_sitemap']
