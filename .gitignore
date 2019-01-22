@@ -64,7 +64,6 @@ docs/_build/
 target/
 
 # buildout
-bin/
 env/
 
 # vscode
