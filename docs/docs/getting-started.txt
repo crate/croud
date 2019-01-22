@@ -1,5 +1,7 @@
+.. _getting-started:
+
 ===============
-Getting started
+Getting Started
 ===============
 
 .. rubric:: Table of Contents
@@ -10,46 +12,62 @@ Getting started
 Installation
 ============
 
-The Croud CLI can be installed using either `pip`_ or `git`_
+The Croud CLI is available as a `pip`_ package.
 
-.. _pip:
-
-Pip
----
-
-To install using pip, simply run the following command:
+To install, run:
 
 .. code-block:: console
 
-    sh$ python3 -m pip install --user -U croud
+    sh$ pip install croud
 
-To update:
+To update, run:
 
 .. code-block:: console
 
    sh$ pip install -U croud
 
-.. _git:
+Run
+===
 
-Git
----
-
-Alternatively, you can clone this repository, install it into a virtualenv and add the executable to your PATH
-environment variable:
+Verify your installation, like so:
 
 .. code-block:: console
 
-    sh$ git clone git@github.com:crate/croud.git && cd croud/
-    sh$ python3.6 -m venv env
-    sh$ env/bin/pip install -e .
-    sh$ export PATH=$PATH:$(pwd)/env/bin/croud
+    sh$ croud --version
 
-Usage
-=====
+When using Croud, you must supply a *command*.
 
-Use the command ``croud -h`` to list all available subcommands or ``croud <subcommand> -h`` to see the their detailed
-usage:
+For example:
 
 .. code-block:: console
 
-    sh$ croud [subcommand] {parameters}
+    sh$ croud login
+
+Here, ``login`` is supplied as a command. The will open a browser window for
+you to authenticate with `CrateDB Cloud`_. You will need to do this before
+issuing any further commands.
+
+From here, you can go on to use :ref:`commands <commands>` to manage your
+configuration values, projects, clusters, organizations, and users.
+
+Command-Line Options
+====================
+
+Croud supports the following command-line options:
+
++------------------------+--------------------------------------------------+
+| Argument               | Description                                      |
++------------------------+--------------------------------------------------+
+| ``-h``,                | Print the help message, then exits.              |
+| ``--help``             |                                                  |
++------------------------+--------------------------------------------------+
+| ``-v``,                | Prints the program's version number, then exits. |
+| ``--version``          |                                                  |
++------------------------+--------------------------------------------------+
+
+.. TIP::
+
+    Some Croud :ref:`commands <commands>` take additional options.
+
+.. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/
+.. _pip: https://pypi.python.org/pypi/pip

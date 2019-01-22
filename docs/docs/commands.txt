@@ -1,75 +1,87 @@
+.. _commands:
+
 ========
 Commands
 ========
 
-Croud has many commands that are able to interact with various CrateDB Cloud resources.
+You can supply commands to the :ref:`Croud CLI <getting-started>` tool, like
+so:
 
-.. NOTE::
-    Most commands are split by the resource that they interact with.
+.. code-block:: console
+
+    sh$ croud [COMMAND] [OPTIONS]
+
+For example:
+
+.. code-block:: console
+
+    sh$ croud login
+
+You can get the list of available commands, like so:
+
+.. code-block:: console
+
+    sh$ croud --help
+
+To get help for a specific command, you can append ``--help``:
+
+.. code-block:: console
+
+    sh$ croud login --help
+
+.. All commands support the ``--env`` flag, which can be used to select between
+.. the ``prod`` and ``dev`` environments. This is an internal feature used by
+.. developers of the Croud CLI tool itself.
 
 .. rubric:: Table of Contents
 
 .. contents::
    :local:
 
-Command-Line Options
-====================
-
-+------------------------+--------------------------------------------------+
-| Argument               | Description                                      |
-+------------------------+--------------------------------------------------+
-| ``-h``,                | Print the help message, then exits.              |
-| ``--help``             |                                                  |
-+------------------------+--------------------------------------------------+
-| ``-v``,                | Prints the program's version number, then exits. |
-| ``--version``          |                                                  |
-+------------------------+--------------------------------------------------+
-
-Sub-Commands
-============
-
-.. NOTE::
-    The `--env` flag can be passed to **all** commands.
-
 .. _login:
 
 ``login``
----------
+=========
 
 CrateDB Cloud uses OAuth2 for authentication.
 
-In order to interact with any of your CrateDB Cloud resources, you must first login.
-To do this, simply enter ``croud login`` into the CLI. This will open a browser window that will ask you
-to enter your credentials, and will then allow the CLI to access resources.
+You must authenticate yourself before interacting with your `CrateDB Cloud`_
+account or its resources.
 
-Example:
+Log in, like so:
 
 .. code-block:: console
 
     sh$ croud login
 
+This will open a browser window that will present you with an authentication
+screen.
+
+.. NOTE::
+
+    Your access token is cached locally, and all subsequent commands will be
+    authenticated until you explicitly log out.
+
 .. _logout:
 
 ``logout``
-----------
+==========
 
-To logout, enter ``croud logout`` into the CLI. This will clear your access token and require you to login again
-before being able to access any resources.
-
-Example:
+To log out, run:
 
 .. code-block:: console
 
     sh$ croud logout
 
+This will clear your access token. You will then be required to log in again
+before interacting with your account or its resources.
+
 .. _me:
 
 ``me``
-------
+======
 
-The `me` command prints the username and email address of the currently authenticated user
-
-Example:
+Print the username and email address of the currently authenticated user:
 
 .. code-block:: console
 
@@ -78,94 +90,101 @@ Example:
 .. _config:
 
 ``config``
-----------
+==========
 
-Croud uses several environment variables that control different aspects of interacting with CrateDB Cloud
+Croud allows you to configure the following variables:
 
-+-----------------+---------------------+---------------------------------------------------+
-| Name            | Value               | Description                                       |
-+=================+=====================+===================================================+
-| region          | One of either:      | The region in which to run a command against      |
-|                 |                     | (some resources, e.g. projects, are stored in     |
-|                 | * westeurope.azure  | specific regions                                  |
-|                 | * eastus.azure      |                                                   |
-|                 | * bregenz.a1        |                                                   |
-+-----------------+---------------------+---------------------------------------------------+
-| output-fmt      | One of either:      | The output format for commands that have an output|
-|                 |                     |                                                   |
-|                 |  * table            |                                                   |
-|                 |  * json             |                                                   |
-+-----------------+---------------------+---------------------------------------------------+
-| env             | One of either:      | The authorization context to use when interacting |
-|                 |                     | with resources or logging in/out. **Note:** this  |
-|                 | * prod              | is only used by developers                        |
-|                 | * dev               |                                                   |
-|                 |                     |                                                   |
-+-----------------+---------------------+---------------------------------------------------+
++----------------+------------------------+-----------------------------------+
+| Name           | Allowed Values         | Description                       |
++================+========================+===================================+
+| ``region``     | One of:                | The region to run a command       |
+|                |                        | against. Some resources (e.g.,    |
+|                | * ``bregenz.a1``       | clusters) are attached to         |
+|                | * ``westeurope.azure`` | specific regions                  |
+|                | * ``eastus.azure``     |                                   |
++----------------+------------------------+-----------------------------------+
+| ``output-fmt`` | One of:                | The default output format (for    |
+|                |                        | commands that produce an output). |
+|                |  * ``table``           |                                   |
+|                |  * ``json``            |                                   |
++----------------+------------------------+-----------------------------------+
 
 .. _get:
 
 ``get``
-~~~~~~~
+-------
 
-To see the value of an environment variable, you can use the `config get` command. The command has the following
-format: ``croud config get ENV_NAME`` where `ENV_NAME` is the name of the environment variable you wish to view.
-
-Example:
+You can print the value of a configuration variable, like this:
 
 .. code-block:: console
 
-    sh$ croud config get region
+    sh$ croud config get [NAME]
 
-This will return the default region used when querying or creating resources.
+So, for example:
+
+.. code-block:: console
+
+    sh$ croud config get 'region'
+
+Here, the value of the ``region`` configuration variable would be printed.
 
 .. _set:
 
 ``set``
-~~~~~~~
+-------
 
-To change the default value of an environment variable (usually so you do not need to always pass it as an argument on each
-command), you can use ``croud config set --ENV_NAME ENV_VALUE`` where `ENV_NAME` is the name of the environment variable
-you wish to change, and `ENV_VALUE` is the new value for the variable.
+You can set configuration variables, like this:
 
-This command can be used to set multiple environment variables at once, or just a single varable.
+.. code-block:: console
+
+    sh$ croud config set [OPTION] [VALUE]
+
+If you want to set the ``region`` configuration variable, you would use the
+``--region`` option.
 
 For example:
 
 .. code-block:: console
 
-    sh$ croud config set --region westeurope.azure --output-fmt table
+    sh$ croud config set --region 'westeurope.azure'
 
-This will update both the region and the output format
-environment variable.
+Here, the ``region`` configuration variable is set to ``westeurope.azure``.
 
-.. code-block:: console
+.. NOTE::
 
-    sh$ croud config set --output-fmt table
-
-This will only update the default output format.
+    If you specify multiple flags, you can set several configuration variables
+    at once.
 
 .. _organizations:
 
 ``organizations``
------------------
+=================
 
-The organizations sub-commands allow you to create, modify and view organization resources.
+The ``organizations`` command allows you to create, modify and view
+organization resources.
 
-.. code-block:: console
-
-    sh$ croud organizations [subcommand] {parameters}
-
-For example:
+You must specify a subcommand, like so:
 
 .. code-block:: console
 
-    sh$ croud organizations create --name "My Organizations" --plan-type 1
+    sh$ croud organizations [SUBCOMMAND] [OPTIONS]
 
 .. _organizations.create:
 
 ``create``
-~~~~~~~~~~
+----------
+
+The ``create`` subcommand creates an organization:
+
+.. code-block:: console
+
+    sh$ croud organizations create [OPTIONS]
+
+.. NOTE::
+
+    This subcommand is only available to superusers.
+
+Recognized options:
 
 +-----------------------+----------+--------------------------------+
 | Option                | Required | Description                    |
@@ -184,42 +203,51 @@ For example:
 |                       |          | - ``6``                        |
 +-----------------------+----------+--------------------------------+
 
-Creates an organization. **Note:** this
-command is only usable by users with super
-user privileges.
-
-**Output**:
+For example:
 
 .. code-block:: console
+
+    sh$ croud organizations create --name 'My Organization' --plan-type '1'
+
+This output format looks like this:
+
+.. code-block:: text
 
     {
         "id": str,
         "name": str,
         "planType": int
-
     }
+
+Here, ``id`` is the organization ID assigned by CrateDB Cloud.
 
 .. _organizations.list:
 
 ``list``
-~~~~~~~~
+--------
+
+The ``list`` subcommand prints a list of all the organizations you belong to:
+
+.. code-block:: console
+
+    sh$ croud organizations list [OPTIONS]
+
+Recognized options:
 
 +---------------------------+----------+----------------------------+
 | Option                    | Required | Description                |
 +===========================+==========+============================+
 | ``--output-fmt <STRING>`` | No       | The desired output format. |
 |                           |          |                            |
-|                           |          | Options:                   |
+|                           |          | One of:                    |
 |                           |          |                            |
 |                           |          | - ``json``                 |
 |                           |          | - ``table``                |
 +---------------------------+----------+----------------------------+
 
-Lists all organizations that a user is part of.
+This output format looks like this:
 
-**Output**:
-
-.. code-block:: console
+.. code-block:: text
 
     [
        {
@@ -239,50 +267,58 @@ Lists all organizations that a user is part of.
 .. _projects:
 
 ``projects``
-------------
+============
 
-The projects sub-commands allow you to create, modify and view project resources.
+The ``project`` command allows you to create, modify and view project
+resources.
 
-.. code-block:: console
-
-    sh$ croud projects [subcommand] {parameters}
-
-For example:
+You must specify a subcommand, like so:
 
 .. code-block:: console
 
-    sh$ croud projects list --region westeurope.azure
+    sh$ croud projects [SUBCOMMAND] [OPTIONS]
 
 .. projects.list:
 
 ``list``
-~~~~~~~~
+--------
+
+The ``list`` subcommand prints a list of all the projects you have access to:
+
+.. code-block:: console
+
+    sh$ croud projects list [OPTIONS]
+
+Recognized options:
 
 +---------------------------+----------+----------------------------+
 | Option                    | Required | Description                |
 +===========================+==========+============================+
-| ``--region <STRING>``     | Yes      | The specified region.      |
+| ``--region <STRING>``     | Yes      | Filter on region.          |
 |                           |          |                            |
-|                           |          | Options:                   |
+|                           |          | One of:                    |
 |                           |          |                            |
-|                           |          | - ``bregenz.a1`` (default) |
+|                           |          | - ``bregenz.a1``           |
 |                           |          | - ``westeurope.azure``     |
 |                           |          | - ``eastus.azure``         |
 +---------------------------+----------+----------------------------+
 | ``--output-fmt <STRING>`` | No       | The desired output format. |
 |                           |          |                            |
-|                           |          | Options:                   |
+|                           |          | One of:                    |
 |                           |          |                            |
-|                           |          | - ``json`` (default)       |
+|                           |          | - ``json``                 |
 |                           |          | - ``table``                |
 +---------------------------+----------+----------------------------+
 
-Outputs a list of projects for the
-specified region that the user is part of.
-
- **Output**:
+For example:
 
 .. code-block:: console
+
+    sh$ croud projects list --region 'westeurope.azure'
+
+This output format looks like this:
+
+.. code-block:: text
 
    [
        {
@@ -294,56 +330,67 @@ specified region that the user is part of.
        ...
    ]
 
+Here, ``id`` is the project ID assigned by CrateDB Cloud.
+
 .. _clusters:
 
 ``clusters``
-------------
+============
 
-The clusters sub-commands allow you to create, modify and view cluster resources.
+The ``clusters`` command allows you to create, modify and view cluster
+resources.
 
-.. code-block:: console
-
-    sh$ croud clusters [subcommand] {parameters}
-
-For example:
+You must specify a subcommand, like so:
 
 .. code-block:: console
 
-    sh$ croud clusters list --region westeurope.azure
+    sh$ croud clusters [SUBCOMMAND] [OPTIONS]
 
 .. clusters.list:
 
 ``list``
-~~~~~~~~
+--------
+
+The ``list`` subcommand prints a list of all the clusters you have access to:
+
+.. code-block:: console
+
+    sh$ croud clusters list [OPTIONS]
+
+Recognized options:
 
 +---------------------------+----------+----------------------------+
 | Option                    | Required | Description                |
 +===========================+==========+============================+
-| ``--region <STRING>``     | Yes      | The specified region.      |
+| ``--region <STRING>``     | Yes      | Filter on region.          |
 |                           |          |                            |
-|                           |          | Options:                   |
+|                           |          | One of:                    |
 |                           |          |                            |
-|                           |          | - ``bregenz.a1`` (default) |
+|                           |          | - ``bregenz.a1``           |
 |                           |          | - ``westeurope.azure``     |
 |                           |          | - ``eastus.azure``         |
 +---------------------------+----------+----------------------------+
-| ``--project-id <STRING>`` | No       | The specified project ID.  |
+| ``--project-id <STRING>`` | No       | Filter on this project ID. |
 +---------------------------+----------+----------------------------+
 | ``--output-fmt <STRING>`` | No       | The desired output format. |
 |                           |          |                            |
-|                           |          | Options:                   |
+|                           |          | One of:                    |
 |                           |          |                            |
 |                           |          | - ``json``                 |
 |                           |          | - ``table``                |
 +---------------------------+----------+----------------------------+
 
-Outputs a list of clusters from projects
-of a specified region that the user is part
-of. The list is filterable by project ID.
-
-**Output**:
+For example:
 
 .. code-block:: console
+
+    sh$ croud clusters list --region 'westeurope.azure'
+
+This would print a list of projects in the ``westeurope.azure`` region.
+
+This output format looks like this:
+
+.. code-block:: text
 
    [
        {
@@ -358,45 +405,62 @@ of. The list is filterable by project ID.
        ...
    ]
 
+Here, ``id`` is the cluster ID assigned by CrateDB Cloud.
+
 .. _users:
 
 ``users``
----------
+=========
 
-The users sub-commands allow you to create, modify and view project resources.
+The ``users`` command allows you to create, modify and view user resources.
 
-.. code-block:: console
-
-    sh$ croud users [subcommand] {parameters}
-
-For example:
+You must specify a subcommand, like so:
 
 .. code-block:: console
 
-    sh$ croud users list --region westeurope.azure
+    sh$ croud users [SUBCOMMAND] [OPTIONS]
 
 .. users.roles:
 
 ``roles``
-~~~~~~~~~
+---------
+
+The ``roles`` subcommand allows you to create, modify and view user roles.
+
+You must specify a second subcommand, like so:
+
+.. code-block:: console
+
+    sh$ croud users roles [SUBCOMMAND] [OPTIONS]
 
 .. users.roles.add:
 
 ``add``
-^^^^^^^
+~~~~~~~
+
+The ``add`` subcommand assigns a new role to a user.
+
+.. code-block:: console
+
+    sh$ croud users roles add [OPTIONS]
+
+.. NOTE::
+
+    This subcommand is only available to superusers.
+
+Recognized options:
 
 +---------------------------+----------+------------------------------+
 | Option                    | Required | Description                  |
 +===========================+==========+==============================+
-| ``--user <STRING>``       | Yes      | The specified username.      |
+| ``--user <STRING>``       | Yes      | The specified user ID.       |
 +---------------------------+----------+------------------------------+
 | ``--resource <STRING>``   | Yes      | The specified resource ID    |
 |                           |          | (organization or project).   |
 +---------------------------+----------+------------------------------+
-| ``--role <STRING>``       | Yes      | The desired role type. This  |
-|                           |          | is the role FQN.             |
-|                           |          |                              |
-|                           |          | Options:                     |
+| ``--role <STRING>``       | Yes      | The desired role type. (This |
+|                           |          | functions as the `fully      |
+|                           |          | qualified role name`_).      |
 |                           |          |                              |
 |                           |          | See ``users roles list`` for |
 |                           |          | more information on viewing  |
@@ -404,19 +468,82 @@ For example:
 +---------------------------+----------+------------------------------+
 | ``--output-fmt <STRING>`` | No       | The desired output format.   |
 |                           |          |                              |
-|                           |          | Options:                     |
+|                           |          | One of:                      |
 |                           |          |                              |
 |                           |          | - ``json``                   |
 |                           |          | - ``table``                  |
 +---------------------------+----------+------------------------------+
 
-Assigns a new role to a user. **Note**:
-this command is only usable by users with
-super user privileges
-
-**Output**:
+For example:
 
 .. code-block:: console
+
+    sh$ croud users roles add --user '54832319' --resource '14569834' --role 'org_admin'
+
+This output format looks like this:
+
+.. code-block:: text
+
+    {
+        "user": {
+            "uid": str,
+            "email": str,
+            "username": str,
+            "organizationId": str
+        }
+    }
+
+
+.. users.roles.remove:
+
+``remove``
+~~~~~~~~~~
+
+The ``remove`` subcommand removes a role from a user.
+
+.. code-block:: console
+
+    sh$ croud users roles remove [OPTIONS]
+
+.. NOTE::
+
+    This subcommand is only available to superusers.
+
+Recognized options:
+
++---------------------------+----------+------------------------------+
+| Option                    | Required | Description                  |
++===========================+==========+==============================+
+| ``--user <STRING>``       | Yes      | The specified user ID.       |
++---------------------------+----------+------------------------------+
+| ``--resource <STRING>``   | Yes      | The specified resource ID    |
+|                           |          | (organization or project).   |
++---------------------------+----------+------------------------------+
+| ``--role <STRING>``       | Yes      | The desired role type. (This |
+|                           |          | functions as the `fully      |
+|                           |          | qualified role name`_).      |
+|                           |          |                              |
+|                           |          | See ``users roles list`` for |
+|                           |          | more information on viewing  |
+|                           |          | a list of available roles.   |
++---------------------------+----------+------------------------------+
+| ``--output-fmt <STRING>`` | No       | The desired output format.   |
+|                           |          |                              |
+|                           |          | One of:                      |
+|                           |          |                              |
+|                           |          | - ``json``                   |
+|                           |          | - ``table``                  |
++---------------------------+----------+------------------------------+
+
+For example:
+
+.. code-block:: console
+
+    sh$ croud users roles remove --user '54832319' --resource '14569834' --role 'org_admin'
+
+This output format looks like this:
+
+.. code-block:: text
 
     {
         "user": {
@@ -430,24 +557,30 @@ super user privileges
 .. users.roles.list:
 
 ``list``
-^^^^^^^^
+~~~~~~~~
+
+The ``list`` subcommand prints a list of all user roles available:
+
+.. code-block:: console
+
+    sh$ croud users roles list [OPTIONS]
+
+Recognized options:
 
 +---------------------------+----------+----------------------------+
 | Option                    | Required | Description                |
 +===========================+==========+============================+
 | ``--output-fmt <STRING>`` | No       | The desired output format. |
 |                           |          |                            |
-|                           |          | Options:                   |
+|                           |          | One of:                    |
 |                           |          |                            |
 |                           |          | - ``json``                 |
 |                           |          | - ``table``                |
 +---------------------------+----------+----------------------------+
 
-Lists all roles a user can be assigned to.
+This output format looks like this:
 
-**Output**:
-
-.. code-block:: console
+.. code-block:: text
 
     [
         {
@@ -456,3 +589,6 @@ Lists all roles a user can be assigned to.
         }
         ...
     ]
+
+.. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/
+.. _fully qualified role name: https://en.wikipedia.org/wiki/Fully_qualified_name
