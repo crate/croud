@@ -44,8 +44,7 @@ Help
 Looking for more help?
 
 - Read the `project documentation`_
-- Check `StackOverflow`_ for common problems
-- Chat with us on `Slack`_
+- Chat with us via our `support channel`_
 - Get `paid support`_
 
 .. _pip: https://pip.pypa.io/en/stable/
@@ -54,6 +53,5 @@ Looking for more help?
 .. _developer docs: https://github.com/crate/croud/blob/master/DEVELOP.rst
 .. _Crate.io: http://crate.io/
 .. _project documentation: https://crate.io/docs/cloud/en/latest/
-.. _StackOverflow: https://stackoverflow.com/tags/crate
-.. _Slack: https://crate.io/docs/support/slackin/
+.. _support channel: https://crate.io/support/
 .. _paid support: https://crate.io/pricing/
