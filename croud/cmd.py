@@ -21,13 +21,14 @@
 
 import argparse
 import sys
-from argparse import ArgumentParser, Namespace, _SubParsersAction
+from argparse import ArgumentParser, Namespace, _ArgumentGroup, _SubParsersAction
 from os.path import basename
 from typing import Callable, Optional
 
 from croud import __version__
 
 POSITIONALS_TITLE = "Available Commands"
+REQUIRED_TITLE = "Required Arguments"
 OPTIONALS_TITLE = "Optional Arguments"
 
 
@@ -128,8 +129,10 @@ class CMD:
                     formatter_class=CroudCliHelpFormatter, add_help=False
                 )
                 context._positionals.title = POSITIONALS_TITLE
-                context._optionals.title = OPTIONALS_TITLE
-                context.add_argument(
+
+                req_args = context.add_argument_group(REQUIRED_TITLE)
+                opt_args = context.add_argument_group(OPTIONALS_TITLE)
+                opt_args.add_argument(
                     "-h",
                     "--help",
                     action="help",
@@ -145,7 +148,7 @@ class CMD:
 
                 if "extra_args" in command:
                     for arg_def in command["extra_args"]:
-                        arg_def(context)
+                        arg_def(req_args, opt_args)
 
                 if "sub_commands" in command:
                     self.create_parent_cmd(
@@ -153,7 +156,7 @@ class CMD:
                     )
                     return
                 else:
-                    add_default_args(context)
+                    add_default_args(opt_args)
                     call = command["calls"]
                 break
 
@@ -183,12 +186,12 @@ def parse_args(parser: ArgumentParser, position: int) -> Namespace:
     return parser.parse_args(sys.argv[position:])
 
 
-def add_default_args(parser: ArgumentParser) -> None:
-    env_arg(parser)
+def add_default_args(opt_args: _ArgumentGroup) -> None:
+    env_arg(opt_args)
 
 
-def env_arg(parser: ArgumentParser) -> None:
-    parser.add_argument(
+def env_arg(opt_args: _ArgumentGroup) -> None:
+    opt_args.add_argument(
         "--env",
         choices=["prod", "dev"],
         default=None,
@@ -197,8 +200,8 @@ def env_arg(parser: ArgumentParser) -> None:
     )
 
 
-def region_arg(parser: ArgumentParser) -> None:
-    parser.add_argument(
+def region_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    opt_args.add_argument(
         "-r",
         "--region",
         choices=["westeurope.azure", "eastus.azure", "eastus2.azure", "bregenz.a1"],
@@ -207,12 +210,16 @@ def region_arg(parser: ArgumentParser) -> None:
     )
 
 
-def project_id_arg(parser: ArgumentParser) -> None:
-    parser.add_argument("-p", "--project-id", type=str, help="Filter by project ID.")
+def project_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument("--name", type=str, help="Project Name.", required=True)
 
 
-def output_fmt_arg(parser: ArgumentParser) -> None:
-    parser.add_argument(
+def project_id_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    opt_args.add_argument("-p", "--project-id", type=str, help="Filter by project ID.")
+
+
+def output_fmt_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    opt_args.add_argument(
         "-o",
         "--output-fmt",
         choices=["table", "json"],
@@ -221,12 +228,12 @@ def output_fmt_arg(parser: ArgumentParser) -> None:
     )
 
 
-def org_name_arg(parser: ArgumentParser) -> None:
-    parser.add_argument("--name", type=str, help="Organization Name.", required=True)
+def org_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument("--name", type=str, help="Organization Name.", required=True)
 
 
-def org_plan_type_arg(parser: ArgumentParser) -> None:
-    parser.add_argument(
+def org_plan_type_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument(
         "--plan-type",
         choices=[1, 2, 3, 4, 5, 6],
         type=int,
@@ -235,12 +242,19 @@ def org_plan_type_arg(parser: ArgumentParser) -> None:
     )
 
 
-def resource_id_arg(parser: ArgumentParser, required: bool) -> None:
-    parser.add_argument("--resource", type=str, help="Resource ID.", required=required)
+def resource_id_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    if required:
+        req_args.add_argument_group(
+            "--resource", type=str, help="Resource ID.", required=True
+        )
+        return
+    opt_args.add_argument("--resource", type=str, help="Resource ID.", required=False)
 
 
-def role_fqn_arg(parser: ArgumentParser) -> None:
-    parser.add_argument(
+def role_fqn_arg(req_args: ArgumentParser, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument(
         "--role",
         type=str,
         help="Role FQN. Run `croud roles list` for a list of available roles.",
@@ -248,8 +262,13 @@ def role_fqn_arg(parser: ArgumentParser) -> None:
     )
 
 
-def user_id_arg(parser: ArgumentParser, required: bool) -> None:
-    parser.add_argument("--user", type=str, help="User ID.", required=required)
+def user_id_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    if required:
+        req_args.add_argument("--user", type=str, help="User ID.", required=True)
+        return
+    opt_args.add_argument("--user", type=str, help="User ID.", required=False)
 
 
 def format_usage(parser: ArgumentParser, depth: int, invalid_args=None) -> None:
