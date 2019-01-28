@@ -207,6 +207,7 @@ def region_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
         choices=["westeurope.azure", "eastus.azure", "eastus2.azure", "bregenz.a1"],
         type=str,
         help="Switch region that command will be run on.",
+        required=False,
     )
 
 
@@ -228,8 +229,11 @@ def output_fmt_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     )
 
 
-def org_id_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
-    opt_args.add_argument("--org-id", type=str, help="Organization ID.")
+def org_id_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument("--org-id", type=str, help="Organization ID.", required=required)
 
 
 def no_org_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:

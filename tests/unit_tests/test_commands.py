@@ -29,6 +29,8 @@ from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
 from croud.organizations.create import organizations_create
 from croud.organizations.list import organizations_list
+from croud.projects.create import project_create
+from croud.projects.list import projects_list
 from croud.server import Server
 from croud.users.list import users_list
 from croud.users.roles.add import roles_add
@@ -266,6 +268,48 @@ mutation {
         args = Namespace(env="dev")
         with mock.patch("croud.organizations.list.print_query") as mock_print:
             organizations_list(args)
+            assert_query(mock_print, query)
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Query, "execute")
+class TestProjects:
+    def test_create(self, mock_execute, mock_load_config):
+        mutation = """
+        mutation {
+            createProject(input: {
+                name: "new-project",
+                organizationId: "organization-id"
+            }) {
+                id
+            }
+        }
+    """
+
+        args = Namespace(
+            env="dev", name="new-project", org_id="organization-id", output_fmt="json"
+        )
+        with mock.patch("croud.projects.create.print_query") as mock_print:
+            project_create(args)
+            assert_query(mock_print, mutation)
+
+    def test_list_projects_org_admin(self, mock_execute, mock_load_config):
+        query = """
+{
+    allProjects {
+        data {
+            id
+            name
+            region
+            organizationId
+        }
+    }
+}
+    """
+
+        args = Namespace(env="dev")
+        with mock.patch("croud.projects.list.print_query") as mock_print:
+            projects_list(args)
             assert_query(mock_print, query)
 
 

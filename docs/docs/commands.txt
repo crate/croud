@@ -269,7 +269,7 @@ This output format looks like this:
 ``projects``
 ============
 
-The ``project`` command allows you to create, modify and view project
+The ``projects`` command allows you to create, modify and view project
 resources.
 
 You must specify a subcommand, like so:
@@ -277,6 +277,36 @@ You must specify a subcommand, like so:
 .. code-block:: console
 
     sh$ croud projects [SUBCOMMAND] [OPTIONS]
+
+.. projects.create:
+
+``create``
+----------
+
+The ``create`` subcommand creates a new project in the given organization.
+The user has to be admin of the organization to perform this operation.
+
+.. code-block:: console
+
+    sh$ croud projects create [OPTIONS]
+
+Recognized options:
+
++---------------------------+----------+----------------------------+
+| Option                    | Required | Description                |
++===========================+==========+============================+
+| ``--name <STRING>``       | Yes      | The desired project name.  |
++---------------------------+----------+----------------------------+
+| ``--org-id <STRING>``     | Yes      | Creates the project in the |
+|                           |          | in the chosen organization.|
++---------------------------+----------+----------------------------+
+| ``--output-fmt <STRING>`` | No       | The desired output format. |
+|                           |          |                            |
+|                           |          | One of:                    |
+|                           |          |                            |
+|                           |          | - ``json``                 |
+|                           |          | - ``table``                |
++---------------------------+----------+----------------------------+
 
 .. projects.list:
 
