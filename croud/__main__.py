@@ -119,8 +119,12 @@ def main():
                         "add": {
                             "help": "Adds a role to a user.",
                             "extra_args": [
-                                lambda parser: resource_id_arg(parser, True),
-                                lambda parser: user_id_arg(parser, True),
+                                lambda req_opt_group, opt_opt_group: resource_id_arg(
+                                    req_opt_group, opt_opt_group, True
+                                ),
+                                lambda req_opt_group, opt_opt_group: user_id_arg(
+                                    req_opt_group, opt_opt_group, True
+                                ),
                                 output_fmt_arg,
                                 role_fqn_arg,
                             ],
@@ -129,8 +133,12 @@ def main():
                         "remove": {
                             "help": "Removes a role from a user.",
                             "extra_args": [
-                                lambda parser: resource_id_arg(parser, True),
-                                lambda parser: user_id_arg(parser, True),
+                                lambda req_opt_group, opt_opt_group: resource_id_arg(
+                                    req_opt_group, opt_opt_group, True
+                                ),
+                                lambda req_opt_group, opt_opt_group: user_id_arg(
+                                    req_opt_group, opt_opt_group, True
+                                ),
                                 output_fmt_arg,
                                 role_fqn_arg,
                             ],
