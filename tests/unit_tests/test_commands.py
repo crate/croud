@@ -28,6 +28,7 @@ from croud.logout import logout
 from croud.organizations.create import organizations_create
 from croud.organizations.list import organizations_list
 from croud.server import Server
+from croud.users.list import users_list
 from croud.users.roles.add import roles_add
 from croud.users.roles.list import roles_list
 from croud.users.roles.remove import roles_remove
@@ -398,3 +399,83 @@ mutation {{
         )
         roles_remove(args)
         mock_print_format.assert_called_once_with(self.authd_response, "json")
+
+
+class TestUsersList(unittest.TestCase):
+    @mock.patch("croud.users.list.get_entity_list")
+    def test_users_list_no_filter(self, mock_get_entity_list):
+        query = """
+{
+    allUsers {
+        data {
+            uid
+            email
+            username
+        }
+    }
+}
+"""
+
+        args: Namespace = Namespace(
+            env=None, no_org=False, org_id=None, output_fmt=None
+        )
+        users_list(args)
+        mock_get_entity_list.assert_called_once_with(query, args, "allUsers")
+
+    @mock.patch("croud.users.list.get_entity_list")
+    def test_users_list_org_filter(self, mock_get_entity_list):
+        query = """
+{
+    allUsers(queryArgs: {organizationId: "abc"}) {
+        data {
+            uid
+            email
+            username
+        }
+    }
+}
+"""
+
+        args: Namespace = Namespace(
+            env=None, no_org=False, org_id="abc", output_fmt=None
+        )
+        users_list(args)
+        mock_get_entity_list.assert_called_once_with(query, args, "allUsers")
+
+    @mock.patch("croud.users.list.get_entity_list")
+    def test_users_list_no_org_filter(self, mock_get_entity_list):
+        query = """
+{
+    allUsers(queryArgs: {noOrg: true}) {
+        data {
+            uid
+            email
+            username
+        }
+    }
+}
+"""
+
+        args: Namespace = Namespace(env=None, no_org=True, org_id=None, output_fmt=None)
+        users_list(args)
+        mock_get_entity_list.assert_called_once_with(query, args, "allUsers")
+
+    @mock.patch("croud.users.list.get_entity_list")
+    def test_users_list_filter_dont_conflict(self, mock_get_entity_list):
+        query = """
+{
+    allUsers(queryArgs: {organizationId: "abc"}) {
+        data {
+            uid
+            email
+            username
+        }
+    }
+}
+"""
+
+        args: Namespace = Namespace(
+            env=None, no_org=True, org_id="abc", output_fmt=None
+        )
+        users_list(args)
+        mock_get_entity_list.assert_called_once_with(query, args, "allUsers")

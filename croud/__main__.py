@@ -26,6 +26,8 @@ import colorama
 from croud.clusters.list import clusters_list
 from croud.cmd import (
     CMD,
+    no_org_arg,
+    org_id_arg,
     org_name_arg,
     org_plan_type_arg,
     output_fmt_arg,
@@ -42,6 +44,7 @@ from croud.me import me
 from croud.organizations.create import organizations_create
 from croud.organizations.list import organizations_list
 from croud.projects.list import projects_list
+from croud.users.list import users_list
 from croud.users.roles.add import roles_add
 from croud.users.roles.list import roles_list
 from croud.users.roles.remove import roles_remove
@@ -113,6 +116,12 @@ def main():
         "users": {
             "help": "Manage CrateDB Cloud users.",
             "sub_commands": {
+                "list": {
+                    "help": "List all users within organizations that the "
+                    "logged in user is part of.",
+                    "extra_args": [output_fmt_arg, org_id_arg, no_org_arg],
+                    "calls": users_list,
+                },
                 "roles": {
                     "help": "Manage CrateDB Cloud user roles.",
                     "sub_commands": {
@@ -150,7 +159,7 @@ def main():
                             "calls": roles_list,
                         },
                     },
-                }
+                },
             },
         },
     }

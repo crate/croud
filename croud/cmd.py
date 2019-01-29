@@ -228,6 +228,21 @@ def output_fmt_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     )
 
 
+def org_id_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    opt_args.add_argument("--org-id", type=str, help="Organization ID.")
+
+
+def no_org_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    opt_args.add_argument(
+        "--no-org",
+        nargs="?",
+        default=False,
+        const=True,
+        type=bool,
+        help="Only show users that are not part of any organization.",
+    )
+
+
 def org_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument("--name", type=str, help="Organization Name.", required=True)
 
