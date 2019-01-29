@@ -5,6 +5,11 @@ Changes for croud
 Unreleased
 ==========
 
+- Added `users list` sub command that lists all users within organizations
+  that a user is part of. For super users it will list all users from all
+  organizations. Super users can also filter by organization ID, and list
+  all users who are not part of any organization.
+
 - Required/Optional arguments are shown separated in help
 
 - Added eastus2 to available regions.

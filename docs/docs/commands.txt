@@ -420,6 +420,42 @@ You must specify a subcommand, like so:
 
     sh$ croud users [SUBCOMMAND] [OPTIONS]
 
+.. users.list:
+
+``list``
+--------
+
+The ``list`` subcommand allows you to list all users within organizations
+that you are part of:
+
+.. code-block:: console
+
+    sh$ croud users list [OPTIONS]
+
+Recognized options:
+
++---------------------------+----------+----------------------------+
+| Option                    | Required | Description                |
++===========================+==========+============================+
+| ``--org-id <STRING>``     | No       | Filter by users in a       |
+|                           |          | specific organization. This|
+|                           |          | option is only available   |
+|                           |          | to super users.            |
++---------------------------+----------+----------------------------+
+| ``--no-org <BOOL>``       | No       | Filter by users who are not|
+|                           |          | part of any organization.  |
+|                           |          | This option is only        |
+|                           |          | available to super users.  |
++---------------------------+----------+----------------------------+
+| ``--output-fmt <STRING>`` | No       | The desired output format. |
+|                           |          |                            |
+|                           |          | One of:                    |
+|                           |          |                            |
+|                           |          | - ``json``                 |
+|                           |          | - ``table``                |
++---------------------------+----------+----------------------------+
+
+
 .. users.roles:
 
 ``roles``
