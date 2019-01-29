@@ -246,14 +246,14 @@ def resource_id_arg(
     req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:
     if required:
-        req_args.add_argument_group(
+        req_args.add_argument(
             "--resource", type=str, help="Resource ID.", required=True
         )
         return
     opt_args.add_argument("--resource", type=str, help="Resource ID.", required=False)
 
 
-def role_fqn_arg(req_args: ArgumentParser, opt_args: _ArgumentGroup) -> None:
+def role_fqn_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument(
         "--role",
         type=str,
