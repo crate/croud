@@ -20,10 +20,9 @@ Installation
 Using pip
 ---------
 
-``croud`` can be installed using pip_::
+``croud`` can be installed using `pip`_::
 
     $ python3 -m pip install --user -U croud
-
 
 To update, run::
 
@@ -37,21 +36,16 @@ contributions!
 
 See the `developer docs`_ and the `contribution docs`_ for more information.
 
-
 Help
 ====
 
-Looking for more help?
+- Read the `project docs`_
+- Check out our `support channels`_
 
-- Read the `project documentation`_
-- Chat with us via our `support channel`_
-- Get `paid support`_
-
-.. _pip: https://pip.pypa.io/en/stable/
-.. _virtualenv: https://virtualenv.pypa.io/en/latest/
 .. _contribution docs: https://github.com/crate/croud/blob/master/CONTRIBUTING.rst
-.. _developer docs: https://github.com/crate/croud/blob/master/DEVELOP.rst
 .. _Crate.io: http://crate.io/
-.. _project documentation: https://crate.io/docs/cloud/en/latest/
-.. _support channel: https://crate.io/support/
-.. _paid support: https://crate.io/pricing/
+.. _developer docs: https://github.com/crate/croud/blob/master/DEVELOP.rst
+.. _pip: https://pip.pypa.io/en/stable/
+.. _project docs: https://crate.io/docs/cloud/cli/en/latest/
+.. _support channels: https://crate.io/support/
+.. _virtualenv: https://virtualenv.pypa.io/en/latest/
