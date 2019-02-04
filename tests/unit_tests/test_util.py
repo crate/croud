@@ -18,14 +18,11 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import unittest
-from argparse import Namespace
 from unittest import mock
 
 from croud.util import (
     can_launch_browser,
-    get_entity_list,
     get_platform_info,
-    gql_mutation,
     is_wsl,
     open_page_in_browser,
 )
@@ -92,32 +89,3 @@ class TestUtils(unittest.TestCase):
             env_mock.get.return_value = "foo"
             result = can_launch_browser()
             self.assertFalse(result)
-
-    @mock.patch("croud.util.send_to_gql", return_value=unauthd_mutation)
-    def test_gql_mutation_has_error(self, mock_send_to_gql):
-        data = gql_mutation("", Namespace(), "mutationName")
-        self.assertEqual(data, self.unauthd_mutation)
-
-    @mock.patch("croud.util.send_to_gql", return_value=authd_mutation)
-    def test_gql_mutation_no_error(self, mock_send_to_gql):
-        key = "mutationName"
-        data = gql_mutation("", Namespace(), key)
-        self.assertEqual(data, self.authd_mutation[key])
-
-    @mock.patch("croud.util.send_to_gql", return_value=authd_entity_list)
-    @mock.patch("croud.util.print_format")
-    def test_get_entity_list_no_error(self, mock_print_format, mock_send_to_gql):
-        get_entity_list("", Namespace(output_fmt="json"), "entityListName")
-
-        mock_print_format.assert_called_once_with(
-            self.authd_entity_list["entityListName"]["data"], "json"
-        )
-
-    @mock.patch("croud.util.send_to_gql", return_value=unauthd_mutation)
-    @mock.patch("croud.util.print_error")
-    def test_get_entity_list_has_error(self, mock_print_error, mock_send_to_gql):
-        get_entity_list("", Namespace(output_fmt="json"), "entityListName")
-
-        mock_print_error.assert_called_once_with(
-            self.unauthd_mutation["errors"][0]["message"]
-        )

@@ -64,9 +64,7 @@ class HttpSession:
         if resp.status == 200:
             try:
                 result = await resp.json()
-                if "errors" in result:
-                    return result
-                return result["data"]
+                return result
             except ContentTypeError:
                 print_error(
                     "Unauthorized. Use `croud login` to login to CrateDB Cloud."

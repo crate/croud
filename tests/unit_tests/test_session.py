@@ -63,7 +63,7 @@ class TestHttpSession(unittest.TestCase):
                     headers=headers,
                 ) as session:
                     result = await session.fetch(me_query)
-                    self.assertEqual(result, me_response)
+                    self.assertEqual(result["data"], me_response)
 
             fake_cloud = FakeCrateDBCloud(loop=loop)
             info = loop.run_until_complete(fake_cloud.start())

@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.util import get_entity_list
+from croud.gql import Query
 
 
 def users_list(args: Namespace) -> None:
@@ -27,7 +27,7 @@ def users_list(args: Namespace) -> None:
     List all users within organizations that the logged in user is part of
     """
 
-    query = """
+    _query = """
 {
     allUsers {
         data {
@@ -46,6 +46,7 @@ def users_list(args: Namespace) -> None:
         queryArgs = f'(queryArgs: {{organizationId: "{args.org_id}"}})'
 
     if queryArgs != "":
-        query = query.replace("allUsers", f"allUsers{queryArgs}")
+        _query = _query.replace("allUsers", f"allUsers{queryArgs}")
 
-    get_entity_list(query, args, "allUsers")
+    query = Query(_query, args)
+    query.print_result("allUsers")

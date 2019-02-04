@@ -19,9 +19,7 @@
 
 from argparse import Namespace
 
-from croud.config import Configuration
-from croud.printer import print_error, print_format
-from croud.util import gql_mutation
+from croud.gql import Query
 
 
 def organizations_create(args: Namespace) -> None:
@@ -29,7 +27,7 @@ def organizations_create(args: Namespace) -> None:
     Creates an organization
     """
 
-    query = """
+    _query = """
 mutation {
     createOrganization(input: {
         name: \"ORG_NAME\",
@@ -42,12 +40,8 @@ mutation {
 }
     """
 
-    query = query.replace("ORG_NAME", args.name)
-    query = query.replace("PLAN_TYPE", f"{args.plan_type}")
+    _query = _query.replace("ORG_NAME", args.name)
+    _query = _query.replace("PLAN_TYPE", f"{args.plan_type}")
 
-    data = gql_mutation(query, args, "createOrganization")
-    if "errors" in data:
-        print_error(data["errors"][0]["message"])
-    else:
-        fmt = args.output_fmt or Configuration.get_setting("output_fmt")
-        print_format(data, fmt)
+    query = Query(_query, args)
+    query.print_result("createOrganization")

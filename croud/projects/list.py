@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.util import get_entity_list
+from croud.gql import Query
 
 
 def projects_list(args: Namespace) -> None:
@@ -27,7 +27,7 @@ def projects_list(args: Namespace) -> None:
     Lists all projects for the current user in the specified region
     """
 
-    query = """
+    _query = """
 {
     allProjects {
         data {
@@ -40,4 +40,5 @@ def projects_list(args: Namespace) -> None:
 }
     """
 
-    get_entity_list(query, args, "allProjects")
+    query = Query(_query, args)
+    query.print_result("allProjects")
