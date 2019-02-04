@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.util import get_entity_list
+from croud.gql import Query
 
 
 def clusters_list(args: Namespace) -> None:
@@ -27,7 +27,7 @@ def clusters_list(args: Namespace) -> None:
     Lists all projects for the current user in the specified region
     """
 
-    query = """
+    _query = """
 {
     allClusters {
         data {
@@ -46,6 +46,7 @@ def clusters_list(args: Namespace) -> None:
     if args.project_id is not None:
         filter_value: str = '{by: PROJECT_ID, op: EQ, value: "%s"}' % args.project_id
         query_filter: str = f"allClusters (filter: {filter_value})"
-        query = query.replace("allClusters", query_filter)
+        _query = _query.replace("allClusters", query_filter)
 
-    get_entity_list(query, args, "allClusters")
+    query = Query(_query, args)
+    query.print_result("allClusters")

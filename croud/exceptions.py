@@ -1,0 +1,2 @@
+class GQLError(Exception):
+    pass

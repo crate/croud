@@ -19,9 +19,7 @@
 
 from argparse import Namespace
 
-from croud.config import Configuration
-from croud.printer import print_error, print_format
-from croud.util import gql_mutation
+from croud.gql import Query
 
 
 def roles_add(args: Namespace) -> None:
@@ -46,9 +44,5 @@ mutation {
     mutation = mutation.replace("rfqn", args.role)
     mutation = mutation.replace("resid", args.resource)
 
-    data = gql_mutation(mutation, args, "addRoleToUser")
-    if "errors" in data:
-        print_error(data["errors"][0]["message"])
-    else:
-        fmt = args.output_fmt or Configuration.get_setting("output_fmt")
-        print_format(data, fmt)
+    query = Query(mutation, args)
+    query.print_result("addRoleToUser")

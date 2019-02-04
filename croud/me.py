@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.util import get_entity_list
+from croud.gql import Query
 
 
 def me(args: Namespace) -> None:
@@ -27,7 +27,7 @@ def me(args: Namespace) -> None:
     Prints the current logged in user
     """
 
-    query = """
+    _query = """
 {
     me {
         email
@@ -36,4 +36,5 @@ def me(args: Namespace) -> None:
 }
     """
 
-    get_entity_list(query, args, "me")
+    query = Query(_query, args)
+    query.print_result("me")

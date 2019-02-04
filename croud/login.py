@@ -19,6 +19,7 @@
 
 import asyncio
 from argparse import Namespace
+from typing import Optional
 
 from croud.config import Configuration
 from croud.printer import print_error, print_info
@@ -58,7 +59,7 @@ def login(args: Namespace) -> None:
     print_info("Login successful.")
 
 
-def _set_login_env(env: str) -> str:
+def _set_login_env(env: Optional[str]) -> str:
     env = Configuration.get_env() if env is None else env
     Configuration.override_context(env)
     return env

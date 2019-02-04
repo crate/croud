@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.util import get_entity_list
+from croud.gql import Query
 
 
 def organizations_list(args: Namespace) -> None:
@@ -27,7 +27,7 @@ def organizations_list(args: Namespace) -> None:
     Lists organizations
     """
 
-    query = """
+    _query = """
 {
     allOrganizations {
         data {
@@ -45,4 +45,5 @@ def organizations_list(args: Namespace) -> None:
 }
 """
 
-    get_entity_list(query, args, "allOrganizations")
+    query = Query(_query, args)
+    query.print_result("allOrganizations")

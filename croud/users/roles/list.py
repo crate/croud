@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.util import get_entity_list
+from croud.gql import Query
 
 
 def roles_list(args: Namespace) -> None:
@@ -27,7 +27,7 @@ def roles_list(args: Namespace) -> None:
     Lists all roles a user can be assigned to
     """
 
-    query = """
+    _query = """
 {
     allRoles {
         data {
@@ -38,4 +38,5 @@ def roles_list(args: Namespace) -> None:
 }
 """
 
-    get_entity_list(query, args, "allRoles")
+    query = Query(_query, args)
+    query.print_result("allRoles")
