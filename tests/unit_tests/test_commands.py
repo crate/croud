@@ -17,9 +17,10 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import unittest
 from argparse import Namespace
 from unittest import mock
+
+import pytest
 
 from croud.clusters.list import clusters_list
 from croud.config import Configuration, config_get, config_set
@@ -35,7 +36,7 @@ from croud.users.roles.list import roles_list
 from croud.users.roles.remove import roles_remove
 
 
-class TestLogin(unittest.TestCase):
+class TestLogin:
     @mock.patch("croud.config.Configuration.set_context")
     @mock.patch("croud.config.Configuration.override_context")
     @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
@@ -73,42 +74,40 @@ class TestLogin(unittest.TestCase):
     def test_login_no_valid_browser(
         self, mock_print_error, mock_can_launch_browser, mock_get_env
     ):
-        with self.assertRaises(SystemExit) as cm:
+        with pytest.raises(SystemExit) as e_info:
             login(Namespace(env=None))
 
         mock_print_error.assert_called_once_with(
             "Login only works with a valid browser installed."
         )
-        self.assertEqual(cm.exception.code, 1)
+        assert e_info.value.code == 1
 
     @mock.patch("croud.config.Configuration.override_context")
     @mock.patch("croud.config.Configuration.get_env", return_value="dev")
     def test_login_env_from_current_context(self, mock_get_env, mock_override_context):
         env = _set_login_env(None)
-        self.assertEqual(env, "dev")
+        assert env == "dev"
 
     def test_login_env_override_context_from_argument(self):
         env = _set_login_env("prod")
-        self.assertEqual(env, "prod")
+        assert env == "prod"
 
     def test_login_urls_from_valid_envs(self):
         url = _login_url("dev")
-        self.assertEqual(
-            "https://bregenz.a1.cratedb-dev.cloud/oauth2/login?cli=true", url
-        )
+        assert "https://bregenz.a1.cratedb-dev.cloud/oauth2/login?cli=true" == url
 
         url = _login_url("prod")
-        self.assertEqual("https://bregenz.a1.cratedb.cloud/oauth2/login?cli=true", url)
+        assert "https://bregenz.a1.cratedb.cloud/oauth2/login?cli=true" == url
 
         url = _login_url("PROD")
-        self.assertEqual("https://bregenz.a1.cratedb.cloud/oauth2/login?cli=true", url)
+        assert "https://bregenz.a1.cratedb.cloud/oauth2/login?cli=true" == url
 
     def test_env_fallback_url(self):
         url = _login_url("invalid")
-        self.assertEqual("https://bregenz.a1.cratedb.cloud/oauth2/login?cli=true", url)
+        assert "https://bregenz.a1.cratedb.cloud/oauth2/login?cli=true" == url
 
 
-class TestLogout(unittest.TestCase):
+class TestLogout:
     @mock.patch("croud.config.Configuration.override_context")
     @mock.patch("croud.logout.Configuration.set_token")
     @mock.patch("croud.logout.print_info")
@@ -124,65 +123,7 @@ class TestLogout(unittest.TestCase):
         mock_print_info.assert_called_once_with("You have been logged out.")
 
 
-class TestClustersList(unittest.TestCase):
-    @mock.Mock(Query)
-    @mock.patch("croud.gql.run")
-    def test_list_clusters_no_pid(self, mock_run, mock_query):
-        query = """
-{
-    allClusters {
-        data {
-            id
-            name
-            numNodes
-            crateVersion
-            projectId
-            username
-            fqdn
-        }
-    }
-}
-    """
-
-        args: Namespace = Namespace(
-            env=None, output_fmt="table", project_id=None, region="bregenz.a1"
-        )
-        clusters_list(args)
-        self.assertEqual(mock_query._query, query)
-
-    @mock.Mock(Query)
-    @mock.patch("croud.gql.run")
-    def test_list_clusters_pid(self, mock_run, mock_query):
-        query = (
-            """
-{
-    allClusters (filter: %s) {
-        data {
-            id
-            name
-            numNodes
-            crateVersion
-            projectId
-            username
-            fqdn
-        }
-    }
-}
-    """
-            % '{by: PROJECT_ID, op: EQ, value: "60d398b4-455b-49dc-bfe9-04edf5bd3eb2"}'
-        )
-
-        args: Namespace = Namespace(
-            env=None,
-            output_fmt="table",
-            project_id="60d398b4-455b-49dc-bfe9-04edf5bd3eb2",
-            region="bregenz.a1",
-        )
-        clusters_list(args)
-        self.assertEqual(mock_query._query, query)
-
-
-class TestConfigGet(unittest.TestCase):
+class TestConfigGet:
     @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch("builtins.print", autospec=True, side_effect=print)
     def test_get_env(self, mock_print, mock_load_config):
@@ -196,7 +137,7 @@ class TestConfigGet(unittest.TestCase):
         mock_print.assert_called_once_with("bregenz.a1")
 
 
-class TestConfigSet(unittest.TestCase):
+class TestConfigSet:
     @mock.patch("croud.config.write_config")
     @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     def test_set_env(self, mock_load_config, mock_write_config):
@@ -218,14 +159,77 @@ class TestConfigSet(unittest.TestCase):
         config["region"] = "bregenz.a1"
 
 
-class TestOrganizationsCreate(unittest.TestCase):
-    @mock.Mock(Query)
-    @mock.patch("croud.gql.run")
-    def test_create(self, mock_run, mock_query):
+def assert_query(mock_print, expected):
+    actual = mock_print.call_args[0][0]._query
+    assert actual == expected
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Query, "execute")
+class TestClusters:
+    def test_list_no_pid(self, mock_execute, mock_load_config):
+        query = """
+{
+    allClusters {
+        data {
+            id
+            name
+            numNodes
+            crateVersion
+            projectId
+            username
+            fqdn
+        }
+    }
+}
+    """
+
+        args = Namespace(
+            env=None, output_fmt="table", project_id=None, region="bregenz.a1"
+        )
+        with mock.patch("croud.clusters.list.print_query") as mock_print:
+            clusters_list(args)
+            assert_query(mock_print, query)
+
+    def test_list_with_pid(self, mock_execute, mock_load_config):
+        query = (
+            """
+{
+    allClusters (filter: %s) {
+        data {
+            id
+            name
+            numNodes
+            crateVersion
+            projectId
+            username
+            fqdn
+        }
+    }
+}
+    """
+            % '{by: PROJECT_ID, op: EQ, value: "60d398b4-455b-49dc-bfe9-04edf5bd3eb2"}'
+        )
+
+        args = Namespace(
+            env=None,
+            output_fmt="table",
+            project_id="60d398b4-455b-49dc-bfe9-04edf5bd3eb2",
+            region="bregenz.a1",
+        )
+        with mock.patch("croud.clusters.list.print_query") as mock_print:
+            clusters_list(args)
+            assert_query(mock_print, query)
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Query, "execute")
+class TestOrganizations:
+    def test_create(self, mock_execute, mock_load_config):
         mutation = """
 mutation {
     createOrganization(input: {
-        name: \"testorg\",
+        name: "testorg",
         planType: 1
     }) {
         id
@@ -236,15 +240,11 @@ mutation {
     """
 
         args = Namespace(env="dev", name="testorg", output_fmt="json", plan_type=1)
-        organizations_create(args)
+        with mock.patch("croud.organizations.create.print_query") as mock_print:
+            organizations_create(args)
+            assert_query(mock_print, mutation)
 
-        self.assertEqual(mock_query._query, mutation)
-
-
-class TestOrganizationsList(unittest.TestCase):
-    @mock.Mock(Query)
-    @mock.patch("croud.gql.run")
-    def test_list_organizations(self, mock_run, mock_query):
+    def test_list(self, mock_execute, mock_load_config):
         query = """
 {
     allOrganizations {
@@ -263,40 +263,59 @@ class TestOrganizationsList(unittest.TestCase):
 }
 """
 
-        args: Namespace = Namespace()
-        organizations_list(args)
-        self.assertEqual(mock_query._query, query)
+        args = Namespace(env="dev")
+        with mock.patch("croud.organizations.list.print_query") as mock_print:
+            organizations_list(args)
+            assert_query(mock_print, query)
 
 
-class TestUsersRolesAdd(unittest.TestCase):
-    @mock.Mock(Query)
-    @mock.patch("croud.gql.run")
-    def test_users_roles_add_superuser(self, mock_run, mock_query):
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Query, "execute")
+class TestUsersRoles:
+    def test_add_superuser(self, mock_execute, mock_load_config):
         input_args = f'{{userId: "123", roleFqn: "admin", resourceId: "abc"}}'
         mutation = f"""
-        mutation {{
-            addRoleToUser(input: {input_args}) {{
-                user {{
-                    uid,
-                    email,
-                    username,
-                    organizationId
-                }}
-            }}
+mutation {{
+    addRoleToUser(input: {input_args}) {{
+        user {{
+            uid,
+            email,
+            username,
+            organizationId
         }}
-        """
+    }}
+}}
+"""
 
         args = Namespace(
             env="dev", output_fmt="json", resource="abc", role="admin", user="123"
         )
-        roles_add(args)
-        self.assertEqual(mock_query._query, mutation)
+        with mock.patch("croud.users.roles.add.print_query") as mock_print:
+            roles_add(args)
+            assert_query(mock_print, mutation)
+
+    def test_remove(self, mock_query, mock_load_config):
+        input_args = '{userId: "123", roleFqn: "org_member", resourceId: "abc"}'
+        mutation = f"""
+mutation {{
+    removeRoleFromUser(input: {input_args}) {{
+        success
+    }}
+}}
+"""
+
+        args = Namespace(
+            env="dev", output_fmt="json", resource="abc", role="org_member", user="123"
+        )
+        with mock.patch("croud.users.roles.remove.print_query") as mock_print:
+            roles_remove(args)
+            assert_query(mock_print, mutation)
 
 
-class TestRolesList(unittest.TestCase):
-    @mock.Mock(Query)
-    @mock.patch("croud.gql.run")
-    def test_list_roles(self, mock_run, mock_query):
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Query, "execute")
+class TestRoles:
+    def test_list(self, mock_execute, mock_load_config):
         query = """
 {
     allRoles {
@@ -308,35 +327,16 @@ class TestRolesList(unittest.TestCase):
 }
 """
 
-        args: Namespace = Namespace()
-        roles_list(args)
-        self.assertEqual(mock_query._query, query)
+        args = Namespace(env="dev")
+        with mock.patch("croud.users.roles.list.print_query") as mock_print:
+            roles_list(args)
+            assert_query(mock_print, query)
 
 
-class TestUsersRolesRemove(unittest.TestCase):
-    @mock.Mock(Query)
-    @mock.patch("croud.gql.run")
-    def test_users_roles_remove(self, mock_run, mock_query):
-        input_args = '{userId: "123", roleFqn: "org_member", resourceId: "abc"}'
-        mutation = f"""
-        mutation {{
-            removeRoleFromUser(input: {input_args}) {{
-                success
-            }}
-        }}
-        """
-
-        args = Namespace(
-            env="dev", output_fmt="json", resource="abc", role="org_member", user="123"
-        )
-        roles_remove(args)
-        self.assertEqual(mock_query._query, mutation)
-
-
-class TestUsersList(unittest.TestCase):
-    @mock.Mock(Query)
-    @mock.patch("croud.gql.run")
-    def test_users_list_no_filter(self, mock_run, mock_query):
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Query, "execute")
+class TestUsers:
+    def test_list_no_filter(self, mock_execute, mock_load_config):
         query = """
 {
     allUsers {
@@ -349,15 +349,12 @@ class TestUsersList(unittest.TestCase):
 }
 """
 
-        args: Namespace = Namespace(
-            env=None, no_org=False, org_id=None, output_fmt=None
-        )
-        users_list(args)
-        self.assertEqual(mock_query._query, query)
+        args = Namespace(env=None, no_org=False, org_id=None, output_fmt=None)
+        with mock.patch("croud.users.list.print_query") as mock_print:
+            users_list(args)
+            assert_query(mock_print, query)
 
-    @mock.Mock(Query)
-    @mock.patch("croud.gql.run")
-    def test_users_list_org_filter(self, mock_run, mock_query):
+    def test_list_org_filter(self, mock_execute, mock_load_config):
         query = """
 {
     allUsers(queryArgs: {organizationId: "abc"}) {
@@ -370,15 +367,12 @@ class TestUsersList(unittest.TestCase):
 }
 """
 
-        args: Namespace = Namespace(
-            env=None, no_org=False, org_id="abc", output_fmt=None
-        )
-        users_list(args)
-        self.assertEqual(mock_query._query, query)
+        args = Namespace(env=None, no_org=False, org_id="abc", output_fmt=None)
+        with mock.patch("croud.users.list.print_query") as mock_print:
+            users_list(args)
+            assert_query(mock_print, query)
 
-    @mock.Mock(Query)
-    @mock.patch("croud.gql.run")
-    def test_users_list_no_org_filter(self, mock_run, mock_query):
+    def test_list_no_org_filter(self, mock_execute, mock_load_config):
         query = """
 {
     allUsers(queryArgs: {noOrg: true}) {
@@ -391,13 +385,12 @@ class TestUsersList(unittest.TestCase):
 }
 """
 
-        args: Namespace = Namespace(env=None, no_org=True, org_id=None, output_fmt=None)
-        users_list(args)
-        self.assertEqual(mock_query._query, query)
+        args = Namespace(env=None, no_org=True, org_id=None, output_fmt=None)
+        with mock.patch("croud.users.list.print_query") as mock_print:
+            users_list(args)
+            assert_query(mock_print, query)
 
-    @mock.Mock(Query)
-    @mock.patch("croud.gql.run")
-    def test_users_list_filter_dont_conflict(self, mock_run, mock_query):
+    def test_list_filter_dont_conflict(self, mock_execute, mock_load_config):
         query = """
 {
     allUsers(queryArgs: {organizationId: "abc"}) {
@@ -410,8 +403,7 @@ class TestUsersList(unittest.TestCase):
 }
 """
 
-        args: Namespace = Namespace(
-            env=None, no_org=True, org_id="abc", output_fmt=None
-        )
-        users_list(args)
-        self.assertEqual(mock_query._query, query)
+        args = Namespace(env=None, no_org=True, org_id="abc", output_fmt=None)
+        with mock.patch("croud.users.list.print_query") as mock_print:
+            users_list(args)
+            assert_query(mock_print, query)

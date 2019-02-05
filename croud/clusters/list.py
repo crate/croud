@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.gql import Query
+from croud.gql import Query, print_query
 
 
 def clusters_list(args: Namespace) -> None:
@@ -49,4 +49,5 @@ def clusters_list(args: Namespace) -> None:
         _query = _query.replace("allClusters", query_filter)
 
     query = Query(_query, args)
-    query.print_result("allClusters")
+    query.execute()
+    print_query(query, "allClusters")

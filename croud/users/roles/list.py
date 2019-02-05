@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.gql import Query
+from croud.gql import Query, print_query
 
 
 def roles_list(args: Namespace) -> None:
@@ -39,4 +39,5 @@ def roles_list(args: Namespace) -> None:
 """
 
     query = Query(_query, args)
-    query.print_result("allRoles")
+    query.execute()
+    print_query(query, "allRoles")

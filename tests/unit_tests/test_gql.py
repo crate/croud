@@ -27,7 +27,7 @@ import pytest
 
 from croud.config import Configuration
 from croud.exceptions import GQLError
-from croud.gql import Query
+from croud.gql import Query, print_query
 
 
 @pytest.mark.parametrize(
@@ -88,22 +88,22 @@ class TestGQL(unittest.TestCase):
             query._get_rows()
 
     @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+    @patch("croud.gql.print_info")
     @patch.object(Query, "_get_rows", return_value=_data["data"])
-    def test_check_rows(self, mock_get_rows, mock_load_config):
+    def test_check_rows(self, mock_load_config, mock_print_info, mock_get_rows):
         query = Query("{}", Namespace(env="dev"))
-        data = query._get_rows()
+        query.execute()
+        print_query(query)
 
-        self.assertEqual(True, query._check_rows(data))
+        mock_print_info.assert_not_called()
 
     @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @patch("croud.gql.print_info")
     @patch.object(Query, "_get_rows", return_value=[])
     def test_check_rows_empty(self, mock_get_rows, mock_print_info, mock_load_config):
         query = Query("{}", Namespace(env="dev"))
-        data = query._get_rows()
-
-        rows_ok = query._check_rows(data)
-        self.assertEqual(False, rows_ok)
+        query.execute()
+        print_query(query)
 
         mock_print_info.assert_called_once_with("Result contained no data to print.")
 
@@ -114,10 +114,8 @@ class TestGQL(unittest.TestCase):
         self, mock_get_rows, mock_print_error, mock_load_config
     ):
         query = Query("{}", Namespace(env="dev"))
-        data = query._get_rows()
-
-        rows_ok = query._check_rows(data)
-        self.assertEqual(False, rows_ok)
+        query.execute()
+        print_query(query)
 
         message = "Result has no proper format to print."
         mock_print_error.assert_called_once_with(message)
@@ -127,7 +125,8 @@ class TestGQL(unittest.TestCase):
     @patch.object(Query, "_get_rows", return_value=_data["data"])
     def test_print_result(self, mock_get_rows, mock_print_format, mock_load_config):
         query = Query("{}", Namespace(env="dev"))
-        query.print_result("key")
+        query.execute()
+        print_query(query, "key")
 
         mock_print_format.assert_called_once_with(self._data["data"]["key"], "table")
 
@@ -136,7 +135,8 @@ class TestGQL(unittest.TestCase):
     @patch.object(Query, "run", return_value=_error_data)
     def test_print_result_error(self, mock_run, mock_print_error, mock_load_config):
         query = Query("{}", Namespace(env="dev"))
-        query.print_result("key")
+        query.execute()
+        print_query(query, "key")
 
         message = self._error_data["errors"][0]["message"]
         mock_print_error.assert_called_once_with(message)
@@ -146,6 +146,7 @@ class TestGQL(unittest.TestCase):
     @patch.object(Query, "run", return_value={"data": []})
     def test_print_result_empty(self, mock_get_rows, mock_print_info, mock_load_config):
         query = Query("{}", Namespace(env="dev"))
-        query.print_result("key")
+        query.execute()
+        print_query(query, "key")
 
         mock_print_info.assert_called_once_with("Result contained no data to print.")

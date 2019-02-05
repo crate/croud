@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.gql import Query
+from croud.gql import Query, print_query
 
 
 def organizations_create(args: Namespace) -> None:
@@ -44,4 +44,5 @@ mutation {
     _query = _query.replace("PLAN_TYPE", f"{args.plan_type}")
 
     query = Query(_query, args)
-    query.print_result("createOrganization")
+    query.execute()
+    print_query(query, "createOrganization")

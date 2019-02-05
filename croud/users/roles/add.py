@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.gql import Query
+from croud.gql import Query, print_query
 
 
 def roles_add(args: Namespace) -> None:
@@ -45,4 +45,5 @@ mutation {
     mutation = mutation.replace("resid", args.resource)
 
     query = Query(mutation, args)
-    query.print_result("addRoleToUser")
+    query.execute()
+    print_query(query, "addRoleToUser")
