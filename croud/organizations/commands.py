@@ -22,32 +22,52 @@ from argparse import Namespace
 from croud.gql import Query, print_query
 
 
-def users_list(args: Namespace) -> None:
+def organizations_create(args: Namespace) -> None:
     """
-    List all users within organizations that the logged in user is part of
+    Creates an organization
     """
 
-    _query = """
-{
-    allUsers {
-        data {
-            uid
-            email
-            username
-        }
-    }
-}
-"""
-
-    queryArgs = ""
-    if args.no_org:
-        queryArgs = "(queryArgs: {noOrg: true})"
-    if args.org_id:
-        queryArgs = f'(queryArgs: {{organizationId: "{args.org_id}"}})'
-
-    if queryArgs != "":
-        _query = _query.replace("allUsers", f"allUsers{queryArgs}")
+    _query = f"""
+    mutation {{
+        createOrganization(input: {{
+            name: "{args.name}",
+            planType: {args.plan_type}
+        }}) {{
+            id
+            name
+            planType
+        }}
+    }}
+    """
 
     query = Query(_query, args)
     query.execute()
-    print_query(query, "allUsers")
+    print_query(query, "createOrganization")
+
+
+def organizations_list(args: Namespace) -> None:
+    """
+    Lists organizations
+    """
+
+    _query = """
+    {
+        allOrganizations {
+            data {
+                id,
+                name,
+                planType,
+                notification {
+                    alert {
+                        email,
+                        enabled
+                    }
+                }
+            }
+        }
+    }
+    """
+
+    query = Query(_query, args)
+    query.execute()
+    print_query(query, "allOrganizations")

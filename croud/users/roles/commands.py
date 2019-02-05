@@ -22,22 +22,66 @@ from argparse import Namespace
 from croud.gql import Query, print_query
 
 
+def _get_mutation_input(args: Namespace) -> str:
+    return f'userId: "{args.user}",roleFqn: "{args.role}",resourceId: "{args.resource}"'
+
+
+def roles_add(args: Namespace) -> None:
+    """
+    Adds a new role to a user
+    """
+
+    mutation = f"""
+    mutation {{
+        addRoleToUser(input: {{{_get_mutation_input(args)}}}) {{
+            user {{
+                uid,
+                email,
+                username,
+                organizationId
+            }}
+        }}
+    }}
+    """
+
+    query = Query(mutation, args)
+    query.execute()
+    print_query(query, "addRoleToUser")
+
+
+def roles_list(args: Namespace) -> None:
+    """
+    Lists all roles a user can be assigned to
+    """
+
+    _query = """
+    {
+        allRoles {
+            data {
+                fqn
+                friendlyName
+            }
+        }
+    }
+    """
+
+    query = Query(_query, args)
+    query.execute()
+    print_query(query, "allRoles")
+
+
 def roles_remove(args: Namespace) -> None:
     """
     Removes a role from a user
     """
 
-    mutation = """
-mutation {
-    removeRoleFromUser(input: {userId: "uid", roleFqn: "rfqn", resourceId: "resid"}) {
-        success
-    }
-}
-"""
-
-    mutation = mutation.replace("uid", args.user, 1)
-    mutation = mutation.replace("rfqn", args.role, 1)
-    mutation = mutation.replace("resid", args.resource, 1)
+    mutation = f"""
+    mutation {{
+        removeRoleFromUser(input: {{{_get_mutation_input(args)}}}) {{
+            success
+        }}
+    }}
+    """
 
     query = Query(mutation, args)
     query.execute()

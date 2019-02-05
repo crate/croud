@@ -28,16 +28,39 @@ def project_create(args: Namespace) -> None:
     """
 
     _query = f"""
-        mutation {{
-            createProject(input: {{
-                name: "{args.name}",
-                organizationId: "{args.org_id}"
-            }}) {{
-                id
-            }}
+    mutation {{
+        createProject(input: {{
+            name: "{args.name}",
+            organizationId: "{args.org_id}"
+        }}) {{
+            id
         }}
+    }}
     """
 
     query = Query(_query, args)
     query.execute()
     print_query(query, "createProject")
+
+
+def projects_list(args: Namespace) -> None:
+    """
+    Lists all projects for the current user in the specified region
+    """
+
+    _query = """
+    {
+        allProjects {
+            data {
+                id
+                name
+                region
+                organizationId
+            }
+        }
+    }
+    """
+
+    query = Query(_query, args)
+    query.execute()
+    print_query(query, "allProjects")

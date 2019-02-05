@@ -22,21 +22,17 @@ from unittest import mock
 
 import pytest
 
-from croud.clusters.list import clusters_list
+from croud.clusters.commands import clusters_list
 from croud.config import Configuration, config_get, config_set
 from croud.gql import Query
 from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
-from croud.organizations.create import organizations_create
-from croud.organizations.list import organizations_list
+from croud.organizations.commands import organizations_create, organizations_list
 from croud.products.deploy import product_deploy
-from croud.projects.create import project_create
-from croud.projects.list import projects_list
+from croud.projects.commands import project_create, projects_list
 from croud.server import Server
-from croud.users.list import users_list
-from croud.users.roles.add import roles_add
-from croud.users.roles.list import roles_list
-from croud.users.roles.remove import roles_remove
+from croud.users.commands import users_list
+from croud.users.roles.commands import roles_add, roles_list, roles_remove
 
 
 class TestLogin:
@@ -190,7 +186,7 @@ class TestClusters:
         args = Namespace(
             env=None, output_fmt="table", project_id=None, region="bregenz.a1"
         )
-        with mock.patch("croud.clusters.list.print_query") as mock_print:
+        with mock.patch("croud.clusters.commands.print_query") as mock_print:
             clusters_list(args)
             assert_query(mock_print, query)
 
@@ -220,7 +216,7 @@ class TestClusters:
             project_id="60d398b4-455b-49dc-bfe9-04edf5bd3eb2",
             region="bregenz.a1",
         )
-        with mock.patch("croud.clusters.list.print_query") as mock_print:
+        with mock.patch("croud.clusters.commands.print_query") as mock_print:
             clusters_list(args)
             assert_query(mock_print, query)
 
@@ -230,44 +226,44 @@ class TestClusters:
 class TestOrganizations:
     def test_create(self, mock_execute, mock_load_config):
         mutation = """
-mutation {
-    createOrganization(input: {
-        name: "testorg",
-        planType: 1
-    }) {
-        id
-        name
-        planType
+    mutation {
+        createOrganization(input: {
+            name: "testorg",
+            planType: 1
+        }) {
+            id
+            name
+            planType
+        }
     }
-}
     """
 
         args = Namespace(env="dev", name="testorg", output_fmt="json", plan_type=1)
-        with mock.patch("croud.organizations.create.print_query") as mock_print:
+        with mock.patch("croud.organizations.commands.print_query") as mock_print:
             organizations_create(args)
             assert_query(mock_print, mutation)
 
     def test_list(self, mock_execute, mock_load_config):
         query = """
-{
-    allOrganizations {
-        data {
-            id,
-            name,
-            planType,
-            notification {
-                alert {
-                    email,
-                    enabled
+    {
+        allOrganizations {
+            data {
+                id,
+                name,
+                planType,
+                notification {
+                    alert {
+                        email,
+                        enabled
+                    }
                 }
             }
         }
     }
-}
-"""
+    """
 
         args = Namespace(env="dev")
-        with mock.patch("croud.organizations.list.print_query") as mock_print:
+        with mock.patch("croud.organizations.commands.print_query") as mock_print:
             organizations_list(args)
             assert_query(mock_print, query)
 
@@ -277,39 +273,39 @@ mutation {
 class TestProjects:
     def test_create(self, mock_execute, mock_load_config):
         mutation = """
-        mutation {
-            createProject(input: {
-                name: "new-project",
-                organizationId: "organization-id"
-            }) {
-                id
-            }
+    mutation {
+        createProject(input: {
+            name: "new-project",
+            organizationId: "organization-id"
+        }) {
+            id
         }
+    }
     """
 
         args = Namespace(
             env="dev", name="new-project", org_id="organization-id", output_fmt="json"
         )
-        with mock.patch("croud.projects.create.print_query") as mock_print:
+        with mock.patch("croud.projects.commands.print_query") as mock_print:
             project_create(args)
             assert_query(mock_print, mutation)
 
     def test_list_projects_org_admin(self, mock_execute, mock_load_config):
         query = """
-{
-    allProjects {
-        data {
-            id
-            name
-            region
-            organizationId
+    {
+        allProjects {
+            data {
+                id
+                name
+                region
+                organizationId
+            }
         }
     }
-}
     """
 
         args = Namespace(env="dev")
-        with mock.patch("croud.projects.list.print_query") as mock_print:
+        with mock.patch("croud.projects.commands.print_query") as mock_print:
             projects_list(args)
             assert_query(mock_print, query)
 
@@ -318,41 +314,41 @@ class TestProjects:
 @mock.patch.object(Query, "execute")
 class TestUsersRoles:
     def test_add_superuser(self, mock_execute, mock_load_config):
-        input_args = f'{{userId: "123", roleFqn: "admin", resourceId: "abc"}}'
+        input_args = f'{{userId: "123",roleFqn: "admin",resourceId: "abc"}}'
         mutation = f"""
-mutation {{
-    addRoleToUser(input: {input_args}) {{
-        user {{
-            uid,
-            email,
-            username,
-            organizationId
+    mutation {{
+        addRoleToUser(input: {input_args}) {{
+            user {{
+                uid,
+                email,
+                username,
+                organizationId
+            }}
         }}
     }}
-}}
-"""
+    """
 
         args = Namespace(
             env="dev", output_fmt="json", resource="abc", role="admin", user="123"
         )
-        with mock.patch("croud.users.roles.add.print_query") as mock_print:
+        with mock.patch("croud.users.roles.commands.print_query") as mock_print:
             roles_add(args)
             assert_query(mock_print, mutation)
 
     def test_remove(self, mock_query, mock_load_config):
-        input_args = '{userId: "123", roleFqn: "org_member", resourceId: "abc"}'
+        input_args = '{userId: "123",roleFqn: "org_member",resourceId: "abc"}'
         mutation = f"""
-mutation {{
-    removeRoleFromUser(input: {input_args}) {{
-        success
+    mutation {{
+        removeRoleFromUser(input: {input_args}) {{
+            success
+        }}
     }}
-}}
-"""
+    """
 
         args = Namespace(
             env="dev", output_fmt="json", resource="abc", role="org_member", user="123"
         )
-        with mock.patch("croud.users.roles.remove.print_query") as mock_print:
+        with mock.patch("croud.users.roles.commands.print_query") as mock_print:
             roles_remove(args)
             assert_query(mock_print, mutation)
 
@@ -362,18 +358,18 @@ mutation {{
 class TestRoles:
     def test_list(self, mock_execute, mock_load_config):
         query = """
-{
-    allRoles {
-        data {
-            fqn
-            friendlyName
+    {
+        allRoles {
+            data {
+                fqn
+                friendlyName
+            }
         }
     }
-}
-"""
+    """
 
         args = Namespace(env="dev")
-        with mock.patch("croud.users.roles.list.print_query") as mock_print:
+        with mock.patch("croud.users.roles.commands.print_query") as mock_print:
             roles_list(args)
             assert_query(mock_print, query)
 
@@ -383,73 +379,73 @@ class TestRoles:
 class TestUsers:
     def test_list_no_filter(self, mock_execute, mock_load_config):
         query = """
-{
-    allUsers {
-        data {
-            uid
-            email
-            username
+    {
+        allUsers {
+            data {
+                uid
+                email
+                username
+            }
         }
     }
-}
-"""
+    """
 
         args = Namespace(env=None, no_org=False, org_id=None, output_fmt=None)
-        with mock.patch("croud.users.list.print_query") as mock_print:
+        with mock.patch("croud.users.commands.print_query") as mock_print:
             users_list(args)
             assert_query(mock_print, query)
 
     def test_list_org_filter(self, mock_execute, mock_load_config):
         query = """
-{
-    allUsers(queryArgs: {organizationId: "abc"}) {
-        data {
-            uid
-            email
-            username
+    {
+        allUsers(queryArgs: {organizationId: "abc"}) {
+            data {
+                uid
+                email
+                username
+            }
         }
     }
-}
-"""
+    """
 
         args = Namespace(env=None, no_org=False, org_id="abc", output_fmt=None)
-        with mock.patch("croud.users.list.print_query") as mock_print:
+        with mock.patch("croud.users.commands.print_query") as mock_print:
             users_list(args)
             assert_query(mock_print, query)
 
     def test_list_no_org_filter(self, mock_execute, mock_load_config):
         query = """
-{
-    allUsers(queryArgs: {noOrg: true}) {
-        data {
-            uid
-            email
-            username
+    {
+        allUsers(queryArgs: {noOrg: true}) {
+            data {
+                uid
+                email
+                username
+            }
         }
     }
-}
-"""
+    """
 
         args = Namespace(env=None, no_org=True, org_id=None, output_fmt=None)
-        with mock.patch("croud.users.list.print_query") as mock_print:
+        with mock.patch("croud.users.commands.print_query") as mock_print:
             users_list(args)
             assert_query(mock_print, query)
 
     def test_list_filter_dont_conflict(self, mock_execute, mock_load_config):
         query = """
-{
-    allUsers(queryArgs: {organizationId: "abc"}) {
-        data {
-            uid
-            email
-            username
+    {
+        allUsers(queryArgs: {organizationId: "abc"}) {
+            data {
+                uid
+                email
+                username
+            }
         }
     }
-}
-"""
+    """
 
         args = Namespace(env=None, no_org=True, org_id="abc", output_fmt=None)
-        with mock.patch("croud.users.list.print_query") as mock_print:
+        with mock.patch("croud.users.commands.print_query") as mock_print:
             users_list(args)
             assert_query(mock_print, query)
 
