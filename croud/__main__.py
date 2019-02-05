@@ -90,6 +90,7 @@ def main():
                         lambda req_opt_group, opt_opt_group: org_id_arg(
                             req_opt_group, opt_opt_group, True
                         ),
+                        region_arg,
                     ],
                     "calls": project_create,
                 },
