@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.gql import Query
+from croud.gql import Query, print_query
 
 
 def roles_remove(args: Namespace) -> None:
@@ -40,4 +40,5 @@ mutation {
     mutation = mutation.replace("resid", args.resource, 1)
 
     query = Query(mutation, args)
-    query.print_result("removeRoleFromUser")
+    query.execute()
+    print_query(query, "removeRoleFromUser")

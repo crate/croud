@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.gql import Query
+from croud.gql import Query, print_query
 
 
 def users_list(args: Namespace) -> None:
@@ -49,4 +49,5 @@ def users_list(args: Namespace) -> None:
         _query = _query.replace("allUsers", f"allUsers{queryArgs}")
 
     query = Query(_query, args)
-    query.print_result("allUsers")
+    query.execute()
+    print_query(query, "allUsers")

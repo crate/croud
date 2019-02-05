@@ -37,13 +37,16 @@ class Query:
     _token: str
     _region: str
 
-    def __init__(self, query: str, args: Namespace):
+    def __init__(self, query: str, args: Namespace) -> None:
         self._query = query
         self._token = Configuration.get_token()
 
         self._set_env(args.env)
         self._set_output_fmt(args)
         self._set_region(args)
+
+        self._error = None
+        self._response = None
 
     def _set_env(self, env: Optional[str]):
         self._env = env or Configuration.get_env()
@@ -68,9 +71,6 @@ class Query:
         async with HttpSession(self._env, self._token, self._region) as session:
             return await session.fetch(self._query)
 
-    def _print_no_data(self):
-        print_info("Result contained no data to print.")
-
     def _get_rows(self) -> JsonDict:
         data = self.run()
 
@@ -78,39 +78,43 @@ class Query:
             raise GQLError(data["errors"][0]["message"])
         return data["data"]
 
-    def _check_rows(self, rows: JsonDict) -> bool:
-        if not rows:
-            self._print_no_data()
-            return False
-
-        if not isinstance(rows, dict):
-            print_error("Result has no proper format to print.")
-            return False
-
-        return True
-
     def run(self) -> JsonDict:
         loop = asyncio.get_event_loop()
 
         return loop.run_until_complete(self._fetch_data())
 
-    def print_result(self, data_key: str):
+    def execute(self):
         try:
-            rows = self._get_rows()
+            self._response = self._get_rows()
+            self._error = None
         except GQLError as e:
-            print_error(str(e))
-            return
+            self._error = str(e)
+            self._response = None
 
-        if not self._check_rows(rows):
-            return
 
-        data = rows[data_key]
-        # some queries have two levels to access data
-        # e.g. {allProjects: {data: [{projects}]}} vs. {me: {data})
-        if "data" in data:
-            data = data["data"]
+def print_query(query: Query, key: str = None):
+    if query._error:
+        print_error(query._error)
+        return
 
-        if len(data) == 0:
-            self._print_no_data()
-        else:
-            print_format(data, self._output_fmt)
+    if not query._response:
+        print_info("Result contained no data to print.")
+        return
+
+    if not isinstance(query._response, dict):
+        print_error("Result has no proper format to print.")
+        return
+
+    if key:
+        data = query._response[key]
+    else:
+        data = query._response
+    # some queries have two levels to access data
+    # e.g. {allProjects: {data: [{projects}]}} vs. {me: {data})
+    if "data" in data:
+        data = data["data"]
+
+    if len(data) == 0:
+        print_info("Result contained no data to print.")
+    else:
+        print_format(data, query._output_fmt)

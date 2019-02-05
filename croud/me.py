@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.gql import Query
+from croud.gql import Query, print_query
 
 
 def me(args: Namespace) -> None:
@@ -37,4 +37,5 @@ def me(args: Namespace) -> None:
     """
 
     query = Query(_query, args)
-    query.print_result("me")
+    query.execute()
+    print_query(query, "me")
