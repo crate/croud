@@ -5,12 +5,15 @@ Changes for croud
 Unreleased
 ==========
 
+0.6.0 - 2018/02/05
+==================
+
 - Added ``projects create`` command that allows organization admins and
   super users to create new projects. Super users are able to create projects
   in all organizations, organization admins only in the organization that
   the user is part of.
 
-- Added `users list` sub command that lists all users within organizations
+- Added ``users list`` sub command that lists all users within organizations
   that a user is part of. For super users it will list all users from all
   organizations. Super users can also filter by organization ID, and list
   all users who are not part of any organization.
