@@ -32,6 +32,7 @@ from croud.cmd import (
     org_plan_type_arg,
     output_fmt_arg,
     project_id_arg,
+    project_name_arg,
     region_arg,
     resource_id_arg,
     role_fqn_arg,
@@ -43,6 +44,7 @@ from croud.logout import logout
 from croud.me import me
 from croud.organizations.create import organizations_create
 from croud.organizations.list import organizations_list
+from croud.projects.create import project_create
 from croud.projects.list import projects_list
 from croud.users.list import users_list
 from croud.users.roles.add import roles_add
@@ -80,12 +82,23 @@ def main():
         "projects": {
             "help": "Manage CrateDB Cloud projects.",
             "sub_commands": {
+                "create": {
+                    "help": "Create a project in the organization the user belongs to.",
+                    "extra_args": [
+                        output_fmt_arg,
+                        project_name_arg,
+                        lambda req_opt_group, opt_opt_group: org_id_arg(
+                            req_opt_group, opt_opt_group, True
+                        ),
+                    ],
+                    "calls": project_create,
+                },
                 "list": {
                     "help": "Lists all projects for the current "
                     "user in the specified region.",
                     "extra_args": [output_fmt_arg, region_arg],
                     "calls": projects_list,
-                }
+                },
             },
         },
         "clusters": {
@@ -119,7 +132,13 @@ def main():
                 "list": {
                     "help": "List all users within organizations that the "
                     "logged in user is part of.",
-                    "extra_args": [output_fmt_arg, org_id_arg, no_org_arg],
+                    "extra_args": [
+                        output_fmt_arg,
+                        lambda req_opt_group, opt_opt_group: org_id_arg(
+                            req_opt_group, opt_opt_group, False
+                        ),
+                        no_org_arg,
+                    ],
                     "calls": users_list,
                 },
                 "roles": {
