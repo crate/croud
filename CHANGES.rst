@@ -5,12 +5,15 @@ Changes for croud
 Unreleased
 ==========
 
+0.6.0 - 2019/02/05
+==================
+
 - Added ``projects create`` command that allows organization admins and
   super users to create new projects. Super users are able to create projects
   in all organizations, organization admins only in the organization that
   the user is part of.
 
-- Added `users list` sub command that lists all users within organizations
+- Added ``users list`` sub command that lists all users within organizations
   that a user is part of. For super users it will list all users from all
   organizations. Super users can also filter by organization ID, and list
   all users who are not part of any organization.
@@ -19,7 +22,7 @@ Unreleased
 
 - Added eastus2 to available regions.
 
-0.5.0 - 2018/01/22
+0.5.0 - 2019/01/22
 ==================
 
 - Fix: Delegate all occurring error messages to the console output
@@ -31,7 +34,7 @@ Unreleased
 
 - refactored `assignRoleToUser` to `addRoleToUser`
 
-0.4.0 - 2018/01/15
+0.4.0 - 2019/01/15
 ==================
 
 - Added `users roles add` sub command that assigns a role to user (super users only).
@@ -44,7 +47,7 @@ Unreleased
 
 - Added `organizations create` sub command that creates an organization (super users only)
 
-0.3.0 - 2018/01/09
+0.3.0 - 2019/01/09
 ==================
 
 - SECURITY: prevented arbitrary code execution when loading the config file
