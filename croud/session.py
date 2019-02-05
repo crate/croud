@@ -27,8 +27,9 @@ from aiohttp import ClientSession, ContentTypeError, TCPConnector  # type: ignor
 from croud.printer import print_error
 from croud.typing import JsonDict
 
-CLOUD_DEV_DOMAIN: str = "cratedb-dev.cloud"
-CLOUD_PROD_DOMAIN: str = "cratedb.cloud"
+CLOUD_DEV_DOMAIN = "cratedb-dev.cloud"
+CLOUD_PROD_DOMAIN = "cratedb.cloud"
+DEFAULT_ENDPOINT = "/graphql"
 
 
 class HttpSession:
@@ -48,7 +49,7 @@ class HttpSession:
             host = CLOUD_PROD_DOMAIN
             if self.env == "dev":
                 host = CLOUD_DEV_DOMAIN
-            url = f"https://{region}.{host}/graphql"
+            url = f"https://{region}.{host}"
 
         self.url = url
         if conn is None:
@@ -59,8 +60,9 @@ class HttpSession:
             cookies={"session": self.token}, connector=conn, headers=headers
         )
 
-    async def fetch(self, query: str) -> JsonDict:
-        resp = await self.client.post(self.url, json={"query": query})
+    async def fetch(self, query: str, endpoint=DEFAULT_ENDPOINT) -> JsonDict:
+        url = self.url + endpoint
+        resp = await self.client.post(url, json={"query": query})
         if resp.status == 200:
             try:
                 result = await resp.json()

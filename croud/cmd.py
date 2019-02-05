@@ -290,6 +290,98 @@ def user_id_arg(
     opt_args.add_argument("--user", type=str, help="User ID.", required=False)
 
 
+def product_tier_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument("--tier", type=str, help="Product Tier.", required=True)
+
+
+def product_unit_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument("--unit", type=int, help="Product Scale Unit.", required=True)
+
+
+def product_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument(
+        "--product-name", type=str, help="Name of the product.", required=True
+    )
+
+
+def crate_version_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument("--version", type=str, help="CrateDB version.", required=True)
+
+
+def crate_username_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument(
+        "--username", type=str, help="CrateDB username.", required=True
+    )
+
+
+def crate_password_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument(
+        "--password", type=str, help="CrateDB password.", required=True
+    )
+
+
+def consumer_eventhub_connection_string_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup
+) -> None:
+    req_args.add_argument(
+        "--consumer-eventhub-connection-string",
+        type=str,
+        help="Connection string of the EventHub from which to consume.",
+        required=True,
+    )
+
+
+def consumer_eventhub_consumer_group_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup
+) -> None:
+    req_args.add_argument(
+        "--consumer-eventhub-consumer-group",
+        type=str,
+        help="EventHub Consumer Group from which to consume.",
+        required=True,
+    )
+
+
+def consumer_eventhub_lease_storage_connection_string_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup
+) -> None:
+    req_args.add_argument(
+        "--consumer-eventhub-lease-storage-connection-string",
+        type=str,
+        help="Connection string of the lease storage for the EventHub consumer.",
+        required=True,
+    )
+
+
+def consumer_eventhub_lease_storage_container_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup
+) -> None:
+    req_args.add_argument(
+        "--consumer-eventhub-lease-storage-container",
+        type=str,
+        help="Container of the lease storage for the EventHub consumer.",
+        required=True,
+    )
+
+
+def consumer_schema_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument(
+        "--consumer-schema",
+        type=str,
+        help="Database schema in which to insert.",
+        required=True,
+    )
+
+
+def consumer_table_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument(
+        "--consumer-table",
+        type=str,
+        help="Database table in which to insert.",
+        required=True,
+    )
+
+
 def format_usage(parser: ArgumentParser, depth: int, invalid_args=None) -> None:
     usage = parser.format_usage()
     args = list(filter(lambda arg: arg != "-h" and arg != "--help", sys.argv[:depth]))

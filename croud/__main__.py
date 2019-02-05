@@ -26,11 +26,23 @@ import colorama
 from croud.clusters.list import clusters_list
 from croud.cmd import (
     CMD,
+    consumer_eventhub_connection_string_arg,
+    consumer_eventhub_consumer_group_arg,
+    consumer_eventhub_lease_storage_connection_string_arg,
+    consumer_eventhub_lease_storage_container_arg,
+    consumer_schema_arg,
+    consumer_table_arg,
+    crate_password_arg,
+    crate_username_arg,
+    crate_version_arg,
     no_org_arg,
     org_id_arg,
     org_name_arg,
     org_plan_type_arg,
     output_fmt_arg,
+    product_name_arg,
+    product_tier_arg,
+    product_unit_arg,
     project_id_arg,
     project_name_arg,
     region_arg,
@@ -44,6 +56,7 @@ from croud.logout import logout
 from croud.me import me
 from croud.organizations.create import organizations_create
 from croud.organizations.list import organizations_list
+from croud.products.deploy import product_deploy
 from croud.projects.create import project_create
 from croud.projects.list import projects_list
 from croud.users.list import users_list
@@ -77,6 +90,31 @@ def main():
                     "extra_args": [output_fmt_arg, region_arg],
                     "calls": config_set,
                 },
+            },
+        },
+        "products": {
+            "help": "Manage CrateDB Cloud for Azure IoT products.",
+            "sub_commands": {
+                "deploy": {
+                    "help": "Deploy a new CrateDB Cloud for Azure IoT product.",
+                    "extra_args": [
+                        output_fmt_arg,
+                        product_tier_arg,
+                        product_unit_arg,
+                        product_name_arg,
+                        project_id_arg,
+                        crate_version_arg,
+                        crate_username_arg,
+                        crate_password_arg,
+                        consumer_eventhub_connection_string_arg,
+                        consumer_eventhub_consumer_group_arg,
+                        consumer_eventhub_lease_storage_connection_string_arg,
+                        consumer_eventhub_lease_storage_container_arg,
+                        consumer_schema_arg,
+                        consumer_table_arg,
+                    ],
+                    "calls": product_deploy,
+                }
             },
         },
         "projects": {

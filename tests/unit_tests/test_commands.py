@@ -29,6 +29,7 @@ from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
 from croud.organizations.create import organizations_create
 from croud.organizations.list import organizations_list
+from croud.products.deploy import product_deploy
 from croud.projects.create import project_create
 from croud.projects.list import projects_list
 from croud.server import Server
@@ -451,3 +452,61 @@ class TestUsers:
         with mock.patch("croud.users.list.print_query") as mock_print:
             users_list(args)
             assert_query(mock_print, query)
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Query, "execute")
+class TestProductsDeploy:
+    def test_deploy_product(self, mock_execute, mock_load_config):
+        mutation = """
+mutation {
+    createProduct(
+        tier: "s1",
+        unit: 0,
+        projectId: "proj_id",
+        name: "test_product",
+        cluster: {
+            version: "3.1.6",
+            username: "crate",
+            password: "crate"
+        },
+        consumer: {
+            eventhub: {
+                connectionString: "string_connection_eventh",
+                consumerGroup: "group_consumer_eventh",
+                leaseStorage: {
+                    connectionString: "str_conn_storage_lease",
+                    container: "container_storage_lease"
+                }
+            },
+            schema: "schema_consumer",
+            table: "table_consumer"
+        }
+    ) {
+        id,
+        url
+    }
+}
+    """
+
+        args = Namespace(
+            env="dev",
+            tier="s1",
+            unit=0,
+            project_id="proj_id",
+            product_name="test_product",
+            version="3.1.6",
+            username="crate",
+            password="crate",
+            consumer_eventhub_connection_string="string_connection_eventh",
+            consumer_eventhub_consumer_group="group_consumer_eventh",
+            consumer_eventhub_lease_storage_connection_string="str_conn_storage_lease",
+            consumer_eventhub_lease_storage_container="container_storage_lease",
+            consumer_schema="schema_consumer",
+            consumer_table="table_consumer",
+            output_fmt="table",
+        )
+        with mock.patch("croud.products.deploy.print_query") as mock_print:
+            product_deploy(args)
+            assert_query(mock_print, mutation)
+            assert mock_print.call_args[0][0]._endpoint == "/product/graphql"

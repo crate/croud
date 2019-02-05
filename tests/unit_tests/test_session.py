@@ -58,7 +58,7 @@ class TestHttpSession(unittest.TestCase):
                 async with HttpSession(
                     env,
                     token,
-                    url="https://cratedb.local/graphql",
+                    url="https://cratedb.local",
                     conn=connector,
                     headers=headers,
                 ) as session:
@@ -88,7 +88,7 @@ class TestHttpSession(unittest.TestCase):
                     async with HttpSession(
                         env,
                         token,
-                        url="https://cratedb.local/graphql",
+                        url="https://cratedb.local",
                         conn=connector,
                         headers=headers,
                     ) as session:

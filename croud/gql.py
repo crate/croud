@@ -26,24 +26,19 @@ from typing import Optional
 from croud.config import Configuration
 from croud.exceptions import GQLError
 from croud.printer import print_error, print_format, print_info
-from croud.session import HttpSession
+from croud.session import DEFAULT_ENDPOINT, HttpSession
 from croud.typing import JsonDict
 
 
 class Query:
-    _query: str
-    _env: str
-    _output_fmt: str
-    _token: str
-    _region: str
-
-    def __init__(self, query: str, args: Namespace) -> None:
+    def __init__(self, query: str, args: Namespace, endpoint=DEFAULT_ENDPOINT) -> None:
         self._query = query
         self._token = Configuration.get_token()
 
         self._set_env(args.env)
         self._set_output_fmt(args)
         self._set_region(args)
+        self._endpoint = endpoint
 
         self._error = None
         self._response = None
@@ -69,7 +64,7 @@ class Query:
 
     async def _fetch_data(self) -> JsonDict:
         async with HttpSession(self._env, self._token, self._region) as session:
-            return await session.fetch(self._query)
+            return await session.fetch(self._query, endpoint=self._endpoint)
 
     def _get_rows(self) -> JsonDict:
         data = self.run()
