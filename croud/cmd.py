@@ -264,12 +264,8 @@ def org_plan_type_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> Non
 def resource_id_arg(
     req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:
-    if required:
-        req_args.add_argument(
-            "--resource", type=str, help="Resource ID.", required=True
-        )
-        return
-    opt_args.add_argument("--resource", type=str, help="Resource ID.", required=False)
+    group = req_args if required else opt_args
+    group.add_argument("--resource", type=str, help="Resource ID.", required=required)
 
 
 def role_fqn_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
@@ -284,10 +280,8 @@ def role_fqn_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
 def user_id_arg(
     req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:
-    if required:
-        req_args.add_argument("--user", type=str, help="User ID.", required=True)
-        return
-    opt_args.add_argument("--user", type=str, help="User ID.", required=False)
+    group = req_args if required else opt_args
+    group.add_argument("--user", type=str, help="User ID.", required=required)
 
 
 def product_tier_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
