@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.7.0 - 2019/02/06
+==================
+
 - Added ``products deploy`` command that allows super users to deploy new
   CrateDB Cloud for Azure IoT products.
 
