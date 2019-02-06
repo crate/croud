@@ -184,7 +184,7 @@ The ``create`` subcommand creates an organization:
 
     This subcommand is only available to superusers.
 
-Recognized options:
+Available options:
 
 +-----------------------+----------+--------------------------------+
 | Option                | Required | Description                    |
@@ -232,7 +232,7 @@ The ``list`` subcommand prints a list of all the organizations you belong to:
 
     sh$ croud organizations list [OPTIONS]
 
-Recognized options:
+Available options:
 
 +---------------------------+----------+----------------------------+
 | Option                    | Required | Description                |
@@ -288,7 +288,7 @@ The ``deploy`` subcommand deploys a new CrateDB Cloud product:
 
     sh$ croud product deploy [OPTIONS]
 
-Recognized options:
+Available options:
 
 +---------------------------+----------+-------------------------------+
 | Option                    | Required | Description                   |
@@ -375,7 +375,7 @@ The user has to be admin of the organization to perform this operation.
 
     sh$ croud projects create [OPTIONS]
 
-Recognized options:
+Available options:
 
 +---------------------------+----------+----------------------------+
 | Option                    | Required | Description                |
@@ -404,7 +404,7 @@ The ``list`` subcommand prints a list of all the projects you have access to:
 
     sh$ croud projects list [OPTIONS]
 
-Recognized options:
+Available options:
 
 +---------------------------+----------+----------------------------+
 | Option                    | Required | Description                |
@@ -472,7 +472,7 @@ The ``list`` subcommand prints a list of all the clusters you have access to:
 
     sh$ croud clusters list [OPTIONS]
 
-Recognized options:
+Available options:
 
 +---------------------------+----------+----------------------------+
 | Option                    | Required | Description                |
@@ -547,7 +547,7 @@ that you are part of:
 
     sh$ croud users list [OPTIONS]
 
-Recognized options:
+Available options:
 
 +---------------------------+----------+----------------------------+
 | Option                    | Required | Description                |
@@ -599,7 +599,7 @@ The ``add`` subcommand assigns a new role to a user.
 
     This subcommand is only available to superusers.
 
-Recognized options:
+Available options:
 
 +---------------------------+----------+------------------------------+
 | Option                    | Required | Description                  |
@@ -660,7 +660,7 @@ The ``remove`` subcommand removes a role from a user.
 
     This subcommand is only available to superusers.
 
-Recognized options:
+Available options:
 
 +---------------------------+----------+------------------------------+
 | Option                    | Required | Description                  |
@@ -716,7 +716,7 @@ The ``list`` subcommand prints a list of all user roles available:
 
     sh$ croud users roles list [OPTIONS]
 
-Recognized options:
+Available options:
 
 +---------------------------+----------+----------------------------+
 | Option                    | Required | Description                |
