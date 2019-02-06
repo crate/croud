@@ -1,4 +1,4 @@
-from crate.theme.rtd.conf.croud import *
+from crate.theme.rtd.conf.cloud_cli import *
 
 exclude_patterns = ["out/**"]
 
