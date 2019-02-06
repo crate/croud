@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Update to `crate-docs-theme <https://github.com/crate/crate-docs-theme>`_
+  0.5.70.
+
 0.7.0 - 2019/02/06
 ==================
 

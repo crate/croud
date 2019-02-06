@@ -1,4 +1,4 @@
-crate-docs-theme
+crate-docs-theme==0.5.70
 
 # packages for local dev
 
