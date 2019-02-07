@@ -12,7 +12,7 @@ Croud
 
 |
 
-*Croud* is a *command-line interface* (CLI) tool for CrateDB Cloud ☁.
+*Croud* is a *command-line interface* (CLI) tool for `CrateDB Cloud`_ ☁.
 
 Installation
 ============
@@ -40,6 +40,7 @@ Help
 ====
 
 - Read the `project docs`_
+- Learn about `CrateDB Cloud`_
 - Check out our `support channels`_
 
 .. _contribution docs: https://github.com/crate/croud/blob/master/CONTRIBUTING.rst
@@ -49,3 +50,4 @@ Help
 .. _project docs: https://crate.io/docs/cloud/cli/en/latest/
 .. _support channels: https://crate.io/support/
 .. _virtualenv: https://virtualenv.pypa.io/en/latest/
+.. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/
