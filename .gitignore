@@ -57,9 +57,6 @@ coverage.xml
 # Django stuff:
 *.log
 
-# Sphinx documentation
-docs/docs/_build/
-
 # PyBuilder
 target/
 
@@ -76,7 +73,7 @@ env/
 .idea
 
 # docs
-docs/.venv
-docs/get-pip.py
-docs/docs/out/
+.venv
+docs/_build
 docs/.idea
+docs/out
