@@ -49,12 +49,14 @@ from croud.cmd import (
     resource_id_arg,
     role_fqn_arg,
     user_id_arg,
+    user_id_or_email_arg,
 )
 from croud.config import Configuration, config_get, config_set
 from croud.login import login
 from croud.logout import logout
 from croud.me import me
 from croud.organizations.commands import organizations_create, organizations_list
+from croud.organizations.users.commands import org_users_add, org_users_remove
 from croud.products.deploy import product_deploy
 from croud.projects.commands import project_create, projects_list
 from croud.users.commands import users_list
@@ -158,6 +160,25 @@ def main():
                     "help": "List all organizations for the logged in user.",
                     "extra_args": [output_fmt_arg],
                     "calls": organizations_list,
+                },
+                "users": {
+                    "help": "Add/remove users to/from organizations.",
+                    "sub_commands": {
+                        "add": {
+                            "help": "Add user to organization",
+                            "extra_args": [user_id_or_email_arg, role_fqn_arg],
+                            "calls": org_users_add,
+                        },
+                        "remove": {
+                            "help": "Remove user from organization",
+                            "extra_args": [
+                                lambda req_opt_group, opt_opt_group: user_id_arg(
+                                    req_opt_group, opt_opt_group, True
+                                )
+                            ],
+                            "calls": org_users_remove,
+                        },
+                    },
                 },
             },
         },

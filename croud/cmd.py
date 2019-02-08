@@ -284,6 +284,12 @@ def user_id_arg(
     group.add_argument("--user", type=str, help="User ID.", required=required)
 
 
+def user_id_or_email_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument(
+        "--user", type=str, help="User email address or ID", required=True
+    )
+
+
 def product_tier_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument("--tier", type=str, help="Product Tier.", required=True)
 
