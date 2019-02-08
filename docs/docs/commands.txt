@@ -277,7 +277,7 @@ You must specify a subcommand, like so:
 
     sh$ croud products [SUBCOMMAND] [OPTIONS]
 
-.. product.deploy:
+.. products.deploy:
 
 ``deploy``
 ----------
@@ -290,64 +290,61 @@ The ``deploy`` subcommand deploys a new CrateDB Cloud product:
 
 Available options:
 
-+---------------------------+----------+-------------------------------+
-| Option                    | Required | Description                   |
-+===========================+==========+===============================+
-| ``--tier <STRING>``       | Yes      | The desired product tier.     |
-|                           |          |                               |
-|                           |          | One of:                       |
-|                           |          |                               |
-|                           |          | - ``s0``                      |
-|                           |          | - ``s1``                      |
-|                           |          | - ``s2``                      |
-+---------------------------+----------+-------------------------------+
-| ``--unit <INT>``          | Yes      | The desired product unit.     |
-+---------------------------+----------+-------------------------------+
-| ``--projectId <STRING>``  | Yes      | The desired project ID.       |
-+---------------------------+----------+-------------------------------+
-| ``--product-name          | Yes      | The desired product name.     |
-| <STRING>``                |          |                               |
-+---------------------------+----------+-------------------------------+
-| ``--version <STRING>``    | Yes      | The desired CrateDB version.  |
-|                           |          |                               |
-+---------------------------+----------+-------------------------------+
-| ``--username <STRING>``   | Yes      | The desired CrateDB username. |
-|                           |          |                               |
-+---------------------------+----------+-------------------------------+
-| ``--password  <STRING>``  | Yes      | The desired CrateDB password. |
-|                           |          |                               |
-+---------------------------+----------+-------------------------------+
-| ``--consumer-eventhub-    | Yes      | The desired Event Hub         |
-| connection-string         |          | connection string.            |
-| <STRING>``                |          |                               |
-+---------------------------+----------+-------------------------------+
-| ``--consumer-eventhub-    | Yes      | The desired Event Hub         |
-| consumer-group            |          | consumer group the Event Hubs |
-| <STRING>``                |          | connector will be using.      |
-+---------------------------+----------+-------------------------------+
-| ``--consumer-eventhub-    | Yes      | The desired eventhub lease    |
-| lease-storage-            |          | storage connection string for |
-| connection-string         |          | Azure storage to store the    |
-| <STRING>``                |          | lease.                        |
-+---------------------------+----------+-------------------------------+
-| ``--consumer-eventhub-    | Yes      | The desired Event Hub lease   |
-| lease-storage-            |          | storage container which will  |
-| container <STRING>``      |          | be used to store the lease.   |
-+---------------------------+----------+-------------------------------+
-| ``--consumer-schema       | Yes      | The desired consumer schema   |
-| <STRING>``                |          | for crate.                    |
-+---------------------------+----------+-------------------------------+
-| ``--consumer-table        | Yes      | The desired consumer table    |
-| <STRING>``                |          | for crate where the data will |
-|                           |          | be written to.                |
-+---------------------------+----------+-------------------------------+
-| ``--output-fmt <STRING>`` | No       | The desired output format.    |
-|                           |          |                               |
-|                           |          | One of:                       |
-|                           |          |                               |
-|                           |          | - ``json``                    |
-|                           |          | - ``table``                   |
-+---------------------------+----------+-------------------------------+
++---------------------------+----------+------------------------------------------+
+| Option                    | Required | Description                              |
++===========================+==========+==========================================+
+| ``--tier <STRING>``       | Yes      | The tier of the deployed product.        |
+|                           |          |                                          |
+|                           |          | One of:                                  |
+|                           |          |                                          |
+|                           |          | - ``S0``                                 |
+|                           |          | - ``S1``                                 |
+|                           |          | - ``S2``                                 |
++---------------------------+----------+------------------------------------------+
+| ``--unit <INT>``          | Yes      | The scale unit of the deployed product.  |
++---------------------------+----------+------------------------------------------+
+| ``--project-id <STRING>`` | Yes      | The identifier of the project in which   |
+|                           |          | the product should be deployed.          |
++---------------------------+----------+------------------------------------------+
+| ``--product-name          | Yes      | A human identifier for the product.      |
+| <STRING>``                |          |                                          |
++---------------------------+----------+------------------------------------------+
+| ``--version <STRING>``    | Yes      | The version of CrateDB.                  |
++---------------------------+----------+------------------------------------------+
+| ``--username <STRING>``   | Yes      | The database username for CrateDB.       |
++---------------------------+----------+------------------------------------------+
+| ``--password  <STRING>``  | Yes      | The password for the given database user.|
++---------------------------+----------+------------------------------------------+
+| ``--consumer-eventhub-    | Yes      | The connection string of the EventHub.   |
+| connection-string         |          |                                          |
+| <STRING>``                |          |                                          |
++---------------------------+----------+------------------------------------------+
+| ``--consumer-eventhub-    | Yes      | The consumer group from which to consume |
+| consumer-group            |          | from the EventHub.                       |
+| <STRING>``                |          |                                          |
++---------------------------+----------+------------------------------------------+
+| ``--consumer-eventhub-    | Yes      | The connection string of the lease       |
+| lease-storage-            |          | storage (Azure BLOB storage) of the      |
+| connection-string         |          | consumer.                                |
+| <STRING>``                |          |                                          |
++---------------------------+----------+------------------------------------------+
+| ``--consumer-eventhub-    | Yes      | The container name of the lease storage. |
+| lease-storage-            |          |                                          |
+| container <STRING>``      |          |                                          |
++---------------------------+----------+------------------------------------------+
+| ``--consumer-schema       | Yes      | The name of the schema in which to       |
+| <STRING>``                |          | insert.                                  |
++---------------------------+----------+------------------------------------------+
+| ``--consumer-table        | Yes      | The name of the table in which to        |
+| <STRING>``                |          | insert.                                  |
++---------------------------+----------+------------------------------------------+
+| ``--output-fmt <STRING>`` | No       | The desired output format.               |
+|                           |          |                                          |
+|                           |          | One of:                                  |
+|                           |          |                                          |
+|                           |          | - ``json``                               |
+|                           |          | - ``table``                              |
++---------------------------+----------+------------------------------------------+
 
 .. _projects:
 
