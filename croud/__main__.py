@@ -23,7 +23,7 @@
 
 import colorama
 
-from croud.clusters.list import clusters_list
+from croud.clusters.commands import clusters_list
 from croud.cmd import (
     CMD,
     consumer_eventhub_connection_string_arg,
@@ -54,15 +54,11 @@ from croud.config import Configuration, config_get, config_set
 from croud.login import login
 from croud.logout import logout
 from croud.me import me
-from croud.organizations.create import organizations_create
-from croud.organizations.list import organizations_list
+from croud.organizations.commands import organizations_create, organizations_list
 from croud.products.deploy import product_deploy
-from croud.projects.create import project_create
-from croud.projects.list import projects_list
-from croud.users.list import users_list
-from croud.users.roles.add import roles_add
-from croud.users.roles.list import roles_list
-from croud.users.roles.remove import roles_remove
+from croud.projects.commands import project_create, projects_list
+from croud.users.commands import users_list
+from croud.users.roles.commands import roles_add, roles_list, roles_remove
 
 
 def main():

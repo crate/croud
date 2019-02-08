@@ -22,28 +22,32 @@ from argparse import Namespace
 from croud.gql import Query, print_query
 
 
-def roles_add(args: Namespace) -> None:
+def users_list(args: Namespace) -> None:
     """
-    Adds a new role to a user
+    List all users within organizations that the logged in user is part of
     """
 
-    mutation = """
-mutation {
-    addRoleToUser(input: {userId: "uid", roleFqn: "rfqn", resourceId: "resid"}) {
-        user {
-            uid,
-            email,
-            username,
-            organizationId
+    _query = """
+    {
+        allUsers {
+            data {
+                uid
+                email
+                username
+            }
         }
     }
-}
-"""
+    """
 
-    mutation = mutation.replace("uid", args.user, 1)
-    mutation = mutation.replace("rfqn", args.role)
-    mutation = mutation.replace("resid", args.resource)
+    queryArgs = ""
+    if args.no_org:
+        queryArgs = "(queryArgs: {noOrg: true})"
+    if args.org_id:
+        queryArgs = f'(queryArgs: {{organizationId: "{args.org_id}"}})'
 
-    query = Query(mutation, args)
+    if queryArgs != "":
+        _query = _query.replace("allUsers", f"allUsers{queryArgs}")
+
+    query = Query(_query, args)
     query.execute()
-    print_query(query, "addRoleToUser")
+    print_query(query, "allUsers")
