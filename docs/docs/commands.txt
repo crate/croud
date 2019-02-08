@@ -269,13 +269,13 @@ This output format looks like this:
 ``products``
 ============
 
-The ``product`` command allows you to deploy a new CrateDB Cloud product.
+The ``products`` command allows you to deploy a new CrateDB Cloud product.
 
 You must specify a subcommand, like so:
 
 .. code-block:: console
 
-    sh$ croud product [SUBCOMMAND] [OPTIONS]
+    sh$ croud products [SUBCOMMAND] [OPTIONS]
 
 .. product.deploy:
 
@@ -286,7 +286,7 @@ The ``deploy`` subcommand deploys a new CrateDB Cloud product:
 
 .. code-block:: console
 
-    sh$ croud product deploy [OPTIONS]
+    sh$ croud products deploy [OPTIONS]
 
 Available options:
 
