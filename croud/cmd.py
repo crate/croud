@@ -213,12 +213,17 @@ def region_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     )
 
 
+def project_id_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "-p", "--project-id", type=str, help="Project ID.", required=required
+    )
+
+
 def project_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument("--name", type=str, help="Project Name.", required=True)
-
-
-def project_id_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
-    opt_args.add_argument("-p", "--project-id", type=str, help="Filter by project ID.")
 
 
 def output_fmt_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:

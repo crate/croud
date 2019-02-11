@@ -5,6 +5,14 @@ Changes for croud
 Unreleased
 ==========
 
+- Added ``projects users add`` command that allow users with permission
+  to add users to projects by specifying a project ID and a user email or
+  ID.
+
+- Added ``projects users remove`` command that allow users with permission
+  to remove users from projects by specifying a project ID and a user email or
+  ID.
+
 - Added ``organizations users remove`` command that allows organization
   admins to remove users from organizations that they are admins for, by
   specifying an organization ID, and a user email address or ID. Super

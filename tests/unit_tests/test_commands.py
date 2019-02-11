@@ -34,6 +34,7 @@ from croud.logout import logout
 from croud.organizations.commands import organizations_create, organizations_list
 from croud.products.deploy import product_deploy
 from croud.projects.commands import project_create, projects_list
+from croud.projects.users.commands import project_user_add, project_user_remove
 from croud.server import Server
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_add, roles_list, roles_remove
@@ -452,6 +453,54 @@ class TestProjects:
         with mock.patch("croud.projects.commands.print_query") as mock_print:
             projects_list(args)
             assert_query(mock_print, query)
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Query, "execute")
+class TestProjectsUsers:
+    def test_add(self, mock_execute, mock_load_config):
+        mutation = """
+    mutation {
+        addUserToProject(input: {
+            projectId: "project-id",
+            user: "user-email-or-id"
+        }) {
+            success
+        }
+    }
+    """
+
+        args = Namespace(
+            env="dev",
+            project_id="project-id",
+            user="user-email-or-id",
+            output_fmt="json",
+        )
+        with mock.patch("croud.projects.users.commands.print_query") as mock_print:
+            project_user_add(args)
+            assert_query(mock_print, mutation)
+
+    def test_remove(self, mock_execute, mock_load_config):
+        mutation = """
+    mutation {
+        removeUserFromProject(input: {
+            projectId: "project-id",
+            user: "user-email-or-id"
+        }) {
+            success
+        }
+    }
+    """
+
+        args = Namespace(
+            env="dev",
+            project_id="project-id",
+            user="user-email-or-id",
+            output_fmt="json",
+        )
+        with mock.patch("croud.projects.users.commands.print_query") as mock_print:
+            project_user_remove(args)
+            assert_query(mock_print, mutation)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)

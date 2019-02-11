@@ -39,6 +39,10 @@ def print_info(text: str):
     print(Fore.CYAN + "==> Info: " + Style.RESET_ALL + text)
 
 
+def print_success(text: str):
+    print(Fore.GREEN + "==> Success: " + Style.RESET_ALL + text)
+
+
 class FormatPrinter:
     def __init__(self):
         self.supported_formats: dict = {"json": self._json, "table": self._tabular}
