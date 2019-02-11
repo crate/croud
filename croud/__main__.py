@@ -61,6 +61,7 @@ from croud.organizations.commands import organizations_create, organizations_lis
 from croud.organizations.users.commands import org_users_add, org_users_remove
 from croud.products.deploy import product_deploy
 from croud.projects.commands import project_create, projects_list
+from croud.projects.users.commands import project_user_add, project_user_remove
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_add, roles_list, roles_remove
 
@@ -133,6 +134,31 @@ command_tree = {
                 "user in the specified region.",
                 "extra_args": [output_fmt_arg, region_arg],
                 "calls": projects_list,
+            },
+            "users": {
+                "help": "Add/Remove users to/from a project.",
+                "sub_commands": {
+                    "add": {
+                        "help": "Add user to a project.",
+                        "extra_args": [
+                            lambda req_opt_group, opt_opt_group: project_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
+                            user_id_or_email_arg,
+                        ],
+                        "calls": project_user_add,
+                    },
+                    "remove": {
+                        "help": "Remove user from a project.",
+                        "extra_args": [
+                            lambda req_opt_group, opt_opt_group: project_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
+                            user_id_or_email_arg,
+                        ],
+                        "calls": project_user_remove,
+                    },
+                },
             },
         },
     },

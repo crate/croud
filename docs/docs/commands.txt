@@ -506,6 +506,66 @@ This output format looks like this:
 
 Here, ``id`` is the project ID assigned by CrateDB Cloud.
 
+.. projects.users:
+
+The ``projects users`` subcommand allows you to add or remove users
+from projects.
+
+.. code-block:: console
+
+    sh$ croud projects users [SUBCOMMAND] [OPTIONS]
+
+.. projects.users.add:
+
+The ``projects users add`` subcommand allows you to add users to projects.
+
+.. code-block:: console
+
+    sh$ croud projects users add [OPTIONS]
+
+Available options:
+
++---------------------------+----------+----------------------------+
+| Option                    | Required | Description                |
++===========================+==========+============================+
+| ``--project-id <STRING>`` | Yes      | Select the projects ID to  |
+|                           |          | add a user.                |
++---------------------------+----------+----------------------------+
+| ``--user <STRING>``       | Yes      | Select a user to add to    |
+|                           |          | the project.               |
+|                           |          |                            |
+|                           |          | Options to select:         |
+|                           |          |                            |
+|                           |          | - ``email``                |
+|                           |          | - ``user-id``              |
++---------------------------+----------+----------------------------+
+
+.. projects.users.remove:
+
+The ``projects users remove`` subcommand allows you to add a user to
+a project.
+
+.. code-block:: console
+
+    sh$ croud projects users remove [OPTIONS]
+
+Available options:
+
++---------------------------+----------+----------------------------+
+| Option                    | Required | Description                |
++===========================+==========+============================+
+| ``--project-id <STRING>`` | Yes      | Select a project to remove |
+|                           |          | a user.                    |
++---------------------------+----------+----------------------------+
+| ``--user <STRING>``       | Yes      | Select a user to remove    |
+|                           |          | from the project.          |
+|                           |          |                            |
+|                           |          | Options to select:         |
+|                           |          |                            |
+|                           |          | - ``email``                |
+|                           |          | - ``user-id``              |
++---------------------------+----------+----------------------------+
+
 .. _clusters:
 
 ``clusters``

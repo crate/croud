@@ -24,7 +24,7 @@ from argparse import Namespace
 from typing import Dict, Optional
 
 from croud.config import Configuration
-from croud.printer import print_error, print_format, print_info
+from croud.printer import print_error, print_format, print_info, print_success
 from croud.session import DEFAULT_ENDPOINT, HttpSession
 from croud.typing import JsonDict
 
@@ -72,7 +72,7 @@ class Query:
             self._error = None
 
 
-def print_query(query: Query, key: str = None):
+def print_query(query: Query, key: str = None, success_message: str = None) -> None:
     if query._error:
         print_error(query._error)
         return
@@ -89,6 +89,22 @@ def print_query(query: Query, key: str = None):
         data = query._response[key]
     else:
         data = query._response
+
+    if "success" in data:
+        success = data["success"]
+        if success:
+            if success_message:
+                print_success(success_message)
+            else:
+                print_success("Success.")
+        else:
+            # Edge case that might occur during network partitions/timeouts etc.
+            print_error(
+                "Command not successful, however no server-side errors occurred. "
+                "Please try again."
+            )
+        return
+
     # some queries have two levels to access data
     # e.g. {allProjects: {data: [{projects}]}} vs. {me: {data})
     if "data" in data:

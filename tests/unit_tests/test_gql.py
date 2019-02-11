@@ -66,6 +66,53 @@ def test_region_set(mock_load_config, input, expected):
     assert query._region == expected
 
 
+@pytest.mark.parametrize(
+    "response, key, message, expected_message",
+    [
+        (
+            {"addUserToProject": {"success": True}},
+            "addUserToProject",
+            "User added to Project.",
+            "User added to Project.",
+        ),
+        ({"addUserToProject": {"success": True}}, "addUserToProject", None, "Success."),
+    ],
+)
+@patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@patch("croud.gql.print_success")
+def test_print_query_success_with_message(
+    print_success, load_config, response, key, message, expected_message
+):
+    query = Query("", Namespace(env="test"))
+    query._response = response
+
+    print_query(query, key, message)
+    print_success.assert_called_once_with(expected_message)
+
+
+@pytest.mark.parametrize(
+    "response, key, expected_message",
+    [
+        (
+            {"addUserToProject": {"success": False}},
+            "addUserToProject",
+            "Command not successful, however no server-side errors occurred. "
+            "Please try again.",
+        )
+    ],
+)
+@patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@patch("croud.gql.print_error")
+def test_print_query_not_successful(
+    print_error, load_config, response, key, expected_message
+):
+    query = Query("", Namespace(env="test"))
+    query._response = response
+
+    print_query(query, key)
+    print_error.assert_called_once_with(expected_message)
+
+
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 class PrintQueryTest:
     @patch("croud.gql.print_error")
