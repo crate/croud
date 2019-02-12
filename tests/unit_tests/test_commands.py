@@ -23,10 +23,9 @@ from textwrap import dedent
 from unittest import mock
 
 import pytest
+from util import CommandTestCase
 
-from croud.__main__ import command_tree
 from croud.clusters.commands import clusters_list
-from croud.cmd import CMD
 from croud.config import Configuration, config_get, config_set
 from croud.gql import Query
 from croud.login import _login_url, _set_login_env, login
@@ -228,15 +227,7 @@ class TestClusters:
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "run", return_value={"data": []})
-class TestOrganizations:
-
-    croud = CMD(command_tree)
-
-    def assertGql(self, mock_run, argv, expected_body, expected_vars):
-        func, args = self.croud.resolve(argv)
-        func(args)
-        mock_run.assert_called_once_with(expected_body, expected_vars)
-
+class TestOrganizations(CommandTestCase):
     def test_create(self, mock_execute, mock_load_config):
         mutation = """
     mutation {
@@ -376,7 +367,7 @@ class TestOrganizations:
                 success
               }
             }
-    """
+        """
         ).strip()
 
         user_id = str(uuid.uuid4())
@@ -393,7 +384,7 @@ class TestOrganizations:
                 success
               }
             }
-    """
+        """
         ).strip()
 
         user_id = str(uuid.uuid4())
@@ -640,7 +631,7 @@ class TestUsers:
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "execute")
-class TestProductsDeploy:
+class TestProducts:
     def test_deploy_product(self, mock_execute, mock_load_config):
         mutation = """
 mutation {
@@ -694,3 +685,54 @@ mutation {
             product_deploy(args)
             assert_query(mock_print, mutation)
             assert mock_print.call_args[0][0]._endpoint == "/product/graphql"
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Query, "run", return_value={"data": []})
+class TestConsumerSets(CommandTestCase):
+    def test_consumer_sets_list(self, mock_run, mock_load_config):
+
+        expectedBody = dedent(
+            """
+    query allConsumerSets($clusterId: String, $productId: String, $projectId: String) {
+        allConsumerSets(clusterId: $clusterId, productId: $productId, projectId: $projectId) {
+            id
+            name
+            projectId
+            instances
+            config {
+                cluster {
+                    id
+                    schema
+                    table
+                }
+                consumerGroup
+                leaseStorageContainer
+            }
+        }
+    }
+    """  # noqa
+        ).strip()
+
+        project_id = "projectFoo"
+        product_id = "productFoo"
+        cluster_id = "clusterFoo"
+        expectedVars = {
+            "projectId": project_id,
+            "productId": product_id,
+            "clusterId": cluster_id,
+        }
+
+        argv = [
+            "croud",
+            "consumer-sets",
+            "list",
+            "--project-id",
+            project_id,
+            "--cluster-id",
+            cluster_id,
+            "--product-id",
+            product_id,
+        ]
+
+        self.assertGql(mock_run, argv, expectedBody, expectedVars)

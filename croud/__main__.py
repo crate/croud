@@ -28,6 +28,7 @@ import colorama
 from croud.clusters.commands import clusters_list
 from croud.cmd import (
     CMD,
+    cluster_id_arg,
     consumer_eventhub_connection_string_arg,
     consumer_eventhub_consumer_group_arg,
     consumer_eventhub_lease_storage_connection_string_arg,
@@ -42,6 +43,7 @@ from croud.cmd import (
     org_name_arg,
     org_plan_type_arg,
     output_fmt_arg,
+    product_id_arg,
     product_name_arg,
     product_tier_arg,
     product_unit_arg,
@@ -54,6 +56,7 @@ from croud.cmd import (
     user_id_or_email_arg,
 )
 from croud.config import Configuration, config_get, config_set
+from croud.consumersets.commands import consumer_sets_list
 from croud.login import login
 from croud.logout import logout
 from croud.me import me
@@ -99,7 +102,9 @@ command_tree = {
                     product_tier_arg,
                     product_unit_arg,
                     product_name_arg,
-                    project_id_arg,
+                    lambda req_opt_group, opt_opt_group: project_id_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
                     crate_version_arg,
                     crate_username_arg,
                     crate_password_arg,
@@ -111,6 +116,27 @@ command_tree = {
                     consumer_table_arg,
                 ],
                 "calls": product_deploy,
+            },
+        },
+    },
+    "consumer-sets": {
+        "help": "Manage consumer sets for CrateDB Cloud for Azure IoT products.",
+        "sub_commands": {
+            "list": {
+                "help": "Lists all consumer sets for the current user",
+                "extra_args": [
+                    output_fmt_arg,
+                    lambda req_opt_group, opt_opt_group: project_id_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
+                    lambda req_opt_group, opt_opt_group: cluster_id_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
+                    lambda req_opt_group, opt_opt_group: product_id_arg(
+                        req_opt_group, opt_opt_group, False
+                    )
+                ],
+                "calls": consumer_sets_list,
             }
         },
     },
@@ -167,7 +193,11 @@ command_tree = {
         "sub_commands": {
             "list": {
                 "help": "List all clusters for the current user.",
-                "extra_args": [output_fmt_arg, project_id_arg, region_arg],
+                "extra_args": [output_fmt_arg,
+                               lambda req_opt_group, opt_opt_group: project_id_arg(
+                                   req_opt_group, opt_opt_group, False
+                               ),
+                               region_arg],
                 "calls": clusters_list,
             }
         },
