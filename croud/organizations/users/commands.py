@@ -26,10 +26,15 @@ from croud.gql import Query, print_query
 
 
 def org_users_add(args: Namespace):
-    qargs = f'{{user: "{args.user}", role_fqn: "{args.role}"}}'
+    qargs = f'user: "{args.user}"'
+    if hasattr(args, "role"):
+        qargs += f', role_fqn: "{args.role}"'
+    if hasattr(args, "org_id"):
+        qargs += f', organizationId: "{args.org_id}"'
+
     mutation = f"""
     mutation {{
-        addUserToOrganization(input: {qargs}) {{
+        addUserToOrganization(input: {{{qargs}}}) {{
             user: {{
                 uid
                 email
@@ -45,9 +50,13 @@ def org_users_add(args: Namespace):
 
 
 def org_users_remove(args: Namespace):
+    qargs = f'uid: "{args.user}"'
+    if hasattr(args, "org_id"):
+        qargs += f', organizationId: "{args.org_id}"'
+
     mutation = f"""
     mutation {{
-        removeUserFromOrganization(input: {{uid: "{args.user}"}}) {{
+        removeUserFromOrganization(input: {{{qargs}}}) {{
             success
         }}
     }}

@@ -268,12 +268,15 @@ def resource_id_arg(
     group.add_argument("--resource", type=str, help="Resource ID.", required=required)
 
 
-def role_fqn_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
-    req_args.add_argument(
+def role_fqn_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
         "--role",
         type=str,
         help="Role FQN. Run `croud roles list` for a list of available roles.",
-        required=True,
+        required=required,
     )
 
 

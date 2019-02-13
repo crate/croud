@@ -271,6 +271,24 @@ class TestOrganizations:
     def test_add_user(self, mock_execute, mock_load_config):
         query = """
     mutation {
+        addUserToOrganization(input: {user: "1"}) {
+            user: {
+                uid
+                email
+                organizationId
+            }
+        }
+    }
+    """
+
+        args = Namespace(env="dev", user="1")
+        with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
+            org_users_add(args)
+            assert_query(mock_print, query)
+
+    def test_add_user_fqn(self, mock_execute, mock_load_config):
+        query = """
+    mutation {
         addUserToOrganization(input: {user: "1", role_fqn: "org_admin"}) {
             user: {
                 uid
@@ -286,6 +304,24 @@ class TestOrganizations:
             org_users_add(args)
             assert_query(mock_print, query)
 
+    def test_add_user_org_id(self, mock_execute, mock_load_config):
+        query = """
+    mutation {
+        addUserToOrganization(input: {user: "1", organizationId: "abc"}) {
+            user: {
+                uid
+                email
+                organizationId
+            }
+        }
+    }
+    """
+
+        args = Namespace(env="dev", user="1", org_id="abc")
+        with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
+            org_users_add(args)
+            assert_query(mock_print, query)
+
     def test_remove_user(self, mock_execute, mock_load_config):
         query = """
     mutation {
@@ -296,6 +332,20 @@ class TestOrganizations:
     """
 
         args = Namespace(env="dev", user="1")
+        with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
+            org_users_remove(args)
+            assert_query(mock_print, query)
+
+    def test_remove_user_org_id(self, mock_execute, mock_load_config):
+        query = """
+    mutation {
+        removeUserFromOrganization(input: {uid: "1", organizationId: "abc"}) {
+            success
+        }
+    }
+    """
+
+        args = Namespace(env="dev", user="1", org_id="abc")
         with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
             org_users_remove(args)
             assert_query(mock_print, query)

@@ -166,7 +166,15 @@ def main():
                     "sub_commands": {
                         "add": {
                             "help": "Add user to organization",
-                            "extra_args": [user_id_or_email_arg, role_fqn_arg],
+                            "extra_args": [
+                                user_id_or_email_arg,
+                                lambda req_opt_group, opt_opt_group: role_fqn_arg(
+                                    req_opt_group, opt_opt_group, False
+                                ),
+                                lambda req_opt_group, opt_opt_group: org_id_arg(
+                                    req_opt_group, opt_opt_group, False
+                                ),
+                            ],
                             "calls": org_users_add,
                         },
                         "remove": {
@@ -174,7 +182,10 @@ def main():
                             "extra_args": [
                                 lambda req_opt_group, opt_opt_group: user_id_arg(
                                     req_opt_group, opt_opt_group, True
-                                )
+                                ),
+                                lambda req_opt_group, opt_opt_group: org_id_arg(
+                                    req_opt_group, opt_opt_group, False
+                                ),
                             ],
                             "calls": org_users_remove,
                         },
@@ -210,7 +221,9 @@ def main():
                                     req_opt_group, opt_opt_group, True
                                 ),
                                 output_fmt_arg,
-                                role_fqn_arg,
+                                lambda req_opt_group, opt_opt_group: role_fqn_arg(
+                                    req_opt_group, opt_opt_group, True
+                                ),
                             ],
                             "calls": roles_add,
                         },
@@ -224,7 +237,9 @@ def main():
                                     req_opt_group, opt_opt_group, True
                                 ),
                                 output_fmt_arg,
-                                role_fqn_arg,
+                                lambda req_opt_group, opt_opt_group: role_fqn_arg(
+                                    req_opt_group, opt_opt_group, True
+                                ),
                             ],
                             "calls": roles_remove,
                         },

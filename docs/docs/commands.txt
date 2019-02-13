@@ -297,12 +297,15 @@ Available options:
 +---------------------------+----------+----------------------------+
 | Option                    | Required | Description                |
 +===========================+==========+============================+
-| ``--org-id <STRING>``     | Yes      | The ID of the organization |
-|                           |          | you wish to add a user to. |
-+---------------------------+----------+----------------------------+
 | ``--user <STRING>``       | Yes      | The email address or ID of |
 |                           |          | the user you wish to add to|
 |                           |          | the organization.          |
++---------------------------+----------+----------------------------+
+| ``--role <STRING>``       | No       | The role FQN of the role   |
+|                           |          | you wish to give the user. |
++---------------------------+----------+----------------------------+
+| ``--org-id <STRING>``     | No       | The ID of the organization |
+|                           |          | you wish to add a user to. |
 +---------------------------+----------+----------------------------+
 
 .. organizations.roles.remove:
@@ -321,13 +324,12 @@ Available options:
 +---------------------------+----------+----------------------------+
 | Option                    | Required | Description                |
 +===========================+==========+============================+
-| ``--org-id <STRING>``     | Yes      | The ID of the organization |
-|                           |          | you wish to remove a user  |
-|                           |          | from.                      |
-+---------------------------+----------+----------------------------+
 | ``--user <STRING>``       | Yes      | The email address or ID of |
 |                           |          | the user you wish to remove|
 |                           |          | from the organization.     |
++---------------------------+----------+----------------------------+
+| ``--org-id <STRING>``     | No       | The ID of the organization |
+|                           |          | you wish to add a user to. |
 +---------------------------+----------+----------------------------+
 
 .. _products:
