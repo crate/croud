@@ -39,6 +39,10 @@ from croud.users.commands import users_list
 from croud.users.roles.commands import roles_add, roles_list, roles_remove
 
 
+def gen_uuid() -> str:
+    return str(uuid.uuid4())
+
+
 class TestLogin:
     @mock.patch("croud.config.Configuration.set_context")
     @mock.patch("croud.config.Configuration.override_context")
@@ -688,7 +692,7 @@ mutation {
 class TestConsumerSets(CommandTestCase):
     def test_consumer_sets_list(self, mock_run, mock_load_config):
 
-        expectedBody = dedent(
+        expected_body = dedent(
             """
     query allConsumerSets($clusterId: String, $productId: String, $projectId: String) {
         allConsumerSets(clusterId: $clusterId, productId: $productId, projectId: $projectId) {
@@ -710,10 +714,11 @@ class TestConsumerSets(CommandTestCase):
     """  # noqa
         ).strip()
 
-        project_id = "projectFoo"
-        product_id = "productFoo"
-        cluster_id = "clusterFoo"
-        expectedVars = {
+        project_id = gen_uuid()
+        product_id = gen_uuid()
+        cluster_id = gen_uuid()
+
+        expected_vars = {
             "projectId": project_id,
             "productId": product_id,
             "clusterId": cluster_id,
@@ -731,4 +736,57 @@ class TestConsumerSets(CommandTestCase):
             product_id,
         ]
 
-        self.assertGql(mock_run, argv, expectedBody, expectedVars)
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
+
+    def test_consumer_sets_edit(self, mock_run, mock_load_config):
+        expected_body = dedent(
+            """
+    mutation editConsumerSet($id: String!, $input: EditConsumerSetInput!) {
+        editConsumerSet(
+            id: $id,
+            input: $input
+        ) {
+            id
+        }
+    }
+    """  # noqa
+        ).strip()
+
+        consumer_set_id = gen_uuid()
+
+        expected_vars = {
+            "id": consumer_set_id,
+            "input": {
+                "eventhub": {
+                    "connectionString": "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=...",  # noqa
+                    "consumerGroup": "$Default",
+                    "leaseStorage": {
+                        "connectionString": "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",  # noqa
+                        "container": "lease_container",
+                    },
+                },
+                "cluster": {"schema": "doc", "table": "raw"},
+            },
+        }
+
+        argv = [
+            "croud",
+            "consumer-sets",
+            "edit",
+            "--consumer-set-id",
+            consumer_set_id,
+            "--consumer-eventhub-connection-string",
+            "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=...",  # noqa
+            "--consumer-eventhub-consumer-group",
+            "$Default",
+            "--consumer-eventhub-lease-storage-connection-string",
+            "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",  # noqa
+            "--consumer-eventhub-lease-storage-container",
+            "lease_container",
+            "--consumer-schema",
+            "doc",
+            "--consumer-table",
+            "raw",
+        ]
+
+        self.assertGql(mock_run, argv, expected_body, expected_vars)

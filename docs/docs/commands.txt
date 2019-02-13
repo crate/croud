@@ -457,6 +457,71 @@ Available options:
 |                           |          | - ``table``                              |
 +---------------------------+----------+------------------------------------------+
 
+.. _consumer-sets:
+
+``consumer-sets``
+=================
+
+The ``consumer-sets`` command allows you to manage consumer Sets for
+a CrateDB Cloud product.
+
+You must specify a subcommand, like so:
+
+.. code-block:: console
+
+    sh$ croud consumer-sets [SUBCOMMAND] [OPTIONS]
+
+.. consumer-sets.edit:
+
+``edit``
+--------
+
+The ``edit`` subcommand edits existing consumer sets for a
+CrateDB Cloud product.
+
+.. code-block:: console
+
+    sh$ croud consumer-sets edit [OPTIONS]
+
+Available options:
+
++----------------------------------------------------------+----------+------------------------------------------+
+| Option                                                   | Required | Description                              |
++==========================================================+==========+==========================================+
+| ``--consumer-set-id <STRING>``                           | Yes      | The identifier of a consumer set         |
+|                                                          |          | of a CrateDB Azure IoT product.          |
++----------------------------------------------------------+----------+------------------------------------------+
+| ``--consumer-eventhub-connection-string <STRING>``       | No       | The connection string of the EventHub.   |
+|                                                          |          |                                          |
+|                                                          |          |                                          |
++----------------------------------------------------------+----------+------------------------------------------+
+| ``--consumer-eventhub-consumer-group <STRING>``          | No       | The consumer group from which to consume |
+|                                                          |          | from the EventHub.                       |
+|                                                          |          |                                          |
++----------------------------------------------------------+----------+------------------------------------------+
+| ``--consumer-eventhub-lease-storage-connection-string    | No       | The connection string of the lease       |
+| <STRING>``                                               |          | storage (Azure BLOB storage) of the      |
+|                                                          |          | consumer.                                |
+|                                                          |          |                                          |
++----------------------------------------------------------+----------+------------------------------------------+
+| ``--consumer-eventhub-lease-storage-container <STRING>`` | No       | The container name of the lease storage. |
+|                                                          |          |                                          |
+|                                                          |          |                                          |
++----------------------------------------------------------+----------+------------------------------------------+
+| ``--consumer-schema <STRING>``                           | No       | The name of the schema in which to       |
+|                                                          |          | insert.                                  |
++----------------------------------------------------------+----------+------------------------------------------+
+| ``--consumer-table <STRING>``                            | No       | The name of the table in which to        |
+|                                                          |          | insert.                                  |
++----------------------------------------------------------+----------+------------------------------------------+
+| ``--output-fmt <STRING>``                                | No       | The desired output format.               |
+|                                                          |          |                                          |
+|                                                          |          | One of:                                  |
+|                                                          |          |                                          |
+|                                                          |          | - ``json``                               |
+|                                                          |          | - ``table``                              |
++----------------------------------------------------------+----------+------------------------------------------+
+
 .. _projects:
 
 ``projects``

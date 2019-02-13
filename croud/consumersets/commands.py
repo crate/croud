@@ -24,10 +24,6 @@ from croud.gql import Query, print_query
 
 
 def consumer_sets_list(args: Namespace) -> None:
-    """
-    List consumer scale sets
-    """
-
     body = dedent(
         """
     query allConsumerSets($clusterId: String, $productId: String, $projectId: String) {
@@ -59,3 +55,37 @@ def consumer_sets_list(args: Namespace) -> None:
     query = Query(body, args, endpoint="/product/graphql")
     query.execute(vars)
     print_query(query, "allConsumerSets")
+
+
+def consumer_sets_edit(args: Namespace) -> None:
+    body = dedent(
+        """
+    mutation editConsumerSet($id: String!, $input: EditConsumerSetInput!) {
+        editConsumerSet(
+            id: $id,
+            input: $input
+        ) {
+            id
+        }
+    }
+    """  # noqa
+    ).strip()
+
+    vars = {
+        "id": args.consumer_set_id,
+        "input": {
+            "eventhub": {
+                "connectionString": args.consumer_eventhub_connection_string,
+                "consumerGroup": args.consumer_eventhub_consumer_group,
+                "leaseStorage": {
+                    "connectionString": args.consumer_eventhub_lease_storage_connection_string,  # noqa
+                    "container": args.consumer_eventhub_lease_storage_container,
+                },
+            },
+            "cluster": {"schema": args.consumer_schema, "table": args.consumer_table},
+        },
+    }
+
+    query = Query(body, args, endpoint="/product/graphql")
+    query.execute(vars)
+    print_query(query, "editConsumerSet")

@@ -346,65 +346,84 @@ def crate_password_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> No
     )
 
 
-def consumer_eventhub_connection_string_arg(
-    req_args: _ArgumentGroup, opt_args: _ArgumentGroup
-) -> None:
+def consumer_set_id_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument(
+        "--consumer-set-id",
+        type=str,
+        help="The identifier of the consumer set",
+        required=True,
+    )
+
+
+def consumer_eventhub_connection_string_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
         "--consumer-eventhub-connection-string",
         type=str,
         help="Connection string of the EventHub from which to consume.",
-        required=True,
+        required=required,
     )
 
 
 def consumer_eventhub_consumer_group_arg(
-    req_args: _ArgumentGroup, opt_args: _ArgumentGroup
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:
-    req_args.add_argument(
+    group = req_args if required else opt_args
+    group.add_argument(
         "--consumer-eventhub-consumer-group",
         type=str,
         help="EventHub Consumer Group from which to consume.",
-        required=True,
+        required=required,
     )
 
 
 def consumer_eventhub_lease_storage_connection_string_arg(
-    req_args: _ArgumentGroup, opt_args: _ArgumentGroup
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:
-    req_args.add_argument(
+    group = req_args if required else opt_args
+    group.add_argument(
         "--consumer-eventhub-lease-storage-connection-string",
         type=str,
         help="Connection string of the lease storage for the EventHub consumer.",
-        required=True,
+        required=required,
     )
 
 
 def consumer_eventhub_lease_storage_container_arg(
-    req_args: _ArgumentGroup, opt_args: _ArgumentGroup
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:
-    req_args.add_argument(
+    group = req_args if required else opt_args
+    group.add_argument(
         "--consumer-eventhub-lease-storage-container",
         type=str,
         help="Container of the lease storage for the EventHub consumer.",
-        required=True,
+        required=required,
     )
 
 
-def consumer_schema_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
-    req_args.add_argument(
+def consumer_schema_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
         "--consumer-schema",
         type=str,
         help="Database schema in which to insert.",
-        required=True,
+        required=required,
     )
 
 
-def consumer_table_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
-    req_args.add_argument(
+def consumer_table_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
         "--consumer-table",
         type=str,
         help="Database table in which to insert.",
-        required=True,
+        required=required,
     )
 
 
