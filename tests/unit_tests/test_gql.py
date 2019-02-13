@@ -19,14 +19,13 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import unittest
+import asyncio
 from argparse import Namespace
 from unittest.mock import patch
 
 import pytest
 
 from croud.config import Configuration
-from croud.exceptions import GQLError
 from croud.gql import Query, print_query
 
 
@@ -67,86 +66,77 @@ def test_region_set(mock_load_config, input, expected):
     assert query._region == expected
 
 
-class TestGQL(unittest.TestCase):
-    _data = {"data": {"key": "value"}}
-    _error_data = {"errors": [{"message": "error"}]}
-
-    @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-    @patch.object(Query, "run", return_value=_data)
-    def test_get_rows(self, mock_run, mock_load_config):
-        query = Query("{}", Namespace(env="dev"))
-        data = query._get_rows()
-
-        self.assertEqual(self._data["data"], data)
-
-    @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-    @patch.object(Query, "run", return_value=_error_data)
-    def test_get_rows_error(self, mock_run, mock_load_config):
-        query = Query("{}", Namespace(env="dev"))
-
-        with self.assertRaises(GQLError):
-            query._get_rows()
-
-    @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-    @patch("croud.gql.print_info")
-    @patch.object(Query, "_get_rows", return_value=_data["data"])
-    def test_check_rows(self, mock_load_config, mock_print_info, mock_get_rows):
-        query = Query("{}", Namespace(env="dev"))
-        query.execute()
-        print_query(query)
-
-        mock_print_info.assert_not_called()
-
-    @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-    @patch("croud.gql.print_info")
-    @patch.object(Query, "_get_rows", return_value=[])
-    def test_check_rows_empty(self, mock_get_rows, mock_print_info, mock_load_config):
-        query = Query("{}", Namespace(env="dev"))
-        query.execute()
-        print_query(query)
-
-        mock_print_info.assert_called_once_with("Result contained no data to print.")
-
-    @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+class PrintQueryTest:
     @patch("croud.gql.print_error")
-    @patch.object(Query, "_get_rows", return_value="string")
-    def test_check_rows_bad_format(
-        self, mock_get_rows, mock_print_error, mock_load_config
-    ):
-        query = Query("{}", Namespace(env="dev"))
-        query.execute()
+    def test_print_query_error(self, print_error, load_config):
+        query = Query("", Namespace(env="test"))
+        query._error = "This is a GraphQL error message"
+
         print_query(query)
+        print_error.assert_called_once_with(query._error)
 
-        message = "Result has no proper format to print."
-        mock_print_error.assert_called_once_with(message)
+    @patch("croud.gql.print_info")
+    def test_print_query_no_response(self, print_info, load_config):
+        query = Query("", Namespace(env="test"))
+        query._response = {}
 
-    @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+        print_query(query)
+        expected_message = "Result contained no data to print."
+        print_info.assert_called_once_with(expected_message)
+
+    @patch("croud.gql.print_error")
+    def test_print_query_malformatted_response(self, print_error, load_config):
+        query = Query("", Namespace(env="test"))
+        query._response = 42
+
+        print_query(query)
+        expected_message = "Result has no proper format to print."
+        print_error.assert_called_once_with(expected_message)
+
+    @pytest.mark.parametrize("format", ["json", "tabular"])
+    @pytest.mark.parametrize(
+        "response, key",
+        [
+            ({"data": ["foo", "bar"]}, None),
+            ({"allNames": {"data": ["foo", "bar"]}}, "allNames"),
+            ({"allNames": ["foo", "bar"]}, "allNames"),
+        ],
+    )
     @patch("croud.gql.print_format")
-    @patch.object(Query, "_get_rows", return_value=_data["data"])
-    def test_print_result(self, mock_get_rows, mock_print_format, mock_load_config):
-        query = Query("{}", Namespace(env="dev"))
-        query.execute()
-        print_query(query, "key")
+    def test_print_query_data(self, print_format, response, key, format, load_config):
+        query = Query("", Namespace(env="test", output_fmt=format))
+        query._response = response
 
-        mock_print_format.assert_called_once_with(self._data["data"]["key"], "table")
+        print_query(query, key)
+        print_format.assert_called_once_with(["foo", "bar"], format)
 
-    @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-    @patch("croud.gql.print_error")
-    @patch.object(Query, "run", return_value=_error_data)
-    def test_print_result_error(self, mock_run, mock_print_error, mock_load_config):
-        query = Query("{}", Namespace(env="dev"))
-        query.execute()
-        print_query(query, "key")
-
-        message = self._error_data["errors"][0]["message"]
-        mock_print_error.assert_called_once_with(message)
-
-    @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+    @pytest.mark.parametrize(
+        "response, key",
+        [
+            ({"data": []}, None),
+            ({"allNames": {"data": []}}, "allNames"),
+            ({"allNames": []}, "allNames"),
+        ],
+    )
     @patch("croud.gql.print_info")
-    @patch.object(Query, "run", return_value={"data": []})
-    def test_print_result_empty(self, mock_get_rows, mock_print_info, mock_load_config):
-        query = Query("{}", Namespace(env="dev"))
-        query.execute()
-        print_query(query, "key")
+    def test_print_query_no_data(self, print_info, response, key, load_config):
+        query = Query("", Namespace(env="test"))
+        query._response = response
 
-        mock_print_info.assert_called_once_with("Result contained no data to print.")
+        print_query(query, key)
+        expected_message = "Result contained no data to print."
+        print_info.assert_called_once_with(expected_message)
+
+
+@patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+def test_execute_query_with_variables(load_config):
+    query = Query("", Namespace(env="test"))
+    vars = {"a": "foo", "b": 42}
+
+    result_future = asyncio.Future()
+    result_future.set_result({"data": []})
+    with patch.object(query, "_fetch_data", return_value=result_future) as fetch_data:
+        query.execute(vars)
+
+    fetch_data.assert_called_once_with(vars)

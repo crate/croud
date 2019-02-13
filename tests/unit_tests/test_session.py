@@ -17,10 +17,10 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import unittest
 from unittest import mock
 
 import aiohttp
+import pytest
 from aiohttp.test_utils import loop_context
 from util.fake_server import FakeCrateDBCloud, FakeResolver
 
@@ -46,10 +46,11 @@ me_response = {
 }
 
 
-class TestHttpSession(unittest.TestCase):
-    @mock.patch.object(Configuration, "get_env", return_value="dev")
+@mock.patch.object(Configuration, "get_env", return_value="dev")
+class TestHttpSession:
+    @pytest.mark.parametrize("variables", [None, {"a": "foo", "b": 42}])
     @mock.patch.object(Configuration, "get_token", return_value="eyJraWQiOiIx")
-    def test_query_success(self, mock_token, mock_env):
+    def test_query_success(self, mock_token, mock_env, variables):
         with loop_context() as loop:
 
             async def test_query():
@@ -62,8 +63,8 @@ class TestHttpSession(unittest.TestCase):
                     conn=connector,
                     headers=headers,
                 ) as session:
-                    result = await session.fetch(me_query)
-                    self.assertEqual(result["data"], me_response)
+                    result = await session.fetch(me_query, variables)
+                    assert result["data"] == me_response
 
             fake_cloud = FakeCrateDBCloud(loop=loop)
             info = loop.run_until_complete(fake_cloud.start())
@@ -75,7 +76,6 @@ class TestHttpSession(unittest.TestCase):
             loop.run_until_complete(test_query())
             loop.run_until_complete(fake_cloud.stop())
 
-    @mock.patch.object(Configuration, "get_env", return_value="dev")
     @mock.patch.object(Configuration, "get_token", return_value="")
     @mock.patch("croud.session.print_error")
     def test_query_unauthorized(self, mock_print_error, mock_token, mock_env):
@@ -84,7 +84,7 @@ class TestHttpSession(unittest.TestCase):
             async def test_query():
                 env = Configuration.get_env()
                 token = Configuration.get_token()
-                with self.assertRaises(SystemExit) as cm:
+                with pytest.raises(SystemExit) as cm:
                     async with HttpSession(
                         env,
                         token,
@@ -92,11 +92,11 @@ class TestHttpSession(unittest.TestCase):
                         conn=connector,
                         headers=headers,
                     ) as session:
-                        await session.fetch(me_query)
+                        await session.fetch(me_query, variables={})
                 mock_print_error.assert_called_once_with(
                     "Unauthorized. Use `croud login` to login to CrateDB Cloud."
                 )
-                self.assertEqual(cm.exception.code, 1)
+                assert cm.value.code == 1
 
             fake_cloud = FakeCrateDBCloud(loop=loop)
             info = loop.run_until_complete(fake_cloud.start())

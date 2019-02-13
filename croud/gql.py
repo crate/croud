@@ -21,10 +21,9 @@
 
 import asyncio
 from argparse import Namespace
-from typing import Optional
+from typing import Dict, Optional
 
 from croud.config import Configuration
-from croud.exceptions import GQLError
 from croud.printer import print_error, print_format, print_info
 from croud.session import DEFAULT_ENDPOINT, HttpSession
 from croud.typing import JsonDict
@@ -40,8 +39,8 @@ class Query:
         self._set_region(args)
         self._endpoint = endpoint
 
-        self._error = None
-        self._response = None
+        self._error: Optional[str] = None
+        self._response: Optional[JsonDict] = None
 
     def _set_env(self, env: Optional[str]):
         self._env = env or Configuration.get_env()
@@ -62,29 +61,26 @@ class Query:
 
         self._region = region
 
-    async def _fetch_data(self) -> JsonDict:
+    async def _fetch_data(self, variables: Optional[Dict]) -> JsonDict:
         async with HttpSession(self._env, self._token, self._region) as session:
-            return await session.fetch(self._query, endpoint=self._endpoint)
+            return await session.fetch(self._query, variables, endpoint=self._endpoint)
 
-    def _get_rows(self) -> JsonDict:
-        data = self.run()
-
-        if "errors" in data:
-            raise GQLError(data["errors"][0]["message"])
-        return data["data"]
-
-    def run(self) -> JsonDict:
+    def run(self, variables: Optional[Dict]) -> JsonDict:
         loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self._fetch_data(variables))
 
-        return loop.run_until_complete(self._fetch_data())
+    def execute(self, variables: Dict = None):
+        response = self.run(variables)
 
-    def execute(self):
-        try:
-            self._response = self._get_rows()
-            self._error = None
-        except GQLError as e:
-            self._error = str(e)
+        if "errors" in response:
             self._response = None
+            self._error = response["errors"][0]["message"]
+        elif "data" in response:
+            self._response = response["data"]
+            self._error = None
+        else:
+            self._response = None
+            self._error = None
 
 
 def print_query(query: Query, key: str = None):

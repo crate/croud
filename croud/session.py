@@ -60,9 +60,13 @@ class HttpSession:
             cookies={"session": self.token}, connector=conn, headers=headers
         )
 
-    async def fetch(self, query: str, endpoint=DEFAULT_ENDPOINT) -> JsonDict:
+    async def fetch(
+        self, query: str, variables: Optional[Dict], endpoint=DEFAULT_ENDPOINT
+    ) -> JsonDict:
         url = self.url + endpoint
-        resp = await self.client.post(url, json={"query": query})
+        resp = await self.client.post(
+            url, json={"query": query, "variables": variables}
+        )
         if resp.status == 200:
             try:
                 result = await resp.json()
