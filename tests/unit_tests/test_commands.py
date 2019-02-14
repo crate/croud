@@ -28,6 +28,7 @@ from croud.gql import Query
 from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
 from croud.organizations.commands import organizations_create, organizations_list
+from croud.organizations.users.commands import org_users_add, org_users_remove
 from croud.products.deploy import product_deploy
 from croud.projects.commands import project_create, projects_list
 from croud.server import Server
@@ -265,6 +266,88 @@ class TestOrganizations:
         args = Namespace(env="dev")
         with mock.patch("croud.organizations.commands.print_query") as mock_print:
             organizations_list(args)
+            assert_query(mock_print, query)
+
+    def test_add_user(self, mock_execute, mock_load_config):
+        query = """
+    mutation {
+        addUserToOrganization(input: {user: "1"}) {
+            user: {
+                uid
+                email
+                organizationId
+            }
+        }
+    }
+    """
+
+        args = Namespace(env="dev", user="1")
+        with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
+            org_users_add(args)
+            assert_query(mock_print, query)
+
+    def test_add_user_fqn(self, mock_execute, mock_load_config):
+        query = """
+    mutation {
+        addUserToOrganization(input: {user: "1", role_fqn: "org_admin"}) {
+            user: {
+                uid
+                email
+                organizationId
+            }
+        }
+    }
+    """
+
+        args = Namespace(env="dev", user="1", role="org_admin")
+        with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
+            org_users_add(args)
+            assert_query(mock_print, query)
+
+    def test_add_user_org_id(self, mock_execute, mock_load_config):
+        query = """
+    mutation {
+        addUserToOrganization(input: {user: "1", organizationId: "abc"}) {
+            user: {
+                uid
+                email
+                organizationId
+            }
+        }
+    }
+    """
+
+        args = Namespace(env="dev", user="1", org_id="abc")
+        with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
+            org_users_add(args)
+            assert_query(mock_print, query)
+
+    def test_remove_user(self, mock_execute, mock_load_config):
+        query = """
+    mutation {
+        removeUserFromOrganization(input: {uid: "1"}) {
+            success
+        }
+    }
+    """
+
+        args = Namespace(env="dev", user="1")
+        with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
+            org_users_remove(args)
+            assert_query(mock_print, query)
+
+    def test_remove_user_org_id(self, mock_execute, mock_load_config):
+        query = """
+    mutation {
+        removeUserFromOrganization(input: {uid: "1", organizationId: "abc"}) {
+            success
+        }
+    }
+    """
+
+        args = Namespace(env="dev", user="1", org_id="abc")
+        with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
+            org_users_remove(args)
             assert_query(mock_print, query)
 
 

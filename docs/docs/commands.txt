@@ -264,6 +264,74 @@ This output format looks like this:
        ...
    ]
 
+.. organizations.users:
+
+``users``
+---------
+
+The ``users`` subcommand allows you to add and remove users from an organization.
+
+You must specify a second subcommand, like so:
+
+.. code-block:: console
+
+    sh$ croud organizations users [SUBCOMMAND] [OPTIONS]
+
+.. NOTE::
+
+    These subcommands are only available to organization admins and superusers.
+
+.. organizations.roles.add:
+
+``add``
+~~~~~~~
+
+The ``add`` subcommand adds a new user to an organization.
+
+.. code-block:: console
+
+    sh$ croud organizations users add [OPTIONS]
+
+Available options:
+
++---------------------------+----------+----------------------------+
+| Option                    | Required | Description                |
++===========================+==========+============================+
+| ``--user <STRING>``       | Yes      | The email address or ID of |
+|                           |          | the user you wish to add to|
+|                           |          | the organization.          |
++---------------------------+----------+----------------------------+
+| ``--role <STRING>``       | No       | The role FQN of the role   |
+|                           |          | you wish to give the user. |
++---------------------------+----------+----------------------------+
+| ``--org-id <STRING>``     | No       | The ID of the organization |
+|                           |          | you wish to add a user to. |
++---------------------------+----------+----------------------------+
+
+.. organizations.roles.remove:
+
+``remove``
+~~~~~~~~~~
+
+The ``remove`` subcommand removes a user from an organization.
+
+.. code-block:: console
+
+    sh$ croud organizations users remove [OPTIONS]
+
+Available options:
+
++---------------------------+----------+----------------------------+
+| Option                    | Required | Description                |
++===========================+==========+============================+
+| ``--user <STRING>``       | Yes      | The email address or ID of |
+|                           |          | the user you wish to remove|
+|                           |          | from the organization.     |
++---------------------------+----------+----------------------------+
+| ``--org-id <STRING>``     | No       | The ID of the organization |
+|                           |          | you wish to add a user to. |
++---------------------------+----------+----------------------------+
+
 .. _products:
 
 ``products``

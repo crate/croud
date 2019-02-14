@@ -5,6 +5,16 @@ Changes for croud
 Unreleased
 ==========
 
+- Added ``organizations users remove`` command that allows organization
+  admins to remove users from organizations that they are admins for, by
+  specifying an organization ID, and a user email address or ID. Super
+  users can remove users from any organization.
+
+- Added ``organizations users add`` command that allows organization admins
+  to add new users to organizations they are admins for, by specifying
+  an organization ID, and a user email address or ID. Super users can
+  add users to any organization.
+
 - Update to `crate-docs-theme <https://github.com/crate/crate-docs-theme>`_
   0.5.70.
 
