@@ -358,61 +358,55 @@ The ``deploy`` subcommand deploys a new CrateDB Cloud product:
 
 Available options:
 
-+---------------------------+----------+------------------------------------------+
-| Option                    | Required | Description                              |
-+===========================+==========+==========================================+
-| ``--tier <STRING>``       | Yes      | The tier of the deployed product.        |
-|                           |          |                                          |
-|                           |          | One of:                                  |
-|                           |          |                                          |
-|                           |          | - ``S0``                                 |
-|                           |          | - ``S1``                                 |
-|                           |          | - ``S2``                                 |
-+---------------------------+----------+------------------------------------------+
-| ``--unit <INT>``          | Yes      | The scale unit of the deployed product.  |
-+---------------------------+----------+------------------------------------------+
-| ``--project-id <STRING>`` | Yes      | The identifier of the project in which   |
-|                           |          | the product should be deployed.          |
-+---------------------------+----------+------------------------------------------+
-| ``--product-name          | Yes      | A human identifier for the product.      |
-| <STRING>``                |          |                                          |
-+---------------------------+----------+------------------------------------------+
-| ``--version <STRING>``    | Yes      | The version of CrateDB.                  |
-+---------------------------+----------+------------------------------------------+
-| ``--username <STRING>``   | Yes      | The database username for CrateDB.       |
-+---------------------------+----------+------------------------------------------+
-| ``--password  <STRING>``  | Yes      | The password for the given database user.|
-+---------------------------+----------+------------------------------------------+
-| ``--consumer-eventhub-    | Yes      | The connection string of the EventHub.   |
-| connection-string         |          |                                          |
-| <STRING>``                |          |                                          |
-+---------------------------+----------+------------------------------------------+
-| ``--consumer-eventhub-    | Yes      | The consumer group from which to consume |
-| consumer-group            |          | from the EventHub.                       |
-| <STRING>``                |          |                                          |
-+---------------------------+----------+------------------------------------------+
-| ``--consumer-eventhub-    | Yes      | The connection string of the lease       |
-| lease-storage-            |          | storage (Azure BLOB storage) of the      |
-| connection-string         |          | consumer.                                |
-| <STRING>``                |          |                                          |
-+---------------------------+----------+------------------------------------------+
-| ``--consumer-eventhub-    | Yes      | The container name of the lease storage. |
-| lease-storage-            |          |                                          |
-| container <STRING>``      |          |                                          |
-+---------------------------+----------+------------------------------------------+
-| ``--consumer-schema       | Yes      | The name of the schema in which to       |
-| <STRING>``                |          | insert.                                  |
-+---------------------------+----------+------------------------------------------+
-| ``--consumer-table        | Yes      | The name of the table in which to        |
-| <STRING>``                |          | insert.                                  |
-+---------------------------+----------+------------------------------------------+
-| ``--output-fmt <STRING>`` | No       | The desired output format.               |
-|                           |          |                                          |
-|                           |          | One of:                                  |
-|                           |          |                                          |
-|                           |          | - ``json``                               |
-|                           |          | - ``table``                              |
-+---------------------------+----------+------------------------------------------+
++-------------------------------------------------------+----------+------------------------------------------+
+| Option                                                | Required | Description                              |
++=======================================================+==========+==========================================+
+| ``--tier <STRING>``                                   | Yes      | The tier of the deployed product.        |
+|                                                       |          |                                          |
+|                                                       |          | One of:                                  |
+|                                                       |          |                                          |
+|                                                       |          | - ``S0``                                 |
+|                                                       |          | - ``S1``                                 |
+|                                                       |          | - ``S2``                                 |
++-------------------------------------------------------+----------+------------------------------------------+
+| ``--unit <INT>``                                      | Yes      | The scale unit of the deployed product.  |
++-------------------------------------------------------+----------+------------------------------------------+
+| ``--project-id <STRING>``                             | Yes      | The identifier of the project in which   |
+|                                                       |          | the product should be deployed.          |
++-------------------------------------------------------+----------+------------------------------------------+
+| ``--product-name <STRING>``                           | Yes      | A human identifier for the product.      |
++-------------------------------------------------------+----------+------------------------------------------+
+| ``--version <STRING>``                                | Yes      | The version of CrateDB.                  |
++-------------------------------------------------------+----------+------------------------------------------+
+| ``--username <STRING>``                               | Yes      | The database username for CrateDB.       |
++-------------------------------------------------------+----------+------------------------------------------+
+| ``--password  <STRING>``                              | Yes      | The password for the given database user.|
++-------------------------------------------------------+----------+------------------------------------------+
+| ``--consumer-eventhub-connection-string <STRING>``    | Yes      | The connection string of the EventHub.   |
++-------------------------------------------------------+----------+------------------------------------------+
+| ``--consumer-eventhub-consumer-group <STRING>``       | Yes      | The consumer group from which to consume |
+|                                                       |          | from the EventHub.                       |
++-------------------------------------------------------+----------+------------------------------------------+
+| ``--consumer-eventhub-lease-storage-connection-string | Yes      | The connection string of the lease       |
+| <STRING>``                                            |          | storage (Azure BLOB storage) of the      |
+|                                                       |          | consumer.                                |
++-------------------------------------------------------+----------+------------------------------------------+
+| ``--consumer-eventhub-lease-storage-container         | Yes      | The container name of the lease storage. |
+| <STRING>``                                            |          |                                          |
++-------------------------------------------------------+----------+------------------------------------------+
+| ``--consumer-schema <STRING>``                        | Yes      | The name of the schema in which to       |
+|                                                       |          | insert.                                  |
++-------------------------------------------------------+----------+------------------------------------------+
+| ``--consumer-table <STRING>``                         | Yes      | The name of the table in which to        |
+|                                                       |          | insert.                                  |
++-------------------------------------------------------+----------+------------------------------------------+
+| ``--output-fmt <STRING>``                             | No       | The desired output format.               |
+|                                                       |          |                                          |
+|                                                       |          | One of:                                  |
+|                                                       |          |                                          |
+|                                                       |          | - ``json``                               |
+|                                                       |          | - ``table``                              |
++-------------------------------------------------------+----------+------------------------------------------+
 
 .. _projects:
 
