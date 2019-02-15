@@ -88,17 +88,19 @@ class TestCmd:
     def test_no_args(self):
         argv = ["croud"]
         croud_cmd = CMD(self.commands)
-        with mock.patch.object(croud_cmd.root_parser, "print_help") as mock_help:
+        with mock.patch("sys.stdout.write") as stdout:
             fn, args = croud_cmd.resolve(argv)
             assert fn is None
             assert args is None
-            mock_help.assert_called_once()
+            stdout.assert_called_once()
+            assert stdout.call_args[0][0].startswith("Usage: croud") is True
 
     def test_help(self):
         argv = ["croud", "--help"]
         croud_cmd = CMD(self.commands)
-        with mock.patch.object(croud_cmd.root_parser, "print_help") as mock_help:
+        with mock.patch("sys.stdout.write") as stdout:
             with pytest.raises(SystemExit) as ex_info:
                 croud_cmd.resolve(argv)
-                mock_help.assert_called_once_with(["--help"])
+                stdout.assert_called_once()
+                assert stdout.call_args[0][0].startswith("Usage: croud") is True
         assert ex_info.value.code == 0

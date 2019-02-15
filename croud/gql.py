@@ -34,43 +34,32 @@ class Query:
         self._query = query
         self._token = Configuration.get_token()
 
-        self._set_env(args.env)
-        self._set_output_fmt(args)
-        self._set_region(args)
+        self._env = args.env or Configuration.get_env()
+        self._output_fmt = (
+            hasattr(args, "output_fmt")  # certain commands do not have an output format
+            and args.output_fmt
+            or Configuration.get_setting("output_fmt")
+        )
+        self._region = (
+            hasattr(args, "region")  # certain commands do not have region
+            and args.region
+            or Configuration.get_setting("region")
+        )
         self._endpoint = endpoint
 
         self._error: Optional[str] = None
         self._response: Optional[JsonDict] = None
 
-    def _set_env(self, env: Optional[str]):
-        self._env = env or Configuration.get_env()
-
-    def _set_output_fmt(self, args: Namespace):
-        if hasattr(args, "output_fmt") and args.output_fmt is not None:
-            fmt = args.output_fmt
-        else:
-            fmt = Configuration.get_setting("output_fmt")
-
-        self._output_fmt = fmt
-
-    def _set_region(self, args: Namespace):
-        if hasattr(args, "region") and args.region is not None:
-            region = args.region
-        else:
-            region = Configuration.get_setting("region")
-
-        self._region = region
-
-    async def _fetch_data(self, variables: Optional[Dict]) -> JsonDict:
+    async def _fetch_data(self, body: str, variables: Optional[Dict]) -> JsonDict:
         async with HttpSession(self._env, self._token, self._region) as session:
-            return await session.fetch(self._query, variables, endpoint=self._endpoint)
+            return await session.fetch(body, variables, endpoint=self._endpoint)
 
-    def run(self, variables: Optional[Dict]) -> JsonDict:
+    def run(self, body: str, variables: Optional[Dict]) -> JsonDict:
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self._fetch_data(variables))
+        return loop.run_until_complete(self._fetch_data(body, variables))
 
     def execute(self, variables: Dict = None):
-        response = self.run(variables)
+        response = self.run(self._query, variables)
 
         if "errors" in response:
             self._response = None

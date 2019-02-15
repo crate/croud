@@ -20,48 +20,45 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 
+import textwrap
 from argparse import Namespace
 
 from croud.gql import Query, print_query
 
 
 def org_users_add(args: Namespace):
-    qargs = f'user: "{args.user}"'
-    if hasattr(args, "role"):
-        qargs += f', role_fqn: "{args.role}"'
-    if hasattr(args, "org_id"):
-        qargs += f', organizationId: "{args.org_id}"'
-
-    mutation = f"""
-    mutation {{
-        addUserToOrganization(input: {{{qargs}}}) {{
-            user: {{
-                uid
-                email
-                organizationId
-            }}
-        }}
-    }}
+    mutation = textwrap.dedent(
+        """
+        mutation addUserToOrganization(input: UserInput!) {
+          addUserToOrganization(input: $input) {
+            user {
+              uid
+              email
+              organizationId
+            }
+          }
+        }
     """
+    ).strip()
 
+    vars = {"user": args.user, "roleFqn": args.role, "organizationId": args.org_id}
     query = Query(mutation, args)
-    query.execute()
+    query.execute(vars)
     print_query(query, "addUserToOrganization")
 
 
 def org_users_remove(args: Namespace):
-    qargs = f'uid: "{args.user}"'
-    if hasattr(args, "org_id"):
-        qargs += f', organizationId: "{args.org_id}"'
-
-    mutation = f"""
-    mutation {{
-        removeUserFromOrganization(input: {{{qargs}}}) {{
+    mutation = textwrap.dedent(
+        """
+        mutation removeUserFromOrganization(input: UserIdInput!) {
+          removeUserFromOrganization(input: $input) {
             success
-        }}
-    }}
+          }
+        }
     """
+    ).strip()
 
+    vars = {"uid": args.user, "organizationId": args.org_id}
     query = Query(mutation, args)
-    query.execute()
+    query.execute(vars)
     print_query(query, "removeUserFromOrganization")

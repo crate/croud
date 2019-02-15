@@ -131,12 +131,20 @@ class PrintQueryTest:
 
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 def test_execute_query_with_variables(load_config):
-    query = Query("", Namespace(env="test"))
+    body = """
+        query {
+          me {
+            uid
+          }
+        }
+    """
     vars = {"a": "foo", "b": 42}
 
     result_future = asyncio.Future()
     result_future.set_result({"data": []})
+
+    query = Query(body, Namespace(env="test"))
     with patch.object(query, "_fetch_data", return_value=result_future) as fetch_data:
         query.execute(vars)
 
-    fetch_data.assert_called_once_with(vars)
+    fetch_data.assert_called_once_with(body, vars)

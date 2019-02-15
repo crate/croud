@@ -17,18 +17,21 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import uuid
 from argparse import Namespace
+from textwrap import dedent
 from unittest import mock
 
 import pytest
 
+from croud.__main__ import command_tree
 from croud.clusters.commands import clusters_list
+from croud.cmd import CMD
 from croud.config import Configuration, config_get, config_set
 from croud.gql import Query
 from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
 from croud.organizations.commands import organizations_create, organizations_list
-from croud.organizations.users.commands import org_users_add, org_users_remove
 from croud.products.deploy import product_deploy
 from croud.projects.commands import project_create, projects_list
 from croud.server import Server
@@ -165,7 +168,7 @@ def assert_query(mock_print, expected):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "execute")
+@mock.patch.object(Query, "run", return_value={"data": []})
 class TestClusters:
     def test_list_no_pid(self, mock_execute, mock_load_config):
         query = """
@@ -223,8 +226,16 @@ class TestClusters:
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "execute")
+@mock.patch.object(Query, "run", return_value={"data": []})
 class TestOrganizations:
+
+    croud = CMD(command_tree)
+
+    def assertGql(self, mock_run, argv, expected_body, expected_vars):
+        func, args = self.croud.resolve(argv)
+        func(args)
+        mock_run.assert_called_once_with(expected_body, expected_vars)
+
     def test_create(self, mock_execute, mock_load_config):
         mutation = """
     mutation {
@@ -268,87 +279,137 @@ class TestOrganizations:
             organizations_list(args)
             assert_query(mock_print, query)
 
-    def test_add_user(self, mock_execute, mock_load_config):
-        query = """
-    mutation {
-        addUserToOrganization(input: {user: "1"}) {
-            user: {
-                uid
-                email
-                organizationId
+    def test_add_user(self, mock_run, mock_load_config):
+        expected_body = dedent(
+            """
+            mutation addUserToOrganization(input: UserInput!) {
+              addUserToOrganization(input: $input) {
+                user {
+                  uid
+                  email
+                  organizationId
+                }
+              }
             }
+        """
+        ).strip()
+        expected_vars = {
+            "organizationId": None,
+            "roleFqn": None,
+            "user": "test@crate.io",
         }
-    }
-    """
 
-        args = Namespace(env="dev", user="1")
-        with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
-            org_users_add(args)
-            assert_query(mock_print, query)
+        argv = ["croud", "organizations", "users", "add", "--user", "test@crate.io"]
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
 
-    def test_add_user_fqn(self, mock_execute, mock_load_config):
-        query = """
-    mutation {
-        addUserToOrganization(input: {user: "1", role_fqn: "org_admin"}) {
-            user: {
-                uid
-                email
-                organizationId
+    def test_add_user_fqn(self, mock_run, mock_load_config):
+        expected_body = dedent(
+            """
+            mutation addUserToOrganization(input: UserInput!) {
+              addUserToOrganization(input: $input) {
+                user {
+                  uid
+                  email
+                  organizationId
+                }
+              }
             }
+        """
+        ).strip()
+        expected_vars = {
+            "organizationId": None,
+            "roleFqn": "org_admin",
+            "user": "test@crate.io",
         }
-    }
-    """
 
-        args = Namespace(env="dev", user="1", role="org_admin")
-        with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
-            org_users_add(args)
-            assert_query(mock_print, query)
+        argv = [
+            "croud",
+            "organizations",
+            "users",
+            "add",
+            "--user",
+            "test@crate.io",
+            "--role",
+            "org_admin",
+        ]
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
 
-    def test_add_user_org_id(self, mock_execute, mock_load_config):
-        query = """
-    mutation {
-        addUserToOrganization(input: {user: "1", organizationId: "abc"}) {
-            user: {
-                uid
-                email
-                organizationId
+    def test_add_user_org_id(self, mock_run, mock_load_config):
+        expected_body = dedent(
+            """
+            mutation addUserToOrganization(input: UserInput!) {
+              addUserToOrganization(input: $input) {
+                user {
+                  uid
+                  email
+                  organizationId
+                }
+              }
             }
+        """
+        ).strip()
+        org_id = str(uuid.uuid4())
+        expected_vars = {
+            "organizationId": org_id,
+            "roleFqn": None,
+            "user": "test@crate.io",
         }
-    }
+
+        argv = [
+            "croud",
+            "organizations",
+            "users",
+            "add",
+            "--user",
+            "test@crate.io",
+            "--org-id",
+            org_id,
+        ]
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
+
+    def test_remove_user(self, mock_run, mock_load_config):
+        expected_body = dedent(
+            """
+            mutation removeUserFromOrganization(input: UserIdInput!) {
+              removeUserFromOrganization(input: $input) {
+                success
+              }
+            }
     """
+        ).strip()
 
-        args = Namespace(env="dev", user="1", org_id="abc")
-        with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
-            org_users_add(args)
-            assert_query(mock_print, query)
+        user_id = str(uuid.uuid4())
+        expected_vars = {"uid": user_id, "organizationId": None}
 
-    def test_remove_user(self, mock_execute, mock_load_config):
-        query = """
-    mutation {
-        removeUserFromOrganization(input: {uid: "1"}) {
-            success
-        }
-    }
+        argv = ["croud", "organizations", "users", "remove", "--user", user_id]
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
+
+    def test_remove_user_org_id(self, mock_run, mock_load_config):
+        expected_body = dedent(
+            """
+            mutation removeUserFromOrganization(input: UserIdInput!) {
+              removeUserFromOrganization(input: $input) {
+                success
+              }
+            }
     """
+        ).strip()
 
-        args = Namespace(env="dev", user="1")
-        with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
-            org_users_remove(args)
-            assert_query(mock_print, query)
+        user_id = str(uuid.uuid4())
+        org_id = str(uuid.uuid4())
+        expected_vars = {"uid": user_id, "organizationId": org_id}
 
-    def test_remove_user_org_id(self, mock_execute, mock_load_config):
-        query = """
-    mutation {
-        removeUserFromOrganization(input: {uid: "1", organizationId: "abc"}) {
-            success
-        }
-    }
-    """
-
-        args = Namespace(env="dev", user="1", org_id="abc")
-        with mock.patch("croud.organizations.users.commands.print_query") as mock_print:
-            org_users_remove(args)
-            assert_query(mock_print, query)
+        argv = [
+            "croud",
+            "organizations",
+            "users",
+            "remove",
+            "--user",
+            user_id,
+            "--org-id",
+            org_id,
+        ]
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)

@@ -76,7 +76,6 @@ class CroudCliHelpFormatter(argparse.HelpFormatter):
 
 class CMD:
     def __init__(self, tree: Dict) -> None:
-        self.root_parser = self._create_root_parser()
         self.cmd_tree = tree
 
     def _create_root_parser(self) -> CroudCliArgumentParser:
@@ -112,7 +111,7 @@ class CMD:
         commands: dict,
         parent_parser: Optional[CroudCliArgumentParser] = None,
     ):
-        parser = parent_parser or self.root_parser
+        parser = parent_parser or self._create_root_parser()
         subparser = parser.add_subparsers()
 
         try:
