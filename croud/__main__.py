@@ -21,6 +21,8 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import sys
+
 import colorama
 
 from croud.clusters.commands import clusters_list
@@ -62,199 +64,204 @@ from croud.projects.commands import project_create, projects_list
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_add, roles_list, roles_remove
 
+# fmt: off
+command_tree = {
+    "me": {
+        "help": "Prints information about the current logged in user.",
+        "extra_args": [output_fmt_arg],
+        "calls": me,
+    },
+    "login": {"help": "Log in to CrateDB Cloud.", "calls": login},
+    "logout": {"help": "Log out from CrateDB Cloud.", "calls": logout},
+    "config": {
+        "help": "Manage croud default configuration values.",
+        "sub_commands": {
+            "get": {
+                "help": "Get default configuration values.",
+                "calls": config_get,
+                "noop_arg": {"choices": ["env", "region", "output-fmt"]},
+            },
+            "set": {
+                "help": "Set default configuration values.",
+                "extra_args": [output_fmt_arg, region_arg],
+                "calls": config_set,
+            },
+        },
+    },
+    "products": {
+        "help": "Manage CrateDB Cloud for Azure IoT products.",
+        "sub_commands": {
+            "deploy": {
+                "help": "Deploy a new CrateDB Cloud for Azure IoT product.",
+                "extra_args": [
+                    output_fmt_arg,
+                    product_tier_arg,
+                    product_unit_arg,
+                    product_name_arg,
+                    project_id_arg,
+                    crate_version_arg,
+                    crate_username_arg,
+                    crate_password_arg,
+                    consumer_eventhub_connection_string_arg,
+                    consumer_eventhub_consumer_group_arg,
+                    consumer_eventhub_lease_storage_connection_string_arg,
+                    consumer_eventhub_lease_storage_container_arg,
+                    consumer_schema_arg,
+                    consumer_table_arg,
+                ],
+                "calls": product_deploy,
+            }
+        },
+    },
+    "projects": {
+        "help": "Manage CrateDB Cloud projects.",
+        "sub_commands": {
+            "create": {
+                "help": "Create a project in the organization the user belongs to.",
+                "extra_args": [
+                    output_fmt_arg,
+                    project_name_arg,
+                    lambda req_opt_group, opt_opt_group: org_id_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    region_arg,
+                ],
+                "calls": project_create,
+            },
+            "list": {
+                "help": "Lists all projects for the current "
+                "user in the specified region.",
+                "extra_args": [output_fmt_arg, region_arg],
+                "calls": projects_list,
+            },
+        },
+    },
+    "clusters": {
+        "help": "Manage CrateDB Cloud clusters.",
+        "sub_commands": {
+            "list": {
+                "help": "List all clusters for the current user.",
+                "extra_args": [output_fmt_arg, project_id_arg, region_arg],
+                "calls": clusters_list,
+            }
+        },
+    },
+    "organizations": {
+        "help": "Manage CrateDB Cloud organizations.",
+        "sub_commands": {
+            "create": {
+                "help": "Creates an organization.",
+                "extra_args": [output_fmt_arg, org_name_arg, org_plan_type_arg],
+                "calls": organizations_create,
+            },
+            "list": {
+                "help": "List all organizations for the logged in user.",
+                "extra_args": [output_fmt_arg],
+                "calls": organizations_list,
+            },
+            "users": {
+                "help": "Add/remove users to/from organizations.",
+                "sub_commands": {
+                    "add": {
+                        "help": "Add user to organization",
+                        "extra_args": [
+                            user_id_or_email_arg,
+                            lambda req_opt_group, opt_opt_group: role_fqn_arg(
+                                req_opt_group, opt_opt_group, False
+                            ),
+                            lambda req_opt_group, opt_opt_group: org_id_arg(
+                                req_opt_group, opt_opt_group, False
+                            ),
+                        ],
+                        "calls": org_users_add,
+                    },
+                    "remove": {
+                        "help": "Remove user from organization",
+                        "extra_args": [
+                            lambda req_opt_group, opt_opt_group: user_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
+                            lambda req_opt_group, opt_opt_group: org_id_arg(
+                                req_opt_group, opt_opt_group, False
+                            ),
+                        ],
+                        "calls": org_users_remove,
+                    },
+                },
+            },
+        },
+    },
+    "users": {
+        "help": "Manage CrateDB Cloud users.",
+        "sub_commands": {
+            "list": {
+                "help": "List all users within organizations that the "
+                "logged in user is part of.",
+                "extra_args": [
+                    output_fmt_arg,
+                    lambda req_opt_group, opt_opt_group: org_id_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
+                    no_org_arg,
+                ],
+                "calls": users_list,
+            },
+            "roles": {
+                "help": "Manage CrateDB Cloud user roles.",
+                "sub_commands": {
+                    "add": {
+                        "help": "Adds a role to a user.",
+                        "extra_args": [
+                            lambda req_opt_group, opt_opt_group: resource_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
+                            lambda req_opt_group, opt_opt_group: user_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
+                            output_fmt_arg,
+                            lambda req_opt_group, opt_opt_group: role_fqn_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
+                        ],
+                        "calls": roles_add,
+                    },
+                    "remove": {
+                        "help": "Removes a role from a user.",
+                        "extra_args": [
+                            lambda req_opt_group, opt_opt_group: resource_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
+                            lambda req_opt_group, opt_opt_group: user_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
+                            output_fmt_arg,
+                            lambda req_opt_group, opt_opt_group: role_fqn_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
+                        ],
+                        "calls": roles_remove,
+                    },
+                    "list": {
+                        "help": "Lists all available roles.",
+                        "extra_args": [output_fmt_arg],
+                        "calls": roles_list,
+                    },
+                },
+            },
+        },
+    },
+}
+# fmt: on
+
 
 def main():
     Configuration.create()
     colorama.init()
 
-    commands: dict = {
-        "me": {
-            "help": "Prints information about the current logged in user.",
-            "extra_args": [output_fmt_arg],
-            "calls": me,
-        },
-        "login": {"help": "Log in to CrateDB Cloud.", "calls": login},
-        "logout": {"help": "Log out from CrateDB Cloud.", "calls": logout},
-        "config": {
-            "help": "Manage croud default configuration values.",
-            "sub_commands": {
-                "get": {
-                    "help": "Get default configuration values.",
-                    "calls": config_get,
-                    "noop_arg": {"choices": ["env", "region", "output-fmt"]},
-                },
-                "set": {
-                    "help": "Set default configuration values.",
-                    "extra_args": [output_fmt_arg, region_arg],
-                    "calls": config_set,
-                },
-            },
-        },
-        "products": {
-            "help": "Manage CrateDB Cloud for Azure IoT products.",
-            "sub_commands": {
-                "deploy": {
-                    "help": "Deploy a new CrateDB Cloud for Azure IoT product.",
-                    "extra_args": [
-                        output_fmt_arg,
-                        product_tier_arg,
-                        product_unit_arg,
-                        product_name_arg,
-                        project_id_arg,
-                        crate_version_arg,
-                        crate_username_arg,
-                        crate_password_arg,
-                        consumer_eventhub_connection_string_arg,
-                        consumer_eventhub_consumer_group_arg,
-                        consumer_eventhub_lease_storage_connection_string_arg,
-                        consumer_eventhub_lease_storage_container_arg,
-                        consumer_schema_arg,
-                        consumer_table_arg,
-                    ],
-                    "calls": product_deploy,
-                }
-            },
-        },
-        "projects": {
-            "help": "Manage CrateDB Cloud projects.",
-            "sub_commands": {
-                "create": {
-                    "help": "Create a project in the organization the user belongs to.",
-                    "extra_args": [
-                        output_fmt_arg,
-                        project_name_arg,
-                        lambda req_opt_group, opt_opt_group: org_id_arg(
-                            req_opt_group, opt_opt_group, True
-                        ),
-                        region_arg,
-                    ],
-                    "calls": project_create,
-                },
-                "list": {
-                    "help": "Lists all projects for the current "
-                    "user in the specified region.",
-                    "extra_args": [output_fmt_arg, region_arg],
-                    "calls": projects_list,
-                },
-            },
-        },
-        "clusters": {
-            "help": "Manage CrateDB Cloud clusters.",
-            "sub_commands": {
-                "list": {
-                    "help": "List all clusters for the current user.",
-                    "extra_args": [output_fmt_arg, project_id_arg, region_arg],
-                    "calls": clusters_list,
-                }
-            },
-        },
-        "organizations": {
-            "help": "Manage CrateDB Cloud organizations.",
-            "sub_commands": {
-                "create": {
-                    "help": "Creates an organization.",
-                    "extra_args": [output_fmt_arg, org_name_arg, org_plan_type_arg],
-                    "calls": organizations_create,
-                },
-                "list": {
-                    "help": "List all organizations for the logged in user.",
-                    "extra_args": [output_fmt_arg],
-                    "calls": organizations_list,
-                },
-                "users": {
-                    "help": "Add/remove users to/from organizations.",
-                    "sub_commands": {
-                        "add": {
-                            "help": "Add user to organization",
-                            "extra_args": [
-                                user_id_or_email_arg,
-                                lambda req_opt_group, opt_opt_group: role_fqn_arg(
-                                    req_opt_group, opt_opt_group, False
-                                ),
-                                lambda req_opt_group, opt_opt_group: org_id_arg(
-                                    req_opt_group, opt_opt_group, False
-                                ),
-                            ],
-                            "calls": org_users_add,
-                        },
-                        "remove": {
-                            "help": "Remove user from organization",
-                            "extra_args": [
-                                lambda req_opt_group, opt_opt_group: user_id_arg(
-                                    req_opt_group, opt_opt_group, True
-                                ),
-                                lambda req_opt_group, opt_opt_group: org_id_arg(
-                                    req_opt_group, opt_opt_group, False
-                                ),
-                            ],
-                            "calls": org_users_remove,
-                        },
-                    },
-                },
-            },
-        },
-        "users": {
-            "help": "Manage CrateDB Cloud users.",
-            "sub_commands": {
-                "list": {
-                    "help": "List all users within organizations that the "
-                    "logged in user is part of.",
-                    "extra_args": [
-                        output_fmt_arg,
-                        lambda req_opt_group, opt_opt_group: org_id_arg(
-                            req_opt_group, opt_opt_group, False
-                        ),
-                        no_org_arg,
-                    ],
-                    "calls": users_list,
-                },
-                "roles": {
-                    "help": "Manage CrateDB Cloud user roles.",
-                    "sub_commands": {
-                        "add": {
-                            "help": "Adds a role to a user.",
-                            "extra_args": [
-                                lambda req_opt_group, opt_opt_group: resource_id_arg(
-                                    req_opt_group, opt_opt_group, True
-                                ),
-                                lambda req_opt_group, opt_opt_group: user_id_arg(
-                                    req_opt_group, opt_opt_group, True
-                                ),
-                                output_fmt_arg,
-                                lambda req_opt_group, opt_opt_group: role_fqn_arg(
-                                    req_opt_group, opt_opt_group, True
-                                ),
-                            ],
-                            "calls": roles_add,
-                        },
-                        "remove": {
-                            "help": "Removes a role from a user.",
-                            "extra_args": [
-                                lambda req_opt_group, opt_opt_group: resource_id_arg(
-                                    req_opt_group, opt_opt_group, True
-                                ),
-                                lambda req_opt_group, opt_opt_group: user_id_arg(
-                                    req_opt_group, opt_opt_group, True
-                                ),
-                                output_fmt_arg,
-                                lambda req_opt_group, opt_opt_group: role_fqn_arg(
-                                    req_opt_group, opt_opt_group, True
-                                ),
-                            ],
-                            "calls": roles_remove,
-                        },
-                        "list": {
-                            "help": "Lists all available roles.",
-                            "extra_args": [output_fmt_arg],
-                            "calls": roles_list,
-                        },
-                    },
-                },
-            },
-        },
-    }
-    croud_cmd = CMD()
-    croud_cmd.create_parent_cmd(1, commands)
+    croud = CMD(command_tree)
+    resolver, arguments = croud.resolve(sys.argv)
+    if resolver:
+        resolver(arguments)
 
 
 if __name__ == "__main__":

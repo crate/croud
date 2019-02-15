@@ -23,7 +23,7 @@ import argparse
 import sys
 from argparse import ArgumentParser, Namespace, _ArgumentGroup, _SubParsersAction
 from os.path import basename
-from typing import Callable, Optional
+from typing import Callable, Dict, List, Optional, Tuple
 
 from croud import __version__
 
@@ -75,8 +75,13 @@ class CroudCliHelpFormatter(argparse.HelpFormatter):
 
 
 class CMD:
-    def __init__(self):
-        parser: CroudCliArgumentParser = CroudCliArgumentParser(
+    def __init__(self, tree: Dict) -> None:
+        self.root_parser = self._create_root_parser()
+        self.cmd_tree = tree
+
+    def _create_root_parser(self) -> CroudCliArgumentParser:
+        parser = CroudCliArgumentParser(
+            prog="croud",
             description="A command line interface for CrateDB Cloud.",
             usage="croud [subcommand] {parameters}",
             formatter_class=CroudCliHelpFormatter,
@@ -98,29 +103,27 @@ class CMD:
             default=argparse.SUPPRESS,
             help="Show this help message and exit.",
         )
-        self.root_parser = parser
+        return parser
 
-    def create_parent_cmd(
+    def _create_parent_cmd(
         self,
         depth: int,
+        argv: List[str],
         commands: dict,
         parent_parser: Optional[CroudCliArgumentParser] = None,
     ):
-        parser = self.root_parser
-        if parent_parser:
-            # a parent parser exists, so use it to parse it's subcommand(s)
-            parser = parent_parser
-
+        parser = parent_parser or self.root_parser
         subparser = parser.add_subparsers()
 
         try:
-            context_name = sys.argv[depth]
+            context_name = argv[depth]
         except IndexError:
-            context_name = sys.argv[depth - 1]
+            context_name = argv[depth - 1]
         context_name = basename(context_name)
 
         context: Optional[ArgumentParser] = None
-        call: Callable
+        resolver: Optional[Callable] = None
+
         for key, command in commands.items():
             subparser.add_parser(key, help=command.get("help"))
 
@@ -143,7 +146,7 @@ class CMD:
                 if "noop_arg" in command:
                     cmd = command["noop_arg"]
                     context.add_argument(key, choices=cmd["choices"])
-                    call = command["calls"]
+                    resolver = command["calls"]
                     break
 
                 if "extra_args" in command:
@@ -151,16 +154,15 @@ class CMD:
                         arg_def(req_args, opt_args)
 
                 if "sub_commands" in command:
-                    self.create_parent_cmd(
-                        depth + 1, command["sub_commands"], parent_parser=context
+                    return self._create_parent_cmd(
+                        depth + 1, argv, command["sub_commands"], parent_parser=context
                     )
-                    return
                 else:
                     add_default_args(opt_args)
-                    call = command["calls"]
+                    resolver = command["calls"]
                 break
 
-        cmd_args = sys.argv[depth : depth + 1]
+        cmd_args = argv[depth : depth + 1]
         if context:
             # supported subcommand used
             try:
@@ -170,8 +172,9 @@ class CMD:
                 parser.print_help()
                 exit(1)
             parser.parse_args(cmd_args)
-            call(parse_args(context, depth + 1))
+            return resolver, context.parse_args(argv[depth + 1 :])
         else:
+            # command has no parent parser
             if cmd_args:
                 format_usage(parser, depth + 1, cmd_args)
                 # root level argument (e.g. --version)
@@ -180,10 +183,10 @@ class CMD:
                 format_usage(parser, depth + 1)
                 # show help if no argument passed at all
                 parser.print_help()
+        return (None, None)
 
-
-def parse_args(parser: ArgumentParser, position: int) -> Namespace:
-    return parser.parse_args(sys.argv[position:])
+    def resolve(self, argv) -> Tuple[Optional[Callable], Namespace]:
+        return self._create_parent_cmd(1, argv, self.cmd_tree)
 
 
 def add_default_args(opt_args: _ArgumentGroup) -> None:
