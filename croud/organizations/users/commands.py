@@ -29,7 +29,7 @@ from croud.gql import Query, print_query
 def org_users_add(args: Namespace):
     mutation = textwrap.dedent(
         """
-        mutation addUserToOrganization(input: UserInput!) {
+        mutation addUserToOrganization(input: AddUserToOrganizationInput!) {
           addUserToOrganization(input: $input) {
             user {
               uid
@@ -50,7 +50,7 @@ def org_users_add(args: Namespace):
 def org_users_remove(args: Namespace):
     mutation = textwrap.dedent(
         """
-        mutation removeUserFromOrganization(input: UserIdInput!) {
+        mutation removeUserFromOrganization(input: RemoveUserFromOrganizationInput!) {
           removeUserFromOrganization(input: $input) {
             success
           }
