@@ -114,66 +114,73 @@ def test_print_query_not_successful(
 
 
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-class PrintQueryTest:
-    @patch("croud.gql.print_error")
-    def test_print_query_error(self, print_error, load_config):
-        query = Query("", Namespace(env="test"))
-        query._error = "This is a GraphQL error message"
+@patch("croud.gql.print_error")
+def test_print_query_error(print_error, load_config):
+    query = Query("", Namespace(env="test"))
+    query._error = "This is a GraphQL error message"
 
-        print_query(query)
-        print_error.assert_called_once_with(query._error)
+    print_query(query)
+    print_error.assert_called_once_with(query._error)
 
-    @patch("croud.gql.print_info")
-    def test_print_query_no_response(self, print_info, load_config):
-        query = Query("", Namespace(env="test"))
-        query._response = {}
 
-        print_query(query)
-        expected_message = "Result contained no data to print."
-        print_info.assert_called_once_with(expected_message)
+@patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@patch("croud.gql.print_info")
+def test_print_query_no_response(print_info, load_config):
+    query = Query("", Namespace(env="test"))
+    query._response = {}
 
-    @patch("croud.gql.print_error")
-    def test_print_query_malformatted_response(self, print_error, load_config):
-        query = Query("", Namespace(env="test"))
-        query._response = 42
+    print_query(query)
+    expected_message = "Result contained no data to print."
+    print_info.assert_called_once_with(expected_message)
 
-        print_query(query)
-        expected_message = "Result has no proper format to print."
-        print_error.assert_called_once_with(expected_message)
 
-    @pytest.mark.parametrize("format", ["json", "tabular"])
-    @pytest.mark.parametrize(
-        "response, key",
-        [
-            ({"data": ["foo", "bar"]}, None),
-            ({"allNames": {"data": ["foo", "bar"]}}, "allNames"),
-            ({"allNames": ["foo", "bar"]}, "allNames"),
-        ],
-    )
-    @patch("croud.gql.print_format")
-    def test_print_query_data(self, print_format, response, key, format, load_config):
-        query = Query("", Namespace(env="test", output_fmt=format))
-        query._response = response
+@patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@patch("croud.gql.print_error")
+def test_print_query_malformatted_response(print_error, load_config):
+    query = Query("", Namespace(env="test"))
+    query._response = 42
 
-        print_query(query, key)
-        print_format.assert_called_once_with(["foo", "bar"], format)
+    print_query(query)
+    expected_message = "Result has no proper format to print."
+    print_error.assert_called_once_with(expected_message)
 
-    @pytest.mark.parametrize(
-        "response, key",
-        [
-            ({"data": []}, None),
-            ({"allNames": {"data": []}}, "allNames"),
-            ({"allNames": []}, "allNames"),
-        ],
-    )
-    @patch("croud.gql.print_info")
-    def test_print_query_no_data(self, print_info, response, key, load_config):
-        query = Query("", Namespace(env="test"))
-        query._response = response
 
-        print_query(query, key)
-        expected_message = "Result contained no data to print."
-        print_info.assert_called_once_with(expected_message)
+@pytest.mark.parametrize("format", ["json", "tabular"])
+@pytest.mark.parametrize(
+    ["response", "key"],
+    [
+        ({"data": ["foo", "bar"]}, None),
+        ({"allNames": {"data": ["foo", "bar"]}}, "allNames"),
+        ({"allNames": ["foo", "bar"]}, "allNames"),
+    ],
+)
+@patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@patch("croud.gql.print_format")
+def test_print_query_data(print_format, load_config, response, key, format):
+    query = Query("", Namespace(env="test", output_fmt=format))
+    query._response = response
+
+    print_query(query, key)
+    print_format.assert_called_once_with(["foo", "bar"], format)
+
+
+@pytest.mark.parametrize(
+    ["response", "key"],
+    [
+        ({"data": []}, None),
+        ({"allNames": {"data": []}}, "allNames"),
+        ({"allNames": []}, "allNames"),
+    ],
+)
+@patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@patch("croud.gql.print_info")
+def test_print_query_no_data(print_info, load_config, response, key):
+    query = Query("", Namespace(env="test"))
+    query._response = response
+
+    print_query(query, key)
+    expected_message = "Result contained no data to print."
+    print_info.assert_called_once_with(expected_message)
 
 
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
