@@ -20,45 +20,48 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 
-import textwrap
 from argparse import Namespace
 
 from croud.gql import Query, print_query
 
 
 def org_users_add(args: Namespace):
-    mutation = textwrap.dedent(
-        """
-        mutation addUserToOrganization(input: AddUserToOrganizationInput!) {
-          addUserToOrganization(input: $input) {
-            user {
-              uid
-              email
-              organizationId
-            }
-          }
-        }
-    """
-    ).strip()
+    qargs = f'user: "{args.user}"'
+    if hasattr(args, "role") and args.role is not None:
+        qargs += f', role_fqn: "{args.role}"'
+    if hasattr(args, "org_id") and args.org_id is not None:
+        qargs += f', organizationId: "{args.org_id}"'
 
-    vars = {"user": args.user, "roleFqn": args.role, "organizationId": args.org_id}
+    mutation = f"""
+    mutation {{
+        addUserToOrganization(input: {{{qargs}}}) {{
+            user {{
+                uid
+                email
+                organizationId
+            }}
+        }}
+    }}
+    """
+
     query = Query(mutation, args)
-    query.execute(vars)
+    query.execute()
     print_query(query, "addUserToOrganization")
 
 
 def org_users_remove(args: Namespace):
-    mutation = textwrap.dedent(
-        """
-        mutation removeUserFromOrganization(input: RemoveUserFromOrganizationInput!) {
-          removeUserFromOrganization(input: $input) {
-            success
-          }
-        }
-    """
-    ).strip()
+    qargs = f'uid: "{args.user}"'
+    if hasattr(args, "org_id") and args.org_id is not None:
+        qargs += f', organizationId: "{args.org_id}"'
 
-    vars = {"uid": args.user, "organizationId": args.org_id}
+    mutation = f"""
+    mutation {{
+        removeUserFromOrganization(input: {{{qargs}}}) {{
+            success
+        }}
+    }}
+    """
+
     query = Query(mutation, args)
-    query.execute(vars)
+    query.execute()
     print_query(query, "removeUserFromOrganization")
