@@ -47,8 +47,8 @@ def consumer_sets_list(args: Namespace) -> None:
             }
         }
     }
-    """
-    ).strip()  # noqa
+    """  # noqa
+    ).strip()
 
     vars = {
         "projectId": args.project_id,

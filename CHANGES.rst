@@ -8,11 +8,11 @@ Unreleased
 - Added ``consumer-sets list`` command that allows users to list their consumer
   sets and filter them by project ID, cluster ID and product ID.
 
-- Added ``projects users add`` command that allow users with permission
+- Added ``projects users add`` command that allows users with permission
   to add users to projects by specifying a project ID and a user email or
   ID.
 
-- Added ``projects users remove`` command that allow users with permission
+- Added ``projects users remove`` command that allows users with permission
   to remove users from projects by specifying a project ID and a user email or
   ID.
 
