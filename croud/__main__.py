@@ -162,10 +162,10 @@ command_tree = {
                 "calls": projects_list,
             },
             "users": {
-                "help": "Add/Remove users to/from a project.",
+                "help": "Manage users in projects.",
                 "sub_commands": {
                     "add": {
-                        "help": "Add user to a project.",
+                        "help": "Add users to projects.",
                         "extra_args": [
                             lambda req_opt_group, opt_opt_group: project_id_arg(
                                 req_opt_group, opt_opt_group, True
@@ -175,7 +175,7 @@ command_tree = {
                         "calls": project_user_add,
                     },
                     "remove": {
-                        "help": "Remove user from a project.",
+                        "help": "Remove users from projects.",
                         "extra_args": [
                             lambda req_opt_group, opt_opt_group: project_id_arg(
                                 req_opt_group, opt_opt_group, True
