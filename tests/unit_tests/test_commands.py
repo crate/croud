@@ -33,7 +33,6 @@ from croud.logout import logout
 from croud.organizations.commands import organizations_create, organizations_list
 from croud.products.deploy import product_deploy
 from croud.projects.commands import project_create, projects_list
-from croud.projects.users.commands import project_user_add, project_user_remove
 from croud.server import Server
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_add, roles_list, roles_remove
@@ -447,51 +446,59 @@ class TestProjects:
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "execute")
-class TestProjectsUsers:
-    def test_add(self, mock_execute, mock_load_config):
-        mutation = """
-    mutation {
-        addUserToProject(input: {
-            projectId: "project-id",
-            user: "user-email-or-id"
-        }) {
-            success
-        }
-    }
-    """
+@mock.patch.object(Query, "run", return_value={"data": []})
+class TestProjectsUsers(CommandTestCase):
+    def test_add(self, mock_run, mock_load_config):
+        expected_body = dedent(
+            """
+            mutation addUserToProject($input: UserProjectInput!) {
+              addUserToProject(input: $input) {
+                user {
+                  uid
+                  email
+                  organizationId
+                }
+              }
+            }
+        """
+        ).strip()
+        expected_vars = {"input": {"user": "test@crate.io", "projectId": "abc"}}
 
-        args = Namespace(
-            env="dev",
-            project_id="project-id",
-            user="user-email-or-id",
-            output_fmt="json",
-        )
-        with mock.patch("croud.projects.users.commands.print_query") as mock_print:
-            project_user_add(args)
-            assert_query(mock_print, mutation)
+        argv = [
+            "croud",
+            "projects",
+            "users",
+            "add",
+            "--user",
+            "test@crate.io",
+            "--project-id",
+            "abc",
+        ]
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
 
-    def test_remove(self, mock_execute, mock_load_config):
-        mutation = """
-    mutation {
-        removeUserFromProject(input: {
-            projectId: "project-id",
-            user: "user-email-or-id"
-        }) {
-            success
-        }
-    }
-    """
+    def test_remove(self, mock_run, mock_load_config):
+        expected_body = dedent(
+            """
+            mutation removeUserFromProject($input: UserProjectInput!) {
+              removeUserFromProject(input: $input) {
+                success
+              }
+            }
+        """
+        ).strip()
+        expected_vars = {"input": {"user": "test@crate.io", "projectId": "abc"}}
 
-        args = Namespace(
-            env="dev",
-            project_id="project-id",
-            user="user-email-or-id",
-            output_fmt="json",
-        )
-        with mock.patch("croud.projects.users.commands.print_query") as mock_print:
-            project_user_remove(args)
-            assert_query(mock_print, mutation)
+        argv = [
+            "croud",
+            "projects",
+            "users",
+            "remove",
+            "--user",
+            "test@crate.io",
+            "--project-id",
+            "abc",
+        ]
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)

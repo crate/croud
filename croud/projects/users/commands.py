@@ -17,6 +17,7 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import textwrap
 from argparse import Namespace
 
 from croud.gql import Query, print_query
@@ -27,20 +28,25 @@ def project_user_add(args: Namespace) -> None:
     Adds a user to a project.
     """
 
-    _query = f"""
-    mutation {{
-        addUserToProject(input: {{
-            projectId: "{args.project_id}",
-            user: "{args.user}"
-        }}) {{
-            success
-        }}
-    }}
+    mutation = textwrap.dedent(
+        """
+        mutation addUserToProject($input: UserProjectInput!) {
+          addUserToProject(input: $input) {
+            user {
+              uid
+              email
+              organizationId
+            }
+          }
+        }
     """
+    ).strip()
 
-    query = Query(_query, args)
-    query.execute()
-    print_query(query, "addUserToProject", "Successfully added user to project.")
+    vars = {"input": {"user": args.user, "projectId": args.project_id}}
+
+    query = Query(mutation, args)
+    query.execute(vars)
+    print_query(query, "addUserToProject")
 
 
 def project_user_remove(args: Namespace) -> None:
@@ -48,19 +54,18 @@ def project_user_remove(args: Namespace) -> None:
     Removes a user to a project.
     """
 
-    _query = f"""
-    mutation {{
-        removeUserFromProject(input: {{
-            projectId: "{args.project_id}",
-            user: "{args.user}"
-        }}) {{
+    mutation = textwrap.dedent(
+        """
+        mutation removeUserFromProject($input: UserProjectInput!) {
+          removeUserFromProject(input: $input) {
             success
-        }}
-    }}
+          }
+        }
     """
+    ).strip()
 
-    query = Query(_query, args)
-    query.execute()
-    print_query(
-        query, "removeUserFromProject", "Successfully removed user from project."
-    )
+    vars = {"input": {"user": args.user, "projectId": args.project_id}}
+
+    query = Query(mutation, args)
+    query.execute(vars)
+    print_query(query, "removeUserFromProject")
