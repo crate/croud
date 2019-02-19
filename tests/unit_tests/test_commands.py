@@ -228,6 +228,8 @@ class TestClusters:
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "run", return_value={"data": []})
 class TestOrganizations(CommandTestCase):
+    remove_input = "RemoveUserFromOrganizationInput"
+
     def test_create(self, mock_execute, mock_load_config):
         mutation = """
     mutation {
@@ -274,7 +276,7 @@ class TestOrganizations(CommandTestCase):
     def test_add_user(self, mock_run, mock_load_config):
         expected_body = dedent(
             """
-            mutation addUserToOrganization(input: UserInput!) {
+            mutation addUserToOrganization($input: AddUserToOrganizationInput!) {
               addUserToOrganization(input: $input) {
                 user {
                   uid
@@ -285,11 +287,7 @@ class TestOrganizations(CommandTestCase):
             }
         """
         ).strip()
-        expected_vars = {
-            "organizationId": None,
-            "roleFqn": None,
-            "user": "test@crate.io",
-        }
+        expected_vars = {"input": {"user": "test@crate.io", "organizationId": None}}
 
         argv = ["croud", "organizations", "users", "add", "--user", "test@crate.io"]
         self.assertGql(mock_run, argv, expected_body, expected_vars)
@@ -297,7 +295,7 @@ class TestOrganizations(CommandTestCase):
     def test_add_user_fqn(self, mock_run, mock_load_config):
         expected_body = dedent(
             """
-            mutation addUserToOrganization(input: UserInput!) {
+            mutation addUserToOrganization($input: AddUserToOrganizationInput!) {
               addUserToOrganization(input: $input) {
                 user {
                   uid
@@ -309,9 +307,11 @@ class TestOrganizations(CommandTestCase):
         """
         ).strip()
         expected_vars = {
-            "organizationId": None,
-            "roleFqn": "org_admin",
-            "user": "test@crate.io",
+            "input": {
+                "roleFqn": "org_admin",
+                "user": "test@crate.io",
+                "organizationId": None,
+            }
         }
 
         argv = [
@@ -329,7 +329,7 @@ class TestOrganizations(CommandTestCase):
     def test_add_user_org_id(self, mock_run, mock_load_config):
         expected_body = dedent(
             """
-            mutation addUserToOrganization(input: UserInput!) {
+            mutation addUserToOrganization($input: AddUserToOrganizationInput!) {
               addUserToOrganization(input: $input) {
                 user {
                   uid
@@ -341,11 +341,7 @@ class TestOrganizations(CommandTestCase):
         """
         ).strip()
         org_id = str(uuid.uuid4())
-        expected_vars = {
-            "organizationId": org_id,
-            "roleFqn": None,
-            "user": "test@crate.io",
-        }
+        expected_vars = {"input": {"organizationId": org_id, "user": "test@crate.io"}}
 
         argv = [
             "croud",
@@ -361,35 +357,35 @@ class TestOrganizations(CommandTestCase):
 
     def test_remove_user(self, mock_run, mock_load_config):
         expected_body = dedent(
-            """
-            mutation removeUserFromOrganization(input: UserIdInput!) {
-              removeUserFromOrganization(input: $input) {
+            f"""
+            mutation removeUserFromOrganization($input: {self.remove_input}!) {{
+              removeUserFromOrganization(input: $input) {{
                 success
-              }
-            }
+              }}
+            }}
         """
         ).strip()
 
         user_id = str(uuid.uuid4())
-        expected_vars = {"uid": user_id, "organizationId": None}
+        expected_vars = {"input": {"uid": user_id, "organizationId": None}}
 
         argv = ["croud", "organizations", "users", "remove", "--user", user_id]
         self.assertGql(mock_run, argv, expected_body, expected_vars)
 
     def test_remove_user_org_id(self, mock_run, mock_load_config):
         expected_body = dedent(
-            """
-            mutation removeUserFromOrganization(input: UserIdInput!) {
-              removeUserFromOrganization(input: $input) {
+            f"""
+            mutation removeUserFromOrganization($input: {self.remove_input}!) {{
+              removeUserFromOrganization(input: $input) {{
                 success
-              }
-            }
+              }}
+            }}
         """
         ).strip()
 
         user_id = str(uuid.uuid4())
         org_id = str(uuid.uuid4())
-        expected_vars = {"uid": user_id, "organizationId": org_id}
+        expected_vars = {"input": {"uid": user_id, "organizationId": org_id}}
 
         argv = [
             "croud",
