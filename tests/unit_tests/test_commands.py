@@ -511,12 +511,7 @@ class TestUsersRoles:
         mutation = f"""
     mutation {{
         addRoleToUser(input: {input_args}) {{
-            user {{
-                uid,
-                email,
-                username,
-                organizationId
-            }}
+            success
         }}
     }}
     """
