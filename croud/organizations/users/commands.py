@@ -29,7 +29,7 @@ from croud.gql import Query, print_query
 def org_users_add(args: Namespace):
     mutation = textwrap.dedent(
         """
-        mutation addUserToOrganization(input: UserInput!) {
+        mutation addUserToOrganization($input: AddUserToOrganizationInput!) {
           addUserToOrganization(input: $input) {
             user {
               uid
@@ -41,7 +41,10 @@ def org_users_add(args: Namespace):
     """
     ).strip()
 
-    vars = {"user": args.user, "roleFqn": args.role, "organizationId": args.org_id}
+    vars = {"input": {"user": args.user, "organizationId": args.org_id}}
+    if args.role is not None:
+        vars["input"]["roleFqn"] = args.role
+
     query = Query(mutation, args)
     query.execute(vars)
     print_query(query, "addUserToOrganization")
@@ -50,7 +53,7 @@ def org_users_add(args: Namespace):
 def org_users_remove(args: Namespace):
     mutation = textwrap.dedent(
         """
-        mutation removeUserFromOrganization(input: UserIdInput!) {
+        mutation removeUserFromOrganization($input: RemoveUserFromOrganizationInput!) {
           removeUserFromOrganization(input: $input) {
             success
           }
@@ -58,7 +61,8 @@ def org_users_remove(args: Namespace):
     """
     ).strip()
 
-    vars = {"uid": args.user, "organizationId": args.org_id}
+    vars = {"input": {"uid": args.user, "organizationId": args.org_id}}
+
     query = Query(mutation, args)
     query.execute(vars)
     print_query(query, "removeUserFromOrganization")
