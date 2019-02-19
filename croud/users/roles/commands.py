@@ -34,12 +34,7 @@ def roles_add(args: Namespace) -> None:
     mutation = f"""
     mutation {{
         addRoleToUser(input: {{{_get_mutation_input(args)}}}) {{
-            user {{
-                uid,
-                email,
-                username,
-                organizationId
-            }}
+            success
         }}
     }}
     """
