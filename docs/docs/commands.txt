@@ -557,12 +557,21 @@ Here, ``id`` is the project ID assigned by CrateDB Cloud.
 
 .. projects.users:
 
+``users``
+---------
+
 The ``projects users`` subcommand allows you to add or remove users
 from projects.
 
 .. code-block:: console
 
     sh$ croud projects users [SUBCOMMAND] [OPTIONS]
+
+
+.. note::
+
+    These commands are privileged to **Organization Admins** only.
+
 
 .. projects.users.add:
 
@@ -591,8 +600,8 @@ Available options:
 
 .. projects.users.remove:
 
-The ``projects users remove`` subcommand allows you to add a user to
-a project.
+The ``projects users remove`` subcommand allows you to remove users
+from projects.
 
 .. code-block:: console
 
