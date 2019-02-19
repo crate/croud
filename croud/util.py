@@ -21,7 +21,7 @@ import os
 import platform
 import subprocess
 import webbrowser
-from typing import Tuple
+from typing import Dict, Tuple
 
 
 # This function was copied from the <https://github.com/Azure/azure-cli>
@@ -76,3 +76,18 @@ def open_page_in_browser(url: str) -> int:
         except FileNotFoundError:  # WSL might be too old
             pass
     return webbrowser.open_new_tab(url)
+
+
+def clean_dict(data: Dict) -> Dict:
+    """Clean a dictionary recursively from keys with None values.
+    Returns a new instance of a dict.
+    """
+    cleaned = {}
+    for k, v in data.items():
+        if v is None:
+            continue
+        elif isinstance(v, dict):
+            cleaned[k] = clean_dict(v)
+        else:
+            cleaned[k] = v
+    return cleaned

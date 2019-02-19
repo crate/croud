@@ -21,6 +21,7 @@ from argparse import Namespace
 from textwrap import dedent
 
 from croud.gql import Query, print_query
+from croud.util import clean_dict
 
 
 def consumer_sets_list(args: Namespace) -> None:
@@ -46,11 +47,13 @@ def consumer_sets_list(args: Namespace) -> None:
     """  # noqa
     ).strip()
 
-    vars = {
-        "projectId": args.project_id,
-        "productId": args.product_id,
-        "clusterId": args.cluster_id,
-    }
+    vars = clean_dict(
+        {
+            "projectId": args.project_id,
+            "productId": args.product_id,
+            "clusterId": args.cluster_id,
+        }
+    )
 
     query = Query(body, args, endpoint="/product/graphql")
     query.execute(vars)
@@ -71,20 +74,25 @@ def consumer_sets_edit(args: Namespace) -> None:
     """  # noqa
     ).strip()
 
-    vars = {
-        "id": args.consumer_set_id,
-        "input": {
-            "eventhub": {
-                "connectionString": args.consumer_eventhub_connection_string,
-                "consumerGroup": args.consumer_eventhub_consumer_group,
-                "leaseStorage": {
-                    "connectionString": args.consumer_eventhub_lease_storage_connection_string,  # noqa
-                    "container": args.consumer_eventhub_lease_storage_container,
+    vars = clean_dict(
+        {
+            "id": args.consumer_set_id,
+            "input": {
+                "eventhub": {
+                    "connectionString": args.consumer_eventhub_connection_string,
+                    "consumerGroup": args.consumer_eventhub_consumer_group,
+                    "leaseStorage": {
+                        "connectionString": args.consumer_eventhub_lease_storage_connection_string,  # noqa
+                        "container": args.consumer_eventhub_lease_storage_container,
+                    },
+                },
+                "cluster": {
+                    "schema": args.consumer_schema,
+                    "table": args.consumer_table,
                 },
             },
-            "cluster": {"schema": args.consumer_schema, "table": args.consumer_table},
-        },
-    }
+        }
+    )
 
     query = Query(body, args, endpoint="/product/graphql")
     query.execute(vars)

@@ -20,8 +20,11 @@
 import unittest
 from unittest import mock
 
+import pytest
+
 from croud.util import (
     can_launch_browser,
+    clean_dict,
     get_platform_info,
     is_wsl,
     open_page_in_browser,
@@ -89,3 +92,21 @@ class TestUtils(unittest.TestCase):
             env_mock.get.return_value = "foo"
             result = can_launch_browser()
             self.assertFalse(result)
+
+
+@pytest.mark.parametrize(
+    ["raw", "cleaned"],
+    [
+        ({}, {}),
+        (
+            {"int": 0, "str": "", "none": None, "list": []},
+            {"int": 0, "str": "", "list": []},
+        ),
+        (
+            {"empty": {}, "nested": {"value": 42, "none": None}},
+            {"empty": {}, "nested": {"value": 42}},
+        ),
+    ],
+)
+def test_clean_dict(raw, cleaned):
+    assert clean_dict(raw) == cleaned
