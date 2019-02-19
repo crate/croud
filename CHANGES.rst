@@ -5,9 +5,6 @@ Changes for croud
 Unreleased
 ==========
 
-- Fixed ``addUserToOrganization`` and  ``removeUserFromOrganization``
-  mutations.
-
 - Added ``consumer-sets list`` command that allows users to list their consumer
   sets and filter them by project ID, cluster ID and product ID.
 
