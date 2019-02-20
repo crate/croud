@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.8.0 - 2019/02/20
+==================
+
 - Added ``consumer-sets edit`` command that allows users to edit their consumer
   sets.
 
@@ -28,9 +31,6 @@ Unreleased
   to add new users to organizations they are admins for, by specifying
   an organization ID, and a user email address or ID. Super users can
   add users to any organization.
-
-- Update to `crate-docs-theme <https://github.com/crate/crate-docs-theme>`_
-  0.5.70.
 
 0.7.0 - 2019/02/06
 ==================
