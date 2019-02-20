@@ -356,7 +356,7 @@ def consumer_set_id_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> N
 
 
 def consumer_eventhub_connection_string_arg(
-    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
 ) -> None:
     group = req_args if required else opt_args
     group.add_argument(
@@ -368,7 +368,7 @@ def consumer_eventhub_connection_string_arg(
 
 
 def consumer_eventhub_consumer_group_arg(
-    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
 ) -> None:
     group = req_args if required else opt_args
     group.add_argument(
@@ -380,7 +380,7 @@ def consumer_eventhub_consumer_group_arg(
 
 
 def consumer_eventhub_lease_storage_connection_string_arg(
-    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
 ) -> None:
     group = req_args if required else opt_args
     group.add_argument(
@@ -392,7 +392,7 @@ def consumer_eventhub_lease_storage_connection_string_arg(
 
 
 def consumer_eventhub_lease_storage_container_arg(
-    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
 ) -> None:
     group = req_args if required else opt_args
     group.add_argument(
@@ -404,7 +404,7 @@ def consumer_eventhub_lease_storage_container_arg(
 
 
 def consumer_schema_arg(
-    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
 ) -> None:
     group = req_args if required else opt_args
     group.add_argument(
@@ -416,7 +416,7 @@ def consumer_schema_arg(
 
 
 def consumer_table_arg(
-    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
 ) -> None:
     group = req_args if required else opt_args
     group.add_argument(

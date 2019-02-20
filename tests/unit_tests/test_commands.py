@@ -23,7 +23,7 @@ from textwrap import dedent
 from unittest import mock
 
 import pytest
-from util import CommandTestCase
+from tests.unit_tests.util import CommandTestCase
 
 from croud.clusters.commands import clusters_list
 from croud.config import Configuration, config_get, config_set
@@ -31,7 +31,6 @@ from croud.gql import Query
 from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
 from croud.organizations.commands import organizations_create, organizations_list
-from croud.products.deploy import product_deploy
 from croud.projects.commands import project_create, projects_list
 from croud.projects.users.commands import project_user_add, project_user_remove
 from croud.server import Server
@@ -630,61 +629,75 @@ class TestUsers:
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "execute")
-class TestProducts:
-    def test_deploy_product(self, mock_execute, mock_load_config):
-        mutation = """
+@mock.patch.object(Query, "run", return_value={"data": []})
+@mock.patch("croud.products.deploy.print_query")
+class TestProducts(CommandTestCase):
+    def test_deploy_product(self, mock_print, mock_run, mock_load_config):
+        expected_body = """
 mutation {
     createProduct(
-        tier: "s1",
+        tier: "S0",
         unit: 0,
-        projectId: "proj_id",
-        name: "test_product",
+        projectId: "705a51b2-a290-4902-a477-a64a0d51bced",
+        name: "iot",
         cluster: {
-            version: "3.1.6",
-            username: "crate",
-            password: "crate"
+            version: "3.2.3",
+            username: "foobar",
+            password: "s3cr3t!"
         },
         consumer: {
             eventhub: {
-                connectionString: "string_connection_eventh",
-                consumerGroup: "group_consumer_eventh",
+                connectionString: "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=...",
+                consumerGroup: "$Default",
                 leaseStorage: {
-                    connectionString: "str_conn_storage_lease",
-                    container: "container_storage_lease"
+                    connectionString: "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",
+                    container: "lease_container"
                 }
             },
-            schema: "schema_consumer",
-            table: "table_consumer"
+            schema: "doc",
+            table: "raw"
         }
     ) {
         id,
         url
     }
 }
-    """
+    """  # noqa
 
-        args = Namespace(
-            env="dev",
-            tier="s1",
-            unit=0,
-            project_id="proj_id",
-            product_name="test_product",
-            version="3.1.6",
-            username="crate",
-            password="crate",
-            consumer_eventhub_connection_string="string_connection_eventh",
-            consumer_eventhub_consumer_group="group_consumer_eventh",
-            consumer_eventhub_lease_storage_connection_string="str_conn_storage_lease",
-            consumer_eventhub_lease_storage_container="container_storage_lease",
-            consumer_schema="schema_consumer",
-            consumer_table="table_consumer",
-            output_fmt="table",
-        )
-        with mock.patch("croud.products.deploy.print_query") as mock_print:
-            product_deploy(args)
-            assert_query(mock_print, mutation)
-            assert mock_print.call_args[0][0]._endpoint == "/product/graphql"
+        argv = [
+            "croud",
+            "products",
+            "deploy",
+            "--tier",
+            "S0",
+            "--unit",
+            "0",
+            "--project-id",
+            "705a51b2-a290-4902-a477-a64a0d51bced",
+            "--product-name",
+            "iot",
+            "--version",
+            "3.2.3",
+            "--username",
+            "foobar",
+            "--password",
+            "s3cr3t!",
+            "--consumer-table",
+            "raw",
+            "--consumer-schema",
+            "doc",
+            "--consumer-eventhub-connection-string",
+            "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=...",  # noqa
+            "--consumer-eventhub-consumer-group",
+            "$Default",
+            "--consumer-eventhub-lease-storage-connection-string",
+            "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",  # noqa
+            "--consumer-eventhub-lease-storage-container",
+            "lease_container",
+        ]
+
+        self.assertGql(mock_run, argv, expected_body, None)
+        assert mock_print.call_args[0][0]._endpoint == "/product/graphql"
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)

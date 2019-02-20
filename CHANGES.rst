@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Fixed ``products deploy`` command which led to an exception in the command
+  line argument parsing.
+
 0.8.0 - 2019/02/20
 ==================
 
