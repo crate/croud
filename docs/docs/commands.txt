@@ -408,61 +408,12 @@ Available options:
 |                                                       |          | - ``table``                              |
 +-------------------------------------------------------+----------+------------------------------------------+
 
-
 .. _consumer-sets:
 
 ``consumer-sets``
 =================
 
-The ``consumer-sets`` command allows you to list consumer sets for
-a CrateDB Cloud product.
-
-You must specify a subcommand, like so:
-
-.. code-block:: console
-
-    sh$ croud consumer-sets [SUBCOMMAND] [OPTIONS]
-
-.. consumer-sets.list:
-
-``list``
---------
-
-The ``list`` subcommand lists consumer sets for a CrateDB Cloud
-product.
-
-.. code-block:: console
-
-    sh$ croud consumer-sets list [OPTIONS]
-
-Available options:
-
-+---------------------------+----------+------------------------------------------+
-| Option                    | Required | Description                              |
-+===========================+==========+==========================================+
-| ``--project-id <STRING>`` | No       | The identifier of the project in which   |
-|                           |          | the consumer set is in.                  |
-+---------------------------+----------+------------------------------------------+
-| ``--product-id <STRING>`` | No       | The identifier of the product in which   |
-|                           |          | the consumer set is in.                  |
-+---------------------------+----------+------------------------------------------+
-| ``--cluster-id <STRING>`` | No       | The identifier of the CrateDB cluster    |
-|                           |          | where the consumer inserts data.         |
-+---------------------------+----------+------------------------------------------+
-| ``--output-fmt <STRING>`` | No       | The desired output format.               |
-|                           |          |                                          |
-|                           |          | One of:                                  |
-|                           |          |                                          |
-|                           |          | - ``json``                               |
-|                           |          | - ``table``                              |
-+---------------------------+----------+------------------------------------------+
-
-.. _consumer-sets:
-
-``consumer-sets``
-=================
-
-The ``consumer-sets`` command allows you to manage consumer Sets for
+The ``consumer-sets`` command allows you to manage consumer sets for
 a CrateDB Cloud product.
 
 You must specify a subcommand, like so:
@@ -521,6 +472,40 @@ Available options:
 |                                                          |          | - ``json``                               |
 |                                                          |          | - ``table``                              |
 +----------------------------------------------------------+----------+------------------------------------------+
+
+.. consumer-sets.list:
+
+``list``
+--------
+
+The ``list`` subcommand lists consumer sets for a CrateDB Cloud
+product.
+
+.. code-block:: console
+
+    sh$ croud consumer-sets list [OPTIONS]
+
+Available options:
+
++---------------------------+----------+------------------------------------------+
+| Option                    | Required | Description                              |
++===========================+==========+==========================================+
+| ``--project-id <STRING>`` | No       | The identifier of the project in which   |
+|                           |          | the consumer set is in.                  |
++---------------------------+----------+------------------------------------------+
+| ``--product-id <STRING>`` | No       | The identifier of the product in which   |
+|                           |          | the consumer set is in.                  |
++---------------------------+----------+------------------------------------------+
+| ``--cluster-id <STRING>`` | No       | The identifier of the CrateDB cluster    |
+|                           |          | where the consumer inserts data.         |
++---------------------------+----------+------------------------------------------+
+| ``--output-fmt <STRING>`` | No       | The desired output format.               |
+|                           |          |                                          |
+|                           |          | One of:                                  |
+|                           |          |                                          |
+|                           |          | - ``json``                               |
+|                           |          | - ``table``                              |
++---------------------------+----------+------------------------------------------+
 
 .. _projects:
 
