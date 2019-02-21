@@ -22,7 +22,9 @@ from argparse import Namespace
 
 from croud.config import Configuration
 from croud.printer import print_info
-from croud.session import HttpSession
+from croud.session import HttpSession, cloud_url
+
+LOGOUT_PATH = "/oauth2/logout"
 
 
 def logout(args: Namespace) -> None:
@@ -41,4 +43,8 @@ def logout(args: Namespace) -> None:
 
 async def make_request(env: str, token: str) -> None:
     async with HttpSession(env, token) as session:
-        await session.logout()
+        await session.logout(_logout_url(env))
+
+
+def _logout_url(env: str) -> str:
+    return cloud_url(env) + LOGOUT_PATH

@@ -28,7 +28,7 @@ from tests.unit_tests.util import CommandTestCase
 from croud.config import Configuration, config_get, config_set
 from croud.gql import Query
 from croud.login import _login_url, _set_login_env, login
-from croud.logout import logout
+from croud.logout import _logout_url, logout
 from croud.server import Server
 
 
@@ -102,6 +102,9 @@ class TestLogin:
         url = _login_url("PROD")
         assert "https://bregenz.a1.cratedb.cloud/oauth2/login?cli=true" == url
 
+        url = _login_url("local")
+        assert "http://localhost:8000/oauth2/login?cli=true" == url
+
     def test_env_fallback_url(self):
         url = _login_url("invalid")
         assert "https://bregenz.a1.cratedb.cloud/oauth2/login?cli=true" == url
@@ -121,6 +124,23 @@ class TestLogout:
 
         mock_set_token.assert_called_once_with("")
         mock_print_info.assert_called_once_with("You have been logged out.")
+
+    def test_logout_urls_from_valid_envs(self):
+        url = _logout_url("dev")
+        assert "https://bregenz.a1.cratedb-dev.cloud/oauth2/logout" == url
+
+        url = _logout_url("prod")
+        assert "https://bregenz.a1.cratedb.cloud/oauth2/logout" == url
+
+        url = _logout_url("PROD")
+        assert "https://bregenz.a1.cratedb.cloud/oauth2/logout" == url
+
+        url = _logout_url("local")
+        assert "http://localhost:8000/oauth2/logout" == url
+
+    def test_env_fallback_url(self):
+        url = _logout_url("invalid")
+        assert "https://bregenz.a1.cratedb.cloud/oauth2/logout" == url
 
 
 class TestConfigGet:

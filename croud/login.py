@@ -24,7 +24,10 @@ from typing import Optional
 from croud.config import Configuration
 from croud.printer import print_error, print_info
 from croud.server import Server
+from croud.session import cloud_url
 from croud.util import can_launch_browser, open_page_in_browser
+
+LOGIN_PATH = "/oauth2/login?cli=true"
 
 
 def login(args: Namespace) -> None:
@@ -66,7 +69,4 @@ def _set_login_env(env: Optional[str]) -> str:
 
 
 def _login_url(env: str) -> str:
-    domain = "cratedb.cloud"
-    if env.lower() == "dev":
-        domain = "cratedb-dev.cloud"
-    return f"https://bregenz.a1.{domain}/oauth2/login?cli=true"
+    return cloud_url(env.lower()) + LOGIN_PATH
