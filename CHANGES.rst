@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Fixed argument description of ``--role`` to reflect the current state.
+
 - Fixed ``products deploy`` command which led to an exception in the command
   line argument parsing.
 
