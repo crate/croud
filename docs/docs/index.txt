@@ -17,5 +17,6 @@ Cloud`_.
 
    getting-started
    commands
+   user-roles
 
 .. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/
