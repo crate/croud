@@ -1,0 +1,55 @@
+.. _roles:
+
+==========
+User Roles
+==========
+
+.. rubric:: Table of Contents
+
+.. contents::
+   :local:
+
+.. _organization_roles:
+
+Organization roles
+==================
+
+.. _org_admin:
+
+Organization admin
+------------------
+
+* Organization Admin has access to all projects in the organization,
+  even if added to a project with a non-admin role.
+* Privileges to manage organization settings.
+* Privileges to add and remove users to and from an organization.
+* Privileges of all the other roles combined.
+
+.. _org_member:
+
+Organization member
+-------------------
+
+* Organization Member has read-only access to the organization (settings, users).
+
+.. _project_roles:
+
+Project roles
+=============
+
+.. _project_admin:
+
+Project admin
+-------------
+
+* Privileges to manage project settings.
+* Privileges to add and remove users to and from a project.
+  (The user has to be part of the organization)
+* Privileges to administer products (Clusters, Consumer, ...).
+
+.. _project_member:
+
+Project member
+--------------
+
+* Project Member has read-only access to the project (settings, products, users).
