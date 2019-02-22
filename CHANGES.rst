@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.8.1 - 2019/02/22
+==================
+
 - Fixed argument description of ``--role`` to reflect the current state.
 
 - Fixed ``products deploy`` command which led to an exception in the command
