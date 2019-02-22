@@ -267,9 +267,7 @@ command_tree = {
                     "remove": {
                         "help": "Remove user from organization",
                         "extra_args": [
-                            lambda req_opt_group, opt_opt_group: user_id_arg(
-                                req_opt_group, opt_opt_group, True
-                            ),
+                            user_id_or_email_arg,
                             lambda req_opt_group, opt_opt_group: org_id_arg(
                                 req_opt_group, opt_opt_group, False
                             ),
