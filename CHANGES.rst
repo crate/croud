@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+- Refactored removing users from organizations commands to parse the
+  ``user`` argument so that users can be removed via their email address
+  or user ID.
+
 0.8.1 - 2019/02/22
 ==================
 

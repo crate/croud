@@ -61,7 +61,7 @@ def org_users_remove(args: Namespace):
     """
     ).strip()
 
-    vars = {"input": {"uid": args.user, "organizationId": args.org_id}}
+    vars = {"input": {"user": args.user, "organizationId": args.org_id}}
 
     query = Query(mutation, args)
     query.execute(vars)

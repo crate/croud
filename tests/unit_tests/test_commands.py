@@ -370,7 +370,7 @@ class TestOrganizations(CommandTestCase):
         ).strip()
 
         user_id = str(uuid.uuid4())
-        expected_vars = {"input": {"uid": user_id, "organizationId": None}}
+        expected_vars = {"input": {"user": user_id, "organizationId": None}}
 
         argv = ["croud", "organizations", "users", "remove", "--user", user_id]
         self.assertGql(mock_run, argv, expected_body, expected_vars)
@@ -388,7 +388,7 @@ class TestOrganizations(CommandTestCase):
 
         user_id = str(uuid.uuid4())
         org_id = str(uuid.uuid4())
-        expected_vars = {"input": {"uid": user_id, "organizationId": org_id}}
+        expected_vars = {"input": {"user": user_id, "organizationId": org_id}}
 
         argv = [
             "croud",
