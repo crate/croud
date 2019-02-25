@@ -29,7 +29,6 @@ from croud.config import Configuration, config_get, config_set
 from croud.gql import Query
 from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
-from croud.organizations.commands import organizations_create, organizations_list
 from croud.projects.commands import project_create, projects_list
 from croud.projects.users.commands import project_user_add, project_user_remove
 from croud.server import Server
@@ -222,10 +221,8 @@ class TestClusters(CommandTestCase):
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "run", return_value={"data": []})
 class TestOrganizations(CommandTestCase):
-    remove_input = "RemoveUserFromOrganizationInput"
-
-    def test_create(self, mock_execute, mock_load_config):
-        mutation = """
+    def test_create(self, mock_run, mock_load_config):
+        expected_body = """
     mutation {
         createOrganization(input: {
             name: "testorg",
@@ -238,13 +235,19 @@ class TestOrganizations(CommandTestCase):
     }
     """
 
-        args = Namespace(env="dev", name="testorg", output_fmt="json", plan_type=1)
-        with mock.patch("croud.organizations.commands.print_query") as mock_print:
-            organizations_create(args)
-            assert_query(mock_print, mutation)
+        argv = [
+            "croud",
+            "organizations",
+            "create",
+            "--name",
+            "testorg",
+            "--plan-type",
+            "1",
+        ]
+        self.assertGql(mock_run, argv, expected_body)
 
-    def test_list(self, mock_execute, mock_load_config):
-        query = """
+    def test_list(self, mock_run, mock_load_config):
+        expected_body = """
     {
         allOrganizations {
             data {
@@ -262,10 +265,8 @@ class TestOrganizations(CommandTestCase):
     }
     """
 
-        args = Namespace(env="dev")
-        with mock.patch("croud.organizations.commands.print_query") as mock_print:
-            organizations_list(args)
-            assert_query(mock_print, query)
+        argv = ["croud", "organizations", "list"]
+        self.assertGql(mock_run, argv, expected_body)
 
     def test_add_user(self, mock_run, mock_load_config):
         expected_body = dedent(
@@ -351,13 +352,13 @@ class TestOrganizations(CommandTestCase):
 
     def test_remove_user(self, mock_run, mock_load_config):
         expected_body = dedent(
-            f"""
-            mutation removeUserFromOrganization($input: {self.remove_input}!) {{
-              removeUserFromOrganization(input: $input) {{
+            """
+            mutation removeUserFromOrganization($input: RemoveUserFromOrganizationInput!) {
+              removeUserFromOrganization(input: $input) {
                 success
-              }}
-            }}
-        """
+              }
+            }
+        """  # noqa
         ).strip()
 
         user_id = str(uuid.uuid4())
@@ -368,13 +369,13 @@ class TestOrganizations(CommandTestCase):
 
     def test_remove_user_org_id(self, mock_run, mock_load_config):
         expected_body = dedent(
-            f"""
-            mutation removeUserFromOrganization($input: {self.remove_input}!) {{
-              removeUserFromOrganization(input: $input) {{
+            """
+            mutation removeUserFromOrganization($input: RemoveUserFromOrganizationInput!) {
+              removeUserFromOrganization(input: $input) {
                 success
-              }}
-            }}
-        """
+              }
+            }
+        """  # noqa
         ).strip()
 
         user_id = str(uuid.uuid4())
