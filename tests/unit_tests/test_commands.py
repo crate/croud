@@ -25,7 +25,6 @@ from unittest import mock
 import pytest
 from tests.unit_tests.util import CommandTestCase
 
-from croud.clusters.commands import clusters_list
 from croud.config import Configuration, config_get, config_set
 from croud.gql import Query
 from croud.login import _login_url, _set_login_env, login
@@ -172,9 +171,9 @@ def assert_query(mock_print, expected):
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "run", return_value={"data": []})
-class TestClusters:
-    def test_list_no_pid(self, mock_execute, mock_load_config):
-        query = """
+class TestClusters(CommandTestCase):
+    def test_list_no_pid(self, mock_run, mock_load_config):
+        expected_body = """
 {
     allClusters {
         data {
@@ -190,18 +189,13 @@ class TestClusters:
 }
     """
 
-        args = Namespace(
-            env=None, output_fmt="table", project_id=None, region="bregenz.a1"
-        )
-        with mock.patch("croud.clusters.commands.print_query") as mock_print:
-            clusters_list(args)
-            assert_query(mock_print, query)
+        argv = ["croud", "clusters", "list"]
+        self.assertGql(mock_run, argv, expected_body)
 
-    def test_list_with_pid(self, mock_execute, mock_load_config):
-        query = (
-            """
+    def test_list_with_pid(self, mock_run, mock_load_config):
+        expected_body = """
 {
-    allClusters (filter: %s) {
+    allClusters (filter: {by: PROJECT_ID, op: EQ, value: "60d398b4-455b-49dc-bfe9-04edf5bd3eb2"}) {
         data {
             id
             name
@@ -213,19 +207,16 @@ class TestClusters:
         }
     }
 }
-    """
-            % '{by: PROJECT_ID, op: EQ, value: "60d398b4-455b-49dc-bfe9-04edf5bd3eb2"}'
-        )
+    """  # noqa
 
-        args = Namespace(
-            env=None,
-            output_fmt="table",
-            project_id="60d398b4-455b-49dc-bfe9-04edf5bd3eb2",
-            region="bregenz.a1",
-        )
-        with mock.patch("croud.clusters.commands.print_query") as mock_print:
-            clusters_list(args)
-            assert_query(mock_print, query)
+        argv = [
+            "croud",
+            "clusters",
+            "list",
+            "--project-id",
+            "60d398b4-455b-49dc-bfe9-04edf5bd3eb2",
+        ]
+        self.assertGql(mock_run, argv, expected_body)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
