@@ -29,7 +29,6 @@ from croud.config import Configuration, config_get, config_set
 from croud.gql import Query
 from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
-from croud.projects.commands import project_create, projects_list
 from croud.projects.users.commands import project_user_add, project_user_remove
 from croud.server import Server
 from croud.users.commands import users_list
@@ -396,10 +395,10 @@ class TestOrganizations(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "execute")
-class TestProjects:
-    def test_create(self, mock_execute, mock_load_config):
-        mutation = """
+@mock.patch.object(Query, "run", return_value={"data": []})
+class TestProjects(CommandTestCase):
+    def test_create(self, mock_run, mock_load_config):
+        expected_body = """
     mutation {
         createProject(input: {
             name: "new-project",
@@ -410,15 +409,19 @@ class TestProjects:
     }
     """
 
-        args = Namespace(
-            env="dev", name="new-project", org_id="organization-id", output_fmt="json"
-        )
-        with mock.patch("croud.projects.commands.print_query") as mock_print:
-            project_create(args)
-            assert_query(mock_print, mutation)
+        argv = [
+            "croud",
+            "projects",
+            "create",
+            "--name",
+            "new-project",
+            "--org-id",
+            "organization-id",
+        ]
+        self.assertGql(mock_run, argv, expected_body)
 
-    def test_list_projects_org_admin(self, mock_execute, mock_load_config):
-        query = """
+    def test_list_projects_org_admin(self, mock_run, mock_load_config):
+        expected_body = """
     {
         allProjects {
             data {
@@ -431,10 +434,8 @@ class TestProjects:
     }
     """
 
-        args = Namespace(env="dev")
-        with mock.patch("croud.projects.commands.print_query") as mock_print:
-            projects_list(args)
-            assert_query(mock_print, query)
+        argv = ["croud", "projects", "list"]
+        self.assertGql(mock_run, argv, expected_body)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
