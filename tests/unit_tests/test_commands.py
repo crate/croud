@@ -491,21 +491,22 @@ class TestProjectsUsers(CommandTestCase):
 @mock.patch.object(Query, "run", return_value={"data": []})
 class TestUsersRoles(CommandTestCase):
     def test_add(self, mock_run, mock_load_config):
-        user = gen_uuid()
-        role = "org_admin"
-        resource = gen_uuid()
+        user_id = gen_uuid()
+        role_fqn = "org_admin"
+        resource_id = gen_uuid()
 
-        expected_body = """
-    mutation {
-        addRoleToUser(input: {userId: "%s",roleFqn: "%s",resourceId: "%s"}) {
-            success
+        expected_body = dedent(
+            """
+            mutation addRoleToUser($input: UserRoleInput!) {
+                addRoleToUser(input: $input) {
+                    success
+                }
+            }
+        """
+        ).strip()
+        expected_vars = {
+            "input": {"userId": user_id, "roleFqn": role_fqn, "resourceId": resource_id}
         }
-    }
-    """ % (
-            user,
-            role,
-            resource,
-        )
 
         argv = [
             "croud",
@@ -513,30 +514,31 @@ class TestUsersRoles(CommandTestCase):
             "roles",
             "add",
             "--user",
-            user,
+            user_id,
             "--role",
-            role,
+            role_fqn,
             "--resource",
-            resource,
+            resource_id,
         ]
-        self.assertGql(mock_run, argv, expected_body)
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
 
     def test_remove(self, mock_run, mock_load_config):
-        user = gen_uuid()
-        role = "org_admin"
-        resource = gen_uuid()
+        user_id = gen_uuid()
+        role_fqn = "org_admin"
+        resource_id = gen_uuid()
 
-        expected_body = """
-    mutation {
-        removeRoleFromUser(input: {userId: "%s",roleFqn: "%s",resourceId: "%s"}) {
-            success
+        expected_body = dedent(
+            """
+            mutation removeRoleFromUser($input: UserRoleInput!) {
+                removeRoleFromUser(input: $input) {
+                    success
+                }
+            }
+        """
+        ).strip()
+        expected_vars = {
+            "input": {"userId": user_id, "roleFqn": role_fqn, "resourceId": resource_id}
         }
-    }
-    """ % (
-            user,
-            role,
-            resource,
-        )
 
         argv = [
             "croud",
@@ -544,25 +546,27 @@ class TestUsersRoles(CommandTestCase):
             "roles",
             "remove",
             "--user",
-            user,
+            user_id,
             "--role",
-            role,
+            role_fqn,
             "--resource",
-            resource,
+            resource_id,
         ]
-        self.assertGql(mock_run, argv, expected_body)
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
 
     def test_list(self, mock_run, mock_load_config):
-        expected_body = """
-    {
-        allRoles {
-            data {
-                fqn
-                friendlyName
+        expected_body = dedent(
+            """
+        query {
+            allRoles {
+                data {
+                    fqn
+                    friendlyName
+                }
             }
         }
-    }
     """
+        ).strip()
 
         argv = ["croud", "users", "roles", "list"]
         self.assertGql(mock_run, argv, expected_body)

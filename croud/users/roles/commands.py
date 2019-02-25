@@ -17,31 +17,11 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import textwrap
 from argparse import Namespace
 
 from croud.gql import Query, print_query
-
-
-def _get_mutation_input(args: Namespace) -> str:
-    return f'userId: "{args.user}",roleFqn: "{args.role}",resourceId: "{args.resource}"'
-
-
-def roles_add(args: Namespace) -> None:
-    """
-    Adds a new role to a user
-    """
-
-    mutation = f"""
-    mutation {{
-        addRoleToUser(input: {{{_get_mutation_input(args)}}}) {{
-            success
-        }}
-    }}
-    """
-
-    query = Query(mutation, args)
-    query.execute()
-    print_query(query, "addRoleToUser")
+from croud.util import clean_dict
 
 
 def roles_list(args: Namespace) -> None:
@@ -49,20 +29,52 @@ def roles_list(args: Namespace) -> None:
     Lists all roles a user can be assigned to
     """
 
-    _query = """
-    {
-        allRoles {
-            data {
-                fqn
-                friendlyName
+    _query = textwrap.dedent(
+        """
+        query {
+            allRoles {
+                data {
+                    fqn
+                    friendlyName
+                }
             }
         }
-    }
     """
+    ).strip()
 
     query = Query(_query, args)
     query.execute()
     print_query(query, "allRoles")
+
+
+def roles_add(args: Namespace) -> None:
+    """
+    Adds a new role to a user
+    """
+
+    mutation = textwrap.dedent(
+        """
+        mutation addRoleToUser($input: UserRoleInput!) {
+            addRoleToUser(input: $input) {
+                success
+            }
+        }
+    """
+    ).strip()
+
+    vars = clean_dict(
+        {
+            "input": {
+                "userId": args.user,
+                "roleFqn": args.role,
+                "resourceId": args.resource,
+            }
+        }
+    )
+
+    query = Query(mutation, args)
+    query.execute(vars)
+    print_query(query, "addRoleToUser")
 
 
 def roles_remove(args: Namespace) -> None:
@@ -70,14 +82,26 @@ def roles_remove(args: Namespace) -> None:
     Removes a role from a user
     """
 
-    mutation = f"""
-    mutation {{
-        removeRoleFromUser(input: {{{_get_mutation_input(args)}}}) {{
-            success
-        }}
-    }}
+    mutation = textwrap.dedent(
+        """
+        mutation removeRoleFromUser($input: UserRoleInput!) {
+            removeRoleFromUser(input: $input) {
+                success
+            }
+        }
     """
+    ).strip()
+
+    vars = clean_dict(
+        {
+            "input": {
+                "userId": args.user,
+                "roleFqn": args.role,
+                "resourceId": args.resource,
+            }
+        }
+    )
 
     query = Query(mutation, args)
-    query.execute()
+    query.execute(vars)
     print_query(query, "removeRoleFromUser", "Successfully removed role from user.")
