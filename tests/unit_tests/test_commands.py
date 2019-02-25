@@ -31,7 +31,6 @@ from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
 from croud.server import Server
 from croud.users.commands import users_list
-from croud.users.roles.commands import roles_add, roles_list, roles_remove
 
 
 def gen_uuid() -> str:
@@ -490,48 +489,72 @@ class TestProjectsUsers(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "execute")
-class TestUsersRoles:
-    def test_add_superuser(self, mock_execute, mock_load_config):
-        input_args = f'{{userId: "123",roleFqn: "admin",resourceId: "abc"}}'
-        mutation = f"""
-    mutation {{
-        addRoleToUser(input: {input_args}) {{
+@mock.patch.object(Query, "run", return_value={"data": []})
+class TestUsersRoles(CommandTestCase):
+    def test_add(self, mock_run, mock_load_config):
+        user = gen_uuid()
+        role = "org_admin"
+        resource = gen_uuid()
+
+        expected_body = """
+    mutation {
+        addRoleToUser(input: {userId: "%s",roleFqn: "%s",resourceId: "%s"}) {
             success
-        }}
-    }}
-    """
-
-        args = Namespace(
-            env="dev", output_fmt="json", resource="abc", role="admin", user="123"
+        }
+    }
+    """ % (
+            user,
+            role,
+            resource,
         )
-        with mock.patch("croud.users.roles.commands.print_query") as mock_print:
-            roles_add(args)
-            assert_query(mock_print, mutation)
 
-    def test_remove(self, mock_query, mock_load_config):
-        input_args = '{userId: "123",roleFqn: "org_member",resourceId: "abc"}'
-        mutation = f"""
-    mutation {{
-        removeRoleFromUser(input: {input_args}) {{
+        argv = [
+            "croud",
+            "users",
+            "roles",
+            "add",
+            "--user",
+            user,
+            "--role",
+            role,
+            "--resource",
+            resource,
+        ]
+        self.assertGql(mock_run, argv, expected_body)
+
+    def test_remove(self, mock_run, mock_load_config):
+        user = gen_uuid()
+        role = "org_admin"
+        resource = gen_uuid()
+
+        expected_body = """
+    mutation {
+        removeRoleFromUser(input: {userId: "%s",roleFqn: "%s",resourceId: "%s"}) {
             success
-        }}
-    }}
-    """
-
-        args = Namespace(
-            env="dev", output_fmt="json", resource="abc", role="org_member", user="123"
+        }
+    }
+    """ % (
+            user,
+            role,
+            resource,
         )
-        with mock.patch("croud.users.roles.commands.print_query") as mock_print:
-            roles_remove(args)
-            assert_query(mock_print, mutation)
 
+        argv = [
+            "croud",
+            "users",
+            "roles",
+            "remove",
+            "--user",
+            user,
+            "--role",
+            role,
+            "--resource",
+            resource,
+        ]
+        self.assertGql(mock_run, argv, expected_body)
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "execute")
-class TestRoles:
-    def test_list(self, mock_execute, mock_load_config):
-        query = """
+    def test_list(self, mock_run, mock_load_config):
+        expected_body = """
     {
         allRoles {
             data {
@@ -542,10 +565,8 @@ class TestRoles:
     }
     """
 
-        args = Namespace(env="dev")
-        with mock.patch("croud.users.roles.commands.print_query") as mock_print:
-            roles_list(args)
-            assert_query(mock_print, query)
+        argv = ["croud", "users", "roles", "list"]
+        self.assertGql(mock_run, argv, expected_body)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
