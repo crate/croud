@@ -29,7 +29,6 @@ from croud.config import Configuration, config_get, config_set
 from croud.gql import Query
 from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
-from croud.projects.users.commands import project_user_add, project_user_remove
 from croud.server import Server
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_add, roles_list, roles_remove
@@ -439,10 +438,10 @@ class TestProjects(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "execute")
-class TestProjectsUsers:
-    def test_add(self, mock_execute, mock_load_config):
-        mutation = """
+@mock.patch.object(Query, "run", return_value={"data": []})
+class TestProjectsUsers(CommandTestCase):
+    def test_add(self, mock_run, mock_load_config):
+        expected_body = """
     mutation {
         addUserToProject(input: {
             projectId: "project-id",
@@ -453,18 +452,20 @@ class TestProjectsUsers:
     }
     """
 
-        args = Namespace(
-            env="dev",
-            project_id="project-id",
-            user="user-email-or-id",
-            output_fmt="json",
-        )
-        with mock.patch("croud.projects.users.commands.print_query") as mock_print:
-            project_user_add(args)
-            assert_query(mock_print, mutation)
+        argv = [
+            "croud",
+            "projects",
+            "users",
+            "add",
+            "--project-id",
+            "project-id",
+            "--user",
+            "user-email-or-id",
+        ]
+        self.assertGql(mock_run, argv, expected_body)
 
-    def test_remove(self, mock_execute, mock_load_config):
-        mutation = """
+    def test_remove(self, mock_run, mock_load_config):
+        expected_body = """
     mutation {
         removeUserFromProject(input: {
             projectId: "project-id",
@@ -475,15 +476,17 @@ class TestProjectsUsers:
     }
     """
 
-        args = Namespace(
-            env="dev",
-            project_id="project-id",
-            user="user-email-or-id",
-            output_fmt="json",
-        )
-        with mock.patch("croud.projects.users.commands.print_query") as mock_print:
-            project_user_remove(args)
-            assert_query(mock_print, mutation)
+        argv = [
+            "croud",
+            "projects",
+            "users",
+            "remove",
+            "--project-id",
+            "project-id",
+            "--user",
+            "user-email-or-id",
+        ]
+        self.assertGql(mock_run, argv, expected_body)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
