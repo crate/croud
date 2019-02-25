@@ -30,7 +30,6 @@ from croud.gql import Query
 from croud.login import _login_url, _set_login_env, login
 from croud.logout import logout
 from croud.server import Server
-from croud.users.commands import users_list
 
 
 def gen_uuid() -> str:
@@ -570,10 +569,10 @@ class TestUsersRoles(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "execute")
-class TestUsers:
-    def test_list_no_filter(self, mock_execute, mock_load_config):
-        query = """
+@mock.patch.object(Query, "run", return_value={"data": []})
+class TestUsers(CommandTestCase):
+    def test_list_no_filter(self, mock_run, mock_load_config):
+        expected_body = """
     {
         allUsers {
             data {
@@ -585,13 +584,11 @@ class TestUsers:
     }
     """
 
-        args = Namespace(env=None, no_org=False, org_id=None, output_fmt=None)
-        with mock.patch("croud.users.commands.print_query") as mock_print:
-            users_list(args)
-            assert_query(mock_print, query)
+        argv = ["croud", "users", "list"]
+        self.assertGql(mock_run, argv, expected_body)
 
-    def test_list_org_filter(self, mock_execute, mock_load_config):
-        query = """
+    def test_list_org_filter(self, mock_run, mock_load_config):
+        expected_body = """
     {
         allUsers(queryArgs: {organizationId: "abc"}) {
             data {
@@ -603,13 +600,11 @@ class TestUsers:
     }
     """
 
-        args = Namespace(env=None, no_org=False, org_id="abc", output_fmt=None)
-        with mock.patch("croud.users.commands.print_query") as mock_print:
-            users_list(args)
-            assert_query(mock_print, query)
+        argv = ["croud", "users", "list", "--org-id", "abc"]
+        self.assertGql(mock_run, argv, expected_body)
 
-    def test_list_no_org_filter(self, mock_execute, mock_load_config):
-        query = """
+    def test_list_no_org_filter(self, mock_run, mock_load_config):
+        expected_body = """
     {
         allUsers(queryArgs: {noOrg: true}) {
             data {
@@ -621,13 +616,11 @@ class TestUsers:
     }
     """
 
-        args = Namespace(env=None, no_org=True, org_id=None, output_fmt=None)
-        with mock.patch("croud.users.commands.print_query") as mock_print:
-            users_list(args)
-            assert_query(mock_print, query)
+        argv = ["croud", "users", "list", "--no-org", "true"]
+        self.assertGql(mock_run, argv, expected_body)
 
-    def test_list_filter_dont_conflict(self, mock_execute, mock_load_config):
-        query = """
+    def test_list_filter_dont_conflict(self, mock_run, mock_load_config):
+        expected_body = """
     {
         allUsers(queryArgs: {organizationId: "abc"}) {
             data {
@@ -639,10 +632,8 @@ class TestUsers:
     }
     """
 
-        args = Namespace(env=None, no_org=True, org_id="abc", output_fmt=None)
-        with mock.patch("croud.users.commands.print_query") as mock_print:
-            users_list(args)
-            assert_query(mock_print, query)
+        argv = ["croud", "users", "list", "--org-id", "abc", "--no-org", "true"]
+        self.assertGql(mock_run, argv, expected_body)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
