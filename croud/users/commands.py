@@ -17,9 +17,11 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import textwrap
 from argparse import Namespace
 
 from croud.gql import Query, print_query
+from croud.util import clean_dict
 
 
 def users_list(args: Namespace) -> None:
@@ -27,27 +29,29 @@ def users_list(args: Namespace) -> None:
     List all users within organizations that the logged in user is part of
     """
 
-    _query = """
-    {
-        allUsers {
-            data {
-                uid
-                email
-                username
+    body = textwrap.dedent(
+        """
+        query allUsers($queryArgs: UserQueryArgs) {
+            allUsers(sort: EMAIL, queryArgs: $queryArgs) {
+                data {
+                    uid
+                    email
+                    username
+                }
             }
         }
-    }
     """
+    ).strip()
 
-    queryArgs = ""
-    if args.no_org:
-        queryArgs = "(queryArgs: {noOrg: true})"
-    if args.org_id:
-        queryArgs = f'(queryArgs: {{organizationId: "{args.org_id}"}})'
+    vars = clean_dict(
+        {
+            "queryArgs": {
+                "noOrg": None if args.org_id else args.no_org,
+                "organizationId": args.org_id,
+            }
+        }
+    )
 
-    if queryArgs != "":
-        _query = _query.replace("allUsers", f"allUsers{queryArgs}")
-
-    query = Query(_query, args)
-    query.execute()
+    query = Query(body, args)
+    query.execute(vars)
     print_query(query, "allUsers")

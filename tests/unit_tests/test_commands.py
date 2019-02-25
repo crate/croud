@@ -571,69 +571,40 @@ class TestUsersRoles(CommandTestCase):
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "run", return_value={"data": []})
 class TestUsers(CommandTestCase):
-    def test_list_no_filter(self, mock_run, mock_load_config):
-        expected_body = """
-    {
-        allUsers {
-            data {
-                uid
-                email
-                username
+    org_id = gen_uuid()
+    expected_body = dedent(
+        """
+        query allUsers($queryArgs: UserQueryArgs) {
+            allUsers(sort: EMAIL, queryArgs: $queryArgs) {
+                data {
+                    uid
+                    email
+                    username
+                }
             }
         }
-    }
     """
+    ).strip()
 
+    def test_list_no_filter(self, mock_run, mock_load_config):
+        expected_vars = {"queryArgs": {"noOrg": False}}
         argv = ["croud", "users", "list"]
-        self.assertGql(mock_run, argv, expected_body)
+        self.assertGql(mock_run, argv, self.expected_body, expected_vars)
 
     def test_list_org_filter(self, mock_run, mock_load_config):
-        expected_body = """
-    {
-        allUsers(queryArgs: {organizationId: "abc"}) {
-            data {
-                uid
-                email
-                username
-            }
-        }
-    }
-    """
-
-        argv = ["croud", "users", "list", "--org-id", "abc"]
-        self.assertGql(mock_run, argv, expected_body)
+        expected_vars = {"queryArgs": {"organizationId": self.org_id}}
+        argv = ["croud", "users", "list", "--org-id", self.org_id]
+        self.assertGql(mock_run, argv, self.expected_body, expected_vars)
 
     def test_list_no_org_filter(self, mock_run, mock_load_config):
-        expected_body = """
-    {
-        allUsers(queryArgs: {noOrg: true}) {
-            data {
-                uid
-                email
-                username
-            }
-        }
-    }
-    """
-
-        argv = ["croud", "users", "list", "--no-org", "true"]
-        self.assertGql(mock_run, argv, expected_body)
+        expected_vars = {"queryArgs": {"noOrg": True}}
+        argv = ["croud", "users", "list", "--no-org"]
+        self.assertGql(mock_run, argv, self.expected_body, expected_vars)
 
     def test_list_filter_dont_conflict(self, mock_run, mock_load_config):
-        expected_body = """
-    {
-        allUsers(queryArgs: {organizationId: "abc"}) {
-            data {
-                uid
-                email
-                username
-            }
-        }
-    }
-    """
-
-        argv = ["croud", "users", "list", "--org-id", "abc", "--no-org", "true"]
-        self.assertGql(mock_run, argv, expected_body)
+        expected_vars = {"queryArgs": {"organizationId": self.org_id}}
+        argv = ["croud", "users", "list", "--org-id", self.org_id, "--no-org"]
+        self.assertGql(mock_run, argv, self.expected_body, expected_vars)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
