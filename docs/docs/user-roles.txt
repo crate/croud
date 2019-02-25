@@ -4,52 +4,61 @@
 User Roles
 ==========
 
+This is an overview over the user roles users can have in the `CrateDB Cloud`_.
+
 .. rubric:: Table of Contents
 
 .. contents::
    :local:
 
-.. _organization_roles:
+.. _organization-roles:
 
 Organization roles
 ==================
 
-.. _org_admin:
+.. _org-admin:
 
-Organization admin
+Organization Admin
 ------------------
 
-* Organization Admin has access to all projects in the organization,
-  even if added to a project with a non-admin role.
+The admin of an organization has the following privileges:
+
+* Organization admin has access to all projects in the organization, even if
+  added to a project with a non-admin role.
 * Privileges to manage organization settings.
 * Privileges to add and remove users to and from an organization.
 * Privileges of all the other roles combined.
 
-.. _org_member:
+.. _org-member:
 
-Organization member
+Organization Member
 -------------------
 
-* Organization Member has read-only access to the organization (settings, users).
+* Organization member has read-only access to the organization (settings, users).
 
-.. _project_roles:
+.. _project-roles:
 
-Project roles
+Project Roles
 =============
 
-.. _project_admin:
+.. _project-admin:
 
-Project admin
+Project Admin
 -------------
 
+The admin of a project has the following privileges:
+
 * Privileges to manage project settings.
-* Privileges to add and remove users to and from a project.
-  (The user has to be part of the organization)
-* Privileges to administer products (Clusters, Consumer, ...).
+* Privileges to add and remove users to and from a project. (The user has to
+  be part of the organization)
+* Privileges to administer products (clusters, consumer, ...).
 
-.. _project_member:
+.. _project-member:
 
-Project member
+Project Member
 --------------
 
-* Project Member has read-only access to the project (settings, products, users).
+* Project member has read-only access to the project (settings, products,
+  users).
+
+.. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/
