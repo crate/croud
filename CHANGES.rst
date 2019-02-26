@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Make ``--org-id`` and ``--no-org`` arguments mutually exclusive for the
+  ``users list`` command and print an error if both arguments are provided.
+
 - Refactored removing users from organizations commands to parse the
   ``user`` argument so that users can be removed via their email address
   or user ID.

@@ -39,8 +39,8 @@ from croud.cmd import (
     crate_password_arg,
     crate_username_arg,
     crate_version_arg,
-    no_org_arg,
     org_id_arg,
+    org_id_no_org_arg_mutual_exclusive,
     org_name_arg,
     org_plan_type_arg,
     output_fmt_arg,
@@ -286,10 +286,7 @@ command_tree = {
                 "logged in user is part of.",
                 "extra_args": [
                     output_fmt_arg,
-                    lambda req_opt_group, opt_opt_group: org_id_arg(
-                        req_opt_group, opt_opt_group, False
-                    ),
-                    no_org_arg,
+                    org_id_no_org_arg_mutual_exclusive,
                 ],
                 "calls": users_list,
             },

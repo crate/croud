@@ -24,29 +24,6 @@ from croud.gql import Query, print_query
 from croud.util import clean_dict
 
 
-def roles_list(args: Namespace) -> None:
-    """
-    Lists all roles a user can be assigned to
-    """
-
-    _query = textwrap.dedent(
-        """
-        query {
-            allRoles {
-                data {
-                    fqn
-                    friendlyName
-                }
-            }
-        }
-    """
-    ).strip()
-
-    query = Query(_query, args)
-    query.execute()
-    print_query(query, "allRoles")
-
-
 def roles_add(args: Namespace) -> None:
     """
     Adds a new role to a user
@@ -75,6 +52,29 @@ def roles_add(args: Namespace) -> None:
     query = Query(mutation, args)
     query.execute(vars)
     print_query(query, "addRoleToUser")
+
+
+def roles_list(args: Namespace) -> None:
+    """
+    Lists all roles a user can be assigned to
+    """
+
+    _query = textwrap.dedent(
+        """
+        query {
+            allRoles {
+                data {
+                    fqn
+                    friendlyName
+                }
+            }
+        }
+    """
+    ).strip()
+
+    query = Query(_query, args)
+    query.execute()
+    print_query(query, "allRoles")
 
 
 def roles_remove(args: Namespace) -> None:

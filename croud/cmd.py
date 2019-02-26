@@ -254,6 +254,14 @@ def no_org_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     )
 
 
+def org_id_no_org_arg_mutual_exclusive(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup
+) -> None:
+    exclusive = opt_args.add_mutually_exclusive_group()
+    org_id_arg(req_args, exclusive, False)
+    no_org_arg(req_args, exclusive)
+
+
 def org_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument("--name", type=str, help="Organization Name.", required=True)
 

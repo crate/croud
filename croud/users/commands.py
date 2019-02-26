@@ -44,12 +44,7 @@ def users_list(args: Namespace) -> None:
     ).strip()
 
     vars = clean_dict(
-        {
-            "queryArgs": {
-                "noOrg": None if args.org_id else args.no_org,
-                "organizationId": args.org_id,
-            }
-        }
+        {"queryArgs": {"noOrg": args.no_org, "organizationId": args.org_id}}
     )
 
     query = Query(body, args)

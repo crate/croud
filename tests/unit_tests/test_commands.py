@@ -596,7 +596,7 @@ class TestUsers(CommandTestCase):
         self.assertGql(mock_run, argv, self.expected_body, expected_vars)
 
     def test_list_org_filter(self, mock_run, mock_load_config):
-        expected_vars = {"queryArgs": {"organizationId": self.org_id}}
+        expected_vars = {"queryArgs": {"organizationId": self.org_id, "noOrg": False}}
         argv = ["croud", "users", "list", "--org-id", self.org_id]
         self.assertGql(mock_run, argv, self.expected_body, expected_vars)
 
@@ -605,10 +605,16 @@ class TestUsers(CommandTestCase):
         argv = ["croud", "users", "list", "--no-org"]
         self.assertGql(mock_run, argv, self.expected_body, expected_vars)
 
-    def test_list_filter_dont_conflict(self, mock_run, mock_load_config):
-        expected_vars = {"queryArgs": {"organizationId": self.org_id}}
+    def test_list_filter_conflict(self, mock_run, mock_load_config):
+        expected_vars = None
         argv = ["croud", "users", "list", "--org-id", self.org_id, "--no-org"]
-        self.assertGql(mock_run, argv, self.expected_body, expected_vars)
+        with mock.patch("sys.stderr.write") as stderr:
+            with pytest.raises(SystemExit) as ex_info:
+                self.assertGql(mock_run, argv, self.expected_body, expected_vars)
+            stderr.assert_called_once()
+            expected_error = "Argument --no-org: not allowed with argument --org-id\n\n"
+            assert stderr.call_args[0][0] == expected_error
+            assert ex_info.value.code == 2
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
