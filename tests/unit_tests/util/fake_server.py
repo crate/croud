@@ -93,9 +93,9 @@ class FakeCrateDBCloud:
                         }
                     }
                 )
-        # If the session cookie is invalid the OAuth Proxy will serve the
-        # provider sign-in page (status = 200) instead of a 401 Unauthorized
-        return web.Response(status=200, text="OAuth provider sign-in page")
+            resp = {"data": {"message": "Bad request"}}
+            return web.json_response(resp, status=400)
+        return web.Response(status=302)
 
     def _is_authorized(self, request: web.Request) -> bool:
         if "session" in request.cookies:

@@ -22,9 +22,9 @@ from types import TracebackType
 from typing import Dict, Optional, Type
 
 import certifi
-from aiohttp import ClientSession, ContentTypeError, TCPConnector  # type: ignore
+from aiohttp import ClientSession, TCPConnector  # type: ignore
 
-from croud.printer import print_error
+from croud.printer import print_error, print_info
 from croud.typing import JsonDict
 
 CLOUD_LOCAL_URL = "http://localhost:8000"
@@ -63,22 +63,21 @@ class HttpSession:
     ) -> JsonDict:
         url = self.url + endpoint
         resp = await self.client.post(
-            url, json={"query": query, "variables": variables}
+            url, json={"query": query, "variables": variables}, allow_redirects=False
         )
-        if resp.status == 200:
-            try:
-                result = await resp.json()
-                return result
-            except ContentTypeError:
-                print_error(
-                    "Unauthorized. Use `croud login` to login to CrateDB Cloud."
-                )
-                await self.client.close()
-                exit(1)
-        else:
-            raise Exception(
-                f"Query failed to run by returning code of {resp.status}. {query}"
-            )
+
+        if resp.status == 302:  # login redirect
+            print_error("Unauthorized. Use `croud login` to login to CrateDB Cloud.")
+            await self.client.close()
+            exit(1)
+
+        if resp.status != 200:
+            print_info(f"Query failed to run by returning code of {resp.status}.")
+            print_info(query)
+            if variables:
+                print_info(str(variables))
+
+        return await resp.json()
 
     async def logout(self, url: str):
         await self.client.get(url)
