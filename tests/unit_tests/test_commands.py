@@ -17,9 +17,9 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import textwrap
 import uuid
 from argparse import Namespace
-from textwrap import dedent
 from unittest import mock
 
 import pytest
@@ -168,7 +168,7 @@ def assert_query(mock_print, expected):
 @mock.patch.object(Query, "run", return_value={"data": []})
 class TestClusters(CommandTestCase):
     project_id = gen_uuid()
-    expected_body = dedent(
+    expected_body = textwrap.dedent(
         """
         query allClusters($filter: [ClusterFilter]) {
             allClusters(sort: [CRATE_VERSION_DESC], filter: $filter) {
@@ -250,7 +250,7 @@ class TestOrganizations(CommandTestCase):
         self.assertGql(mock_run, argv, expected_body)
 
     def test_add_user(self, mock_run, mock_load_config):
-        expected_body = dedent(
+        expected_body = textwrap.dedent(
             """
             mutation addUserToOrganization($input: AddUserToOrganizationInput!) {
               addUserToOrganization(input: $input) {
@@ -269,7 +269,7 @@ class TestOrganizations(CommandTestCase):
         self.assertGql(mock_run, argv, expected_body, expected_vars)
 
     def test_add_user_fqn(self, mock_run, mock_load_config):
-        expected_body = dedent(
+        expected_body = textwrap.dedent(
             """
             mutation addUserToOrganization($input: AddUserToOrganizationInput!) {
               addUserToOrganization(input: $input) {
@@ -303,7 +303,7 @@ class TestOrganizations(CommandTestCase):
         self.assertGql(mock_run, argv, expected_body, expected_vars)
 
     def test_add_user_org_id(self, mock_run, mock_load_config):
-        expected_body = dedent(
+        expected_body = textwrap.dedent(
             """
             mutation addUserToOrganization($input: AddUserToOrganizationInput!) {
               addUserToOrganization(input: $input) {
@@ -332,7 +332,7 @@ class TestOrganizations(CommandTestCase):
         self.assertGql(mock_run, argv, expected_body, expected_vars)
 
     def test_remove_user(self, mock_run, mock_load_config):
-        expected_body = dedent(
+        expected_body = textwrap.dedent(
             """
             mutation removeUserFromOrganization($input: RemoveUserFromOrganizationInput!) {
               removeUserFromOrganization(input: $input) {
@@ -349,7 +349,7 @@ class TestOrganizations(CommandTestCase):
         self.assertGql(mock_run, argv, expected_body, expected_vars)
 
     def test_remove_user_org_id(self, mock_run, mock_load_config):
-        expected_body = dedent(
+        expected_body = textwrap.dedent(
             """
             mutation removeUserFromOrganization($input: RemoveUserFromOrganizationInput!) {
               removeUserFromOrganization(input: $input) {
@@ -480,7 +480,7 @@ class TestUsersRoles(CommandTestCase):
         role_fqn = "org_admin"
         resource_id = gen_uuid()
 
-        expected_body = dedent(
+        expected_body = textwrap.dedent(
             """
             mutation addRoleToUser($input: UserRoleInput!) {
                 addRoleToUser(input: $input) {
@@ -512,7 +512,7 @@ class TestUsersRoles(CommandTestCase):
         role_fqn = "org_admin"
         resource_id = gen_uuid()
 
-        expected_body = dedent(
+        expected_body = textwrap.dedent(
             """
             mutation removeRoleFromUser($input: UserRoleInput!) {
                 removeRoleFromUser(input: $input) {
@@ -540,7 +540,7 @@ class TestUsersRoles(CommandTestCase):
         self.assertGql(mock_run, argv, expected_body, expected_vars)
 
     def test_list(self, mock_run, mock_load_config):
-        expected_body = dedent(
+        expected_body = textwrap.dedent(
             """
         query {
             allRoles {
@@ -561,7 +561,7 @@ class TestUsersRoles(CommandTestCase):
 @mock.patch.object(Query, "run", return_value={"data": []})
 class TestUsers(CommandTestCase):
     org_id = gen_uuid()
-    expected_body = dedent(
+    expected_body = textwrap.dedent(
         """
         query allUsers($queryArgs: UserQueryArgs) {
             allUsers(sort: EMAIL, queryArgs: $queryArgs) {
@@ -613,7 +613,7 @@ class TestProducts(CommandTestCase):
         storage_dsn = "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net"  # noqa
         # fmt: on
 
-        expected_body = dedent(
+        expected_body = textwrap.dedent(
             """
             mutation createProduct(
                 $name: String!
@@ -703,7 +703,7 @@ class TestProducts(CommandTestCase):
 class TestConsumerSets(CommandTestCase):
     def test_consumer_sets_list(self, mock_run, mock_load_config):
 
-        expected_body = dedent(
+        expected_body = textwrap.dedent(
             """
     query allConsumerSets($clusterId: String, $productId: String, $projectId: String) {
         allConsumerSets(clusterId: $clusterId, productId: $productId, projectId: $projectId) {
@@ -750,7 +750,7 @@ class TestConsumerSets(CommandTestCase):
         self.assertGql(mock_run, argv, expected_body, expected_vars)
 
     def test_consumer_sets_edit(self, mock_run, mock_load_config):
-        expected_body = dedent(
+        expected_body = textwrap.dedent(
             """
     mutation editConsumerSet($id: String!, $input: EditConsumerSetInput!) {
         editConsumerSet(
