@@ -607,36 +607,60 @@ class TestUsers(CommandTestCase):
 @mock.patch("croud.products.deploy.print_query")
 class TestProducts(CommandTestCase):
     def test_deploy_product(self, mock_print, mock_run, mock_load_config):
-        expected_body = """
-mutation {
-    createProduct(
-        tier: "S0",
-        unit: 0,
-        projectId: "705a51b2-a290-4902-a477-a64a0d51bced",
-        name: "iot",
-        cluster: {
-            version: "3.2.3",
-            username: "foobar",
-            password: "s3cr3t!"
-        },
-        consumer: {
-            eventhub: {
-                connectionString: "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=...",
-                consumerGroup: "$Default",
-                leaseStorage: {
-                    connectionString: "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",
-                    container: "lease_container"
+        project_id = gen_uuid()
+        # fmt: off
+        eventhub_dsn = "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=..."  # noqa
+        storage_dsn = "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net"  # noqa
+        # fmt: on
+
+        expected_body = dedent(
+            """
+            mutation createProduct(
+                $name: String!
+                $projectId: String!
+                $tier: String!
+                $unit: Int
+                $cluster: CreateClusterInput!
+                $consumer: CreateConsumerSetInput!
+            ) {
+                createProduct(
+                    name: $name
+                    projectId: $projectId
+                    tier: $tier
+                    unit: $unit
+                    cluster: $cluster
+                    consumer: $consumer
+                ) {
+                    id
+                    url
                 }
+            }
+        """
+        ).strip()
+
+        expected_vars = {
+            "cluster": {
+                "password": "s3cr3t!",
+                "username": "foobar",
+                "version": "3.2.3",
             },
-            schema: "doc",
-            table: "raw"
+            "consumer": {
+                "eventhub": {
+                    "connectionString": eventhub_dsn,
+                    "consumerGroup": "$Default",
+                    "leaseStorage": {
+                        "connectionString": storage_dsn,
+                        "container": "lease_container",
+                    },
+                },
+                "schema": "doc",
+                "table": "raw",
+            },
+            "name": "iot",
+            "projectId": project_id,
+            "tier": "S0",
+            "unit": 1,
         }
-    ) {
-        id,
-        url
-    }
-}
-    """  # noqa
 
         argv = [
             "croud",
@@ -645,9 +669,9 @@ mutation {
             "--tier",
             "S0",
             "--unit",
-            "0",
+            "1",
             "--project-id",
-            "705a51b2-a290-4902-a477-a64a0d51bced",
+            project_id,
             "--product-name",
             "iot",
             "--version",
@@ -661,16 +685,16 @@ mutation {
             "--consumer-schema",
             "doc",
             "--consumer-eventhub-connection-string",
-            "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=...",  # noqa
+            eventhub_dsn,
             "--consumer-eventhub-consumer-group",
             "$Default",
             "--consumer-eventhub-lease-storage-connection-string",
-            "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",  # noqa
+            storage_dsn,
             "--consumer-eventhub-lease-storage-container",
             "lease_container",
         ]
 
-        self.assertGql(mock_run, argv, expected_body, None)
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
         assert mock_print.call_args[0][0]._endpoint == "/product/graphql"
 
 

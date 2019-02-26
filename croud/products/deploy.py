@@ -17,9 +17,11 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import textwrap
 from argparse import Namespace
 
 from croud.gql import Query, print_query
+from croud.util import clean_dict
 
 
 def product_deploy(args: Namespace) -> None:
@@ -27,37 +29,57 @@ def product_deploy(args: Namespace) -> None:
     Deploy a new CrateDB Cloud for Azure IoT product.
     """
 
-    _query = f"""
-mutation {{
-    createProduct(
-        tier: "{args.tier}",
-        unit: {args.unit},
-        projectId: "{args.project_id}",
-        name: "{args.product_name}",
-        cluster: {{
-            version: "{args.version}",
-            username: "{args.username}",
-            password: "{args.password}"
-        }},
-        consumer: {{
-            eventhub: {{
-                connectionString: "{args.consumer_eventhub_connection_string}",
-                consumerGroup: "{args.consumer_eventhub_consumer_group}",
-                leaseStorage: {{
-                    connectionString: "{args.consumer_eventhub_lease_storage_connection_string}",
-                    container: "{args.consumer_eventhub_lease_storage_container}"
-                }}
-            }},
-            schema: "{args.consumer_schema}",
-            table: "{args.consumer_table}"
-        }}
-    ) {{
-        id,
-        url
-    }}
-}}
-    """  # noqa
+    mutation = textwrap.dedent(
+        """
+        mutation createProduct(
+            $name: String!
+            $projectId: String!
+            $tier: String!
+            $unit: Int
+            $cluster: CreateClusterInput!
+            $consumer: CreateConsumerSetInput!
+        ) {
+            createProduct(
+                name: $name
+                projectId: $projectId
+                tier: $tier
+                unit: $unit
+                cluster: $cluster
+                consumer: $consumer
+            ) {
+                id
+                url
+            }
+        }
+    """
+    ).strip()
 
-    query = Query(_query, args, endpoint="/product/graphql")
-    query.execute()
+    vars = clean_dict(
+        {
+            "tier": args.tier,
+            "unit": args.unit,
+            "projectId": args.project_id,
+            "name": args.product_name,
+            "cluster": {
+                "version": args.version,
+                "username": args.username,
+                "password": args.password,
+            },
+            "consumer": {
+                "eventhub": {
+                    "connectionString": args.consumer_eventhub_connection_string,
+                    "consumerGroup": args.consumer_eventhub_consumer_group,
+                    "leaseStorage": {
+                        "connectionString": args.consumer_eventhub_lease_storage_connection_string,  # noqa
+                        "container": args.consumer_eventhub_lease_storage_container,  # noqa
+                    },
+                },
+                "schema": args.consumer_schema,
+                "table": args.consumer_table,
+            },
+        }
+    )
+
+    query = Query(mutation, args, endpoint="/product/graphql")
+    query.execute(vars)
     print_query(query, "createProduct")
