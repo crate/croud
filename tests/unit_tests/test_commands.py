@@ -167,51 +167,36 @@ def assert_query(mock_print, expected):
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "run", return_value={"data": []})
 class TestClusters(CommandTestCase):
-    def test_list_no_pid(self, mock_run, mock_load_config):
-        expected_body = """
-{
-    allClusters {
-        data {
-            id
-            name
-            numNodes
-            crateVersion
-            projectId
-            username
-            fqdn
+    project_id = gen_uuid()
+    expected_body = dedent(
+        """
+        query allClusters($filter: [ClusterFilter]) {
+            allClusters(sort: [CRATE_VERSION_DESC], filter: $filter) {
+                data {
+                    id
+                    name
+                    numNodes
+                    crateVersion
+                    projectId
+                    username
+                    fqdn
+                }
+            }
         }
-    }
-}
     """
+    ).strip()
 
+    def test_list_no_project_id(self, mock_run, mock_load_config):
         argv = ["croud", "clusters", "list"]
-        self.assertGql(mock_run, argv, expected_body)
+        expected_vars = {}
+        self.assertGql(mock_run, argv, self.expected_body, expected_vars)
 
-    def test_list_with_pid(self, mock_run, mock_load_config):
-        expected_body = """
-{
-    allClusters (filter: {by: PROJECT_ID, op: EQ, value: "60d398b4-455b-49dc-bfe9-04edf5bd3eb2"}) {
-        data {
-            id
-            name
-            numNodes
-            crateVersion
-            projectId
-            username
-            fqdn
+    def test_list_with_project_id(self, mock_run, mock_load_config):
+        argv = ["croud", "clusters", "list", "--project-id", self.project_id]
+        expected_vars = {
+            "filter": [{"by": "PROJECT_ID", "op": "EQ", "value": self.project_id}]
         }
-    }
-}
-    """  # noqa
-
-        argv = [
-            "croud",
-            "clusters",
-            "list",
-            "--project-id",
-            "60d398b4-455b-49dc-bfe9-04edf5bd3eb2",
-        ]
-        self.assertGql(mock_run, argv, expected_body)
+        self.assertGql(mock_run, argv, self.expected_body, expected_vars)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)

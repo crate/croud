@@ -17,9 +17,11 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import textwrap
 from argparse import Namespace
 
 from croud.gql import Query, print_query
+from croud.util import clean_dict
 
 
 def clusters_list(args: Namespace) -> None:
@@ -27,27 +29,31 @@ def clusters_list(args: Namespace) -> None:
     Lists all projects for the current user in the specified region
     """
 
-    _query = """
-{
-    allClusters {
-        data {
-            id
-            name
-            numNodes
-            crateVersion
-            projectId
-            username
-            fqdn
+    body = textwrap.dedent(
+        """
+        query allClusters($filter: [ClusterFilter]) {
+            allClusters(sort: [CRATE_VERSION_DESC], filter: $filter) {
+                data {
+                    id
+                    name
+                    numNodes
+                    crateVersion
+                    projectId
+                    username
+                    fqdn
+                }
+            }
         }
-    }
-}
     """
+    ).strip()
 
-    if args.project_id is not None:
-        filter_value: str = '{by: PROJECT_ID, op: EQ, value: "%s"}' % args.project_id
-        query_filter: str = f"allClusters (filter: {filter_value})"
-        _query = _query.replace("allClusters", query_filter)
+    project_filter = (
+        {"by": "PROJECT_ID", "op": "EQ", "value": args.project_id}
+        if args.project_id
+        else None
+    )
+    vars = clean_dict({"filter": [project_filter] if project_filter else None})
 
-    query = Query(_query, args)
-    query.execute()
+    query = Query(body, args)
+    query.execute(vars)
     print_query(query, "allClusters")
