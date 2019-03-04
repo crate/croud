@@ -25,7 +25,7 @@ from aiohttp.test_utils import loop_context
 from util.fake_server import FakeCrateDBCloud, FakeResolver
 
 from croud.config import Configuration
-from croud.session import HttpSession
+from croud.session import HttpSession, cloud_url
 
 me_query = """
 {
@@ -107,3 +107,19 @@ class TestHttpSession:
             headers = {"query": "me"}
             loop.run_until_complete(test_query())
             loop.run_until_complete(fake_cloud.stop())
+
+    def test_correct_url(self, mock_env):
+        region = "bregenz.a1"
+
+        url = cloud_url("prod", region)
+        assert url == f"https://{region}.cratedb.cloud"
+
+        url = cloud_url("dev", region)
+        assert url == f"https://{region}.cratedb-dev.cloud"
+
+        url = cloud_url("local", region)
+        assert url == "http://localhost:8000"
+
+        region = "westeurope.azure"
+        url = cloud_url("prod", region)
+        assert url == f"https://{region}.cratedb.cloud"

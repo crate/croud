@@ -38,7 +38,11 @@ class Configuration:
     DEFAULT_CONFIG: dict = {
         "auth": {
             "current_context": "prod",
-            "contexts": {"prod": {"token": ""}, "dev": {"token": ""}},
+            "contexts": {
+                "prod": {"token": ""},
+                "dev": {"token": ""},
+                "local": {"token": ""},
+            },
         },
         "region": "bregenz.a1",
         "output_fmt": "table",
@@ -57,7 +61,11 @@ class Configuration:
             {
                 "auth": {
                     "current_context": str,
-                    "contexts": {"prod": {"token": str}, "dev": {"token": str}},
+                    "contexts": {
+                        "prod": {"token": str},
+                        "dev": {"token": str},
+                        "local": {"token": str},
+                    },
                 },
                 "region": str,
                 "output_fmt": str,
@@ -100,6 +108,10 @@ class Configuration:
     def set_context(env: str) -> None:
         config = load_config()
         config["auth"]["current_context"] = env
+
+        if env == "local":
+            contexts = config["auth"]["contexts"]
+            contexts["local"]["token"] = contexts["dev"]["token"]
 
         write_config(config)
 

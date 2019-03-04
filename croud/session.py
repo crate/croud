@@ -27,6 +27,7 @@ from aiohttp import ClientSession, ContentTypeError, TCPConnector  # type: ignor
 from croud.printer import print_error
 from croud.typing import JsonDict
 
+CLOUD_LOCAL_URL = "http://localhost:8000"
 CLOUD_DEV_DOMAIN = "cratedb-dev.cloud"
 CLOUD_PROD_DOMAIN = "cratedb.cloud"
 DEFAULT_ENDPOINT = "/graphql"
@@ -46,10 +47,7 @@ class HttpSession:
         self.token = token
 
         if not url:
-            host = CLOUD_PROD_DOMAIN
-            if self.env == "dev":
-                host = CLOUD_DEV_DOMAIN
-            url = f"https://{region}.{host}"
+            url = cloud_url(env, region)
 
         self.url = url
         if conn is None:
@@ -82,11 +80,7 @@ class HttpSession:
                 f"Query failed to run by returning code of {resp.status}. {query}"
             )
 
-    async def logout(self):
-        domain = CLOUD_PROD_DOMAIN
-        if self.env == "dev":
-            domain = CLOUD_DEV_DOMAIN
-        url = f"https://bregenz.a1.{domain}/oauth2/logout"
+    async def logout(self, url: str):
         await self.client.get(url)
 
     async def __aenter__(self) -> "HttpSession":
@@ -102,3 +96,11 @@ class HttpSession:
         exc_tb: Optional[TracebackType],
     ) -> None:
         await self.close()
+
+
+def cloud_url(env: str, region: str = "bregenz.a1") -> str:
+    if env == "local":
+        return CLOUD_LOCAL_URL
+
+    host = CLOUD_DEV_DOMAIN if env == "dev" else CLOUD_PROD_DOMAIN
+    return f"https://{region}.{host}"

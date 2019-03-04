@@ -195,7 +195,7 @@ def add_default_args(opt_args: _ArgumentGroup) -> None:
 def env_arg(opt_args: _ArgumentGroup) -> None:
     opt_args.add_argument(
         "--env",
-        choices=["prod", "dev"],
+        choices=["prod", "dev", "local"],
         default=None,
         type=str,
         help="Switches auth context.",
