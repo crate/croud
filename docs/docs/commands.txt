@@ -408,6 +408,12 @@ Available options:
 |                                                       |          | - ``table``                              |
 +-------------------------------------------------------+----------+------------------------------------------+
 
+.. TIP:
+
+    Be careful when specifying passwords on the command line. Some
+    non-alphanumeric characters may be interpreted in an unexpected way by your
+    shell. Use `string delimitation`_ and escape characters as needed.
+
 .. _consumer-sets:
 
 ``consumer-sets``
@@ -688,6 +694,61 @@ You must specify a subcommand, like so:
 
     sh$ croud clusters [SUBCOMMAND] [OPTIONS]
 
+.. clusters.deploy:
+
+``deploy``
+----------
+
+The ``deploy`` subcommand deploys a new CrateDB cluster:
+
+.. code-block: console
+
+    sh$ croud clusters deploy [OPTIONS]
+
+Available options:
+
++-------------------------------+----------+----------------------------------+
+| Option                        | Required | Description                      |
++===============================+==========+==================================+
+| ``--product-name <STRING>``   | Yes      | The name of the desired CrateDB  |
+|                               |          |  product.                        |
++-------------------------------+----------+----------------------------------+
+| ``--tier <STRING>``           | Yes      | The tier of the deployed product.|
+|                               |          |                                  |
+|                               |          | One of:                          |
+|                               |          |                                  |
+|                               |          | - ``XS``                         |
+|                               |          | - ``S``                          |
+|                               |          | - ``M``                          |
+|                               |          | - ``L``                          |
+|                               |          | - ``XL``                         |
++-------------------------------+----------+----------------------------------+
+| ``--project-id <STRING>``     | Yes      | The identifier of the project in |
+|                               |          | which the product should be      |
+|                               |          | deployed.                        |
++-------------------------------+----------+----------------------------------+
+| ``--cluster-name <STRING>``   | Yes      | The CrateDB cluster name.        |
+|                               |          |                                  |
++-------------------------------+----------+----------------------------------+
+| ``--username <STRING>``       | Yes      | The database username for        |
+|                               |          | CrateDB.                         |
++-------------------------------+----------+----------------------------------+
+| ``--password <STRING>``       | Yes      | The password for the given       |
+|                               |          | database user.                   |
++-------------------------------+----------+----------------------------------+
+| ``--version <STRING>``        | Yes      | The version of CrateDB.          |
+|                               |          |                                  |
++-------------------------------+----------+----------------------------------+
+| ``--unit <STRING>``           | No       | The scale unit of the deployed   |
+|                               |          | product.                         |
++-------------------------------+----------+----------------------------------+
+
+.. TIP:
+
+    Be careful when specifying passwords on the command line. Some
+    non-alphanumeric characters may be interpreted in an unexpected way by your
+    shell. Use `string delimitation`_ and escape characters as needed.
+
 .. clusters.list:
 
 ``list``
@@ -796,7 +857,6 @@ Available options:
 |                           |          | - ``json``                 |
 |                           |          | - ``table``                |
 +---------------------------+----------+----------------------------+
-
 
 .. users.roles:
 
@@ -970,3 +1030,4 @@ This output format looks like this:
 
 .. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/
 .. _fully qualified role name: https://en.wikipedia.org/wiki/Fully_qualified_name
+.. _string delimitation: https://en.wikipedia.org/wiki/Delimiter

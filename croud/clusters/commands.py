@@ -57,3 +57,41 @@ def clusters_list(args: Namespace) -> None:
     query = Query(body, args)
     query.execute(vars)
     print_query(query, "allClusters")
+
+
+def clusters_deploy(args: Namespace) -> None:
+    """
+    Deploys a new cluster CrateDB cluster.
+    """
+
+    mutation = textwrap.dedent(
+        """
+        mutation deployCluster($input: DeployClusterInput!) {
+            deployCluster(input: $input) {
+                id
+                name
+                fqdn
+                url
+            }
+        }
+    """  # noqa
+    ).strip()
+
+    vars = clean_dict(
+        {
+            "input": {
+                "productName": args.product_name,
+                "tier": args.tier,
+                "unit": args.unit,
+                "name": args.cluster_name,
+                "projectId": args.project_id,
+                "username": args.username,
+                "password": args.password,
+                "version": args.version,
+            }
+        }
+    )
+
+    query = Query(mutation, args)
+    query.execute(vars)
+    print_query(query, "deployCluster")

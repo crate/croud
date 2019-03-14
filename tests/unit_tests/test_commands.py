@@ -218,6 +218,59 @@ class TestClusters(CommandTestCase):
         }
         self.assertGql(mock_run, argv, self.expected_body, expected_vars)
 
+    def test_crate_clusters(self, mock_run, mock_load_config):
+        expected_body = textwrap.dedent(
+            """
+            mutation deployCluster($input: DeployClusterInput!) {
+                deployCluster(input: $input) {
+                    id
+                    name
+                    fqdn
+                    url
+                }
+            }
+        """  # noqa
+        ).strip()
+
+        project_id = gen_uuid()
+
+        expected_vars = {
+            "input": {
+                "productName": "crate-default",
+                "tier": "S0",
+                "unit": 1,
+                "name": "crate_cluster",
+                "projectId": project_id,
+                "username": "foobar",
+                "password": "s3cr3t!",
+                "version": "3.2.5",
+            }
+        }
+
+        argv = [
+            "croud",
+            "clusters",
+            "deploy",
+            "--product-name",
+            "crate-default",
+            "--tier",
+            "S0",
+            "--unit",
+            "1",
+            "--project-id",
+            project_id,
+            "--cluster-name",
+            "crate_cluster",
+            "--version",
+            "3.2.5",
+            "--username",
+            "foobar",
+            "--password",
+            "s3cr3t!",
+        ]
+
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
+
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "run", return_value={"data": []})

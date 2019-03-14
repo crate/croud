@@ -6,4 +6,4 @@ pytest-black
 pytest-mypy
 pytest-aiohttp
 mypy
-black
+black==18.9b0

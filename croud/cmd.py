@@ -317,6 +317,15 @@ def cluster_id_arg(
     )
 
 
+def cluster_name_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "--cluster-name", type=str, help="CrateDB cluster name", required=required
+    )
+
+
 def product_id_arg(
     req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:
@@ -328,8 +337,13 @@ def product_tier_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None
     req_args.add_argument("--tier", type=str, help="Product Tier.", required=True)
 
 
-def product_unit_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
-    req_args.add_argument("--unit", type=int, help="Product Scale Unit.", required=True)
+def product_unit_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "--unit", type=int, help="Product Scale Unit.", required=required
+    )
 
 
 def product_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
