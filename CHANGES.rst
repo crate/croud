@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.9.0 - 2019/03/20
+==================
+
 - Added ``clusters deploy`` command that allows users to deploy a new
   CrateDB cluster.
 
