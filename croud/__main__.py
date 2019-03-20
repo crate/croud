@@ -25,10 +25,11 @@ import sys
 
 import colorama
 
-from croud.clusters.commands import clusters_list
+from croud.clusters.commands import clusters_deploy, clusters_list
 from croud.cmd import (
     CMD,
     cluster_id_arg,
+    cluster_name_arg,
     consumer_eventhub_connection_string_arg,
     consumer_eventhub_consumer_group_arg,
     consumer_eventhub_lease_storage_connection_string_arg,
@@ -101,7 +102,9 @@ command_tree = {
                 "extra_args": [
                     output_fmt_arg,
                     product_tier_arg,
-                    product_unit_arg,
+                    lambda req_opt_group, opt_opt_group: product_unit_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
                     product_name_arg,
                     lambda req_opt_group, opt_opt_group: project_id_arg(
                         req_opt_group, opt_opt_group, True
@@ -232,6 +235,28 @@ command_tree = {
                                ),
                                region_arg],
                 "calls": clusters_list,
+            },
+            "deploy": {
+                "help": "Deploys a new CrateDB cluster.",
+                "extra_args": [
+                    output_fmt_arg,
+                    region_arg,
+                    product_name_arg,
+                    product_tier_arg,
+                    lambda req_opt_group, opt_opt_group: product_unit_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
+                    lambda req_opt_group, opt_opt_group: project_id_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: cluster_name_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    crate_version_arg,
+                    crate_username_arg,
+                    crate_password_arg,
+                ],
+                "calls": clusters_deploy,
             }
         },
     },

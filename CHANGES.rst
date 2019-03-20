@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added ``clusters deploy`` command that allows users to deploy a new
+  CrateDB cluster.
+
 - Make ``--org-id`` and ``--no-org`` arguments mutually exclusive for the
   ``users list`` command and print an error if both arguments are provided.
 
