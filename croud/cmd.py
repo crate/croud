@@ -208,7 +208,7 @@ def region_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
         "--region",
         choices=["westeurope.azure", "eastus.azure", "eastus2.azure", "bregenz.a1"],
         type=str,
-        help="Switch region that command will be run on.",
+        help="Switches the region that command will be run on.",
         required=False,
     )
 
@@ -218,12 +218,14 @@ def project_id_arg(
 ) -> None:
     group = req_args if required else opt_args
     group.add_argument(
-        "-p", "--project-id", type=str, help="Project ID.", required=required
+        "-p", "--project-id", type=str, help="The project ID to use.", required=required
     )
 
 
 def project_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
-    req_args.add_argument("--name", type=str, help="Project Name.", required=True)
+    req_args.add_argument(
+        "--name", type=str, help="The project name to use.", required=True
+    )
 
 
 def output_fmt_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
@@ -240,7 +242,9 @@ def org_id_arg(
     req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:
     group = req_args if required else opt_args
-    group.add_argument("--org-id", type=str, help="Organization ID.", required=required)
+    group.add_argument(
+        "--org-id", type=str, help="The organization ID to use.", required=required
+    )
 
 
 def no_org_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
@@ -263,7 +267,9 @@ def org_id_no_org_arg_mutual_exclusive(
 
 
 def org_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
-    req_args.add_argument("--name", type=str, help="Organization Name.", required=True)
+    req_args.add_argument(
+        "--name", type=str, help="The organization name to use.", required=True
+    )
 
 
 def org_plan_type_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
@@ -271,7 +277,7 @@ def org_plan_type_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> Non
         "--plan-type",
         choices=[1, 2, 3, 4, 5, 6],
         type=int,
-        help="Plan type for organization.",
+        help="The support plan to use for the organization.",
         required=True,
     )
 
@@ -280,7 +286,9 @@ def resource_id_arg(
     req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:
     group = req_args if required else opt_args
-    group.add_argument("--resource", type=str, help="Resource ID.", required=required)
+    group.add_argument(
+        "--resource", type=str, help="The resource ID to use.", required=required
+    )
 
 
 def role_fqn_arg(
@@ -290,7 +298,10 @@ def role_fqn_arg(
     group.add_argument(
         "--role",
         type=str,
-        help="Role FQN. Run `croud users roles list` for a list of available roles.",
+        help=(
+            "The role FQN to use. Run `croud users roles list` "
+            "for a list of available roles."
+        ),
         required=required,
     )
 
@@ -299,12 +310,14 @@ def user_id_arg(
     req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:
     group = req_args if required else opt_args
-    group.add_argument("--user", type=str, help="User ID.", required=required)
+    group.add_argument(
+        "--user", type=str, help="The user ID to use.", required=required
+    )
 
 
 def user_id_or_email_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument(
-        "--user", type=str, help="User email address or ID", required=True
+        "--user", type=str, help="The user email address or ID to use.", required=True
     )
 
 
@@ -313,7 +326,10 @@ def cluster_id_arg(
 ) -> None:
     group = req_args if required else opt_args
     group.add_argument(
-        "--cluster-id", type=str, help="CrateDB cluster ID", required=required
+        "--cluster-id",
+        type=str,
+        help="The CrateDB cluster ID to use.",
+        required=required,
     )
 
 
@@ -322,7 +338,10 @@ def cluster_name_arg(
 ) -> None:
     group = req_args if required else opt_args
     group.add_argument(
-        "--cluster-name", type=str, help="CrateDB cluster name", required=required
+        "--cluster-name",
+        type=str,
+        help="The CrateDB cluster name to use.",
+        required=required,
     )
 
 
@@ -330,11 +349,13 @@ def product_id_arg(
     req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:
     group = req_args if required else opt_args
-    group.add_argument("--product-id", type=str, help="Filter by product ID.")
+    group.add_argument("--product-id", type=str, help="The product ID to filter by.")
 
 
 def product_tier_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
-    req_args.add_argument("--tier", type=str, help="Product Tier.", required=True)
+    req_args.add_argument(
+        "--tier", type=str, help="The product tier to use.", required=True
+    )
 
 
 def product_unit_arg(
@@ -342,38 +363,37 @@ def product_unit_arg(
 ) -> None:
     group = req_args if required else opt_args
     group.add_argument(
-        "--unit", type=int, help="Product Scale Unit.", required=required
+        "--unit", type=int, help="The product scale unit to use.", required=required
     )
 
 
 def product_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument(
-        "--product-name", type=str, help="Name of the product.", required=True
+        "--product-name", type=str, help="The product name to use.", required=True
     )
 
 
 def crate_version_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
-    req_args.add_argument("--version", type=str, help="CrateDB version.", required=True)
+    req_args.add_argument(
+        "--version", type=str, help="The CrateDB version to use.", required=True
+    )
 
 
 def crate_username_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument(
-        "--username", type=str, help="CrateDB username.", required=True
+        "--username", type=str, help="The CrateDB username to use.", required=True
     )
 
 
 def crate_password_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument(
-        "--password", type=str, help="CrateDB password.", required=True
+        "--password", type=str, help="The CrateDB password to use.", required=True
     )
 
 
 def consumer_set_id_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument(
-        "--consumer-set-id",
-        type=str,
-        help="The identifier of the consumer set",
-        required=True,
+        "--consumer-set-id", type=str, help="The consumer set ID to use.", required=True
     )
 
 
@@ -384,7 +404,7 @@ def consumer_eventhub_connection_string_arg(
     group.add_argument(
         "--consumer-eventhub-connection-string",
         type=str,
-        help="Connection string of the EventHub from which to consume.",
+        help="The connection string to the Azure EventHub from which to consume.",
         required=required,
     )
 
@@ -396,7 +416,7 @@ def consumer_eventhub_consumer_group_arg(
     group.add_argument(
         "--consumer-eventhub-consumer-group",
         type=str,
-        help="EventHub Consumer Group from which to consume.",
+        help="The consumer group for the Azure EventHub from which to consume.",
         required=required,
     )
 
@@ -408,7 +428,10 @@ def consumer_eventhub_lease_storage_connection_string_arg(
     group.add_argument(
         "--consumer-eventhub-lease-storage-connection-string",
         type=str,
-        help="Connection string of the lease storage for the EventHub consumer.",
+        help=(
+            "The connection string to a lease storage for the Azure EventHub "
+            "consumer write its lease files to."
+        ),
         required=required,
     )
 
@@ -420,7 +443,10 @@ def consumer_eventhub_lease_storage_container_arg(
     group.add_argument(
         "--consumer-eventhub-lease-storage-container",
         type=str,
-        help="Container of the lease storage for the EventHub consumer.",
+        help=(
+            "The container name in the lease storage for the Azure EventHub "
+            "consumer to use."
+        ),
         required=required,
     )
 
@@ -432,7 +458,7 @@ def consumer_schema_arg(
     group.add_argument(
         "--consumer-schema",
         type=str,
-        help="Database schema in which to insert.",
+        help="The CrateDB database schema used by the Azure EventHub consumer.",
         required=required,
     )
 
@@ -444,7 +470,7 @@ def consumer_table_arg(
     group.add_argument(
         "--consumer-table",
         type=str,
-        help="Database table in which to insert.",
+        help="The CrateDB database table used by the Azure EventHub consumer.",
         required=required,
     )
 
