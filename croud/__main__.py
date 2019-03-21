@@ -321,7 +321,7 @@ command_tree = {
                 "help": "Manage user roles.",
                 "sub_commands": {
                     "add": {
-                        "help": "Add the chosen role to the selected user.",
+                        "help": "Assign a role to the selected user.",
                         "extra_args": [
                             lambda req_opt_group, opt_opt_group: resource_id_arg(
                                 req_opt_group, opt_opt_group, True
@@ -337,7 +337,7 @@ command_tree = {
                         "calls": roles_add,
                     },
                     "remove": {
-                        "help": "Remove the chosen role from the selected user.",
+                        "help": "Unassign a role from the selected user.",
                         "extra_args": [
                             lambda req_opt_group, opt_opt_group: resource_id_arg(
                                 req_opt_group, opt_opt_group, True
