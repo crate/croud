@@ -208,7 +208,7 @@ def region_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
         "--region",
         choices=["westeurope.azure", "eastus.azure", "eastus2.azure", "bregenz.a1"],
         type=str,
-        help="Switches the region that command will be run on.",
+        help="Temporarily use the specified region that command will be run in.",
         required=False,
     )
 
@@ -429,8 +429,7 @@ def consumer_eventhub_lease_storage_connection_string_arg(
         "--consumer-eventhub-lease-storage-connection-string",
         type=str,
         help=(
-            "The connection string to a lease storage for the Azure EventHub "
-            "consumer write its lease files to."
+            "The connection string to an Azure storage account to use as lease storage."
         ),
         required=required,
     )

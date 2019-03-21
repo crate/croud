@@ -73,7 +73,7 @@ from croud.users.roles.commands import roles_add, roles_list, roles_remove
 # fmt: off
 command_tree = {
     "me": {
-        "help": "Prints information about the current logged in user.",
+        "help": "Print information about the current logged in user.",
         "extra_args": [output_fmt_arg],
         "calls": me,
     },
@@ -127,7 +127,7 @@ command_tree = {
         "help": "Manage consumer sets in CrateDB Cloud.",
         "sub_commands": {
             "list": {
-                "help": "Lists all consumer sets the current user has access to.",
+                "help": "List all consumer sets the current user has access to.",
                 "extra_args": [
                     output_fmt_arg,
                     lambda req_opt_group, opt_opt_group: project_id_arg(
@@ -192,7 +192,7 @@ command_tree = {
             },
             "list": {
                 "help": (
-                    "Lists all projects the current user has access to in "
+                    "List all projects the current user has access to in "
                     "the specified region."
                 ),
                 "extra_args": [output_fmt_arg, region_arg],
@@ -277,7 +277,7 @@ command_tree = {
                 "calls": organizations_list,
             },
             "users": {
-                "help": "Manage user in an organization.",
+                "help": "Manage users in an organization.",
                 "sub_commands": {
                     "add": {
                         "help": "Add the selected user to an organization.",
@@ -293,7 +293,7 @@ command_tree = {
                         "calls": org_users_add,
                     },
                     "remove": {
-                        "help": "Add the selected user from an organization.",
+                        "help": "Remove the selected user from an organization.",
                         "extra_args": [
                             user_id_or_email_arg,
                             lambda req_opt_group, opt_opt_group: org_id_arg(
@@ -310,7 +310,7 @@ command_tree = {
         "help": "Manage CrateDB Cloud users.",
         "sub_commands": {
             "list": {
-                "help": "List all users within the given organizations.",
+                "help": "List all users within the specified organization.",
                 "extra_args": [
                     output_fmt_arg,
                     org_id_no_org_arg_mutual_exclusive,
@@ -321,7 +321,7 @@ command_tree = {
                 "help": "Manage CrateDB Cloud user roles.",
                 "sub_commands": {
                     "add": {
-                        "help": "Grant the selected user to the chosen role.",
+                        "help": "Add the chosen role to the selected user.",
                         "extra_args": [
                             lambda req_opt_group, opt_opt_group: resource_id_arg(
                                 req_opt_group, opt_opt_group, True
@@ -337,7 +337,7 @@ command_tree = {
                         "calls": roles_add,
                     },
                     "remove": {
-                        "help": "Revoke the chosen role from the selected user.",
+                        "help": "Remove the chosen role from the selected user.",
                         "extra_args": [
                             lambda req_opt_group, opt_opt_group: resource_id_arg(
                                 req_opt_group, opt_opt_group, True
@@ -353,7 +353,7 @@ command_tree = {
                         "calls": roles_remove,
                     },
                     "list": {
-                        "help": "Lists all available roles.",
+                        "help": "List all available roles.",
                         "extra_args": [output_fmt_arg],
                         "calls": roles_list,
                     },
