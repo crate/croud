@@ -78,7 +78,7 @@ command_tree = {
         "calls": me,
     },
     "login": {"help": "Log in to CrateDB Cloud.", "calls": login},
-    "logout": {"help": "Log out from CrateDB Cloud.", "calls": logout},
+    "logout": {"help": "Log out of CrateDB Cloud.", "calls": logout},
     "config": {
         "help": "Manage croud default configuration values.",
         "sub_commands": {
@@ -95,10 +95,10 @@ command_tree = {
         },
     },
     "products": {
-        "help": "Manage CrateDB Cloud for Azure IoT products.",
+        "help": "Manage Azure IoT products.",
         "sub_commands": {
             "deploy": {
-                "help": "Deploy a new CrateDB Cloud for Azure IoT product.",
+                "help": "Deploy a new Azure IoT product.",
                 "extra_args": [
                     output_fmt_arg,
                     product_tier_arg,
@@ -124,7 +124,7 @@ command_tree = {
         },
     },
     "consumer-sets": {
-        "help": "Manage consumer sets in CrateDB Cloud.",
+        "help": "Manage consumer sets.",
         "sub_commands": {
             "list": {
                 "help": "List all consumer sets the current user has access to.",
@@ -143,7 +143,7 @@ command_tree = {
                 "calls": consumer_sets_list,
             },
             "edit": {
-                "help": "Edit the specified consumer set in CrateDB Cloud.",
+                "help": "Edit the specified consumer set.",
                 "extra_args": [
                     consumer_set_id_arg,
                     lambda req_opt_group, opt_opt_group:
@@ -176,7 +176,7 @@ command_tree = {
         },
     },
     "projects": {
-        "help": "Manage CrateDB Cloud projects.",
+        "help": "Manage projects.",
         "sub_commands": {
             "create": {
                 "help": "Create a project in the specified organization and region.",
@@ -226,7 +226,7 @@ command_tree = {
         },
     },
     "clusters": {
-        "help": "Manage CrateDB Cloud clusters.",
+        "help": "Manage clusters.",
         "sub_commands": {
             "list": {
                 "help": "List all clusters the current user has access to.",
@@ -264,7 +264,7 @@ command_tree = {
         },
     },
     "organizations": {
-        "help": "Manage CrateDB Cloud organizations.",
+        "help": "Manage organizations.",
         "sub_commands": {
             "create": {
                 "help": "Create a new organization.",
@@ -307,7 +307,7 @@ command_tree = {
         },
     },
     "users": {
-        "help": "Manage CrateDB Cloud users.",
+        "help": "Manage users.",
         "sub_commands": {
             "list": {
                 "help": "List all users within the specified organization.",
@@ -318,7 +318,7 @@ command_tree = {
                 "calls": users_list,
             },
             "roles": {
-                "help": "Manage CrateDB Cloud user roles.",
+                "help": "Manage user roles.",
                 "sub_commands": {
                     "add": {
                         "help": "Add the chosen role to the selected user.",
