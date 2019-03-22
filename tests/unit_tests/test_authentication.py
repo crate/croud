@@ -73,6 +73,54 @@ class TestLogin:
         mock_print_info.assert_has_calls(calls)
         assert cfg.read_config()["auth"]["current_context"] == "dev"
 
+    @mock.patch.object(Server, "stop")
+    @mock.patch.object(Server, "start")
+    @mock.patch("croud.login.asyncio.get_event_loop")
+    @mock.patch("croud.login.can_launch_browser", return_value=True)
+    @mock.patch("croud.login.open_page_in_browser")
+    @mock.patch("croud.login.print_info")
+    def test_local_login(
+        self,
+        mock_print_info,
+        mock_open_page_in_browser,
+        mock_can_launch_browser,
+        mock_loop,
+        mock_start,
+        mock_stop,
+    ):
+        """
+        Test for a bug that caused that upon login to local env the local token
+        was overwritten by the dev token.
+        """
+        conf = {
+            "auth": {
+                "current_context": "prod",
+                "contexts": {
+                    "prod": {"token": "prod-token"},
+                    "dev": {"token": "dev-token"},
+                    "local": {"token": ""},
+                },
+            },
+            "region": "bregenz.a1",
+            "output_fmt": "table",
+        }
+        cfg = MockConfig(conf)
+
+        with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
+            with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
+                login(Namespace(env="local"))
+
+        new_cfg = cfg.read_config()
+        assert new_cfg["auth"]["current_context"] == "local"
+        assert (
+            new_cfg["auth"]["contexts"]["local"]["token"]
+            != new_cfg["auth"]["contexts"]["dev"]["token"]
+        )
+        assert (
+            new_cfg["auth"]["contexts"]["local"]["token"]
+            != new_cfg["auth"]["contexts"]["prod"]["token"]
+        )
+
     @mock.patch("croud.config.Configuration.get_env", return_value="dev")
     @mock.patch("croud.login.can_launch_browser", return_value=False)
     @mock.patch("croud.login.print_error")

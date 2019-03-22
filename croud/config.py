@@ -108,11 +108,6 @@ class Configuration:
     def set_context(env: str) -> None:
         config = load_config()
         config["auth"]["current_context"] = env
-
-        if env == "local":
-            contexts = config["auth"]["contexts"]
-            contexts["local"]["token"] = contexts["dev"]["token"]
-
         write_config(config)
 
     @staticmethod
