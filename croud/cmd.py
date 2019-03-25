@@ -397,12 +397,12 @@ def consumer_set_id_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> N
     )
 
 
-def consumer_eventhub_connection_string_arg(
+def consumer_eventhub_dsn_arg(
     req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
 ) -> None:
     group = req_args if required else opt_args
     group.add_argument(
-        "--consumer-eventhub-connection-string",
+        "--consumer-eventhub-dsn",
         type=str,
         help="The connection string to the Azure EventHub from which to consume.",
         required=required,
@@ -421,12 +421,12 @@ def consumer_eventhub_consumer_group_arg(
     )
 
 
-def consumer_eventhub_lease_storage_connection_string_arg(
+def consumer_eventhub_lease_storage_dsn_arg(
     req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
 ) -> None:
     group = req_args if required else opt_args
     group.add_argument(
-        "--consumer-eventhub-lease-storage-connection-string",
+        "--consumer-eventhub-lease-storage-dsn",
         type=str,
         help=(
             "The connection string to an Azure storage account to use as lease storage."

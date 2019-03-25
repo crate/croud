@@ -382,13 +382,13 @@ Available options:
 +-------------------------------------------------------+----------+------------------------------------------+
 | ``--password  <STRING>``                              | Yes      | The password for the given database user.|
 +-------------------------------------------------------+----------+------------------------------------------+
-| ``--consumer-eventhub-connection-string <STRING>``    | Yes      | The connection string of the EventHub.   |
+| ``--consumer-eventhub-dsn <STRING>``                  | Yes      | The connection string of the EventHub.   |
 +-------------------------------------------------------+----------+------------------------------------------+
 | ``--consumer-eventhub-consumer-group <STRING>``       | Yes      | The consumer group from which to consume |
 |                                                       |          | from the EventHub.                       |
 +-------------------------------------------------------+----------+------------------------------------------+
-| ``--consumer-eventhub-lease-storage-connection-string | Yes      | The connection string of the lease       |
-| <STRING>``                                            |          | storage (Azure BLOB storage) of the      |
+| ``--consumer-eventhub-lease-storage-dsn <STRING>``    | Yes      | The connection string of the lease       |
+|                                                       |          | storage (Azure BLOB storage) of the      |
 |                                                       |          | consumer.                                |
 +-------------------------------------------------------+----------+------------------------------------------+
 | ``--consumer-eventhub-lease-storage-container         | Yes      | The container name of the lease storage. |
@@ -448,7 +448,7 @@ Available options:
 | ``--consumer-set-id <STRING>``                           | Yes      | The identifier of a consumer set         |
 |                                                          |          | of a CrateDB Azure IoT product.          |
 +----------------------------------------------------------+----------+------------------------------------------+
-| ``--consumer-eventhub-connection-string <STRING>``       | No       | The connection string of the EventHub.   |
+| ``--consumer-eventhub-dsn <STRING>``                     | No       | The connection string of the EventHub.   |
 |                                                          |          |                                          |
 |                                                          |          |                                          |
 +----------------------------------------------------------+----------+------------------------------------------+
@@ -456,8 +456,8 @@ Available options:
 |                                                          |          | from the EventHub.                       |
 |                                                          |          |                                          |
 +----------------------------------------------------------+----------+------------------------------------------+
-| ``--consumer-eventhub-lease-storage-connection-string    | No       | The connection string of the lease       |
-| <STRING>``                                               |          | storage (Azure BLOB storage) of the      |
+| ``--consumer-eventhub-lease-storage-dsn <STRING>``       | No       | The connection string of the lease       |
+|                                                          |          | storage (Azure BLOB storage) of the      |
 |                                                          |          | consumer.                                |
 |                                                          |          |                                          |
 +----------------------------------------------------------+----------+------------------------------------------+
