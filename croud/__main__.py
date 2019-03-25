@@ -34,8 +34,8 @@ from croud.cmd import (
     consumer_eventhub_dsn_arg,
     consumer_eventhub_lease_storage_container_arg,
     consumer_eventhub_lease_storage_dsn_arg,
+    consumer_id_arg,
     consumer_schema_arg,
-    consumer_set_id_arg,
     consumer_table_arg,
     crate_password_arg,
     crate_username_arg,
@@ -58,7 +58,7 @@ from croud.cmd import (
     user_id_or_email_arg,
 )
 from croud.config import Configuration, config_get, config_set
-from croud.consumersets.commands import consumer_sets_edit, consumer_sets_list
+from croud.consumers.commands import consumers_edit, consumers_list
 from croud.login import login
 from croud.logout import logout
 from croud.me import me
@@ -123,8 +123,8 @@ command_tree = {
             },
         },
     },
-    "consumer-sets": {
-        "help": "Manage consumer sets.",
+    "consumers": {
+        "help": "Manage consumers.",
         "sub_commands": {
             "list": {
                 "help": "List all consumer sets the current user has access to.",
@@ -140,12 +140,12 @@ command_tree = {
                         req_opt_group, opt_opt_group, False
                     )
                 ],
-                "calls": consumer_sets_list,
+                "calls": consumers_list,
             },
             "edit": {
                 "help": "Edit the specified consumer set.",
                 "extra_args": [
-                    consumer_set_id_arg,
+                    consumer_id_arg,
                     lambda req_opt_group, opt_opt_group:
                     consumer_eventhub_dsn_arg(
                         req_opt_group, opt_opt_group, False
@@ -171,7 +171,7 @@ command_tree = {
                         req_opt_group, opt_opt_group, False
                     ),
                 ],
-                "calls": consumer_sets_edit,
+                "calls": consumers_edit,
             },
         },
     },

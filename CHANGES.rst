@@ -5,6 +5,13 @@ Changes for croud
 Unreleased
 ==========
 
+- [Breaking] Removed the ``consumer-sets`` commands and replaced them
+  with the ``consumer`` commands.
+
+  - ``croud consumers edit``
+
+  - ``croud consumers list``
+
 - [Breaking] Changed the arguments containing ``connection-string`` to
   ``dsn`` to shorten the arguments as preparation for future arguments.
   Affected arguments are:
