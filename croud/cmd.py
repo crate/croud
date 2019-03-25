@@ -391,9 +391,9 @@ def crate_password_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> No
     )
 
 
-def consumer_set_id_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+def consumer_id_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument(
-        "--consumer-set-id", type=str, help="The consumer set ID to use.", required=True
+        "--consumer-id", type=str, help="The consumer set ID to use.", required=True
     )
 
 

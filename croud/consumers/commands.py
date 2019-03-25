@@ -24,11 +24,11 @@ from croud.gql import Query, print_query
 from croud.util import clean_dict
 
 
-def consumer_sets_list(args: Namespace) -> None:
+def consumers_list(args: Namespace) -> None:
     body = dedent(
         """
-    query allConsumerSets($clusterId: String, $productId: String, $projectId: String) {
-        allConsumerSets(clusterId: $clusterId, productId: $productId, projectId: $projectId) {
+    query allConsumers($clusterId: ID, $productName: String, $projectId: ID) {
+        allConsumers(clusterId: $clusterId, productName: $productName, projectId: $projectId) {
             id
             name
             projectId
@@ -55,15 +55,15 @@ def consumer_sets_list(args: Namespace) -> None:
         }
     )
 
-    query = Query(body, args, endpoint="/product/graphql")
+    query = Query(body, args)
     query.execute(vars)
-    print_query(query, "allConsumerSets")
+    print_query(query, "allConsumers")
 
 
-def consumer_sets_edit(args: Namespace) -> None:
+def consumers_edit(args: Namespace) -> None:
     body = dedent(
         """
-    mutation editConsumerSet($id: String!, $input: EditConsumerSetInput!) {
+    mutation editConsumer($id: ID!, $input: EditConsumerInput!) {
         editConsumerSet(
             id: $id,
             input: $input
@@ -76,7 +76,7 @@ def consumer_sets_edit(args: Namespace) -> None:
 
     vars = clean_dict(
         {
-            "id": args.consumer_set_id,
+            "id": args.consumer_id,
             "input": {
                 "eventhub": {
                     "connectionString": args.consumer_eventhub_dsn,
@@ -94,6 +94,6 @@ def consumer_sets_edit(args: Namespace) -> None:
         }
     )
 
-    query = Query(body, args, endpoint="/product/graphql")
+    query = Query(body, args)
     query.execute(vars)
-    print_query(query, "editConsumerSet")
+    print_query(query, "editConsumer")

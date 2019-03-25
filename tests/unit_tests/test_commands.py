@@ -664,12 +664,12 @@ class TestProducts(CommandTestCase):
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "run", return_value={"data": []})
 class TestConsumerSets(CommandTestCase):
-    def test_consumer_sets_list(self, mock_run, mock_load_config):
+    def test_consumers_list(self, mock_run, mock_load_config):
 
         expected_body = textwrap.dedent(
             """
-    query allConsumerSets($clusterId: String, $productId: String, $projectId: String) {
-        allConsumerSets(clusterId: $clusterId, productId: $productId, projectId: $projectId) {
+    query allConsumers($clusterId: ID, $productName: String, $projectId: ID) {
+        allConsumers(clusterId: $clusterId, productName: $productName, projectId: $projectId) {
             id
             name
             projectId
@@ -700,7 +700,7 @@ class TestConsumerSets(CommandTestCase):
 
         argv = [
             "croud",
-            "consumer-sets",
+            "consumers",
             "list",
             "--project-id",
             project_id,
@@ -712,10 +712,10 @@ class TestConsumerSets(CommandTestCase):
 
         self.assertGql(mock_run, argv, expected_body, expected_vars)
 
-    def test_consumer_sets_edit(self, mock_run, mock_load_config):
+    def test_consumers_edit(self, mock_run, mock_load_config):
         expected_body = textwrap.dedent(
             """
-    mutation editConsumerSet($id: String!, $input: EditConsumerSetInput!) {
+    mutation editConsumer($id: ID!, $input: EditConsumerInput!) {
         editConsumerSet(
             id: $id,
             input: $input
@@ -726,10 +726,10 @@ class TestConsumerSets(CommandTestCase):
     """  # noqa
         ).strip()
 
-        consumer_set_id = gen_uuid()
+        consumer_id = gen_uuid()
 
         expected_vars = {
-            "id": consumer_set_id,
+            "id": consumer_id,
             "input": {
                 "eventhub": {
                     "connectionString": "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=...",  # noqa
@@ -745,10 +745,10 @@ class TestConsumerSets(CommandTestCase):
 
         argv = [
             "croud",
-            "consumer-sets",
+            "consumers",
             "edit",
-            "--consumer-set-id",
-            consumer_set_id,
+            "--consumer-id",
+            consumer_id,
             "--consumer-eventhub-dsn",
             "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=...",  # noqa
             "--consumer-eventhub-consumer-group",
