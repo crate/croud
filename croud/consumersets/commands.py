@@ -79,10 +79,10 @@ def consumer_sets_edit(args: Namespace) -> None:
             "id": args.consumer_set_id,
             "input": {
                 "eventhub": {
-                    "connectionString": args.consumer_eventhub_connection_string,
+                    "connectionString": args.consumer_eventhub_dsn,
                     "consumerGroup": args.consumer_eventhub_consumer_group,
                     "leaseStorage": {
-                        "connectionString": args.consumer_eventhub_lease_storage_connection_string,  # noqa
+                        "connectionString": args.consumer_eventhub_lease_storage_dsn,  # noqa
                         "container": args.consumer_eventhub_lease_storage_container,
                     },
                 },

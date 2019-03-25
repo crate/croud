@@ -30,10 +30,10 @@ from croud.cmd import (
     CMD,
     cluster_id_arg,
     cluster_name_arg,
-    consumer_eventhub_connection_string_arg,
     consumer_eventhub_consumer_group_arg,
-    consumer_eventhub_lease_storage_connection_string_arg,
+    consumer_eventhub_dsn_arg,
     consumer_eventhub_lease_storage_container_arg,
+    consumer_eventhub_lease_storage_dsn_arg,
     consumer_schema_arg,
     consumer_set_id_arg,
     consumer_table_arg,
@@ -112,9 +112,9 @@ command_tree = {
                     crate_version_arg,
                     crate_username_arg,
                     crate_password_arg,
-                    consumer_eventhub_connection_string_arg,
+                    consumer_eventhub_dsn_arg,
                     consumer_eventhub_consumer_group_arg,
-                    consumer_eventhub_lease_storage_connection_string_arg,
+                    consumer_eventhub_lease_storage_dsn_arg,
                     consumer_eventhub_lease_storage_container_arg,
                     consumer_schema_arg,
                     consumer_table_arg,
@@ -147,7 +147,7 @@ command_tree = {
                 "extra_args": [
                     consumer_set_id_arg,
                     lambda req_opt_group, opt_opt_group:
-                    consumer_eventhub_connection_string_arg(
+                    consumer_eventhub_dsn_arg(
                         req_opt_group, opt_opt_group, False
                     ),
                     lambda req_opt_group, opt_opt_group:
@@ -155,7 +155,7 @@ command_tree = {
                         req_opt_group, opt_opt_group, False
                     ),
                     lambda req_opt_group, opt_opt_group:
-                    consumer_eventhub_lease_storage_connection_string_arg(
+                    consumer_eventhub_lease_storage_dsn_arg(
                         req_opt_group, opt_opt_group, False
                     ),
                     lambda req_opt_group, opt_opt_group:
