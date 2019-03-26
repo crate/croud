@@ -18,6 +18,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 from argparse import Namespace
+from typing import Dict
 from unittest import mock
 
 import pytest
@@ -28,10 +29,22 @@ from croud.logout import _logout_url, logout
 from croud.server import Server
 
 
+class MockConfig:
+    """
+    A mocked configuration which emulates reading and writing file from/to disk.
+    """
+
+    def __init__(self, config: Dict) -> None:
+        self.conf = config
+
+    def read_config(self) -> Dict:
+        return self.conf
+
+    def write_config(self, config) -> None:
+        self.conf = config
+
+
 class TestLogin:
-    @mock.patch("croud.config.Configuration.set_context")
-    @mock.patch("croud.config.Configuration.override_context")
-    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Server, "stop")
     @mock.patch.object(Server, "start")
     @mock.patch("croud.login.asyncio.get_event_loop")
@@ -46,19 +59,19 @@ class TestLogin:
         mock_loop,
         mock_start,
         mock_stop,
-        mock_load_config,
-        mock_override_context,
-        mock_set_context,
     ):
-        m = mock.mock_open()
-        with mock.patch("croud.config.open", m, create=True):
-            login(Namespace(env=None))
+        cfg = MockConfig(Configuration.DEFAULT_CONFIG)
+
+        with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
+            with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
+                login(Namespace(env="dev"))
 
         calls = [
             mock.call("A browser tab has been launched for you to login."),
             mock.call("Login successful."),
         ]
         mock_print_info.assert_has_calls(calls)
+        assert cfg.read_config()["auth"]["current_context"] == "dev"
 
     @mock.patch("croud.config.Configuration.get_env", return_value="dev")
     @mock.patch("croud.login.can_launch_browser", return_value=False)
@@ -103,18 +116,23 @@ class TestLogin:
 
 
 class TestLogout:
-    @mock.patch("croud.config.Configuration.override_context")
-    @mock.patch("croud.logout.Configuration.set_token")
     @mock.patch("croud.logout.print_info")
-    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-    def test_logout(
-        self, mock_load_config, mock_print_info, mock_set_token, mock_override_context
-    ):
-        m = mock.mock_open()
-        with mock.patch("croud.config.open", m, create=True):
-            logout(Namespace(env="dev"))
+    def test_logout(self, mock_print_info):
+        conf = {
+            "auth": {
+                "current_context": "prod",
+                "contexts": {"prod": {"token": "my-token"}},
+            },
+            "region": "bregenz.a1",
+            "output_fmt": "table",
+        }
+        cfg = MockConfig(conf)
 
-        mock_set_token.assert_called_once_with("")
+        with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
+            with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
+                logout(Namespace(env="prod"))
+
+        assert cfg.read_config()["auth"]["contexts"]["prod"]["token"] == ""
         mock_print_info.assert_called_once_with("You have been logged out.")
 
     def test_logout_urls_from_valid_envs(self):
