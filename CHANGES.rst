@@ -5,8 +5,11 @@ Changes for croud
 Unreleased
 ==========
 
-- [Breaking] Removed the ``consumer-sets`` commands and replaced them
-  with the ``consumer`` commands.
+- [Breaking] Replaced the ``products deploy`` command with the ``consumers
+  deploy`` command.
+
+- [Breaking] Replaced the ``consumer-sets`` commands with the ``consumers``
+  commands.
 
   - ``croud consumers edit``
 

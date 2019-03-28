@@ -567,103 +567,76 @@ class TestUsers(CommandTestCase):
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "run", return_value={"data": []})
-@mock.patch("croud.products.deploy.print_query")
-class TestProducts(CommandTestCase):
-    def test_deploy_product(self, mock_print, mock_run, mock_load_config):
+class TestConsumers(CommandTestCase):
+    # fmt: off
+    eventhub_dsn = "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=..."  # noqa
+    storage_dsn = "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net"  # noqa
+    # fmt: on
+
+    def test_deploy_consumer(self, mock_run, mock_load_config):
         project_id = gen_uuid()
-        # fmt: off
-        eventhub_dsn = "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=..."  # noqa
-        storage_dsn = "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net"  # noqa
-        # fmt: on
+        cluster_id = gen_uuid()
 
         expected_body = textwrap.dedent(
             """
-            mutation createProduct(
-                $name: String!
-                $projectId: String!
-                $tier: String!
-                $unit: Int
-                $cluster: CreateClusterInput!
-                $consumer: CreateConsumerSetInput!
-            ) {
-                createProduct(
-                    name: $name
-                    projectId: $projectId
-                    tier: $tier
-                    unit: $unit
-                    cluster: $cluster
-                    consumer: $consumer
-                ) {
-                    id
-                    url
-                }
+        query deployConsumer($input: DeployConsumerInput) {
+            deployConsumer(input: $input) {
+                id
+                name
             }
-        """
+        }
+        """  # noqa
         ).strip()
 
         expected_vars = {
-            "cluster": {
-                "password": "s3cr3t!",
-                "username": "foobar",
-                "version": "3.2.3",
-            },
-            "consumer": {
-                "eventhub": {
-                    "connectionString": eventhub_dsn,
-                    "consumerGroup": "$Default",
-                    "leaseStorage": {
-                        "connectionString": storage_dsn,
-                        "container": "lease_container",
-                    },
-                },
-                "schema": "doc",
-                "table": "raw",
-            },
-            "name": "iot",
-            "projectId": project_id,
-            "tier": "S0",
-            "unit": 1,
+            "input": {
+                "clusterId": cluster_id,
+                "eventhubConnectionString": self.eventhub_dsn,
+                "eventhubConsumerGroup": "$Default",
+                "instances": 2,
+                "leaseStorageConnectionString": self.storage_dsn,
+                "leaseStorageContainer": "lease_container",
+                "name": "my-eventhub-consumer",
+                "productName": "eventhub-consumer",
+                "productTier": "S0",
+                "projectId": project_id,
+                "tableName": "raw",
+                "tableSchema": "doc",
+            }
         }
 
         argv = [
             "croud",
-            "products",
+            "consumers",
             "deploy",
+            "--product-name",
+            "eventhub-consumer",
             "--tier",
             "S0",
-            "--unit",
-            "1",
+            "--num-instances",
+            "2",
             "--project-id",
             project_id,
-            "--product-name",
-            "iot",
-            "--version",
-            "3.2.3",
-            "--username",
-            "foobar",
-            "--password",
-            "s3cr3t!",
+            "--cluster-id",
+            cluster_id,
+            "--consumer-name",
+            "my-eventhub-consumer",
             "--consumer-table",
             "raw",
             "--consumer-schema",
             "doc",
-            "--consumer-eventhub-dsn",
-            eventhub_dsn,
-            "--consumer-eventhub-consumer-group",
+            "--eventhub-dsn",
+            self.eventhub_dsn,
+            "--eventhub-consumer-group",
             "$Default",
-            "--consumer-eventhub-lease-storage-dsn",
-            storage_dsn,
-            "--consumer-eventhub-lease-storage-container",
+            "--lease-storage-dsn",
+            self.storage_dsn,
+            "--lease-storage-container",
             "lease_container",
         ]
 
         self.assertGql(mock_run, argv, expected_body, expected_vars)
-        assert mock_print.call_args[0][0]._endpoint == "/product/graphql"
 
-
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "run", return_value={"data": []})
-class TestConsumerSets(CommandTestCase):
     def test_consumers_list(self, mock_run, mock_load_config):
 
         expected_body = textwrap.dedent(
@@ -732,10 +705,10 @@ class TestConsumerSets(CommandTestCase):
             "id": consumer_id,
             "input": {
                 "eventhub": {
-                    "connectionString": "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=...",  # noqa
+                    "connectionString": self.eventhub_dsn,
                     "consumerGroup": "$Default",
                     "leaseStorage": {
-                        "connectionString": "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",  # noqa
+                        "connectionString": self.storage_dsn,
                         "container": "lease_container",
                     },
                 },
@@ -749,13 +722,13 @@ class TestConsumerSets(CommandTestCase):
             "edit",
             "--consumer-id",
             consumer_id,
-            "--consumer-eventhub-dsn",
-            "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=...",  # noqa
-            "--consumer-eventhub-consumer-group",
+            "--eventhub-dsn",
+            self.eventhub_dsn,
+            "--eventhub-consumer-group",
             "$Default",
-            "--consumer-eventhub-lease-storage-dsn",
-            "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",  # noqa
-            "--consumer-eventhub-lease-storage-container",
+            "--lease-storage-dsn",
+            self.storage_dsn,
+            "--lease-storage-container",
             "lease_container",
             "--consumer-schema",
             "doc",

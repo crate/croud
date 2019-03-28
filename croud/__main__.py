@@ -30,16 +30,18 @@ from croud.cmd import (
     CMD,
     cluster_id_arg,
     cluster_name_arg,
-    consumer_eventhub_consumer_group_arg,
-    consumer_eventhub_dsn_arg,
-    consumer_eventhub_lease_storage_container_arg,
-    consumer_eventhub_lease_storage_dsn_arg,
     consumer_id_arg,
+    consumer_name_arg,
     consumer_schema_arg,
     consumer_table_arg,
     crate_password_arg,
     crate_username_arg,
     crate_version_arg,
+    eventhub_consumer_group_arg,
+    eventhub_dsn_arg,
+    lease_storage_container_arg,
+    lease_storage_dsn_arg,
+    num_instances_arg,
     org_id_arg,
     org_id_no_org_arg_mutual_exclusive,
     org_name_arg,
@@ -58,13 +60,12 @@ from croud.cmd import (
     user_id_or_email_arg,
 )
 from croud.config import Configuration, config_get, config_set
-from croud.consumers.commands import consumers_edit, consumers_list
+from croud.consumers.commands import consumers_deploy, consumers_edit, consumers_list
 from croud.login import login
 from croud.logout import logout
 from croud.me import me
 from croud.organizations.commands import organizations_create, organizations_list
 from croud.organizations.users.commands import org_users_add, org_users_remove
-from croud.products.deploy import product_deploy
 from croud.projects.commands import project_create, projects_list
 from croud.projects.users.commands import project_user_add, project_user_remove
 from croud.users.commands import users_list
@@ -94,38 +95,45 @@ command_tree = {
             },
         },
     },
-    "products": {
-        "help": "Manage Azure IoT products.",
-        "sub_commands": {
-            "deploy": {
-                "help": "Deploy a new Azure IoT product.",
-                "extra_args": [
-                    output_fmt_arg,
-                    product_tier_arg,
-                    lambda req_opt_group, opt_opt_group: product_unit_arg(
-                        req_opt_group, opt_opt_group, True
-                    ),
-                    product_name_arg,
-                    lambda req_opt_group, opt_opt_group: project_id_arg(
-                        req_opt_group, opt_opt_group, True
-                    ),
-                    crate_version_arg,
-                    crate_username_arg,
-                    crate_password_arg,
-                    consumer_eventhub_dsn_arg,
-                    consumer_eventhub_consumer_group_arg,
-                    consumer_eventhub_lease_storage_dsn_arg,
-                    consumer_eventhub_lease_storage_container_arg,
-                    consumer_schema_arg,
-                    consumer_table_arg,
-                ],
-                "calls": product_deploy,
-            },
-        },
-    },
     "consumers": {
         "help": "Manage consumers.",
         "sub_commands": {
+            "deploy": {
+                "help": "Deploy a new consumer.",
+                "extra_args": [
+                    output_fmt_arg,
+                    region_arg,
+                    product_name_arg,
+                    product_tier_arg,
+                    consumer_name_arg,
+                    num_instances_arg,
+                    lambda req_opt_group, opt_opt_group: consumer_schema_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: consumer_table_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: project_id_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: cluster_id_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: eventhub_dsn_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: eventhub_consumer_group_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: lease_storage_dsn_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: lease_storage_container_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                ],
+                "calls": consumers_deploy,
+            },
             "list": {
                 "help": "List all consumer sets the current user has access to.",
                 "extra_args": [
@@ -147,19 +155,19 @@ command_tree = {
                 "extra_args": [
                     consumer_id_arg,
                     lambda req_opt_group, opt_opt_group:
-                    consumer_eventhub_dsn_arg(
+                    eventhub_dsn_arg(
                         req_opt_group, opt_opt_group, False
                     ),
                     lambda req_opt_group, opt_opt_group:
-                    consumer_eventhub_consumer_group_arg(
+                    eventhub_consumer_group_arg(
                         req_opt_group, opt_opt_group, False
                     ),
                     lambda req_opt_group, opt_opt_group:
-                    consumer_eventhub_lease_storage_dsn_arg(
+                    lease_storage_dsn_arg(
                         req_opt_group, opt_opt_group, False
                     ),
                     lambda req_opt_group, opt_opt_group:
-                    consumer_eventhub_lease_storage_container_arg(
+                    lease_storage_container_arg(
                         req_opt_group, opt_opt_group, False
                     ),
                     lambda req_opt_group, opt_opt_group:

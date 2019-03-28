@@ -24,6 +24,42 @@ from croud.gql import Query, print_query
 from croud.util import clean_dict
 
 
+def consumers_deploy(args: Namespace) -> None:
+    body = dedent(
+        """
+    query deployConsumer($input: DeployConsumerInput) {
+        deployConsumer(input: $input) {
+            id
+            name
+        }
+    }
+    """  # noqa
+    ).strip()
+
+    vars = clean_dict(
+        {
+            "input": {
+                "name": args.consumer_name,
+                "productName": args.product_name,
+                "productTier": args.tier,
+                "tableName": args.consumer_table,
+                "tableSchema": args.consumer_schema,
+                "clusterId": args.cluster_id,
+                "projectId": args.project_id,
+                "instances": args.num_instances,
+                "eventhubConnectionString": args.eventhub_dsn,
+                "eventhubConsumerGroup": args.eventhub_consumer_group,
+                "leaseStorageContainer": args.lease_storage_container,
+                "leaseStorageConnectionString": args.lease_storage_dsn,
+            }
+        }
+    )
+
+    query = Query(body, args)
+    query.execute(vars)
+    print_query(query, "deployConsumer")
+
+
 def consumers_list(args: Namespace) -> None:
     body = dedent(
         """
@@ -79,11 +115,11 @@ def consumers_edit(args: Namespace) -> None:
             "id": args.consumer_id,
             "input": {
                 "eventhub": {
-                    "connectionString": args.consumer_eventhub_dsn,
-                    "consumerGroup": args.consumer_eventhub_consumer_group,
+                    "connectionString": args.eventhub_dsn,
+                    "consumerGroup": args.eventhub_consumer_group,
                     "leaseStorage": {
-                        "connectionString": args.consumer_eventhub_lease_storage_dsn,  # noqa
-                        "container": args.consumer_eventhub_lease_storage_container,
+                        "connectionString": args.lease_storage_dsn,  # noqa
+                        "container": args.lease_storage_container,
                     },
                 },
                 "cluster": {

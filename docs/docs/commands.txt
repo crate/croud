@@ -332,88 +332,6 @@ Available options:
 |                           |          | you wish to add a user to. |
 +---------------------------+----------+----------------------------+
 
-.. _products:
-
-``products``
-============
-
-The ``products`` command allows you to deploy a new CrateDB Cloud product.
-
-You must specify a subcommand, like so:
-
-.. code-block:: console
-
-    sh$ croud products [SUBCOMMAND] [OPTIONS]
-
-.. products.deploy:
-
-``deploy``
-----------
-
-The ``deploy`` subcommand deploys a new CrateDB Cloud product:
-
-.. code-block:: console
-
-    sh$ croud products deploy [OPTIONS]
-
-Available options:
-
-+-------------------------------------------------------+----------+------------------------------------------+
-| Option                                                | Required | Description                              |
-+=======================================================+==========+==========================================+
-| ``--tier <STRING>``                                   | Yes      | The tier of the deployed product.        |
-|                                                       |          |                                          |
-|                                                       |          | One of:                                  |
-|                                                       |          |                                          |
-|                                                       |          | - ``S0``                                 |
-|                                                       |          | - ``S1``                                 |
-|                                                       |          | - ``S2``                                 |
-+-------------------------------------------------------+----------+------------------------------------------+
-| ``--unit <INT>``                                      | Yes      | The scale unit of the deployed product.  |
-+-------------------------------------------------------+----------+------------------------------------------+
-| ``--project-id <STRING>``                             | Yes      | The identifier of the project in which   |
-|                                                       |          | the product should be deployed.          |
-+-------------------------------------------------------+----------+------------------------------------------+
-| ``--product-name <STRING>``                           | Yes      | A human identifier for the product.      |
-+-------------------------------------------------------+----------+------------------------------------------+
-| ``--version <STRING>``                                | Yes      | The version of CrateDB.                  |
-+-------------------------------------------------------+----------+------------------------------------------+
-| ``--username <STRING>``                               | Yes      | The database username for CrateDB.       |
-+-------------------------------------------------------+----------+------------------------------------------+
-| ``--password  <STRING>``                              | Yes      | The password for the given database user.|
-+-------------------------------------------------------+----------+------------------------------------------+
-| ``--consumer-eventhub-dsn <STRING>``                  | Yes      | The connection string of the EventHub.   |
-+-------------------------------------------------------+----------+------------------------------------------+
-| ``--consumer-eventhub-consumer-group <STRING>``       | Yes      | The consumer group from which to consume |
-|                                                       |          | from the EventHub.                       |
-+-------------------------------------------------------+----------+------------------------------------------+
-| ``--consumer-eventhub-lease-storage-dsn <STRING>``    | Yes      | The connection string of the lease       |
-|                                                       |          | storage (Azure BLOB storage) of the      |
-|                                                       |          | consumer.                                |
-+-------------------------------------------------------+----------+------------------------------------------+
-| ``--consumer-eventhub-lease-storage-container         | Yes      | The container name of the lease storage. |
-| <STRING>``                                            |          |                                          |
-+-------------------------------------------------------+----------+------------------------------------------+
-| ``--consumer-schema <STRING>``                        | Yes      | The name of the schema in which to       |
-|                                                       |          | insert.                                  |
-+-------------------------------------------------------+----------+------------------------------------------+
-| ``--consumer-table <STRING>``                         | Yes      | The name of the table in which to        |
-|                                                       |          | insert.                                  |
-+-------------------------------------------------------+----------+------------------------------------------+
-| ``--output-fmt <STRING>``                             | No       | The desired output format.               |
-|                                                       |          |                                          |
-|                                                       |          | One of:                                  |
-|                                                       |          |                                          |
-|                                                       |          | - ``json``                               |
-|                                                       |          | - ``table``                              |
-+-------------------------------------------------------+----------+------------------------------------------+
-
-.. TIP:
-
-    Be careful when specifying passwords on the command line. Some
-    non-alphanumeric characters may be interpreted in an unexpected way by your
-    shell. Use `string delimitation`_ and escape characters as needed.
-
 .. _consumers:
 
 ``consumers``
@@ -447,19 +365,14 @@ Available options:
 | ``--cluster-id <STRING>``           | Yes      | The identifier of the CrateDB cluster.   |
 |                                     |          |                                          |
 +-------------------------------------+----------+------------------------------------------+
-| ``--consumer-table <STRING>``       | Yes      | The name of the table in which to        |
-|                                     |          | insert.                                  |
-+-------------------------------------+----------+------------------------------------------+
-| ``--consumer-schema <STRING>``      | Yes      | The name of the schema in which to       |
-|                                     |          | insert.                                  |
-+-------------------------------------+----------+------------------------------------------+
 | ``--project-id <STRING>``           | Yes      | The identifier of the project in which   |
 |                                     |          | the consumer should be deployed.         |
 +-------------------------------------+----------+------------------------------------------+
 | ``--product-name <STRING>``         | Yes      | The name of the desired consumer         |
 |                                     |          | product.                                 |
 +-------------------------------------+----------+------------------------------------------+
-| ``--tier <STRING>``                 | Yes      | The tier of the consumer.                |
+| ``--tier <STRING>``                 | Yes      | The tier of the desired consumer         |
+|                                     |          | product                                  |
 |                                     |          |                                          |
 |                                     |          | One of:                                  |
 |                                     |          |                                          |
@@ -470,18 +383,33 @@ Available options:
 |                                     |          | - ``XL``                                 |
 +-------------------------------------+----------+------------------------------------------+
 | ``--num-instances <INT>``           | No       | The number of consumers to be deployed.  |
-|                                     |          |                                          |
+|                                     |          | Defaults to ``1``.                       |
 +-------------------------------------+----------+------------------------------------------+
-| ``--consumer-dsn <STRING>``         | No       | The connection string of the consumer.   |
-|                                     |          |                                          |
+| ``--consumer-table <STRING>``       | Yes      | The name of the table in which to        |
+|                                     |          | insert.                                  |
 +-------------------------------------+----------+------------------------------------------+
-| ``--lease-storage-dsn               | No       | The connection string of the lease       |
+| ``--consumer-schema <STRING>``      | Yes      | The name of the schema in which to       |
+|                                     |          | insert.                                  |
++-------------------------------------+----------+------------------------------------------+
+| ``--eventhub-dsn <STRING>``         | Yes      | The connection string of the Azure       |
+|                                     |          | Eventhub.                                |
++-------------------------------------+----------+------------------------------------------+
+| ``--eventhub-consumer-group         | Yes      | The consumer group of the Azure          |
+| <STRING>``                          |          | Eventhub.                                |
++-------------------------------------+----------+------------------------------------------+
+| ``--lease-storage-dsn               | Yes      | The connection string of the lease       |
 | <STRING>``                          |          | storage (Azure BLOB storage) of the      |
 |                                     |          | consumer.                                |
 +-------------------------------------+----------+------------------------------------------+
-| ``--lease-storage-container         | No       | The container name of the lease storage. |
+| ``--lease-storage-container         | Yes      | The container name of the lease storage. |
 | <STRING>``                          |          |                                          |
 +-------------------------------------+----------+------------------------------------------+
+
+.. TIP:
+
+    Be careful when specifying passwords on the command line. Some
+    non-alphanumeric characters may be interpreted in an unexpected way by your
+    shell. Use `string delimitation`_ and escape characters as needed.
 
 .. consumers.edit:
 
@@ -509,11 +437,11 @@ Available options:
 | ``--consumer-schema <STRING>``      | No       | The name of the schema in which to       |
 |                                     |          | insert.                                  |
 +-------------------------------------+----------+------------------------------------------+
-| ``--consumer-group <STRING>``       | No       | The consumer group from which to consume |
-|                                     |          | from.                                    |
+| ``--eventhub-dsn <STRING>``         | No       | The connection string of the Azure       |
+|                                     |          | Eventhub.                                |
 +-------------------------------------+----------+------------------------------------------+
-| ``--consumer-dsn <STRING>``         | No       | The connection string of the consumer.   |
-|                                     |          |                                          |
+| ``--eventhub-consumer-group         | No       | The consumer group of the Azure          |
+| <STRING>``                          |          | Eventhub.                                |
 +-------------------------------------+----------+------------------------------------------+
 | ``--lease-storage-dsn               | No       | The connection string of the lease       |
 | <STRING>``                          |          | storage (Azure BLOB storage) of the      |
