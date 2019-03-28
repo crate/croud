@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 #
 # Licensed to CRATE Technology GmbH ("Crate") under one or more contributor
@@ -27,7 +25,6 @@ import colorama
 
 from croud.clusters.commands import clusters_deploy, clusters_list
 from croud.cmd import (
-    CMD,
     cluster_id_arg,
     cluster_name_arg,
     consumer_id_arg,
@@ -46,13 +43,11 @@ from croud.cmd import (
     org_id_no_org_arg_mutual_exclusive,
     org_name_arg,
     org_plan_type_arg,
-    output_fmt_arg,
     product_name_arg,
     product_tier_arg,
     product_unit_arg,
     project_id_arg,
     project_name_arg,
-    region_arg,
     resource_id_arg,
     role_fqn_arg,
     user_id_arg,
@@ -66,6 +61,7 @@ from croud.me import me
 from croud.monitoring.grafana.commands import set_grafana
 from croud.organizations.commands import organizations_create, organizations_list
 from croud.organizations.users.commands import org_users_add, org_users_remove
+from croud.parser import create_parser
 from croud.projects.commands import project_create, projects_list
 from croud.projects.users.commands import project_user_add, project_user_remove
 from croud.users.commands import users_list
@@ -75,34 +71,32 @@ from croud.users.roles.commands import roles_add, roles_list, roles_remove
 command_tree = {
     "me": {
         "help": "Print information about the current logged in user.",
-        "extra_args": [output_fmt_arg],
-        "calls": me,
+        "extra_args": [],
+        "resolver": me,
     },
-    "login": {"help": "Log in to CrateDB Cloud.", "calls": login},
-    "logout": {"help": "Log out of CrateDB Cloud.", "calls": logout},
+    "login": {"help": "Log in to CrateDB Cloud.", "resolver": login},
+    "logout": {"help": "Log out of CrateDB Cloud.", "resolver": logout},
     "config": {
         "help": "Manage croud default configuration values.",
-        "sub_commands": {
+        "commands": {
             "get": {
                 "help": "Get default configuration values.",
-                "calls": config_get,
+                "resolver": config_get,
                 "noop_arg": {"choices": ["env", "region", "output-fmt"]},
             },
             "set": {
                 "help": "Set default configuration values.",
-                "extra_args": [output_fmt_arg, region_arg],
-                "calls": config_set,
+                "extra_args": [],
+                "resolver": config_set,
             },
         },
     },
     "consumers": {
         "help": "Manage consumers.",
-        "sub_commands": {
+        "commands": {
             "deploy": {
                 "help": "Deploy a new consumer.",
                 "extra_args": [
-                    output_fmt_arg,
-                    region_arg,
                     lambda req_opt_group, opt_opt_group: product_name_arg(
                         req_opt_group, opt_opt_group, True
                     ),
@@ -134,12 +128,11 @@ command_tree = {
                         req_opt_group, opt_opt_group, True
                     ),
                 ],
-                "calls": consumers_deploy,
+                "resolver": consumers_deploy,
             },
             "list": {
-                "help": "List all consumer sets the current user has access to.",
+                "help": "List all consumers the current user has access to.",
                 "extra_args": [
-                    output_fmt_arg,
                     lambda req_opt_group, opt_opt_group: project_id_arg(
                         req_opt_group, opt_opt_group, False
                     ),
@@ -150,7 +143,7 @@ command_tree = {
                         req_opt_group, opt_opt_group, False
                     )
                 ],
-                "calls": consumers_list,
+                "resolver": consumers_list,
             },
             "edit": {
                 "help": "Edit the specified consumer set.",
@@ -185,36 +178,34 @@ command_tree = {
                         req_opt_group, opt_opt_group, False
                     ),
                 ],
-                "calls": consumers_edit,
+                "resolver": consumers_edit,
             },
         },
     },
     "projects": {
         "help": "Manage projects.",
-        "sub_commands": {
+        "commands": {
             "create": {
                 "help": "Create a project in the specified organization and region.",
                 "extra_args": [
-                    output_fmt_arg,
                     project_name_arg,
                     lambda req_opt_group, opt_opt_group: org_id_arg(
                         req_opt_group, opt_opt_group, True
                     ),
-                    region_arg,
                 ],
-                "calls": project_create,
+                "resolver": project_create,
             },
             "list": {
                 "help": (
                     "List all projects the current user has access to in "
                     "the specified region."
                 ),
-                "extra_args": [output_fmt_arg, region_arg],
-                "calls": projects_list,
+                "extra_args": [],
+                "resolver": projects_list,
             },
             "users": {
                 "help": "Manage users in projects.",
-                "sub_commands": {
+                "commands": {
                     "add": {
                         "help": "Add the selected user to a project.",
                         "extra_args": [
@@ -223,7 +214,7 @@ command_tree = {
                             ),
                             user_id_or_email_arg,
                         ],
-                        "calls": project_user_add,
+                        "resolver": project_user_add,
                     },
                     "remove": {
                         "help": "Remove the selected user from a project.",
@@ -233,7 +224,7 @@ command_tree = {
                             ),
                             user_id_or_email_arg,
                         ],
-                        "calls": project_user_remove,
+                        "resolver": project_user_remove,
                     },
                 },
             },
@@ -241,23 +232,19 @@ command_tree = {
     },
     "clusters": {
         "help": "Manage clusters.",
-        "sub_commands": {
+        "commands": {
             "list": {
                 "help": "List all clusters the current user has access to.",
                 "extra_args": [
-                    output_fmt_arg,
                     lambda req_opt_group, opt_opt_group: project_id_arg(
                         req_opt_group, opt_opt_group, False
                     ),
-                    region_arg,
                 ],
-                "calls": clusters_list,
+                "resolver": clusters_list,
             },
             "deploy": {
                 "help": "Deploy a new CrateDB cluster.",
                 "extra_args": [
-                    output_fmt_arg,
-                    region_arg,
                     lambda req_opt_group, opt_opt_group: product_name_arg(
                         req_opt_group, opt_opt_group, True
                     ),
@@ -275,26 +262,26 @@ command_tree = {
                     crate_username_arg,
                     crate_password_arg,
                 ],
-                "calls": clusters_deploy,
+                "resolver": clusters_deploy,
             }
         },
     },
     "organizations": {
         "help": "Manage organizations.",
-        "sub_commands": {
+        "commands": {
             "create": {
                 "help": "Create a new organization.",
-                "extra_args": [output_fmt_arg, org_name_arg, org_plan_type_arg],
-                "calls": organizations_create,
+                "extra_args": [org_name_arg, org_plan_type_arg],
+                "resolver": organizations_create,
             },
             "list": {
                 "help": "List all organizations the current user has access to.",
-                "extra_args": [output_fmt_arg],
-                "calls": organizations_list,
+                "extra_args": [],
+                "resolver": organizations_list,
             },
             "users": {
                 "help": "Manage users in an organization.",
-                "sub_commands": {
+                "commands": {
                     "add": {
                         "help": "Add the selected user to an organization.",
                         "extra_args": [
@@ -306,7 +293,7 @@ command_tree = {
                                 req_opt_group, opt_opt_group, False
                             ),
                         ],
-                        "calls": org_users_add,
+                        "resolver": org_users_add,
                     },
                     "remove": {
                         "help": "Remove the selected user from an organization.",
@@ -316,7 +303,7 @@ command_tree = {
                                 req_opt_group, opt_opt_group, False
                             ),
                         ],
-                        "calls": org_users_remove,
+                        "resolver": org_users_remove,
                     },
                 },
             },
@@ -324,18 +311,17 @@ command_tree = {
     },
     "users": {
         "help": "Manage users.",
-        "sub_commands": {
+        "commands": {
             "list": {
                 "help": "List all users within the specified organization.",
                 "extra_args": [
-                    output_fmt_arg,
                     org_id_no_org_arg_mutual_exclusive,
                 ],
-                "calls": users_list,
+                "resolver": users_list,
             },
             "roles": {
                 "help": "Manage user roles.",
-                "sub_commands": {
+                "commands": {
                     "add": {
                         "help": "Assign a role to the selected user.",
                         "extra_args": [
@@ -345,12 +331,11 @@ command_tree = {
                             lambda req_opt_group, opt_opt_group: user_id_arg(
                                 req_opt_group, opt_opt_group, True
                             ),
-                            output_fmt_arg,
                             lambda req_opt_group, opt_opt_group: role_fqn_arg(
                                 req_opt_group, opt_opt_group, True
                             ),
                         ],
-                        "calls": roles_add,
+                        "resolver": roles_add,
                     },
                     "remove": {
                         "help": "Unassign a role from the selected user.",
@@ -361,17 +346,16 @@ command_tree = {
                             lambda req_opt_group, opt_opt_group: user_id_arg(
                                 req_opt_group, opt_opt_group, True
                             ),
-                            output_fmt_arg,
                             lambda req_opt_group, opt_opt_group: role_fqn_arg(
                                 req_opt_group, opt_opt_group, True
                             ),
                         ],
-                        "calls": roles_remove,
+                        "resolver": roles_remove,
                     },
                     "list": {
                         "help": "List all available roles.",
-                        "extra_args": [output_fmt_arg],
-                        "calls": roles_list,
+                        "extra_args": [],
+                        "resolver": roles_list,
                     },
                 },
             },
@@ -379,32 +363,28 @@ command_tree = {
     },
     "monitoring": {
         "help": "Manage monitoring tools.",
-        "sub_commands": {
+        "commands": {
             "grafana": {
                 "help": "Manage access to Grafana dashboards for projects.",
-                "sub_commands": {
+                "commands": {
                     "enable": {
                         "help": "Enable Grafana dashboards to visualize metrics for a "
                         "project.",
                         "extra_args": [
-                            output_fmt_arg,
                             lambda req_opt_group, opt_opt_group: project_id_arg(
                                 req_opt_group, opt_opt_group, True
                             ),
-                            region_arg,
                         ],
-                        "calls": lambda args: set_grafana(True, args),
+                        "resolver": lambda args: set_grafana(True, args),
                     },
                     "disable": {
                         "help": "Disable Grafana dashboards for a project.",
                         "extra_args": [
-                            output_fmt_arg,
                             lambda req_opt_group, opt_opt_group: project_id_arg(
                                 req_opt_group, opt_opt_group, True
                             ),
-                            region_arg,
                         ],
-                        "calls": lambda args: set_grafana(False, args),
+                        "resolver": lambda args: set_grafana(False, args),
                     },
                 },
             },
@@ -414,14 +394,26 @@ command_tree = {
 # fmt: on
 
 
+def get_parser():
+    tree = {
+        "help": "A command line interface for CrateDB Cloud.",
+        "commands": command_tree,
+    }
+    return create_parser(tree)
+
+
 def main():
     Configuration.create()
     colorama.init()
 
-    croud = CMD(command_tree)
-    resolver, arguments = croud.resolve(sys.argv)
-    if resolver:
-        resolver(arguments)
+    parser = get_parser()
+    params = parser.parse_args(sys.argv[1:])
+    if "resolver" in params:
+        fn = params.resolver
+        del params.resolver
+        fn(params)
+    else:
+        parser.print_help()
 
 
 if __name__ == "__main__":
