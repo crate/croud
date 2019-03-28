@@ -100,10 +100,7 @@ def consumers_edit(args: Namespace) -> None:
     body = dedent(
         """
     mutation editConsumer($id: ID!, $input: EditConsumerInput!) {
-        editConsumerSet(
-            id: $id,
-            input: $input
-        ) {
+        editConsumerSet(id: $id, input: $input) {
             id
         }
     }
@@ -114,18 +111,13 @@ def consumers_edit(args: Namespace) -> None:
         {
             "id": args.consumer_id,
             "input": {
-                "eventhub": {
-                    "connectionString": args.eventhub_dsn,
-                    "consumerGroup": args.eventhub_consumer_group,
-                    "leaseStorage": {
-                        "connectionString": args.lease_storage_dsn,  # noqa
-                        "container": args.lease_storage_container,
-                    },
-                },
-                "cluster": {
-                    "schema": args.consumer_schema,
-                    "table": args.consumer_table,
-                },
+                "eventhubConnectionString": args.eventhub_dsn,
+                "eventhubConsumerGroup": args.eventhub_consumer_group,
+                "leaseStorageConnectionString": args.lease_storage_dsn,
+                "leaseStorageContainer": args.lease_storage_container,
+                "consumerSchema": args.consumer_schema,
+                "consumerTable": args.consumer_table,
+                "clusterId": args.cluster_id,
             },
         }
     )

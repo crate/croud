@@ -688,10 +688,7 @@ class TestConsumers(CommandTestCase):
         expected_body = textwrap.dedent(
             """
     mutation editConsumer($id: ID!, $input: EditConsumerInput!) {
-        editConsumerSet(
-            id: $id,
-            input: $input
-        ) {
+        editConsumerSet(id: $id, input: $input) {
             id
         }
     }
@@ -699,19 +696,18 @@ class TestConsumers(CommandTestCase):
         ).strip()
 
         consumer_id = gen_uuid()
+        cluster_id = gen_uuid()
 
         expected_vars = {
             "id": consumer_id,
             "input": {
-                "eventhub": {
-                    "connectionString": self.eventhub_dsn,
-                    "consumerGroup": "$Default",
-                    "leaseStorage": {
-                        "connectionString": self.storage_dsn,
-                        "container": "lease_container",
-                    },
-                },
-                "cluster": {"schema": "doc", "table": "raw"},
+                "eventhubConnectionString": self.eventhub_dsn,
+                "eventhubConsumerGroup": "$Default",
+                "leaseStorageConnectionString": self.storage_dsn,
+                "leaseStorageContainer": "lease_container",
+                "consumerSchema": "doc",
+                "consumerTable": "raw",
+                "clusterId": cluster_id,
             },
         }
 
@@ -733,6 +729,8 @@ class TestConsumers(CommandTestCase):
             "doc",
             "--consumer-table",
             "raw",
+            "--cluster-id",
+            cluster_id,
         ]
 
         self.assertGql(mock_run, argv, expected_body, expected_vars)

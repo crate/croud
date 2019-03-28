@@ -179,6 +179,10 @@ command_tree = {
                     consumer_table_arg(
                         req_opt_group, opt_opt_group, False
                     ),
+                    lambda req_opt_group, opt_opt_group:
+                    cluster_id_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
                 ],
                 "calls": consumers_edit,
             },
