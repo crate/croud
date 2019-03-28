@@ -85,8 +85,8 @@ def consumers_list(args: Namespace) -> None:
 
     vars = clean_dict(
         {
+            "productName": args.product_name,
             "projectId": args.project_id,
-            "productId": args.product_id,
             "clusterId": args.cluster_id,
         }
     )

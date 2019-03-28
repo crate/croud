@@ -345,13 +345,6 @@ def cluster_name_arg(
     )
 
 
-def product_id_arg(
-    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
-) -> None:
-    group = req_args if required else opt_args
-    group.add_argument("--product-id", type=str, help="The product ID to filter by.")
-
-
 def product_tier_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument(
         "--tier", type=str, help="The product tier to use.", required=True
@@ -367,9 +360,12 @@ def product_unit_arg(
     )
 
 
-def product_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
-    req_args.add_argument(
-        "--product-name", type=str, help="The product name to use.", required=True
+def product_name_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "--product-name", type=str, help="The product name to use.", required=required
     )
 
 

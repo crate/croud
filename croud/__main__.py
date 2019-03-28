@@ -47,7 +47,6 @@ from croud.cmd import (
     org_name_arg,
     org_plan_type_arg,
     output_fmt_arg,
-    product_id_arg,
     product_name_arg,
     product_tier_arg,
     product_unit_arg,
@@ -103,7 +102,9 @@ command_tree = {
                 "extra_args": [
                     output_fmt_arg,
                     region_arg,
-                    product_name_arg,
+                    lambda req_opt_group, opt_opt_group: product_name_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
                     product_tier_arg,
                     consumer_name_arg,
                     num_instances_arg,
@@ -144,7 +145,7 @@ command_tree = {
                     lambda req_opt_group, opt_opt_group: cluster_id_arg(
                         req_opt_group, opt_opt_group, False
                     ),
-                    lambda req_opt_group, opt_opt_group: product_id_arg(
+                    lambda req_opt_group, opt_opt_group: product_name_arg(
                         req_opt_group, opt_opt_group, False
                     )
                 ],
@@ -252,7 +253,9 @@ command_tree = {
                 "extra_args": [
                     output_fmt_arg,
                     region_arg,
-                    product_name_arg,
+                    lambda req_opt_group, opt_opt_group: product_name_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
                     product_tier_arg,
                     lambda req_opt_group, opt_opt_group: product_unit_arg(
                         req_opt_group, opt_opt_group, False

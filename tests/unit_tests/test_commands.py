@@ -662,12 +662,11 @@ class TestConsumers(CommandTestCase):
         ).strip()
 
         project_id = gen_uuid()
-        product_id = gen_uuid()
         cluster_id = gen_uuid()
 
         expected_vars = {
+            "productName": "eventhub-consumer",
             "projectId": project_id,
-            "productId": product_id,
             "clusterId": cluster_id,
         }
 
@@ -679,8 +678,8 @@ class TestConsumers(CommandTestCase):
             project_id,
             "--cluster-id",
             cluster_id,
-            "--product-id",
-            product_id,
+            "--product-name",
+            "eventhub-consumer",
         ]
 
         self.assertGql(mock_run, argv, expected_body, expected_vars)
