@@ -5,15 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
-- [Breaking] Changed the arguments containing ``connection-string`` to
-  ``dsn`` to shorten the arguments as preparation for future arguments.
-  Affected arguments are:
-
-  - ``--consumer-eventhub-connection-string`` to
-    ``--consumer-eventhub-dsn``
-
-  - ``--consumer-eventhub-lease-storage-connection-string`` to
-    ``--consumer-eventhub-lease-storage-dsn``
+- [Breaking] Removed the commands ``product deploy``, ``consumer-sets list``
+  and ``consumer-sets edit``.
 
 0.9.0 - 2019/03/20
 ==================
