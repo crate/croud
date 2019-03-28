@@ -321,6 +321,18 @@ def user_id_or_email_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> 
     )
 
 
+def cluster_id_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "--cluster-id",
+        type=str,
+        help="The CrateDB cluster ID to use.",
+        required=required,
+    )
+
+
 def cluster_name_arg(
     req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:
@@ -348,9 +360,12 @@ def product_unit_arg(
     )
 
 
-def product_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
-    req_args.add_argument(
-        "--product-name", type=str, help="The product name to use.", required=True
+def product_name_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "--product-name", type=str, help="The product name to use.", required=required
     )
 
 
@@ -369,6 +384,105 @@ def crate_username_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> No
 def crate_password_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument(
         "--password", type=str, help="The CrateDB password to use.", required=True
+    )
+
+
+def consumer_id_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument(
+        "--consumer-id", type=str, help="The consumer set ID to use.", required=True
+    )
+
+
+def consumer_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    req_args.add_argument(
+        "--consumer-name", type=str, help="The consumer name to use.", required=True
+    )
+
+
+def consumer_schema_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "--consumer-schema",
+        type=str,
+        help="The CrateDB database schema used by the Azure EventHub consumer.",
+        required=required,
+    )
+
+
+def consumer_table_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "--consumer-table",
+        type=str,
+        help="The CrateDB database table used by the Azure EventHub consumer.",
+        required=required,
+    )
+
+
+def eventhub_dsn_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "--eventhub-dsn",
+        type=str,
+        help="The connection string to the Azure EventHub from which to consume.",
+        required=required,
+    )
+
+
+def eventhub_consumer_group_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "--eventhub-consumer-group",
+        type=str,
+        help="The consumer group of the Azure EventHub from which to consume.",
+        required=required,
+    )
+
+
+def lease_storage_dsn_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "--lease-storage-dsn",
+        type=str,
+        help=(
+            "The connection string to an Azure storage account to use as lease storage."
+        ),
+        required=required,
+    )
+
+
+def lease_storage_container_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "--lease-storage-container",
+        type=str,
+        help=(
+            "The container name in the lease storage for the Azure EventHub "
+            "consumer to use."
+        ),
+        required=required,
+    )
+
+
+def num_instances_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    opt_args.add_argument(
+        "--num-instances",
+        type=int,
+        help="The number of instances to deploy.",
+        default=1,
+        required=False,
     )
 
 

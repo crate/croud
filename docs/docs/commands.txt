@@ -332,6 +332,156 @@ Available options:
 |                           |          | you wish to add a user to. |
 +---------------------------+----------+----------------------------+
 
+.. _consumers:
+
+``consumers``
+=============
+
+The ``consumers`` command allows you to manage consumers.
+
+.. code-block:: console
+
+    sh$ croud consumers [SUBCOMMAND] [OPTIONS]
+
+.. consumers.deploy:
+
+``deploy``
+----------
+
+The ``deploy`` subcommand deploys a new consumer.
+
+.. code-block:: console
+
+    sh$ croud consumers deploy [OPTIONS]
+
+Available options:
+
++-------------------------------------+----------+------------------------------------------+
+| Option                              | Required | Description                              |
++=====================================+==========+==========================================+
+| ``--consumer-name <STRING>``        | Yes      | The name of the consumer.                |
+|                                     |          |                                          |
++-------------------------------------+----------+------------------------------------------+
+| ``--cluster-id <STRING>``           | Yes      | The identifier of the CrateDB cluster.   |
+|                                     |          |                                          |
++-------------------------------------+----------+------------------------------------------+
+| ``--project-id <STRING>``           | Yes      | The identifier of the project in which   |
+|                                     |          | the consumer should be deployed.         |
++-------------------------------------+----------+------------------------------------------+
+| ``--product-name <STRING>``         | Yes      | The name of the desired consumer         |
+|                                     |          | product.                                 |
++-------------------------------------+----------+------------------------------------------+
+| ``--tier <STRING>``                 | Yes      | The tier of the desired consumer         |
+|                                     |          | product                                  |
+|                                     |          |                                          |
+|                                     |          | One of:                                  |
+|                                     |          |                                          |
+|                                     |          | - ``XS``                                 |
+|                                     |          | - ``S``                                  |
+|                                     |          | - ``M``                                  |
+|                                     |          | - ``L``                                  |
+|                                     |          | - ``XL``                                 |
++-------------------------------------+----------+------------------------------------------+
+| ``--num-instances <INT>``           | No       | The number of consumers to be deployed.  |
+|                                     |          | Defaults to ``1``.                       |
++-------------------------------------+----------+------------------------------------------+
+| ``--consumer-table <STRING>``       | Yes      | The name of the table in which to        |
+|                                     |          | insert.                                  |
++-------------------------------------+----------+------------------------------------------+
+| ``--consumer-schema <STRING>``      | Yes      | The name of the schema in which to       |
+|                                     |          | insert.                                  |
++-------------------------------------+----------+------------------------------------------+
+| ``--eventhub-dsn <STRING>``         | Yes      | The connection string of the Azure       |
+|                                     |          | Eventhub.                                |
++-------------------------------------+----------+------------------------------------------+
+| ``--eventhub-consumer-group         | Yes      | The consumer group of the Azure          |
+| <STRING>``                          |          | Eventhub.                                |
++-------------------------------------+----------+------------------------------------------+
+| ``--lease-storage-dsn               | Yes      | The connection string of the lease       |
+| <STRING>``                          |          | storage (Azure BLOB storage) of the      |
+|                                     |          | consumer.                                |
++-------------------------------------+----------+------------------------------------------+
+| ``--lease-storage-container         | Yes      | The container name of the lease storage. |
+| <STRING>``                          |          |                                          |
++-------------------------------------+----------+------------------------------------------+
+
+.. TIP:
+
+    Be careful when specifying passwords on the command line. Some
+    non-alphanumeric characters may be interpreted in an unexpected way by your
+    shell. Use `string delimitation`_ and escape characters as needed.
+
+.. consumers.edit:
+
+``edit``
+--------
+
+The ``edit`` subcommand edits existing eventhub
+consumers.
+
+.. code-block:: console
+
+    sh$ croud consumers edit [OPTIONS]
+
+Available options:
+
++-------------------------------------+----------+------------------------------------------+
+| Option                              | Required | Description                              |
++=====================================+==========+==========================================+
+| ``--consumer-id <STRING>``          | Yes      | The identifier of the consumer.          |
+|                                     |          |                                          |
++-------------------------------------+----------+------------------------------------------+
+| ``--consumer-table <STRING>``       | No       | The name of the table in which to        |
+|                                     |          | insert.                                  |
++-------------------------------------+----------+------------------------------------------+
+| ``--consumer-schema <STRING>``      | No       | The name of the schema in which to       |
+|                                     |          | insert.                                  |
++-------------------------------------+----------+------------------------------------------+
+| ``--eventhub-dsn <STRING>``         | No       | The connection string of the Azure       |
+|                                     |          | Eventhub.                                |
++-------------------------------------+----------+------------------------------------------+
+| ``--eventhub-consumer-group         | No       | The consumer group of the Azure          |
+| <STRING>``                          |          | Eventhub.                                |
++-------------------------------------+----------+------------------------------------------+
+| ``--lease-storage-dsn               | No       | The connection string of the lease       |
+| <STRING>``                          |          | storage (Azure BLOB storage) of the      |
+|                                     |          | consumer.                                |
++-------------------------------------+----------+------------------------------------------+
+| ``--lease-storage-container         | No       | The container name of the lease storage. |
+| <STRING>``                          |          |                                          |
++-------------------------------------+----------+------------------------------------------+
+
+.. consumers.list:
+
+``list``
+--------
+
+By default the command lists all consumers a user can see in their organization.
+The list can optionally be filtered by project or cluster.
+
+.. code-block:: console
+
+    sh$ croud consumers list [OPTIONS]
+
+Available options:
+
++---------------------------+----------+------------------------------------------+
+| Option                    | Required | Description                              |
++===========================+==========+==========================================+
+| ``--project-id <STRING>`` | No       | The identifier of the project in which   |
+|                           |          | the consumer is in.                      |
++---------------------------+----------+------------------------------------------+
+| ``--cluster-id <STRING>`` | No       | The identifier of the CrateDB cluster    |
+|                           |          | where the consumer inserts data.         |
++---------------------------+----------+------------------------------------------+
+| ``--output-fmt <STRING>`` | No       | The desired output format.               |
+|                           |          |                                          |
+|                           |          | One of:                                  |
+|                           |          |                                          |
+|                           |          | - ``json``                               |
+|                           |          | - ``table``                              |
++---------------------------+----------+------------------------------------------+
+
 .. _projects:
 
 ``projects``

@@ -563,3 +563,177 @@ class TestUsers(CommandTestCase):
             expected_error = "Argument --no-org: not allowed with argument --org-id\n\n"
             assert stderr.call_args[0][0] == expected_error
             assert ex_info.value.code == 2
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Query, "run", return_value={"data": []})
+class TestConsumers(CommandTestCase):
+    # fmt: off
+    eventhub_dsn = "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=..."  # noqa
+    storage_dsn = "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net"  # noqa
+    # fmt: on
+
+    def test_deploy_consumer(self, mock_run, mock_load_config):
+        project_id = gen_uuid()
+        cluster_id = gen_uuid()
+
+        expected_body = textwrap.dedent(
+            """
+        mutation deployConsumer($input: DeployConsumerInput!) {
+            deployConsumer(input: $input) {
+                id
+                name
+                projectId
+                clusterId
+                productName
+                productTier
+                instances
+                tableName
+                tableSchema
+            }
+        }
+        """  # noqa
+        ).strip()
+
+        expected_vars = {
+            "input": {
+                "clusterId": cluster_id,
+                "eventhubConnectionString": self.eventhub_dsn,
+                "eventhubConsumerGroup": "$Default",
+                "instances": 2,
+                "leaseStorageConnectionString": self.storage_dsn,
+                "leaseStorageContainer": "lease_container",
+                "name": "my-eventhub-consumer",
+                "productName": "eventhub-consumer",
+                "productTier": "S0",
+                "projectId": project_id,
+                "tableName": "raw",
+                "tableSchema": "doc",
+            }
+        }
+
+        argv = [
+            "croud",
+            "consumers",
+            "deploy",
+            "--product-name",
+            "eventhub-consumer",
+            "--tier",
+            "S0",
+            "--num-instances",
+            "2",
+            "--project-id",
+            project_id,
+            "--cluster-id",
+            cluster_id,
+            "--consumer-name",
+            "my-eventhub-consumer",
+            "--consumer-table",
+            "raw",
+            "--consumer-schema",
+            "doc",
+            "--eventhub-dsn",
+            self.eventhub_dsn,
+            "--eventhub-consumer-group",
+            "$Default",
+            "--lease-storage-dsn",
+            self.storage_dsn,
+            "--lease-storage-container",
+            "lease_container",
+        ]
+
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
+
+    def test_consumers_list(self, mock_run, mock_load_config):
+
+        expected_body = textwrap.dedent(
+            """
+    query allConsumers($clusterId: ID, $productName: String, $projectId: ID) {
+        allConsumers(clusterId: $clusterId, productName: $productName, projectId: $projectId) {
+            id
+            name
+            projectId
+            clusterId
+            productName
+            productTier
+            instances
+            tableName
+            tableSchema
+        }
+    }
+    """  # noqa
+        ).strip()
+
+        project_id = gen_uuid()
+        cluster_id = gen_uuid()
+
+        expected_vars = {
+            "productName": "eventhub-consumer",
+            "projectId": project_id,
+            "clusterId": cluster_id,
+        }
+
+        argv = [
+            "croud",
+            "consumers",
+            "list",
+            "--project-id",
+            project_id,
+            "--cluster-id",
+            cluster_id,
+            "--product-name",
+            "eventhub-consumer",
+        ]
+
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
+
+    def test_consumers_edit(self, mock_run, mock_load_config):
+        expected_body = textwrap.dedent(
+            """
+    mutation editConsumer($id: String!, $input: EditConsumerInput!) {
+        editConsumer(id: $id, input: $input) {
+            id
+        }
+    }
+    """  # noqa
+        ).strip()
+
+        consumer_id = gen_uuid()
+        cluster_id = gen_uuid()
+
+        expected_vars = {
+            "id": consumer_id,
+            "input": {
+                "eventhubConnectionString": self.eventhub_dsn,
+                "eventhubConsumerGroup": "$Default",
+                "leaseStorageConnectionString": self.storage_dsn,
+                "leaseStorageContainer": "lease_container",
+                "consumerSchema": "doc",
+                "consumerTable": "raw",
+                "clusterId": cluster_id,
+            },
+        }
+
+        argv = [
+            "croud",
+            "consumers",
+            "edit",
+            "--consumer-id",
+            consumer_id,
+            "--eventhub-dsn",
+            self.eventhub_dsn,
+            "--eventhub-consumer-group",
+            "$Default",
+            "--lease-storage-dsn",
+            self.storage_dsn,
+            "--lease-storage-container",
+            "lease_container",
+            "--consumer-schema",
+            "doc",
+            "--consumer-table",
+            "raw",
+            "--cluster-id",
+            cluster_id,
+        ]
+
+        self.assertGql(mock_run, argv, expected_body, expected_vars)

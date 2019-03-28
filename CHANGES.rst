@@ -5,6 +5,11 @@ Changes for croud
 Unreleased
 ==========
 
+- Added the commands ``consumers deploy``, ``consumers list`` and
+  ``consumers edit``. The ``deploy`` command deploys a new consumer,
+  the ``edit`` command edits an existing consumer and the ``list``
+  command lists existing consumers.
+
 - [Breaking] Removed the commands ``product deploy``, ``consumer-sets list``
   and ``consumer-sets edit``.
 

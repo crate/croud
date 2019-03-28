@@ -28,10 +28,20 @@ import colorama
 from croud.clusters.commands import clusters_deploy, clusters_list
 from croud.cmd import (
     CMD,
+    cluster_id_arg,
     cluster_name_arg,
+    consumer_id_arg,
+    consumer_name_arg,
+    consumer_schema_arg,
+    consumer_table_arg,
     crate_password_arg,
     crate_username_arg,
     crate_version_arg,
+    eventhub_consumer_group_arg,
+    eventhub_dsn_arg,
+    lease_storage_container_arg,
+    lease_storage_dsn_arg,
+    num_instances_arg,
     org_id_arg,
     org_id_no_org_arg_mutual_exclusive,
     org_name_arg,
@@ -49,6 +59,7 @@ from croud.cmd import (
     user_id_or_email_arg,
 )
 from croud.config import Configuration, config_get, config_set
+from croud.consumers.commands import consumers_deploy, consumers_edit, consumers_list
 from croud.login import login
 from croud.logout import logout
 from croud.me import me
@@ -80,6 +91,100 @@ command_tree = {
                 "help": "Set default configuration values.",
                 "extra_args": [output_fmt_arg, region_arg],
                 "calls": config_set,
+            },
+        },
+    },
+    "consumers": {
+        "help": "Manage consumers.",
+        "sub_commands": {
+            "deploy": {
+                "help": "Deploy a new consumer.",
+                "extra_args": [
+                    output_fmt_arg,
+                    region_arg,
+                    lambda req_opt_group, opt_opt_group: product_name_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    product_tier_arg,
+                    consumer_name_arg,
+                    num_instances_arg,
+                    lambda req_opt_group, opt_opt_group: consumer_schema_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: consumer_table_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: project_id_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: cluster_id_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: eventhub_dsn_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: eventhub_consumer_group_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: lease_storage_dsn_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: lease_storage_container_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                ],
+                "calls": consumers_deploy,
+            },
+            "list": {
+                "help": "List all consumer sets the current user has access to.",
+                "extra_args": [
+                    output_fmt_arg,
+                    lambda req_opt_group, opt_opt_group: project_id_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
+                    lambda req_opt_group, opt_opt_group: cluster_id_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
+                    lambda req_opt_group, opt_opt_group: product_name_arg(
+                        req_opt_group, opt_opt_group, False
+                    )
+                ],
+                "calls": consumers_list,
+            },
+            "edit": {
+                "help": "Edit the specified consumer set.",
+                "extra_args": [
+                    consumer_id_arg,
+                    lambda req_opt_group, opt_opt_group:
+                    eventhub_dsn_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
+                    lambda req_opt_group, opt_opt_group:
+                    eventhub_consumer_group_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
+                    lambda req_opt_group, opt_opt_group:
+                    lease_storage_dsn_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
+                    lambda req_opt_group, opt_opt_group:
+                    lease_storage_container_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
+                    lambda req_opt_group, opt_opt_group:
+                    consumer_schema_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
+                    lambda req_opt_group, opt_opt_group:
+                    consumer_table_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
+                    lambda req_opt_group, opt_opt_group:
+                    cluster_id_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
+                ],
+                "calls": consumers_edit,
             },
         },
     },
@@ -152,7 +257,9 @@ command_tree = {
                 "extra_args": [
                     output_fmt_arg,
                     region_arg,
-                    product_name_arg,
+                    lambda req_opt_group, opt_opt_group: product_name_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
                     product_tier_arg,
                     lambda req_opt_group, opt_opt_group: product_unit_arg(
                         req_opt_group, opt_opt_group, False
