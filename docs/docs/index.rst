@@ -16,7 +16,7 @@ Cloud`_.
    :maxdepth: 2
 
    getting-started
-   commands
+   commands/index
    user-roles
 
 .. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/
