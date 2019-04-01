@@ -9,3 +9,9 @@ html_favicon = None
 
 site_url = 'https://crate.io/docs/croud/en/latest/'
 extensions = ['sphinx_sitemap']
+
+# The file extension
+source_suffix = '.rst'
+
+# The master toctree document.
+master_doc = 'index'
