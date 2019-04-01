@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.10.0 - 2019/04/01
+===================
+
 - Added the commands ``consumers deploy``, ``consumers list`` and
   ``consumers edit``. The ``deploy`` command deploys a new consumer,
   the ``edit`` command edits an existing consumer and the ``list``
