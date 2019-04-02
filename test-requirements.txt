@@ -1,9 +1,9 @@
 pytest>=3,<4
-pytest-flake8
-pytest-mock
-pytest-isort
-pytest-black
-pytest-mypy
-pytest-aiohttp
-mypy
-black==18.9b0
+pytest-flake8==1.0.4
+pytest-mock==0.10.1
+pytest-isort==0.2.1
+pytest-black==0.3.5
+pytest-mypy==0.3.2
+pytest-aiohttp==0.3.0
+mypy==0.670
+black==19.3b0
