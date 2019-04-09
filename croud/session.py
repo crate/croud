@@ -18,6 +18,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import ssl
+from enum import Enum
 from types import TracebackType
 from typing import Dict, Optional, Type
 
@@ -31,6 +32,13 @@ CLOUD_LOCAL_URL = "http://localhost:8000"
 CLOUD_DEV_DOMAIN = "cratedb-dev.cloud"
 CLOUD_PROD_DOMAIN = "cratedb.cloud"
 DEFAULT_ENDPOINT = "/graphql"
+CLOUD_APP_API_PREFIX = "/api/v2"
+
+
+class RequestMethod(Enum):
+    GET = "get"
+    POST = "post"
+    DELETE = "delete"
 
 
 class HttpSession:
@@ -76,6 +84,31 @@ class HttpSession:
             print_info(query)
             if variables:
                 print_info(str(variables))
+
+        return await resp.json()
+
+    async def rest_fetch(
+        self, method: RequestMethod, params: Optional[JsonDict], endpoint: str
+    ) -> JsonDict:
+        url = self.url + CLOUD_APP_API_PREFIX + endpoint
+
+        resp = await getattr(self.client, method.value)(
+            url, params=params, allow_redirects=False
+        )
+
+        if resp.status == 302:  # login redirect
+            print_error("Unauthorized. Use `croud login` to login to CrateDB Cloud.")
+            await self.client.close()
+            exit(1)
+
+        if resp.status < 200 or resp.status > 299:
+            print_info(
+                f"Query failed to run by returning code of {resp.status}. "
+                f"Method: {method.name} "
+                f"Endpoint: {CLOUD_APP_API_PREFIX + endpoint}"
+            )
+            if params:
+                print_info(str(params))
 
         return await resp.json()
 

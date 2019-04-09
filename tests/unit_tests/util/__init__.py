@@ -9,3 +9,17 @@ class CommandTestCase:
         func, args = self.croud.resolve(argv)
         func(args)
         mock_run.assert_called_once_with(expected_body, expected_vars)
+
+    def assertREST(
+        self,
+        mock_run,
+        mock_init,
+        argv,
+        expected_method,
+        expected_endpoint,
+        expected_params,
+    ):
+        func, args = self.croud.resolve(argv)
+        func(args)
+        mock_run.assert_called_once_with(expected_params)
+        mock_init.assert_called_once_with(args, expected_method, expected_endpoint)

@@ -27,6 +27,7 @@ from tests.unit_tests.util import CommandTestCase
 
 from croud.config import Configuration, config_get, config_set
 from croud.gql import Query
+from croud.rest import Request, RequestMethod
 
 
 def gen_uuid() -> str:
@@ -737,3 +738,44 @@ class TestConsumers(CommandTestCase):
         ]
 
         self.assertGql(mock_run, argv, expected_body, expected_vars)
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Request, "run", return_value={"data": []})
+@mock.patch.object(Request, "__init__", return_value=None)
+class TestDashboards(CommandTestCase):
+    def test_monitoring_grafana_enable(self, mock_init, mock_run, mock_load_config):
+        project_id = gen_uuid()
+
+        expected_endpoint = "/monitoring/grafana"
+        expected_method = RequestMethod.POST
+        expected_params = {"project_id": project_id}
+
+        argv = ["croud", "monitoring", "grafana", "create", "--project-id", project_id]
+
+        self.assertREST(
+            mock_run,
+            mock_init,
+            argv,
+            expected_method,
+            expected_endpoint,
+            expected_params,
+        )
+
+    def test_monitoring_grafana_disable(self, mock_init, mock_run, mock_load_config):
+        project_id = gen_uuid()
+
+        expected_endpoint = "/monitoring/grafana"
+        expected_method = RequestMethod.DELETE
+        expected_params = {"project_id": project_id}
+
+        argv = ["croud", "monitoring", "grafana", "remove", "--project-id", project_id]
+
+        self.assertREST(
+            mock_run,
+            mock_init,
+            argv,
+            expected_method,
+            expected_endpoint,
+            expected_params,
+        )

@@ -61,6 +61,8 @@ class FakeCrateDBCloud:
         self.app = web.Application()
         # thi will allow us to register multiple endpoints/handlers to test
         self.app.router.add_routes([web.post("/graphql", self.on_graphql)])
+        self.app.router.add_routes([web.post("/api/v2/rest_me", self.on_rest)])
+        self.app.router.add_routes([web.get("/api/v2/rest_fail", self.on_rest_fail)])
         here = pathlib.Path(__file__)
         # Load certificates and sign key used to simulate ssl/tls
         ssl_cert = here.parent / "server.crt"
@@ -96,6 +98,25 @@ class FakeCrateDBCloud:
             resp = {"data": {"message": "Bad request"}}
             return web.json_response(resp, status=400)
         return web.Response(status=302)
+
+    async def on_rest(self, request: web.Request) -> web.Response:
+        if self._is_authorized(request):
+            return web.json_response(
+                {
+                    "data": {
+                        "me": {
+                            "email": "sheldon@crate.io",
+                            "username": "Google_1234",
+                            "name": "Sheldon Cooper",
+                        }
+                    }
+                }
+            )
+        return web.Response(status=302)
+
+    async def on_rest_fail(self, request: web.Request) -> web.Response:
+        resp = {"errors": [{"message": "Error message"}]}
+        return web.json_response(resp, status=400)
 
     def _is_authorized(self, request: web.Request) -> bool:
         if "session" in request.cookies:

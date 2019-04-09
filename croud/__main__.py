@@ -60,6 +60,7 @@ from croud.cmd import (
 )
 from croud.config import Configuration, config_get, config_set
 from croud.consumers.commands import consumers_deploy, consumers_edit, consumers_list
+from croud.dashboards.commands import dashboard_disable, dashboard_enable
 from croud.login import login
 from croud.logout import logout
 from croud.me import me
@@ -187,6 +188,36 @@ command_tree = {
                 "calls": consumers_edit,
             },
         },
+    },
+    "monitoring": {
+        "help": "Manage monitoring tools.",
+        "sub_commands": {
+            "grafana": {
+                "help": "Manage grafana.",
+                "sub_commands": {
+                    "create": {
+                        "help": "Enable grafana to visualize metrics for a project.",
+                        "extra_args": [
+                            output_fmt_arg,
+                            lambda req_opt_group, opt_opt_group: project_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            )
+                        ],
+                        "calls": dashboard_enable,
+                    },
+                    "remove": {
+                        "help": "Disable grafana for a project.",
+                        "extra_args": [
+                            output_fmt_arg,
+                            lambda req_opt_group, opt_opt_group: project_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            )
+                        ],
+                        "calls": dashboard_disable,
+                    }
+                }
+            },
+        }
     },
     "projects": {
         "help": "Manage projects.",
@@ -377,6 +408,8 @@ command_tree = {
         },
     },
 }
+
+
 # fmt: on
 
 
