@@ -5,9 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
-- Added the commands ``croud monitoring grafana create`` and
-  ``croud monitoring grafana remove`` These commands are used to create
-  and remove a Grafana dashboard for a project.
+- Added the commands ``croud monitoring grafana enable`` and
+  ``croud monitoring grafana disable`` These commands are used to enable
+  and disable a Grafana dashboard for a project.
 
 0.10.0 - 2019/04/01
 ===================

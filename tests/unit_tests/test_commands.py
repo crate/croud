@@ -751,7 +751,7 @@ class TestDashboards(CommandTestCase):
         expected_method = RequestMethod.POST
         expected_params = {"project_id": project_id}
 
-        argv = ["croud", "monitoring", "grafana", "create", "--project-id", project_id]
+        argv = ["croud", "monitoring", "grafana", "enable", "--project-id", project_id]
 
         self.assertREST(
             mock_run,
@@ -769,7 +769,7 @@ class TestDashboards(CommandTestCase):
         expected_method = RequestMethod.DELETE
         expected_params = {"project_id": project_id}
 
-        argv = ["croud", "monitoring", "grafana", "remove", "--project-id", project_id]
+        argv = ["croud", "monitoring", "grafana", "disable", "--project-id", project_id]
 
         self.assertREST(
             mock_run,

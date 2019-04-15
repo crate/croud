@@ -21,7 +21,7 @@
 
 import asyncio
 from argparse import Namespace
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 from croud.config import Configuration
 from croud.printer import print_error, print_format, print_info, print_success
@@ -51,33 +51,32 @@ class Request:
         self._error: Optional[str] = None
         self._response: Optional[JsonDict] = None
 
-    async def _fetch_data(self, params: Optional[JsonDict]) -> JsonDict:
+    async def _fetch_data(self, params: Optional[JsonDict]) -> Tuple[int, JsonDict]:
         async with HttpSession(self._env, self._token, self._region) as session:
-            return await session.rest_fetch(
+            resp = await session.rest_fetch(
                 self._method, params, endpoint=self._endpoint
             )
+            return resp.status, await resp.json()
 
-    def run(self, params: Optional[JsonDict]) -> JsonDict:
+    def run(self, params: Optional[JsonDict]) -> Tuple[int, JsonDict]:
         loop = asyncio.get_event_loop()
         return loop.run_until_complete(self._fetch_data(params))
 
     def send(self, params: Dict = None):
-        response = self.run(params)
+        status, data = self.run(params)
 
-        if "errors" in response:
-            self._response = None
-            self._error = response["errors"][0]["message"]
-        elif "data" in response:
-            self._response = response["data"]
-            self._error = None
-        else:
-            self._response = None
-            self._error = None
+        if status == 302:  # login redirect
+            print_error("Unauthorized. Use `croud login` to login to CrateDB Cloud.")
+            exit(1)
+
+        if status >= 400:
+            self._error = data["error"]["message"]
+            return
+
+        self._response = data
 
 
-def print_response(
-    request: Request, key: str = None, success_message: str = None
-) -> None:
+def print_response(request: Request, success_message: str = None) -> None:
 
     if request._error:
         print_error(request._error)
@@ -87,36 +86,18 @@ def print_response(
         print_info("Result contained no data to print.")
         return
 
-    if not isinstance(request._response, dict):
+    response = request._response
+    if not isinstance(response, dict):
         print_error("Result has no proper format to print.")
         return
 
-    if key:
-        data = request._response[key]
-    else:
-        data = request._response
-
-    if "success" in data:
-        success = data["success"]
-        if success:
-            if success_message:
-                print_success(success_message)
-            else:
-                print_success("Success.")
+    if "data" in response:
+        if len(response["data"]) == 0:
+            print_info("Result contained no data to print.")
         else:
-            # Edge case that might occur during network partitions/timeouts etc.
-            print_error(
-                "Command not successful, however no server-side errors occurred. "
-                "Please try again."
-            )
-        return
-
-    # some queries have two levels to access data
-    # e.g. {allProjects: {data: [{projects}]}} vs. {me: {data})
-    if "data" in data:
-        data = data["data"]
-
-    if len(data) == 0:
-        print_info("Result contained no data to print.")
+            print_format(response["data"], request._output_fmt)
     else:
-        print_format(data, request._output_fmt)
+        if success_message:
+            print_success(success_message)
+        else:
+            print_success("Success.")

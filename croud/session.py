@@ -24,6 +24,7 @@ from typing import Dict, Optional, Type
 
 import certifi
 from aiohttp import ClientSession, TCPConnector  # type: ignore
+from pip._vendor.requests.models import Response
 
 from croud.printer import print_error, print_info
 from croud.typing import JsonDict
@@ -89,28 +90,14 @@ class HttpSession:
 
     async def rest_fetch(
         self, method: RequestMethod, params: Optional[JsonDict], endpoint: str
-    ) -> JsonDict:
+    ) -> Response:
         url = self.url + CLOUD_APP_API_PREFIX + endpoint
 
         resp = await getattr(self.client, method.value)(
-            url, params=params, allow_redirects=False
+            url, json=params, allow_redirects=False
         )
 
-        if resp.status == 302:  # login redirect
-            print_error("Unauthorized. Use `croud login` to login to CrateDB Cloud.")
-            await self.client.close()
-            exit(1)
-
-        if resp.status < 200 or resp.status > 299:
-            print_info(
-                f"Query failed to run by returning code of {resp.status}. "
-                f"Method: {method.name} "
-                f"Endpoint: {CLOUD_APP_API_PREFIX + endpoint}"
-            )
-            if params:
-                print_info(str(params))
-
-        return await resp.json()
+        return resp
 
     async def logout(self, url: str):
         await self.client.get(url)

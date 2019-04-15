@@ -193,10 +193,11 @@ command_tree = {
         "help": "Manage monitoring tools.",
         "sub_commands": {
             "grafana": {
-                "help": "Manage grafana.",
+                "help": "Manage Grafana.",
                 "sub_commands": {
-                    "create": {
-                        "help": "Enable grafana to visualize metrics for a project.",
+                    "enable": {
+                        "help": "Enable Grafana dashboards to visualize metrics for a "
+                                "project.",
                         "extra_args": [
                             output_fmt_arg,
                             lambda req_opt_group, opt_opt_group: project_id_arg(
@@ -205,8 +206,8 @@ command_tree = {
                         ],
                         "calls": dashboard_enable,
                     },
-                    "remove": {
-                        "help": "Disable grafana for a project.",
+                    "disable": {
+                        "help": "Disable Grafana dashboards for a project.",
                         "extra_args": [
                             output_fmt_arg,
                             lambda req_opt_group, opt_opt_group: project_id_arg(
@@ -408,8 +409,6 @@ command_tree = {
         },
     },
 }
-
-
 # fmt: on
 
 

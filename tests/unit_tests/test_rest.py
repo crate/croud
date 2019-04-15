@@ -31,16 +31,16 @@ from croud.session import RequestMethod
 
 
 @pytest.mark.parametrize(
-    "input,expected", [(Namespace(env="dev"), "dev"), (Namespace(env=None), "prod")]
+    "args,expected", [(Namespace(env="dev"), "dev"), (Namespace(env=None), "prod")]
 )
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-def test_env_set(mock_load_config, input, expected):
-    request = Request(input, RequestMethod.GET, "/test")
+def test_env_set(mock_load_config, args, expected):
+    request = Request(args, RequestMethod.GET, "/test")
     assert request._env == expected
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    "args,expected",
     [
         (Namespace(env="dev", output_fmt="json"), "json"),
         (Namespace(env="dev", output_fmt=None), "table"),
@@ -48,13 +48,13 @@ def test_env_set(mock_load_config, input, expected):
     ],
 )
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-def test_output_fmt_set(mock_load_config, input, expected):
-    request = Request(input, RequestMethod.GET, "/test")
+def test_output_fmt_set(mock_load_config, args, expected):
+    request = Request(args, RequestMethod.GET, "/test")
     assert request._output_fmt == expected
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    "args,expected",
     [
         (Namespace(env="dev", region="westeurope.azure"), "westeurope.azure"),
         (Namespace(env="dev", region=None), "bregenz.a1"),
@@ -62,56 +62,32 @@ def test_output_fmt_set(mock_load_config, input, expected):
     ],
 )
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-def test_region_set(mock_load_config, input, expected):
-    request = Request(input, RequestMethod.GET, "/test")
+def test_region_set(mock_load_config, args, expected):
+    request = Request(args, RequestMethod.GET, "/test")
     assert request._region == expected
 
 
 @pytest.mark.parametrize(
-    "response, key, message, expected_message",
+    "response, message, expected_message",
     [
         (
             {"addUserToProject": {"success": True}},
-            "addUserToProject",
             "User added to Project.",
             "User added to Project.",
         ),
-        ({"addUserToProject": {"success": True}}, "addUserToProject", None, "Success."),
+        ({"addUserToProject": {"success": True}}, None, "Success."),
     ],
 )
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @patch("croud.rest.print_success")
 def test_print_query_success_with_message(
-    print_success, load_config, response, key, message, expected_message
+    print_success, load_config, response, message, expected_message
 ):
     request = Request(Namespace(env="test"), RequestMethod.GET, "/test")
     request._response = response
 
-    print_response(request, key, message)
+    print_response(request, message)
     print_success.assert_called_once_with(expected_message)
-
-
-@pytest.mark.parametrize(
-    "response, key, expected_message",
-    [
-        (
-            {"addUserToProject": {"success": False}},
-            "addUserToProject",
-            "Command not successful, however no server-side errors occurred. "
-            "Please try again.",
-        )
-    ],
-)
-@patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@patch("croud.rest.print_error")
-def test_print_query_not_successful(
-    print_error, load_config, response, key, expected_message
-):
-    request = Request(Namespace(env="test"), RequestMethod.GET, "/test")
-    request._response = response
-
-    print_response(request, key)
-    print_error.assert_called_once_with(expected_message)
 
 
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
@@ -147,41 +123,27 @@ def test_print_query_malformatted_response(print_error, load_config):
 
 
 @pytest.mark.parametrize("format", ["json", "tabular"])
-@pytest.mark.parametrize(
-    ["response", "key"],
-    [
-        ({"data": ["foo", "bar"]}, None),
-        ({"allNames": {"data": ["foo", "bar"]}}, "allNames"),
-        ({"allNames": ["foo", "bar"]}, "allNames"),
-    ],
-)
+@pytest.mark.parametrize("response", [({"data": ["foo", "bar"], "success": True})])
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @patch("croud.rest.print_format")
-def test_print_query_data(print_format, load_config, response, key, format):
+def test_print_query_data(print_format, load_config, response, format):
     request = Request(
         Namespace(env="test", output_fmt=format), RequestMethod.GET, "/test"
     )
     request._response = response
 
-    print_response(request, key)
+    print_response(request)
     print_format.assert_called_once_with(["foo", "bar"], format)
 
 
-@pytest.mark.parametrize(
-    ["response", "key"],
-    [
-        ({"data": []}, None),
-        ({"allNames": {"data": []}}, "allNames"),
-        ({"allNames": []}, "allNames"),
-    ],
-)
+@pytest.mark.parametrize("response", [({"data": {}, "success": True})])
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @patch("croud.rest.print_info")
-def test_print_query_no_data(print_info, load_config, response, key):
+def test_print_query_no_data(print_info, load_config, response):
     request = Request(Namespace(env="test"), RequestMethod.GET, "/test")
     request._response = response
 
-    print_response(request, key)
+    print_response(request)
     expected_message = "Result contained no data to print."
     print_info.assert_called_once_with(expected_message)
 

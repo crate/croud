@@ -115,8 +115,8 @@ class FakeCrateDBCloud:
         return web.Response(status=302)
 
     async def on_rest_fail(self, request: web.Request) -> web.Response:
-        resp = {"errors": [{"message": "Error message"}]}
-        return web.json_response(resp, status=400)
+        resp = {"error": {"message": "Error message"}}
+        return web.json_response(resp, status=500)
 
     def _is_authorized(self, request: web.Request) -> bool:
         if "session" in request.cookies:
