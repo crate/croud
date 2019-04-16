@@ -392,10 +392,12 @@ Available options:
 |                                     |          | insert.                                  |
 +-------------------------------------+----------+------------------------------------------+
 | ``--eventhub-dsn <STRING>``         | Yes      | The connection string of the Azure       |
-|                                     |          | Eventhub.                                |
+|                                     |          | IoT Hub Events endpoint or an Azure      |
+|                                     |          | EventHub endpoint.                       |
 +-------------------------------------+----------+------------------------------------------+
 | ``--eventhub-consumer-group         | Yes      | The consumer group of the Azure          |
-| <STRING>``                          |          | Eventhub.                                |
+| <STRING>``                          |          | IoT Hub Events endpoint or an Azure      |
+|                                     |          | EventHub endpoint.                       |
 +-------------------------------------+----------+------------------------------------------+
 | ``--lease-storage-dsn               | Yes      | The connection string of the lease       |
 | <STRING>``                          |          | storage (Azure BLOB storage) of the      |
