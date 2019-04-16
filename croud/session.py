@@ -18,19 +18,24 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import ssl
+from enum import Enum
 from types import TracebackType
 from typing import Dict, Optional, Type
 
 import certifi
-from aiohttp import ClientSession, TCPConnector  # type: ignore
+from aiohttp import ClientResponse, ClientSession, TCPConnector  # type: ignore
 
-from croud.printer import print_error, print_info
-from croud.typing import JsonDict
+from croud.printer import print_error
 
 CLOUD_LOCAL_URL = "http://localhost:8000"
 CLOUD_DEV_DOMAIN = "cratedb-dev.cloud"
 CLOUD_PROD_DOMAIN = "cratedb.cloud"
-DEFAULT_ENDPOINT = "/graphql"
+
+
+class RequestMethod(Enum):
+    GET = "get"
+    POST = "post"
+    DELETE = "delete"
 
 
 class HttpSession:
@@ -51,33 +56,27 @@ class HttpSession:
 
         self.url = url
         if conn is None:
-            ssl_context = ssl.create_default_context(cafile=certifi.where())
-            conn = TCPConnector(ssl_context=ssl_context)
+            conn = self._get_conn()
 
         self.client = ClientSession(
             cookies={"session": self.token}, connector=conn, headers=headers
         )
 
-    async def fetch(
-        self, query: str, variables: Optional[Dict], endpoint=DEFAULT_ENDPOINT
-    ) -> JsonDict:
-        url = self.url + endpoint
-        resp = await self.client.post(
-            url, json={"query": query, "variables": variables}, allow_redirects=False
-        )
+    def _get_conn(self) -> TCPConnector:
+        ssl_context = ssl.create_default_context(cafile=certifi.where())
+        return TCPConnector(ssl_context=ssl_context)
 
+    async def fetch(
+        self, method: RequestMethod, endpoint: str, body: dict = None
+    ) -> ClientResponse:
+        url = self.url + endpoint
+        resp = await getattr(self.client, method.value)(
+            url, json=body, allow_redirects=False
+        )
         if resp.status == 302:  # login redirect
             print_error("Unauthorized. Use `croud login` to login to CrateDB Cloud.")
-            await self.client.close()
             exit(1)
-
-        if resp.status != 200:
-            print_info(f"Query failed to run by returning code of {resp.status}.")
-            print_info(query)
-            if variables:
-                print_info(str(variables))
-
-        return await resp.json()
+        return resp
 
     async def logout(self, url: str):
         await self.client.get(url)

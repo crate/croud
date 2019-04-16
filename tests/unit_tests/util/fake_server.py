@@ -61,6 +61,11 @@ class FakeCrateDBCloud:
         self.app = web.Application()
         # thi will allow us to register multiple endpoints/handlers to test
         self.app.router.add_routes([web.post("/graphql", self.on_graphql)])
+        self.app.router.add_routes([web.get("/data/data-key", self.data_data_key)])
+        self.app.router.add_routes([web.get("/data/no-key", self.data_no_key)])
+        self.app.router.add_routes([web.get("/errors/400", self.error_400)])
+        self.app.router.add_routes([web.get("/text-response", self.text_response)])
+
         here = pathlib.Path(__file__)
         # Load certificates and sign key used to simulate ssl/tls
         ssl_cert = here.parent / "server.crt"
@@ -95,6 +100,26 @@ class FakeCrateDBCloud:
                 )
             resp = {"data": {"message": "Bad request"}}
             return web.json_response(resp, status=400)
+        return web.Response(status=302)
+
+    async def data_data_key(self, request: web.Request) -> web.Response:
+        if self._is_authorized(request):
+            return web.json_response({"data": {"key": "value"}})
+        return web.Response(status=302)
+
+    async def data_no_key(self, request: web.Request) -> web.Response:
+        if self._is_authorized(request):
+            return web.json_response({"key": "value"})
+        return web.Response(status=302)
+
+    async def error_400(self, request: web.Request) -> web.Response:
+        if self._is_authorized(request):
+            return web.json_response({"error": {"message": "Bad request."}}, status=400)
+        return web.Response(status=302)
+
+    async def text_response(self, request: web.Request) -> web.Response:
+        if self._is_authorized(request):
+            return web.Response(body="Non JSON response.", status=500)
         return web.Response(status=302)
 
     def _is_authorized(self, request: web.Request) -> bool:
