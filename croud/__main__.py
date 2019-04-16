@@ -63,6 +63,7 @@ from croud.consumers.commands import consumers_deploy, consumers_edit, consumers
 from croud.login import login
 from croud.logout import logout
 from croud.me import me
+from croud.monitoring.grafana.commands import set_grafana
 from croud.organizations.commands import organizations_create, organizations_list
 from croud.organizations.users.commands import org_users_add, org_users_remove
 from croud.projects.commands import project_create, projects_list
@@ -376,6 +377,39 @@ command_tree = {
             },
         },
     },
+    "monitoring": {
+        "help": "Manage monitoring tools.",
+        "sub_commands": {
+            "grafana": {
+                "help": "Manage access to Grafana dashboards for projects.",
+                "sub_commands": {
+                    "enable": {
+                        "help": "Enable Grafana dashboards to visualize metrics for a "
+                        "project.",
+                        "extra_args": [
+                            output_fmt_arg,
+                            lambda req_opt_group, opt_opt_group: project_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
+                            region_arg,
+                        ],
+                        "calls": lambda args: set_grafana(True, args),
+                    },
+                    "disable": {
+                        "help": "Disable Grafana dashboards for a project.",
+                        "extra_args": [
+                            output_fmt_arg,
+                            lambda req_opt_group, opt_opt_group: project_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
+                            region_arg,
+                        ],
+                        "calls": lambda args: set_grafana(False, args),
+                    },
+                },
+            },
+        }
+    }
 }
 # fmt: on
 
