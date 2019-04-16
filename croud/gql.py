@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # Licensed to CRATE Technology GmbH ("Crate") under one or more contributor
 # license agreements.  See the NOTICE file distributed with this work for
 # additional information regarding copyright ownership.  Crate licenses
@@ -25,8 +23,10 @@ from typing import Dict, Optional
 
 from croud.config import Configuration
 from croud.printer import print_error, print_format, print_info, print_success
-from croud.session import DEFAULT_ENDPOINT, HttpSession
+from croud.session import HttpSession, RequestMethod
 from croud.typing import JsonDict
+
+DEFAULT_ENDPOINT = "/graphql"
 
 
 class Query:
@@ -52,7 +52,19 @@ class Query:
 
     async def _fetch_data(self, body: str, variables: Optional[Dict]) -> JsonDict:
         async with HttpSession(self._env, self._token, self._region) as session:
-            return await session.fetch(body, variables, endpoint=self._endpoint)
+            resp = await session.fetch(
+                RequestMethod.POST,
+                self._endpoint,
+                {"query": body, "variables": variables},
+            )
+
+            if resp.status != 200:
+                print_info(f"Query failed to run by returning code of {resp.status}.")
+                print_info(body)
+                if variables:
+                    print_info(str(variables))
+
+            return await resp.json()
 
     def run(self, body: str, variables: Optional[Dict]) -> JsonDict:
         loop = asyncio.get_event_loop()
