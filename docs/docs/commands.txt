@@ -997,6 +997,122 @@ This output format looks like this:
         ...
     ]
 
+.. _monitoring:
+
+``monitoring``
+==============
+
+The ``monitoring`` command allows you to manage monitoring tools.
+
+You must specify a subcommand, like so:
+
+.. code-block:: console
+
+    sh$ croud monitoring [SUBCOMMAND] [OPTIONS]
+
+.. monitoring.grafana
+
+``grafana``
+-----------
+
+The ``grafana`` subcommand allows you manage access to Grafana dashboards for a project.
+
+You must specify a second subcommand, like so:
+
+.. code-block:: console
+
+    sh$ croud monitoring grafana [SUBCOMMAND] [OPTIONS]
+
+.. monitoring.grafana.enable:
+
+``enable``
+~~~~~~~~~~
+
+The ``enable`` subcommand enables access to Grafana dashboards for a project.
+
+.. code-block:: console
+
+    sh$ croud monitoring grafana enable [OPTIONS]
+
+.. NOTE::
+
+    This subcommand is only available to superusers.
+
+Available options:
+
++---------------------------+------------------------+-------------------------------+
+| Option                    | Required               | Description                   |
++===========================+========================+===============================+
+| ``--project-id <STRING>`` | Yes                    | The specified project ID.     |
++---------------------------+------------------------+-------------------------------+
+| ``region <STRING>``       | One of:                | The region to run a command   |
+|                           |                        | against. Some resources (e.g.,|
+|                           | * ``bregenz.a1``       | clusters) are attached to     |
+|                           | * ``westeurope.azure`` | specific regions              |
+|                           | * ``eastus.azure``     |                               |
++---------------------------+------------------------+-------------------------------+
+| ``output-fmt <STRING>``   | One of:                | The default output format (for|
+|                           |                        | commands that produce an      |
+|                           |  * ``table``           | output).                      |
+|                           |  * ``json``            |                               |
++---------------------------+------------------------+-------------------------------+
+
+For example:
+
+.. code-block:: console
+
+    sh$ croud monitoring grafana enable --project-id 'abc'
+
+This output format looks like this:
+
+.. code-block:: text
+
+    {
+        "password": str
+    }
+
+.. monitoring.grafana.disable:
+
+``disable``
+~~~~~~~~~~~
+
+The ``disable`` subcommand disables access to Grafana dashboards for a project.
+
+.. code-block:: console
+
+    sh$ croud monitoring grafana disable [OPTIONS]
+
+.. NOTE::
+
+    This subcommand is only available to superusers.
+
+Available options:
+
++---------------------------+------------------------+-------------------------------+
+| Option                    | Required               | Description                   |
++===========================+========================+===============================+
+| ``--project-id <STRING>`` | Yes                    | The specified project ID.     |
++---------------------------+------------------------+-------------------------------+
+| ``region <STRING>``       | One of:                | The region to run a command   |
+|                           |                        | against. Some resources (e.g.,|
+|                           | * ``bregenz.a1``       | clusters) are attached to     |
+|                           | * ``westeurope.azure`` | specific regions              |
+|                           | * ``eastus.azure``     |                               |
++---------------------------+------------------------+-------------------------------+
+| ``output-fmt <STRING>``   | One of:                | The default output format (for|
+|                           |                        | commands that produce an      |
+|                           |  * ``table``           | output).                      |
+|                           |  * ``json``            |                               |
++---------------------------+------------------------+-------------------------------+
+
+For example:
+
+.. code-block:: console
+
+    sh$ croud monitoring grafana disable --project-id 'abc'
+
+There is not output for this command.
+
 .. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/
 .. _fully qualified role name: https://en.wikipedia.org/wiki/Fully_qualified_name
 .. _string delimitation: https://en.wikipedia.org/wiki/Delimiter

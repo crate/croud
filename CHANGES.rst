@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added the commands ``monitoring grafana`` that can enable and
+  disable Grafana dashboards for a project.
+
 0.10.0 - 2019/04/01
 ===================
 
