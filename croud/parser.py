@@ -35,7 +35,10 @@ class CroudCliArgumentParser(argparse.ArgumentParser):
         )
         self._positionals.title = POSITIONALS_TITLE
         self._optionals.title = OPTIONALS_TITLE
-        self.add_argument(
+
+        self._group_required = self.add_argument_group(REQUIRED_TITLE)
+        self._group_optional = self.add_argument_group(OPTIONALS_TITLE)
+        self._group_optional.add_argument(
             "-h",
             "--help",
             action="help",
@@ -85,21 +88,23 @@ class CroudCliHelpFormatter(argparse.HelpFormatter):
 
 
 def add_default_args(parser):
-    parser.add_argument(
+    parser._group_optional.add_argument(
         "--region",
         "-r",
         required=False,
         choices={"eastus.azure", "eastus2.azure", "westeurope.azure", "bregenz.a1"},
         help="Temporarily use the specified region that command will be run in.",
     )
-    parser.add_argument(
+    parser._group_optional.add_argument(
         "--env",
         "-e",
         required=False,
         choices={"dev", "prod", "local"},
         help="Switches auth context.",
     )
-    parser.add_argument("--output-fmt", "-o", required=False, choices={"table", "json"})
+    parser._group_optional.add_argument(
+        "--output-fmt", "-o", required=False, choices={"table", "json"}
+    )
 
 
 def help_print_factory(parser: argparse.ArgumentParser):
@@ -112,7 +117,9 @@ def help_print_factory(parser: argparse.ArgumentParser):
 def add_subparser(parser, tree, name="__root__"):
     if "extra_args" in tree:
         for arg_provider in tree["extra_args"]:
-            arg_provider(parser, parser)  # keep existing behaviour
+            arg_provider(
+                parser._group_required, parser._group_optional
+            )  # keep existing behaviour
     if "noop_arg" in tree:
         parser.add_argument(name.split(" ")[-1], choices=tree["noop_arg"]["choices"])
     if "commands" in tree:
@@ -128,7 +135,7 @@ def add_subparser(parser, tree, name="__root__"):
 
 def create_parser(tree):
     parser = CroudCliArgumentParser(prog="croud", description=tree["help"])
-    parser.add_argument(
+    parser._group_optional.add_argument(
         "-v",
         "--version",
         action="version",

@@ -16,9 +16,11 @@
 
 import io
 from argparse import Namespace
+from typing import Callable
 from unittest import mock
 
 import pytest
+from tests.unit_tests.util import assert_ellipsis_match
 
 from croud import __version__
 from croud.parser import CroudCliArgumentParser, CroudCliHelpFormatter, create_parser
@@ -65,13 +67,68 @@ class TestParser:
         parser.print_help(file=fp)
         fp.seek(0)
         usage = fp.read()
-        command_list = """Available Commands:
+        assert_ellipsis_match(
+            usage,
+            """
+Usage: croud [-h] [-v] {cmd_a,cmd_b,cmd_c}
+...
+Available Commands:
   cmd_a          Command A
   cmd_b          Command B
   cmd_c          Command C
+...
+""",
+        )
 
-"""
-        assert command_list in usage
+    def test_parser_argument_groups(self):
+        def argument_provider_factory(argument: str, required: bool) -> Callable:
+            """
+            Create an argument provider that adds an argument to the optional
+            or required group depending on the value of the ``required``
+            argument.
+            """
+
+            def argument_provider(req_group, opt_group):
+                group = req_group if required else opt_group
+                group.add_argument(argument, required=required)
+
+            return argument_provider
+
+        tree = {
+            "help": "help text",
+            "commands": {
+                "cmd": {
+                    "resolver": noop,
+                    "extra_args": [
+                        argument_provider_factory("--arg-a", True),
+                        argument_provider_factory("--arg-b", False),
+                    ],
+                    "help": "Command help",
+                }
+            },
+        }
+        parser = create_parser(tree)
+
+        output = ""
+        with mock.patch("sys.stdout.write") as stdout:
+            with pytest.raises(SystemExit) as ex_info:
+                parser.parse_args(["cmd"])
+            assert ex_info.value.code == 2
+            output = stdout.call_args[0][0]
+        assert_ellipsis_match(
+            output,
+            """
+Usage: croud cmd [-h] --arg-a ARG_A [--arg-b ARG_B]
+...
+Required Arguments:
+  --arg-a ARG_A
+...
+Optional Arguments:
+...
+  --arg-b ARG_B
+...
+""",
+        )
 
     def test_parser_version(self):
         tree = {"help": "help text", "commands": {}}
