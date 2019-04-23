@@ -1,6 +1,24 @@
 import argparse
+import difflib
+import re
+from doctest import _ellipsis_match  # type: ignore
+from functools import partial
 
 from croud.__main__ import get_parser
+
+normalize = partial(re.sub, r"\s+", "")
+
+
+def ndiff(actual: str, expected: str) -> str:
+    engine = difflib.Differ(charjunk=difflib.IS_CHARACTER_JUNK)
+    diff = list(engine.compare(expected.splitlines(True), actual.splitlines(True)))
+    return "\n".join(line.rstrip() for line in diff)
+
+
+def assert_ellipsis_match(actual: str, expected: str) -> None:
+    diff = ndiff(expected.strip(), actual.strip())
+    equality = _ellipsis_match(normalize(expected.strip()), normalize(actual.strip()))
+    assert equality, diff
 
 
 class CommandTestCase:
