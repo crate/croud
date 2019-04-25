@@ -92,15 +92,19 @@ See the instructions for `Generating distribution archives`_ for more details.
 Writing Documentation
 =====================
 
-The docs live under the ``docs`` directory.
+The docs live under the ``docs/`` directory.
 
 The docs are written with ReStructuredText_ and processed with Sphinx_.
 
-Build the docs by running::
+First, install the additional dependencies by running::
+
+    $ pip install -Ur requirements-docs.txt
+
+Then build the documentation by running::
 
     $ bin/sphinx
 
-The output can then be found in the ``out/html`` directory.
+The output can then be found in the ``docs/out/html/`` directory.
 
 If you would like to live-reload the docs as you edit them, you can run::
 
