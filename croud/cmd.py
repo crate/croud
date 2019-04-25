@@ -203,7 +203,7 @@ def consumer_schema_arg(
     group.add_argument(
         "--consumer-schema",
         type=str,
-        help="The CrateDB database schema used by the Azure EventHub consumer.",
+        help="The CrateDB database schema used by the Azure Events endpoint consumer.",
         required=required,
     )
 
@@ -215,7 +215,7 @@ def consumer_table_arg(
     group.add_argument(
         "--consumer-table",
         type=str,
-        help="The CrateDB database table used by the Azure EventHub consumer.",
+        help="The CrateDB database table used by the Azure Events endpoint consumer.",
         required=required,
     )
 
@@ -227,7 +227,7 @@ def eventhub_dsn_arg(
     group.add_argument(
         "--eventhub-dsn",
         type=str,
-        help="The connection string to the Azure EventHub from which to consume.",
+        help="The connection string of the Azure Events endpoint from which to consume.",
         required=required,
     )
 
@@ -239,7 +239,7 @@ def eventhub_consumer_group_arg(
     group.add_argument(
         "--eventhub-consumer-group",
         type=str,
-        help="The consumer group of the Azure EventHub from which to consume.",
+        help="The consumer group of the Azure Events endpoint from which to consume.",
         required=required,
     )
 
@@ -252,7 +252,8 @@ def lease_storage_dsn_arg(
         "--lease-storage-dsn",
         type=str,
         help=(
-            "The connection string to an Azure storage account to use as lease storage."
+            "The connection string of an Azure storage account to use as lease storage"
+            "for the consumer."
         ),
         required=required,
     )
@@ -266,8 +267,8 @@ def lease_storage_container_arg(
         "--lease-storage-container",
         type=str,
         help=(
-            "The container name in the lease storage for the Azure EventHub "
-            "consumer to use."
+            "The blob container name within an Azure storage account to use as "
+            "lease storage for the consumer. "
         ),
         required=required,
     )
