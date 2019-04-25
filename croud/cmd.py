@@ -227,7 +227,8 @@ def eventhub_dsn_arg(
     group.add_argument(
         "--eventhub-dsn",
         type=str,
-        help="The connection string of the Azure Events endpoint from which to consume.",
+        help="The connection string of the Azure Events endpoint from which to"
+        "consume.",
         required=required,
     )
 
