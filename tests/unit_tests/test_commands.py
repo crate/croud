@@ -23,10 +23,12 @@ from argparse import Namespace
 from unittest import mock
 
 import pytest
-from tests.unit_tests.util import CommandTestCase
+from util import CommandTestCase
 
 from croud.config import Configuration, config_get, config_set
 from croud.gql import Query
+from croud.rest import Client
+from croud.session import RequestMethod
 
 
 def gen_uuid() -> str:
@@ -737,3 +739,43 @@ class TestConsumers(CommandTestCase):
         ]
 
         self.assertGql(mock_run, argv, expected_body, expected_vars)
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Client, "send")
+class TestGrafana(CommandTestCase):
+    project_id = gen_uuid()
+
+    def test_enable(self, mock_send, mock_config):
+        argv = [
+            "croud",
+            "monitoring",
+            "grafana",
+            "enable",
+            "--project-id",
+            self.project_id,
+        ]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.POST,
+            "/api/v2/monitoring/grafana",
+            {"project_id": self.project_id},
+        )
+
+    def test_disable(self, mock_send, mock_config):
+        argv = [
+            "croud",
+            "monitoring",
+            "grafana",
+            "disable",
+            "--project-id",
+            self.project_id,
+        ]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.DELETE,
+            "/api/v2/monitoring/grafana",
+            {"project_id": self.project_id},
+        )
