@@ -17,8 +17,9 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import functools
 import json
-from typing import List, Union
+from typing import List, Optional, Union
 
 from colorama import Fore, Style
 from tabulate import tabulate
@@ -26,8 +27,10 @@ from tabulate import tabulate
 from croud.typing import JsonDict
 
 
-def print_format(rows: Union[List[JsonDict], JsonDict], format: str) -> None:
-    printer = FormatPrinter()
+def print_format(
+    rows: Union[List[JsonDict], JsonDict], format: str, keys: Optional[List[str]] = None
+) -> None:
+    printer = FormatPrinter(keys)
     printer.print_rows(rows, format)
 
 
@@ -44,8 +47,9 @@ def print_success(text: str):
 
 
 class FormatPrinter:
-    def __init__(self):
+    def __init__(self, keys: Optional[List[str]] = None):
         self.supported_formats: dict = {"json": self._json, "table": self._tabular}
+        self.keys = keys
 
     def print_rows(self, rows: Union[List[JsonDict], JsonDict], format: str) -> None:
         try:
@@ -64,29 +68,37 @@ class FormatPrinter:
         else:
             return field
 
+    def _filter_record(self, data: dict, keys: List[str]) -> JsonDict:
+        return {key: value for key, value in data.items() if key in keys}
+
     def _json(self, rows: Union[List[JsonDict], JsonDict]) -> str:
         return json.dumps(rows, sort_keys=False, indent=2)
 
     def _tabular(self, rows: Union[List[JsonDict], JsonDict]) -> str:
-        if isinstance(rows, list):
-            # ensure that keys are mapped to their values
-            # e.g. Rows, generated with
-            # [{"a": "foo", "b": 1}, {"b": 2, "a": "bar"}]
-            # should get printed same as
-            # [{"a": "foo", "b": 1}, {"a": "bar", "b": "1"}]
-            # +-----+-----+
-            # | a   |   b |
-            # |-----+-----|
-            # | foo |   1 |
-            # |-----+-----|
-            # | bar |   2 |
-            # +-----+-----+
-            headers = list(map(str, iter(rows[0].keys())))
-            values = [
-                [self._transform_field(row[header]) for header in headers]
-                for row in rows
-            ]
-        else:
-            headers = list(map(str, iter(rows.keys())))
-            values = [list(map(self._transform_field, rows.values()))]
+        if rows is None:
+            return ""
+
+        if not isinstance(rows, list):
+            rows = [rows]
+
+        if self.keys:
+            filter_record = functools.partial(self._filter_record, keys=self.keys)
+            rows = list(map(filter_record, rows))
+
+        # ensure that keys are mapped to their values
+        # e.g. Rows, generated with
+        # [{"a": "foo", "b": 1}, {"b": 2, "a": "bar"}]
+        # should get printed same as
+        # [{"a": "foo", "b": 1}, {"a": "bar", "b": "1"}]
+        # +-----+-----+
+        # | a   |   b |
+        # |-----+-----|
+        # | foo |   1 |
+        # |-----+-----|
+        # | bar |   2 |
+        # +-----+-----+
+        headers = list(map(str, rows[0].keys()))
+        values = [
+            [self._transform_field(row[header]) for header in headers] for row in rows
+        ]
         return tabulate(values, headers=headers, tablefmt="psql", missingval="NULL")

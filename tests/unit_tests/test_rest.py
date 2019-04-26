@@ -92,7 +92,7 @@ def test_print_success(mock_print_format, mock_print_success):
 
     client._data = {"key": "value"}
     client.print()
-    mock_print_format.assert_called_once_with({"key": "value"}, "json")
+    mock_print_format.assert_called_once_with({"key": "value"}, "json", None)
 
     client._data = None
     client.print("Success message.")

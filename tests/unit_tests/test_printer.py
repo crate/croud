@@ -17,47 +17,114 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import pytest
 
 from croud.printer import FormatPrinter
 
 
-class TestFormatPrinter(object):
-    printer = FormatPrinter()
-
-    def test_json_format(self, capsys):
-        sample = {"a": "foo", "b": 1, "c": True}
-        self.printer.print_rows(sample, format="json")
+class TestFormatPrinter:
+    @pytest.mark.parametrize(
+        "rows,expected",
+        (
+            (None, "null\n"),
+            ({}, "{}\n"),
+            (
+                {"a": "foo", "b": 1, "c": True, "d": {"x": 1, "y": "xyz", "z": False}},
+                (
+                    "{\n"
+                    '  "a": "foo",\n'
+                    '  "b": 1,\n'
+                    '  "c": true,\n'
+                    '  "d": {\n'
+                    '    "x": 1,\n'
+                    '    "y": "xyz",\n'
+                    '    "z": false\n'
+                    "  }\n"
+                    "}\n"
+                ),
+            ),
+        ),
+    )
+    def test_json_format(self, rows, expected, capsys):
+        FormatPrinter().print_rows(rows, "json")
         out, err = capsys.readouterr()
-        assert out == """{\n  "a": "foo",\n  "b": 1,\n  "c": true\n}\n"""
+        assert out == expected
 
-    def test_tabular_format_dict(self, capsys):
-        sample = {"a": "foo", "b": 1, "c": True}
-        self.printer.print_rows(sample, format="table")
+    @pytest.mark.parametrize(
+        "rows,keys,expected",
+        (
+            (None, ["what", "ever"], "\n"),
+            ({}, ["what", "ever"], "\n"),
+            (
+                {"a": "foo", "b": 1, "c": True},
+                None,
+                (
+                    "+-----+-----+------+\n"
+                    "| a   |   b | c    |\n"
+                    "|-----+-----+------|\n"
+                    "| foo |   1 | TRUE |\n"
+                    "+-----+-----+------+\n"
+                ),
+            ),
+            (
+                [
+                    {"a": "foo", "b": 1, "c": True},
+                    {"b": 2, "c": False, "a": {"bar": [{"value": 0}, {"value": 1}]}},
+                ],
+                None,
+                (
+                    "+---------------------------------------+-----+-------+\n"
+                    "| a                                     |   b | c     |\n"
+                    "|---------------------------------------+-----+-------|\n"
+                    "| foo                                   |   1 | TRUE  |\n"
+                    '| {"bar": [{"value": 0}, {"value": 1}]} |   2 | FALSE |\n'
+                    "+---------------------------------------+-----+-------+\n"
+                ),
+            ),
+            (
+                {"k1": "v1", "k2": "v2", "k3": "v3"},
+                ["k1", "k3"],
+                (
+                    "+------+------+\n"
+                    "| k1   | k3   |\n"
+                    "|------+------|\n"
+                    "| v1   | v3   |\n"
+                    "+------+------+\n"
+                ),
+            ),
+            (
+                [
+                    {"k1": "v01", "k2": "v02", "k3": "v03"},
+                    {"k1": "v11", "k2": "v12", "k3": "v13"},
+                ],
+                ["k1", "k2"],
+                (
+                    "+------+------+\n"
+                    "| k1   | k2   |\n"
+                    "|------+------|\n"
+                    "| v01  | v02  |\n"
+                    "| v11  | v12  |\n"
+                    "+------+------+\n"
+                ),
+            ),
+            (
+                [
+                    {"k1": "v01", "k2": "v02", "k3": "v03"},
+                    {"k1": "v11", "k2": "v12", "k3": "v13"},
+                ],
+                ["k1", "k2", "k4"],
+                (
+                    "+------+------+\n"
+                    "| k1   | k2   |\n"
+                    "|------+------|\n"
+                    "| v01  | v02  |\n"
+                    "| v11  | v12  |\n"
+                    "+------+------+\n"
+                ),
+            ),
+        ),
+    )
+    def test_tabular_format(self, rows, keys, expected, capsys):
+        FormatPrinter(keys=keys).print_rows(rows, "table")
         out, err = capsys.readouterr()
-        assert (
-            out
-            == """+-----+-----+------+
-| a   |   b | c    |
-|-----+-----+------|
-| foo |   1 | TRUE |
-+-----+-----+------+
-"""
-        )
-
-    def test_tabular_format_multi_row(self, capsys):
-        sample = [
-            {"a": "foo", "b": 1, "c": True},
-            {"b": 2, "c": False, "a": {"bar": [{"value": 0}, {"value": 1}]}},
-        ]
-        self.printer.print_rows(sample, format="table")
-        out, err = capsys.readouterr()
-        assert (
-            out
-            == """+---------------------------------------+-----+-------+
-| a                                     |   b | c     |
-|---------------------------------------+-----+-------|
-| foo                                   |   1 | TRUE  |
-| {"bar": [{"value": 0}, {"value": 1}]} |   2 | FALSE |
-+---------------------------------------+-----+-------+
-"""
-        )
+        assert out == expected

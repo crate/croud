@@ -19,7 +19,8 @@
 
 from argparse import Namespace
 
-from croud.gql import Query, print_query
+from croud.rest import Client
+from croud.session import RequestMethod
 
 
 def project_create(args: Namespace) -> None:
@@ -27,20 +28,13 @@ def project_create(args: Namespace) -> None:
     Creates a project in the organization the user belongs to.
     """
 
-    _query = f"""
-    mutation {{
-        createProject(input: {{
-            name: "{args.name}",
-            organizationId: "{args.org_id}"
-        }}) {{
-            id
-        }}
-    }}
-    """
-
-    query = Query(_query, args)
-    query.execute()
-    print_query(query, "createProject")
+    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client.send(
+        RequestMethod.POST,
+        "/api/v2/projects/",
+        {"name": args.name, "organization_id": args.org_id},
+    )
+    client.print(keys=["id"])
 
 
 def projects_list(args: Namespace) -> None:
@@ -48,19 +42,6 @@ def projects_list(args: Namespace) -> None:
     Lists all projects for the current user in the specified region
     """
 
-    _query = """
-    {
-        allProjects {
-            data {
-                id
-                name
-                region
-                organizationId
-            }
-        }
-    }
-    """
-
-    query = Query(_query, args)
-    query.execute()
-    print_query(query, "allProjects")
+    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client.send(RequestMethod.GET, "/api/v2/projects/")
+    client.print(keys=["id", "name", "region", "organization_id"])

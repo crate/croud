@@ -51,7 +51,7 @@ class Client:
 
         self._data = data["data"] if "data" in data else data
 
-    def print(self, success_message: str = None):
+    def print(self, success_message: str = None, keys: List[str] = None):
         if self._error:
             if "message" in self._error:
                 print_error(self._error["message"])
@@ -63,11 +63,7 @@ class Client:
             print_success(message)
             return
 
-        if not isinstance(self._data, dict):
-            print_error("Result has no proper format to print.")
-            return
-
-        print_format(self._data, self._output_fmt)
+        print_format(self._data, self._output_fmt, keys)
 
     def _run(
         self, method: RequestMethod, endpoint: str, body: dict = None

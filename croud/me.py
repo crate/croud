@@ -19,7 +19,8 @@
 
 from argparse import Namespace
 
-from croud.gql import Query, print_query
+from croud.rest import Client
+from croud.session import RequestMethod
 
 
 def me(args: Namespace) -> None:
@@ -27,15 +28,6 @@ def me(args: Namespace) -> None:
     Prints the current logged in user
     """
 
-    _query = """
-{
-    me {
-        email
-        username
-    }
-}
-    """
-
-    query = Query(_query, args)
-    query.execute()
-    print_query(query, "me")
+    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client.send(RequestMethod.GET, "/api/v2/users/me/")
+    client.print(keys=["email", "username"])

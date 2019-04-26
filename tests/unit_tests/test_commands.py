@@ -35,6 +35,14 @@ def gen_uuid() -> str:
     return str(uuid.uuid4())
 
 
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Client, "send")
+class TestMe(CommandTestCase):
+    def test_me(self, mock_send, mock_config):
+        argv = ["croud", "me"]
+        self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/users/me/")
+
+
 class TestConfigGet:
     @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch("builtins.print", autospec=True, side_effect=print)
@@ -187,52 +195,29 @@ class TestClusters(CommandTestCase):
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "run", return_value={"data": []})
 class TestOrganizations(CommandTestCase):
-    def test_create(self, mock_run, mock_load_config):
-        expected_body = """
-    mutation {
-        createOrganization(input: {
-            name: "testorg",
-            planType: 1
-        }) {
-            id
-            name
-            planType
-        }
-    }
-    """
-
+    @mock.patch.object(Client, "send")
+    def test_create(self, mock_send, mock_run, mock_load_config):
         argv = [
             "croud",
             "organizations",
             "create",
             "--name",
-            "testorg",
+            "test-org",
             "--plan-type",
             "1",
         ]
-        self.assertGql(mock_run, argv, expected_body)
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.POST,
+            "/api/v2/organizations/",
+            {"name": "test-org", "plan_type": 1},
+        )
 
-    def test_list(self, mock_run, mock_load_config):
-        expected_body = """
-    {
-        allOrganizations {
-            data {
-                id,
-                name,
-                planType,
-                notification {
-                    alert {
-                        email,
-                        enabled
-                    }
-                }
-            }
-        }
-    }
-    """
-
+    @mock.patch.object(Client, "send")
+    def test_list(self, mock_send, mock_run, mock_load_config):
         argv = ["croud", "organizations", "list"]
-        self.assertGql(mock_run, argv, expected_body)
+        self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/organizations/")
 
     def test_add_user(self, mock_run, mock_load_config):
         expected_body = textwrap.dedent(
@@ -362,20 +347,9 @@ class TestOrganizations(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "run", return_value={"data": []})
+@mock.patch.object(Client, "send")
 class TestProjects(CommandTestCase):
-    def test_create(self, mock_run, mock_load_config):
-        expected_body = """
-    mutation {
-        createProject(input: {
-            name: "new-project",
-            organizationId: "organization-id"
-        }) {
-            id
-        }
-    }
-    """
-
+    def test_create(self, mock_send, mock_load_config):
         argv = [
             "croud",
             "projects",
@@ -385,24 +359,17 @@ class TestProjects(CommandTestCase):
             "--org-id",
             "organization-id",
         ]
-        self.assertGql(mock_run, argv, expected_body)
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.POST,
+            "/api/v2/projects/",
+            {"name": "new-project", "organization_id": "organization-id"},
+        )
 
-    def test_list_projects_org_admin(self, mock_run, mock_load_config):
-        expected_body = """
-    {
-        allProjects {
-            data {
-                id
-                name
-                region
-                organizationId
-            }
-        }
-    }
-    """
-
+    def test_list(self, mock_send, mock_load_config):
         argv = ["croud", "projects", "list"]
-        self.assertGql(mock_run, argv, expected_body)
+        self.assertGql(mock_send, argv, RequestMethod.GET, "/api/v2/projects/")
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)

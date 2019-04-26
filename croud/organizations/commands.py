@@ -19,7 +19,8 @@
 
 from argparse import Namespace
 
-from croud.gql import Query, print_query
+from croud.rest import Client
+from croud.session import RequestMethod
 
 
 def organizations_create(args: Namespace) -> None:
@@ -27,22 +28,13 @@ def organizations_create(args: Namespace) -> None:
     Creates an organization
     """
 
-    _query = f"""
-    mutation {{
-        createOrganization(input: {{
-            name: "{args.name}",
-            planType: {args.plan_type}
-        }}) {{
-            id
-            name
-            planType
-        }}
-    }}
-    """
-
-    query = Query(_query, args)
-    query.execute()
-    print_query(query, "createOrganization")
+    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client.send(
+        RequestMethod.POST,
+        "/api/v2/organizations/",
+        {"name": args.name, "plan_type": args.plan_type},
+    )
+    client.print(keys=["id", "name", "plan_type"])
 
 
 def organizations_list(args: Namespace) -> None:
@@ -50,24 +42,6 @@ def organizations_list(args: Namespace) -> None:
     Lists organizations
     """
 
-    _query = """
-    {
-        allOrganizations {
-            data {
-                id,
-                name,
-                planType,
-                notification {
-                    alert {
-                        email,
-                        enabled
-                    }
-                }
-            }
-        }
-    }
-    """
-
-    query = Query(_query, args)
-    query.execute()
-    print_query(query, "allOrganizations")
+    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client.send(RequestMethod.GET, "/api/v2/organizations/")
+    client.print(keys=["id", "name", "plan_type"])
