@@ -7,3 +7,4 @@ pytest-mypy==0.3.2
 pytest-aiohttp==0.3.0
 mypy==0.670
 black==19.3b0
+asynctest==0.12.2

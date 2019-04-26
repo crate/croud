@@ -6,6 +6,10 @@ User Roles
 
 This is an overview over the user roles users can have in the `CrateDB Cloud`_.
 
+.. tip::
+
+   The ``users roles list`` command provides a list of fully qualified role names.
+
 .. rubric:: Table of Contents
 
 .. contents::
@@ -13,7 +17,7 @@ This is an overview over the user roles users can have in the `CrateDB Cloud`_.
 
 .. _organization-roles:
 
-Organization roles
+Organization Roles
 ==================
 
 .. _org-admin:
@@ -60,5 +64,6 @@ Project Member
 
 * Project member has read-only access to the project (settings, products,
   users).
+
 
 .. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/

@@ -1,0 +1,20 @@
+/**
+ * Custom style for sphinxarg tables
+ */
+
+code, kbd {
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(0, 0, 0, .2);
+  border-radius: 2px;
+  background-color: #e7e7e7;
+}
+
+colgroup {
+  display: none;
+}
+
+table.option-list th, table.option-list td {
+  border: 0px none !important;
+  padding: 0 24px 12px 0;
+}
