@@ -26,7 +26,7 @@ from tabulate import tabulate
 from croud.typing import JsonDict
 
 
-def print_format(rows: Union[List[JsonDict], JsonDict], format: str = "json") -> None:
+def print_format(rows: Union[List[JsonDict], JsonDict], format: str) -> None:
     printer = FormatPrinter()
     printer.print_rows(rows, format)
 
@@ -76,9 +76,9 @@ class FormatPrinter:
             # [{"a": "foo", "b": 1}, {"a": "bar", "b": "1"}]
             # +-----+-----+
             # | a   |   b |
-            # |-----+-----+
+            # |-----+-----|
             # | foo |   1 |
-            # +-----+-----+
+            # |-----+-----|
             # | bar |   2 |
             # +-----+-----+
             headers = list(map(str, iter(rows[0].keys())))

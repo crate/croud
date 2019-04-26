@@ -103,7 +103,11 @@ def add_default_args(parser):
         help="Switches auth context.",
     )
     parser._group_optional.add_argument(
-        "--output-fmt", "-o", required=False, choices={"table", "json"}
+        "--output-fmt",
+        "-o",
+        required=False,
+        choices={"table", "json"},
+        help="Change the formatting of the output",
     )
 
 

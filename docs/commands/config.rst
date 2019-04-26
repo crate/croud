@@ -26,7 +26,11 @@ Example
 .. code-block:: console
 
    $ croud config get env
-   prod
+   +--------+
+   | env    |
+   |--------|
+   | prod   |
+   +--------+
 
 
 ``config set``

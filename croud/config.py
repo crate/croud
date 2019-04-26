@@ -24,7 +24,7 @@ import yaml
 from appdirs import user_config_dir
 from schema import Schema, SchemaError
 
-from croud.printer import print_error, print_info
+from croud.printer import print_error, print_format, print_info
 
 
 class IncompatibleConfigException(Exception):
@@ -173,7 +173,9 @@ def config_get(args: Namespace):
     Gets a default configuration setting
     """
 
-    print(Configuration.get_setting(args.get))
+    fmt = Configuration.get_setting("output_fmt")
+    value = Configuration.get_setting(args.get)
+    print_format([{args.get: value}], args.output_fmt or fmt)
 
 
 def config_set(args: Namespace):

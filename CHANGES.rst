@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Make the ``config get`` commands respect the output format option.
+
 0.11.0 - 2019/04/17
 ===================
 

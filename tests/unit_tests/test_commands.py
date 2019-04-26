@@ -39,14 +39,34 @@ class TestConfigGet:
     @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch("builtins.print", autospec=True, side_effect=print)
     def test_get_env(self, mock_print, mock_load_config):
-        config_get(Namespace(get="env"))
-        mock_print.assert_called_once_with("prod")
+        config_get(Namespace(get="env", output_fmt=None))
+        mock_print.assert_called_once_with(
+            textwrap.dedent(
+                """
+                +-------+
+                | env   |
+                |-------|
+                | prod  |
+                +-------+
+            """
+            ).strip()
+        )
 
     @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch("builtins.print", autospec=True, side_effect=print)
     def test_get_top_level_setting(self, mock_print, mock_load_config):
-        config_get(Namespace(get="region"))
-        mock_print.assert_called_once_with("bregenz.a1")
+        config_get(Namespace(get="region", output_fmt=None))
+        mock_print.assert_called_once_with(
+            textwrap.dedent(
+                """
+                +------------+
+                | region     |
+                |------------|
+                | bregenz.a1 |
+                +------------+
+            """
+            ).strip()
+        )
 
 
 class TestConfigSet:
