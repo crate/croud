@@ -19,7 +19,7 @@ master_doc = 'index'
 
 html_static_path = ['_static']
 html_context = {
-    'css_files': [
+    'extra_css_files': [
         '_static/sphinxarg.css',  # overrides
     ],
 }
