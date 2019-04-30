@@ -18,7 +18,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import asyncio
-from typing import Optional
+from typing import List, Optional, Union
 
 from aiohttp import ContentTypeError  # type: ignore
 from aiohttp.client_reqrep import ClientResponse
@@ -33,8 +33,8 @@ class Client:
     _token: str
     _region: str
     _output_fmt: str
-    _data: Optional[dict] = None
-    _error: Optional[str] = None
+    _data: Optional[Union[List[dict], dict]] = None
+    _error: Optional[dict] = None
 
     def __init__(self, env: str = None, region: str = None, output_fmt: str = None):
         self._env = env or Configuration.get_env()
@@ -46,14 +46,16 @@ class Client:
         data = self._decode_response(resp)
 
         if resp.status >= 400:
-            self._error = data["error"]["message"]
+            self._error = data
             return
 
         self._data = data["data"] if "data" in data else data
 
     def print(self, success_message: str = None):
         if self._error:
-            print_error(self._error)
+            if "message" in self._error:
+                print_error(self._error["message"])
+            print_format(self._error, "json")
             return
 
         if self._data is None or len(self._data) == 0:
@@ -87,7 +89,7 @@ class Client:
                 return await resp.json()
             # API always returns JSON, unless there's an unhandled server error
             except ContentTypeError:
-                return {"error": {"message": await resp.text()}}
+                return {"message": "Invalid response type.", "success": False}
 
         loop = asyncio.get_event_loop()
         return loop.run_until_complete(_decode())

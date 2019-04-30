@@ -114,7 +114,10 @@ class FakeCrateDBCloud:
 
     async def error_400(self, request: web.Request) -> web.Response:
         if self._is_authorized(request):
-            return web.json_response({"error": {"message": "Bad request."}}, status=400)
+            return web.json_response(
+                {"message": "Bad request.", "errors": {"key": "Error on 'key'"}},
+                status=400,
+            )
         return web.Response(status=302)
 
     async def text_response(self, request: web.Request) -> web.Response:

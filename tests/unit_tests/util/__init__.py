@@ -42,4 +42,8 @@ class CommandTestCase:
 
     def assertRest(self, mock_send, argv, method, endpoint, body=None):
         self.execute(argv)
-        mock_send.assert_called_once_with(method, endpoint, body)
+
+        args = [method, endpoint]
+        if body is not None:
+            args.append(body)
+        mock_send.assert_called_once_with(*args)
