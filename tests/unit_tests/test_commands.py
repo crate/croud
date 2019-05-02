@@ -759,7 +759,7 @@ class TestGrafana(CommandTestCase):
             mock_send,
             argv,
             RequestMethod.POST,
-            "/api/v2/monitoring/grafana",
+            "/api/v2/monitoring/grafana/",
             {"project_id": self.project_id},
         )
 
@@ -776,6 +776,6 @@ class TestGrafana(CommandTestCase):
             mock_send,
             argv,
             RequestMethod.DELETE,
-            "/api/v2/monitoring/grafana",
+            "/api/v2/monitoring/grafana/",
             {"project_id": self.project_id},
         )
