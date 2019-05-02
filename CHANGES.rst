@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.11.1 - 2019/05/02
+===================
+
 - Fixed API redirect and error response bug for ``monitoring grafana`` command.
 
 0.11.0 - 2019/04/17
