@@ -66,23 +66,28 @@ class TestRestClient:
             client = Client(env="dev", region="bregenz.a1", output_fmt="json")
             client.send(RequestMethod.GET, "/errors/400")
 
-            assert client._error == "Bad request."
+            assert client._error == {
+                "message": "Bad request.",
+                "errors": {"key": "Error on 'key'"},
+            }
 
     def test_send_text_response(self, mock_cloud_url, mock_token):
         with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
             client = Client(env="dev", region="bregenz.a1", output_fmt="json")
             client.send(RequestMethod.GET, "/text-response")
 
-            assert client._error == "Non JSON response."
+            assert client._error == {
+                "message": "Invalid response type.",
+                "success": False,
+            }
 
     def _get_conn(self):
         return TCPConnector(loop=self.loop, resolver=self.resolver, ssl=True)
 
 
-@mock.patch("croud.rest.print_error")
 @mock.patch("croud.rest.print_success")
 @mock.patch("croud.rest.print_format")
-def test_print(mock_print_format, mock_print_success, mock_print_error):
+def test_print_success(mock_print_format, mock_print_success):
     client = Client(env="dev", region="bregenz.a1", output_fmt="json")
 
     client._data = {"key": "value"}
@@ -97,6 +102,14 @@ def test_print(mock_print_format, mock_print_success, mock_print_error):
         [mock.call("Success message."), mock.call("Success.")]
     )
 
-    client._error = "Error message."
+
+@mock.patch("croud.rest.print_error")
+@mock.patch("croud.rest.print_format")
+def test_print_error(mock_print_format, mock_print_error):
+    client = Client(env="dev", region="bregenz.a1", output_fmt="json")
+
+    error = {"message": "Bad request.", "errors": {"key": "Error on 'key'"}}
+    client._error = error
     client.print()
-    mock_print_error.assert_called_once_with("Error message.")
+    mock_print_error.assert_called_once_with("Bad request.")
+    mock_print_format.assert_called_once_with(error, "json")
