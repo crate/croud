@@ -19,112 +19,110 @@
 
 import pytest
 
-from croud.printer import FormatPrinter
+from croud.printer import JsonFormatPrinter, TableFormatPrinter
 
 
-class TestFormatPrinter:
-    @pytest.mark.parametrize(
-        "rows,expected",
+@pytest.mark.parametrize(
+    "rows,expected",
+    (
+        (None, "null"),
+        ({}, "{}"),
         (
-            (None, "null\n"),
-            ({}, "{}\n"),
+            {"a": "foo", "b": 1, "c": True, "d": {"x": 1, "y": "xyz", "z": False}},
             (
-                {"a": "foo", "b": 1, "c": True, "d": {"x": 1, "y": "xyz", "z": False}},
-                (
-                    "{\n"
-                    '  "a": "foo",\n'
-                    '  "b": 1,\n'
-                    '  "c": true,\n'
-                    '  "d": {\n'
-                    '    "x": 1,\n'
-                    '    "y": "xyz",\n'
-                    '    "z": false\n'
-                    "  }\n"
-                    "}\n"
-                ),
+                "{\n"
+                '  "a": "foo",\n'
+                '  "b": 1,\n'
+                '  "c": true,\n'
+                '  "d": {\n'
+                '    "x": 1,\n'
+                '    "y": "xyz",\n'
+                '    "z": false\n'
+                "  }\n"
+                "}"
             ),
         ),
-    )
-    def test_json_format(self, rows, expected, capsys):
-        FormatPrinter().print_rows(rows, "json")
-        out, err = capsys.readouterr()
-        assert out == expected
+    ),
+)
+def test_json_format(rows, expected):
+    out = JsonFormatPrinter().format_rows(rows)
+    assert out == expected
 
-    @pytest.mark.parametrize(
-        "rows,keys,expected",
+
+@pytest.mark.parametrize(
+    "rows,keys,expected",
+    (
+        (None, ["what", "ever"], ""),
+        ({}, ["what", "ever"], ""),
         (
-            (None, ["what", "ever"], "\n"),
-            ({}, ["what", "ever"], "\n"),
+            {"a": "foo", "b": 1, "c": True},
+            None,
             (
+                "+-----+-----+------+\n"
+                "| a   |   b | c    |\n"
+                "|-----+-----+------|\n"
+                "| foo |   1 | TRUE |\n"
+                "+-----+-----+------+"
+            ),
+        ),
+        (
+            [
                 {"a": "foo", "b": 1, "c": True},
-                None,
-                (
-                    "+-----+-----+------+\n"
-                    "| a   |   b | c    |\n"
-                    "|-----+-----+------|\n"
-                    "| foo |   1 | TRUE |\n"
-                    "+-----+-----+------+\n"
-                ),
-            ),
+                {"b": 2, "c": False, "a": {"bar": [{"value": 0}, {"value": 1}]}},
+            ],
+            None,
             (
-                [
-                    {"a": "foo", "b": 1, "c": True},
-                    {"b": 2, "c": False, "a": {"bar": [{"value": 0}, {"value": 1}]}},
-                ],
-                None,
-                (
-                    "+---------------------------------------+-----+-------+\n"
-                    "| a                                     |   b | c     |\n"
-                    "|---------------------------------------+-----+-------|\n"
-                    "| foo                                   |   1 | TRUE  |\n"
-                    '| {"bar": [{"value": 0}, {"value": 1}]} |   2 | FALSE |\n'
-                    "+---------------------------------------+-----+-------+\n"
-                ),
-            ),
-            (
-                {"k1": "v1", "k2": "v2", "k3": "v3"},
-                ["k1", "k3"],
-                (
-                    "+------+------+\n"
-                    "| k1   | k3   |\n"
-                    "|------+------|\n"
-                    "| v1   | v3   |\n"
-                    "+------+------+\n"
-                ),
-            ),
-            (
-                [
-                    {"k1": "v01", "k2": "v02", "k3": "v03"},
-                    {"k1": "v11", "k2": "v12", "k3": "v13"},
-                ],
-                ["k1", "k2"],
-                (
-                    "+------+------+\n"
-                    "| k1   | k2   |\n"
-                    "|------+------|\n"
-                    "| v01  | v02  |\n"
-                    "| v11  | v12  |\n"
-                    "+------+------+\n"
-                ),
-            ),
-            (
-                [
-                    {"k1": "v01", "k2": "v02", "k3": "v03"},
-                    {"k1": "v11", "k2": "v12", "k3": "v13"},
-                ],
-                ["k1", "k2", "k4"],
-                (
-                    "+------+------+\n"
-                    "| k1   | k2   |\n"
-                    "|------+------|\n"
-                    "| v01  | v02  |\n"
-                    "| v11  | v12  |\n"
-                    "+------+------+\n"
-                ),
+                "+---------------------------------------+-----+-------+\n"
+                "| a                                     |   b | c     |\n"
+                "|---------------------------------------+-----+-------|\n"
+                "| foo                                   |   1 | TRUE  |\n"
+                '| {"bar": [{"value": 0}, {"value": 1}]} |   2 | FALSE |\n'
+                "+---------------------------------------+-----+-------+"
             ),
         ),
-    )
-    def test_tabular_format(self, rows, keys, expected, capsys):
-        FormatPrinter(keys=keys).print_rows(rows, "table")
-        out, err = capsys.readouterr()
-        assert out == expected
+        (
+            {"k1": "v1", "k2": "v2", "k3": "v3"},
+            ["k1", "k3"],
+            (
+                "+------+------+\n"
+                "| k1   | k3   |\n"
+                "|------+------|\n"
+                "| v1   | v3   |\n"
+                "+------+------+"
+            ),
+        ),
+        (
+            [
+                {"k1": "v01", "k2": "v02", "k3": "v03"},
+                {"k1": "v11", "k2": "v12", "k3": "v13"},
+            ],
+            ["k1", "k2"],
+            (
+                "+------+------+\n"
+                "| k1   | k2   |\n"
+                "|------+------|\n"
+                "| v01  | v02  |\n"
+                "| v11  | v12  |\n"
+                "+------+------+"
+            ),
+        ),
+        (
+            [
+                {"k1": "v01", "k2": "v02", "k3": "v03"},
+                {"k1": "v11", "k2": "v12", "k3": "v13"},
+            ],
+            ["k1", "k2", "k4"],
+            (
+                "+------+------+\n"
+                "| k1   | k2   |\n"
+                "|------+------|\n"
+                "| v01  | v02  |\n"
+                "| v11  | v12  |\n"
+                "+------+------+"
+            ),
+        ),
+    ),
+)
+def test_tabular_format(rows, keys, expected):
+    out = TableFormatPrinter(keys=keys).format_rows(rows)
+    assert out == expected
