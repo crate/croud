@@ -25,7 +25,7 @@ Example
 
 .. code-block:: console
 
-   $ croud config get env
+   sh$ croud config get env
    +--------+
    | env    |
    |--------|
@@ -49,7 +49,7 @@ Example
 
 .. code-block:: console
 
-   $ croud config set --region eastus.azure
+   sh$ croud config set --region eastus.azure
    ==> Info: Region switched to eastus.azure
 
 .. note::

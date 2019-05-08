@@ -15,7 +15,7 @@ Example
 
 .. code-block:: console
 
-   $ croud me
+   sh$ croud me
    +----------------+-----------------+
    | email          | username        |
    |----------------+-----------------|

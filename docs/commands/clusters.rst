@@ -31,7 +31,7 @@ Example
 
 .. code-block:: console
 
-   $ croud clusters list
+   sh$ croud clusters list
    +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
    | id                                   | name                   | numNodes | crateVersion | projectId                            | username    | fqdn                                             |
    |--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------|
@@ -52,7 +52,7 @@ Example
 
 .. code-block:: console
 
-   $ croud clusters deploy \
+   sh$ croud clusters deploy \
        --product-name cratedb.az1 \
        --tier xs \
        --name my-first-crate-cluster \

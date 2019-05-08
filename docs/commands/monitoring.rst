@@ -36,7 +36,7 @@ Example
 
 .. code-block:: console
 
-   $ sh croud monioring grafana enable --project-id 57d3434e-2abc-4d6a-8542-8b33e0881599
+   sh$ croud monioring grafana enable --project-id 57d3434e-2abc-4d6a-8542-8b33e0881599
    +----------------------------------+
    | password                         |
    |----------------------------------|
@@ -62,7 +62,7 @@ Example
 
 .. code-block:: console
 
-   $ sh croud monioring grafana disable --project-id 57d3434e-2abc-4d6a-8542-8b33e0881599
+   sh$ croud monioring grafana disable --project-id 57d3434e-2abc-4d6a-8542-8b33e0881599
    ==> Info: Success
 
 

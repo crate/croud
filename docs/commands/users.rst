@@ -26,7 +26,7 @@ Example
 
 .. code-block:: console
 
-   $ croud users list
+   sh$ croud users list
    +--------------------------------------+-------------------------------+-------------------+
    | uid                                  | email                         | username          |
    |--------------------------------------+-------------------------------+-------------------|
@@ -63,7 +63,7 @@ Example
 
 .. code-block:: console
 
-   $ croud users roles add \
+   sh$ croud users roles add \
        --user 6ac0f500-f9f8-4c12-82e2-3ad6192525d4 \
        --resource 035f1161-402e-44b4-9073-0749586091e0 \
        --role project_admin
@@ -88,7 +88,7 @@ Example
 
 .. code-block:: console
 
-   $ croud users roles remove \
+   sh$ croud users roles remove \
        --user 6ac0f500-f9f8-4c12-82e2-3ad6192525d4 \
        --resource 035f1161-402e-44b4-9073-0749586091e0 \
        --role project_admin
@@ -113,7 +113,7 @@ Example
 
 .. code-block:: console
 
-   $ croud users roles list
+   sh$ croud users roles list
    +----------------+---------------------+
    | fqn            | friendlyName        |
    |----------------+---------------------|

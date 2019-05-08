@@ -25,7 +25,7 @@ Example
 
 .. code-block:: console
 
-   $ croud consumers deploy \
+   sh$ croud consumers deploy \
        --project-id 664e6556-5734-449c-a717-f3533e5f86cf \
        --product-name eventhub-consumer \
        --tier s \
@@ -59,7 +59,7 @@ Example
 
 .. code-block:: console
 
-   $ croud consumers list
+   sh$ croud consumers list
    +--------------------------------------+-------------------+--------------------------------------+--------------------------------------+-------------------+---------------+-------------+-------------+---------------+
    | id                                   | name              | projectId                            | clusterId                            | productName       | productTier   |   instances | tableName   | tableSchema   |
    |--------------------------------------+-------------------+--------------------------------------+--------------------------------------+-------------------+---------------+-------------+-------------+---------------|
@@ -81,7 +81,7 @@ Example
 
 .. code-block:: console
 
-   $ croud consumers edit \
+   sh$ croud consumers edit \
        --consumer-schema my_schema \
        --consumer-table ingest_table
    +--------------------------------------+-------------------+--------------------------------------+--------------------------------------+-------------------+---------------+-------------+--------------+---------------+
