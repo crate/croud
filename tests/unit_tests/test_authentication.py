@@ -164,8 +164,9 @@ class TestLogin:
 
 
 class TestLogout:
+    @mock.patch("croud.logout.asyncio.get_event_loop")
     @mock.patch("croud.logout.print_info")
-    def test_logout(self, mock_print_info):
+    def test_logout(self, mock_print_info, mock_loop):
         conf = {
             "auth": {
                 "current_context": "prod",
