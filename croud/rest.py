@@ -41,8 +41,15 @@ class Client:
         self._region = region or Configuration.get_setting("region")
         self._output_fmt = output_fmt or Configuration.get_setting("output_fmt")
 
-    def send(self, method: RequestMethod, endpoint: str, body: dict = None):
-        resp = self._run(method, endpoint, body)
+    def send(
+        self,
+        method: RequestMethod,
+        endpoint: str,
+        *,
+        body: dict = None,
+        params: dict = None
+    ):
+        resp = self._run(method, endpoint, body, params)
         data = self._decode_response(resp)
 
         if resp.status >= 400:
@@ -66,18 +73,26 @@ class Client:
         print_format(self._data, self._output_fmt, keys)
 
     def _run(
-        self, method: RequestMethod, endpoint: str, body: dict = None
+        self,
+        method: RequestMethod,
+        endpoint: str,
+        body: dict = None,
+        params: dict = None,
     ) -> ClientResponse:
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self._fetch_data(method, endpoint, body))
+        return loop.run_until_complete(self._fetch_data(method, endpoint, body, params))
 
     async def _fetch_data(
-        self, method: RequestMethod, endpoint: str, body: dict = None
+        self,
+        method: RequestMethod,
+        endpoint: str,
+        body: dict = None,
+        params: dict = None,
     ) -> ClientResponse:
         async with HttpSession(
             self._env, Configuration.get_token(), self._region
         ) as session:
-            return await session.fetch(method, endpoint, body)
+            return await session.fetch(method, endpoint, body, params)
 
     def _decode_response(self, resp: ClientResponse):
         async def _decode():

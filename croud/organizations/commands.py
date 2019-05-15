@@ -32,7 +32,7 @@ def organizations_create(args: Namespace) -> None:
     client.send(
         RequestMethod.POST,
         "/api/v2/organizations/",
-        {"name": args.name, "plan_type": args.plan_type},
+        body={"name": args.name, "plan_type": args.plan_type},
     )
     client.print(keys=["id", "name", "plan_type"])
 

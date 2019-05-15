@@ -32,7 +32,7 @@ def project_create(args: Namespace) -> None:
     client.send(
         RequestMethod.POST,
         "/api/v2/projects/",
-        {"name": args.name, "organization_id": args.org_id},
+        body={"name": args.name, "organization_id": args.org_id},
     )
     client.print(keys=["id"])
 

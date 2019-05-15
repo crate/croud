@@ -211,7 +211,7 @@ class TestOrganizations(CommandTestCase):
             argv,
             RequestMethod.POST,
             "/api/v2/organizations/",
-            {"name": "test-org", "plan_type": 1},
+            body={"name": "test-org", "plan_type": 1},
         )
 
     @mock.patch.object(Client, "send")
@@ -364,7 +364,7 @@ class TestProjects(CommandTestCase):
             argv,
             RequestMethod.POST,
             "/api/v2/projects/",
-            {"name": "new-project", "organization_id": "organization-id"},
+            body={"name": "new-project", "organization_id": "organization-id"},
         )
 
     def test_list(self, mock_send, mock_load_config):
@@ -747,7 +747,7 @@ class TestGrafana(CommandTestCase):
             argv,
             RequestMethod.POST,
             "/api/v2/monitoring/grafana/",
-            {"project_id": self.project_id},
+            body={"project_id": self.project_id},
         )
 
     def test_disable(self, mock_send, mock_config):
@@ -764,5 +764,5 @@ class TestGrafana(CommandTestCase):
             argv,
             RequestMethod.DELETE,
             "/api/v2/monitoring/grafana/",
-            {"project_id": self.project_id},
+            body={"project_id": self.project_id},
         )

@@ -67,11 +67,15 @@ class HttpSession:
         return TCPConnector(ssl_context=ssl_context)
 
     async def fetch(
-        self, method: RequestMethod, endpoint: str, body: dict = None
+        self,
+        method: RequestMethod,
+        endpoint: str,
+        body: dict = None,
+        params: dict = None,
     ) -> ClientResponse:
         url = self.url + endpoint
         resp = await getattr(self.client, method.value)(
-            url, json=body, allow_redirects=False
+            url, json=body, allow_redirects=False, params=params
         )
         if resp.status == 302:  # login redirect
             print_error("Unauthorized. Use `croud login` to login to CrateDB Cloud.")

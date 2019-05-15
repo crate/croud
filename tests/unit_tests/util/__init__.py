@@ -40,10 +40,13 @@ class CommandTestCase:
         self.execute(argv)
         mock_run.assert_called_once_with(expected_body, expected_vars)
 
-    def assertRest(self, mock_send, argv, method, endpoint, body=None):
+    def assertRest(self, mock_send, argv, method, endpoint, *, body=None, params=None):
         self.execute(argv)
 
         args = [method, endpoint]
+        kwargs = {}
         if body is not None:
-            args.append(body)
-        mock_send.assert_called_once_with(*args)
+            kwargs["body"] = body
+        if params is not None:
+            kwargs["params"] = params
+        mock_send.assert_called_once_with(*args, **kwargs)

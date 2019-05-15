@@ -27,5 +27,7 @@ def set_grafana(enable: bool, args: Namespace) -> None:
     method = RequestMethod.POST if enable else RequestMethod.DELETE
 
     client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
-    client.send(method, "/api/v2/monitoring/grafana/", {"project_id": args.project_id})
+    client.send(
+        method, "/api/v2/monitoring/grafana/", body={"project_id": args.project_id}
+    )
     client.print()
