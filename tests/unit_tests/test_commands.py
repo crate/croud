@@ -126,17 +126,23 @@ class TestClusters(CommandTestCase):
     """
     ).strip()
 
-    def test_list_no_project_id(self, mock_run, mock_load_config):
+    @mock.patch.object(Client, "send")
+    def test_list_no_project_id(self, mock_send, mock_run, mock_load_config):
         argv = ["croud", "clusters", "list"]
-        expected_vars = {}
-        self.assertGql(mock_run, argv, self.expected_body, expected_vars)
+        self.assertRest(
+            mock_send, argv, RequestMethod.GET, "/api/v2/clusters/", params={}
+        )
 
-    def test_list_with_project_id(self, mock_run, mock_load_config):
+    @mock.patch.object(Client, "send")
+    def test_list_with_project_id(self, mock_send, mock_run, mock_load_config):
         argv = ["croud", "clusters", "list", "--project-id", self.project_id]
-        expected_vars = {
-            "filter": [{"by": "PROJECT_ID", "op": "EQ", "value": self.project_id}]
-        }
-        self.assertGql(mock_run, argv, self.expected_body, expected_vars)
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.GET,
+            "/api/v2/clusters/",
+            params={"project_id": self.project_id},
+        )
 
     def test_crate_clusters(self, mock_run, mock_load_config):
         expected_body = textwrap.dedent(

@@ -21,6 +21,8 @@ import textwrap
 from argparse import Namespace
 
 from croud.gql import Query, print_query
+from croud.rest import Client
+from croud.session import RequestMethod
 from croud.util import clean_dict
 
 
@@ -29,34 +31,23 @@ def clusters_list(args: Namespace) -> None:
     Lists all projects for the current user in the specified region
     """
 
-    body = textwrap.dedent(
-        """
-        query allClusters($filter: [ClusterFilter]) {
-            allClusters(sort: [CRATE_VERSION_DESC], filter: $filter) {
-                data {
-                    id
-                    name
-                    numNodes
-                    crateVersion
-                    projectId
-                    username
-                    fqdn
-                }
-            }
-        }
-    """
-    ).strip()
+    params = {}
+    if args.project_id:
+        params["project_id"] = args.project_id
 
-    project_filter = (
-        {"by": "PROJECT_ID", "op": "EQ", "value": args.project_id}
-        if args.project_id
-        else None
+    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client.send(RequestMethod.GET, "/api/v2/clusters/", params=params)
+    client.print(
+        keys=[
+            "id",
+            "name",
+            "num_nodes",
+            "crate_version",
+            "project_id",
+            "username",
+            "fqdn",
+        ]
     )
-    vars = clean_dict({"filter": [project_filter] if project_filter else None})
-
-    query = Query(body, args)
-    query.execute(vars)
-    print_query(query, "allClusters")
 
 
 def clusters_deploy(args: Namespace) -> None:
