@@ -21,6 +21,8 @@ from argparse import Namespace
 from textwrap import dedent
 
 from croud.gql import Query, print_query
+from croud.rest import Client
+from croud.session import RequestMethod
 from croud.util import clean_dict
 
 
@@ -68,35 +70,29 @@ def consumers_deploy(args: Namespace) -> None:
 
 
 def consumers_list(args: Namespace) -> None:
-    body = dedent(
-        """
-    query allConsumers($clusterId: ID, $productName: String, $projectId: ID) {
-        allConsumers(clusterId: $clusterId, productName: $productName, projectId: $projectId) {
-            id
-            name
-            projectId
-            clusterId
-            productName
-            productTier
-            instances
-            tableName
-            tableSchema
-        }
-    }
-    """  # noqa
-    ).strip()
+    params = {}
+    if args.cluster_id:
+        params["cluster_id"] = args.cluster_id
+    if args.product_name:
+        params["product_name"] = args.product_name
+    if args.project_id:
+        params["project_id"] = args.project_id
 
-    vars = clean_dict(
-        {
-            "productName": args.product_name,
-            "projectId": args.project_id,
-            "clusterId": args.cluster_id,
-        }
+    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client.send(RequestMethod.GET, "/api/v2/consumers/", params=params)
+    client.print(
+        keys=[
+            "cluster_id",
+            "id",
+            "instances",
+            "name",
+            "product_name",
+            "product_tier",
+            "project_id",
+            "table_name",
+            "table_schema",
+        ]
     )
-
-    query = Query(body, args)
-    query.execute(vars)
-    print_query(query, "allConsumers")
 
 
 def consumers_edit(args: Namespace) -> None:

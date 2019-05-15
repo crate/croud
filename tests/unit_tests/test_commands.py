@@ -585,13 +585,13 @@ class TestUsers(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "run", return_value={"data": []})
 class TestConsumers(CommandTestCase):
     # fmt: off
     eventhub_dsn = "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=..."  # noqa
     storage_dsn = "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net"  # noqa
     # fmt: on
 
+    @mock.patch.object(Query, "run", return_value={"data": []})
     def test_deploy_consumer(self, mock_run, mock_load_config):
         project_id = gen_uuid()
         cluster_id = gen_uuid()
@@ -663,35 +663,17 @@ class TestConsumers(CommandTestCase):
 
         self.assertGql(mock_run, argv, expected_body, expected_vars)
 
-    def test_consumers_list(self, mock_run, mock_load_config):
+    @mock.patch.object(Client, "send")
+    def test_consumers_list(self, mock_send, mock_load_config):
+        argv = ["croud", "consumers", "list"]
+        self.assertRest(
+            mock_send, argv, RequestMethod.GET, "/api/v2/consumers/", params={}
+        )
 
-        expected_body = textwrap.dedent(
-            """
-    query allConsumers($clusterId: ID, $productName: String, $projectId: ID) {
-        allConsumers(clusterId: $clusterId, productName: $productName, projectId: $projectId) {
-            id
-            name
-            projectId
-            clusterId
-            productName
-            productTier
-            instances
-            tableName
-            tableSchema
-        }
-    }
-    """  # noqa
-        ).strip()
-
+    @mock.patch.object(Client, "send")
+    def test_consumers_list_with_params(self, mock_send, mock_load_config):
         project_id = gen_uuid()
         cluster_id = gen_uuid()
-
-        expected_vars = {
-            "productName": "eventhub-consumer",
-            "projectId": project_id,
-            "clusterId": cluster_id,
-        }
-
         argv = [
             "croud",
             "consumers",
@@ -703,9 +685,19 @@ class TestConsumers(CommandTestCase):
             "--product-name",
             "eventhub-consumer",
         ]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.GET,
+            "/api/v2/consumers/",
+            params={
+                "product_name": "eventhub-consumer",
+                "project_id": project_id,
+                "cluster_id": cluster_id,
+            },
+        )
 
-        self.assertGql(mock_run, argv, expected_body, expected_vars)
-
+    @mock.patch.object(Query, "run", return_value={"data": []})
     def test_consumers_edit(self, mock_run, mock_load_config):
         expected_body = textwrap.dedent(
             """
