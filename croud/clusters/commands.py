@@ -17,13 +17,10 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import textwrap
 from argparse import Namespace
 
-from croud.gql import Query, print_query
 from croud.rest import Client
 from croud.session import RequestMethod
-from croud.util import clean_dict
 
 
 def clusters_list(args: Namespace) -> None:
@@ -54,35 +51,17 @@ def clusters_deploy(args: Namespace) -> None:
     """
     Deploys a new cluster CrateDB cluster.
     """
-
-    mutation = textwrap.dedent(
-        """
-        mutation deployCluster($input: DeployClusterInput!) {
-            deployCluster(input: $input) {
-                id
-                name
-                fqdn
-                url
-            }
-        }
-    """  # noqa
-    ).strip()
-
-    vars = clean_dict(
-        {
-            "input": {
-                "productName": args.product_name,
-                "tier": args.tier,
-                "unit": args.unit,
-                "name": args.cluster_name,
-                "projectId": args.project_id,
-                "username": args.username,
-                "password": args.password,
-                "version": args.version,
-            }
-        }
-    )
-
-    query = Query(mutation, args)
-    query.execute(vars)
-    print_query(query, "deployCluster")
+    body = {
+        "crate_version": args.version,
+        "name": args.cluster_name,
+        "password": args.password,
+        "product_name": args.product_name,
+        "product_tier": args.tier,
+        "project_id": args.project_id,
+        "username": args.username,
+    }
+    if args.unit:
+        body["product_unit"] = args.unit
+    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client.send(RequestMethod.POST, "/api/v2/clusters/", body=body)
+    client.print(keys=["id", "name", "fqdn", "url"])

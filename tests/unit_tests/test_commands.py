@@ -144,47 +144,20 @@ class TestClusters(CommandTestCase):
             params={"project_id": self.project_id},
         )
 
-    def test_crate_clusters(self, mock_run, mock_load_config):
-        expected_body = textwrap.dedent(
-            """
-            mutation deployCluster($input: DeployClusterInput!) {
-                deployCluster(input: $input) {
-                    id
-                    name
-                    fqdn
-                    url
-                }
-            }
-        """  # noqa
-        ).strip()
-
-        project_id = gen_uuid()
-
-        expected_vars = {
-            "input": {
-                "productName": "crate-default",
-                "tier": "S0",
-                "unit": 1,
-                "name": "crate_cluster",
-                "projectId": project_id,
-                "username": "foobar",
-                "password": "s3cr3t!",
-                "version": "3.2.5",
-            }
-        }
-
+    @mock.patch.object(Client, "send")
+    def test_deploy_cluster(self, mock_send, mock_run, mock_load_config):
         argv = [
             "croud",
             "clusters",
             "deploy",
             "--product-name",
-            "crate-default",
+            "cratedb.az1",
             "--tier",
-            "S0",
+            "xs",
             "--unit",
             "1",
             "--project-id",
-            project_id,
+            self.project_id,
             "--cluster-name",
             "crate_cluster",
             "--version",
@@ -194,8 +167,59 @@ class TestClusters(CommandTestCase):
             "--password",
             "s3cr3t!",
         ]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.POST,
+            "/api/v2/clusters/",
+            body={
+                "crate_version": "3.2.5",
+                "name": "crate_cluster",
+                "password": "s3cr3t!",
+                "product_name": "cratedb.az1",
+                "product_tier": "xs",
+                "product_unit": 1,
+                "project_id": self.project_id,
+                "username": "foobar",
+            },
+        )
 
-        self.assertGql(mock_run, argv, expected_body, expected_vars)
+    @mock.patch.object(Client, "send")
+    def test_deploy_cluster_no_unit(self, mock_send, mock_run, mock_load_config):
+        argv = [
+            "croud",
+            "clusters",
+            "deploy",
+            "--product-name",
+            "cratedb.az1",
+            "--tier",
+            "xs",
+            "--project-id",
+            self.project_id,
+            "--cluster-name",
+            "crate_cluster",
+            "--version",
+            "3.2.5",
+            "--username",
+            "foobar",
+            "--password",
+            "s3cr3t!",
+        ]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.POST,
+            "/api/v2/clusters/",
+            body={
+                "crate_version": "3.2.5",
+                "name": "crate_cluster",
+                "password": "s3cr3t!",
+                "product_name": "cratedb.az1",
+                "product_tier": "xs",
+                "project_id": self.project_id,
+                "username": "foobar",
+            },
+        )
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
