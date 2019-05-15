@@ -591,45 +591,10 @@ class TestConsumers(CommandTestCase):
     storage_dsn = "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net"  # noqa
     # fmt: on
 
-    @mock.patch.object(Query, "run", return_value={"data": []})
-    def test_deploy_consumer(self, mock_run, mock_load_config):
+    @mock.patch.object(Client, "send")
+    def test_deploy_consumer(self, mock_send, mock_load_config):
         project_id = gen_uuid()
         cluster_id = gen_uuid()
-
-        expected_body = textwrap.dedent(
-            """
-        mutation deployConsumer($input: DeployConsumerInput!) {
-            deployConsumer(input: $input) {
-                id
-                name
-                projectId
-                clusterId
-                productName
-                productTier
-                instances
-                tableName
-                tableSchema
-            }
-        }
-        """  # noqa
-        ).strip()
-
-        expected_vars = {
-            "input": {
-                "clusterId": cluster_id,
-                "eventhubConnectionString": self.eventhub_dsn,
-                "eventhubConsumerGroup": "$Default",
-                "instances": 2,
-                "leaseStorageConnectionString": self.storage_dsn,
-                "leaseStorageContainer": "lease_container",
-                "name": "my-eventhub-consumer",
-                "productName": "eventhub-consumer",
-                "productTier": "S0",
-                "projectId": project_id,
-                "tableName": "raw",
-                "tableSchema": "doc",
-            }
-        }
 
         argv = [
             "croud",
@@ -661,7 +626,28 @@ class TestConsumers(CommandTestCase):
             "lease_container",
         ]
 
-        self.assertGql(mock_run, argv, expected_body, expected_vars)
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.POST,
+            "/api/v2/consumers/",
+            body={
+                "cluster_id": cluster_id,
+                "config": {
+                    "connection_string": self.eventhub_dsn,
+                    "consumer_group": "$Default",
+                    "lease_storage_connection_string": self.storage_dsn,
+                    "consumer_lease_container": "lease_container",
+                },
+                "instances": 2,
+                "name": "my-eventhub-consumer",
+                "product_name": "eventhub-consumer",
+                "product_tier": "S0",
+                "project_id": project_id,
+                "table_name": "raw",
+                "table_schema": "doc",
+            },
+        )
 
     @mock.patch.object(Client, "send")
     def test_consumers_list(self, mock_send, mock_load_config):

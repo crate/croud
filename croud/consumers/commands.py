@@ -27,46 +27,37 @@ from croud.util import clean_dict
 
 
 def consumers_deploy(args: Namespace) -> None:
-    body = dedent(
-        """
-    mutation deployConsumer($input: DeployConsumerInput!) {
-        deployConsumer(input: $input) {
-            id
-            name
-            projectId
-            clusterId
-            productName
-            productTier
-            instances
-            tableName
-            tableSchema
-        }
+    body = {
+        "cluster_id": args.cluster_id,
+        "config": {
+            "connection_string": args.eventhub_dsn,
+            "consumer_group": args.eventhub_consumer_group,
+            "consumer_lease_container": args.lease_storage_container,
+            "lease_storage_connection_string": args.lease_storage_dsn,
+        },
+        "instances": args.num_instances,
+        "name": args.consumer_name,
+        "product_name": args.product_name,
+        "product_tier": args.tier,
+        "project_id": args.project_id,
+        "table_name": args.consumer_table,
+        "table_schema": args.consumer_schema,
     }
-    """  # noqa
-    ).strip()
-
-    vars = clean_dict(
-        {
-            "input": {
-                "name": args.consumer_name,
-                "productName": args.product_name,
-                "productTier": args.tier,
-                "tableName": args.consumer_table,
-                "tableSchema": args.consumer_schema,
-                "clusterId": args.cluster_id,
-                "projectId": args.project_id,
-                "instances": args.num_instances,
-                "eventhubConnectionString": args.eventhub_dsn,
-                "eventhubConsumerGroup": args.eventhub_consumer_group,
-                "leaseStorageContainer": args.lease_storage_container,
-                "leaseStorageConnectionString": args.lease_storage_dsn,
-            }
-        }
+    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client.send(RequestMethod.POST, "/api/v2/consumers/", body=body)
+    client.print(
+        keys=[
+            "cluster_id",
+            "id",
+            "instances",
+            "name",
+            "product_name",
+            "product_tier",
+            "project_id",
+            "table_name",
+            "table_schema",
+        ]
     )
-
-    query = Query(body, args)
-    query.execute(vars)
-    print_query(query, "deployConsumer")
 
 
 def consumers_list(args: Namespace) -> None:
