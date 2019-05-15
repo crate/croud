@@ -585,13 +585,13 @@ class TestUsers(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Client, "send")
 class TestConsumers(CommandTestCase):
     # fmt: off
     eventhub_dsn = "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=..."  # noqa
     storage_dsn = "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net"  # noqa
     # fmt: on
 
-    @mock.patch.object(Client, "send")
     def test_deploy_consumer(self, mock_send, mock_load_config):
         project_id = gen_uuid()
         cluster_id = gen_uuid()
@@ -649,14 +649,12 @@ class TestConsumers(CommandTestCase):
             },
         )
 
-    @mock.patch.object(Client, "send")
     def test_consumers_list(self, mock_send, mock_load_config):
         argv = ["croud", "consumers", "list"]
         self.assertRest(
             mock_send, argv, RequestMethod.GET, "/api/v2/consumers/", params={}
         )
 
-    @mock.patch.object(Client, "send")
     def test_consumers_list_with_params(self, mock_send, mock_load_config):
         project_id = gen_uuid()
         cluster_id = gen_uuid()
@@ -683,33 +681,9 @@ class TestConsumers(CommandTestCase):
             },
         )
 
-    @mock.patch.object(Query, "run", return_value={"data": []})
-    def test_consumers_edit(self, mock_run, mock_load_config):
-        expected_body = textwrap.dedent(
-            """
-    mutation editConsumer($id: String!, $input: EditConsumerInput!) {
-        editConsumer(id: $id, input: $input) {
-            id
-        }
-    }
-    """  # noqa
-        ).strip()
-
+    def test_consumers_edit(self, mock_send, mock_load_config):
         consumer_id = gen_uuid()
         cluster_id = gen_uuid()
-
-        expected_vars = {
-            "id": consumer_id,
-            "input": {
-                "eventhubConnectionString": self.eventhub_dsn,
-                "eventhubConsumerGroup": "$Default",
-                "leaseStorageConnectionString": self.storage_dsn,
-                "leaseStorageContainer": "lease_container",
-                "consumerSchema": "doc",
-                "consumerTable": "raw",
-                "clusterId": cluster_id,
-            },
-        }
 
         argv = [
             "croud",
@@ -733,7 +707,23 @@ class TestConsumers(CommandTestCase):
             cluster_id,
         ]
 
-        self.assertGql(mock_run, argv, expected_body, expected_vars)
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.PATCH,
+            f"/api/v2/consumers/{consumer_id}/",
+            body={
+                "cluster_id": cluster_id,
+                "config": {
+                    "connection_string": self.eventhub_dsn,
+                    "consumer_group": "$Default",
+                    "lease_storage_connection_string": self.storage_dsn,
+                    "consumer_lease_container": "lease_container",
+                },
+                "table_name": "raw",
+                "table_schema": "doc",
+            },
+        )
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)

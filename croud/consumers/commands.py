@@ -18,12 +18,9 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 from argparse import Namespace
-from textwrap import dedent
 
-from croud.gql import Query, print_query
 from croud.rest import Client
 from croud.session import RequestMethod
-from croud.util import clean_dict
 
 
 def consumers_deploy(args: Namespace) -> None:
@@ -43,7 +40,7 @@ def consumers_deploy(args: Namespace) -> None:
         "table_name": args.consumer_table,
         "table_schema": args.consumer_schema,
     }
-    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
     client.send(RequestMethod.POST, "/api/v2/consumers/", body=body)
     client.print(
         keys=[
@@ -69,7 +66,7 @@ def consumers_list(args: Namespace) -> None:
     if args.project_id:
         params["project_id"] = args.project_id
 
-    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
     client.send(RequestMethod.GET, "/api/v2/consumers/", params=params)
     client.print(
         keys=[
@@ -87,31 +84,25 @@ def consumers_list(args: Namespace) -> None:
 
 
 def consumers_edit(args: Namespace) -> None:
-    body = dedent(
-        """
-    mutation editConsumer($id: String!, $input: EditConsumerInput!) {
-        editConsumer(id: $id, input: $input) {
-            id
-        }
+    body = {
+        "cluster_id": args.cluster_id,
+        "table_name": args.consumer_table,
+        "table_schema": args.consumer_schema,
     }
-    """  # noqa
-    ).strip()
+    config = {}
+    if args.eventhub_dsn:
+        config["connection_string"] = args.eventhub_dsn
+    if args.eventhub_consumer_group:
+        config["consumer_group"] = args.eventhub_consumer_group
+    if args.lease_storage_container:
+        config["consumer_lease_container"] = args.lease_storage_container
+    if args.lease_storage_dsn:
+        config["lease_storage_connection_string"] = args.lease_storage_dsn
 
-    vars = clean_dict(
-        {
-            "id": args.consumer_id,
-            "input": {
-                "eventhubConnectionString": args.eventhub_dsn,
-                "eventhubConsumerGroup": args.eventhub_consumer_group,
-                "leaseStorageConnectionString": args.lease_storage_dsn,
-                "leaseStorageContainer": args.lease_storage_container,
-                "consumerSchema": args.consumer_schema,
-                "consumerTable": args.consumer_table,
-                "clusterId": args.cluster_id,
-            },
-        }
+    if config:
+        body["config"] = config
+    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client.send(
+        RequestMethod.PATCH, f"/api/v2/consumers/{args.consumer_id}/", body=body
     )
-
-    query = Query(body, args)
-    query.execute(vars)
-    print_query(query, "editConsumer")
+    client.print(keys=["id"])

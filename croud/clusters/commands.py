@@ -32,7 +32,7 @@ def clusters_list(args: Namespace) -> None:
     if args.project_id:
         params["project_id"] = args.project_id
 
-    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
     client.send(RequestMethod.GET, "/api/v2/clusters/", params=params)
     client.print(
         keys=[
@@ -62,6 +62,6 @@ def clusters_deploy(args: Namespace) -> None:
     }
     if args.unit:
         body["product_unit"] = args.unit
-    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
     client.send(RequestMethod.POST, "/api/v2/clusters/", body=body)
     client.print(keys=["id", "name", "fqdn", "url"])
