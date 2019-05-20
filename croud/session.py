@@ -37,6 +37,7 @@ class RequestMethod(Enum):
     POST = "post"
     DELETE = "delete"
     PATCH = "patch"
+    PUT = "put"
 
 
 class HttpSession:

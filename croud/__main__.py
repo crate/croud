@@ -23,7 +23,7 @@ import sys
 
 import colorama
 
-from croud.clusters.commands import clusters_deploy, clusters_list
+from croud.clusters.commands import clusters_deploy, clusters_list, clusters_scale
 from croud.cmd import (
     cluster_id_arg,
     cluster_name_arg,
@@ -279,6 +279,21 @@ command_tree = {
                     crate_password_arg,
                 ],
                 "resolver": clusters_deploy,
+            },
+            "scale": {
+                "help": "Scale an existing CrateDB cluster.",
+                "extra_args": [
+                    lambda req_opt_group, opt_opt_group: project_id_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: cluster_id_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    lambda req_opt_group, opt_opt_group: product_unit_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                ],
+                "resolver": clusters_scale,
             }
         },
     },
