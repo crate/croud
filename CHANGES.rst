@@ -5,6 +5,12 @@ Changes for croud
 Unreleased
 ==========
 
+
+0.12.0 - 2019/05/21
+===================
+
+- Updated the API calls from the deprecated ``v1`` to ``v2``.
+
 - Make the ``config get`` commands respect the output format option.
 
 0.11.1 - 2019/05/02
