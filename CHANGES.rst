@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Removed the redundant printed error JSON from the error message,
+  only the message is provided. When the message is not available,
+  the full error JSON is then printed.
 
 0.12.0 - 2019/05/21
 ===================

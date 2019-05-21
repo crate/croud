@@ -62,7 +62,8 @@ class Client:
         if self._error:
             if "message" in self._error:
                 print_error(self._error["message"])
-            print_format(self._error, "json")
+            else:
+                print_format(self._error, "json")
             return
 
         if self._data is None or len(self._data) == 0:
