@@ -74,6 +74,31 @@ metadata.
 Upload to `PyPI`_
 -----------------
 
+Install wheel::
+
+    pip install wheel
+
+Install twine::
+
+    pip install twine
+
+Create the distributions::
+
+    python setup.py sdist bdist_wheel
+
+
+Check the distributions with twine ::
+
+    twine check dist/*.whl
+
+To upload to test pypi::
+
+     twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+To upload to pypi::
+
+    twine upload dist/*
+
 See the instructions for `Generating distribution archives`_ for more details.
 
 .. note::
