@@ -72,8 +72,6 @@ Example
 Available Products and Tiers
 ----------------------------
 
-Available Products and Tiers
-----------------------------
 
 +--------------+----------------+------------------------------------------------+-----------+
 | Product Name | Available Tier | Available Region                               | Disk Type |
