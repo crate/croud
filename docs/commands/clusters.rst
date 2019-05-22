@@ -72,11 +72,9 @@ Example
 Available Products and Tiers
 ----------------------------
 
-
 +--------------+----------------+------------------------------------------------+-----------+
 | Product Name | Available Tier | Available Region                               | Disk Type |
 +==============+================+================================================+===========+
-
 | cratedb.az1  | XS             | eastus.azure, eastus2.azure, westeurope.azure  | Standard  |
 +--------------+----------------+------------------------------------------------+-----------+
 |              | S              | eastus.azure, eastus2.azure, westeurope.azure  | Standard  |
