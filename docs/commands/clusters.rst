@@ -76,15 +76,15 @@ Available Products and Tiers
 +--------------+----------------+------------------------------------------------+-----------+
 | Product Name | Available Tier | Available Region                               | Disk Type |
 +--------------+----------------+------------------------------------------------+-----------+
-| cratedb.az1  | XS             | eastus.azure, eastus2.azure, westeurope.azure  | Premium   |
+| cratedb.az1  | XS             | eastus.azure, eastus2.azure, westeurope.azure  | Standard  |
 +--------------+----------------+------------------------------------------------+-----------+
-|              | S              | eastus.azure, eastus2.azure, westeurope.azure  | Premium   |
+|              | S              | eastus.azure, eastus2.azure, westeurope.azure  | Standard  |
 +--------------+----------------+------------------------------------------------+-----------+
-|              | M              | eastus.azure, westeurope.azure                 | Premium   |
+|              | M              | eastus.azure, westeurope.azure                 | Standard  |
 +--------------+----------------+------------------------------------------------+-----------+
-|              | L              | eastus.azure, westeurope.azure                 | Premium   |
+|              | L              | eastus.azure, westeurope.azure                 | Standard  |
 +--------------+----------------+------------------------------------------------+-----------+
-| cratedb.az2  | M              | eastus2.azure                                  | Ephemeral |
+| cratedb.az2  | M              | eastus2.azure                                  | Premium   |
 +--------------+----------------+------------------------------------------------+-----------+
-|              | L              | eastus2.azure                                  | Ephemeral |
+|              | L              | eastus2.azure                                  | Premium   |
 +--------------+----------------+------------------------------------------------+-----------+
