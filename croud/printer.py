@@ -17,9 +17,10 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import abc
 import functools
 import json
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Type, Union
 
 from colorama import Fore, Style
 from tabulate import tabulate
@@ -30,8 +31,13 @@ from croud.typing import JsonDict
 def print_format(
     rows: Union[List[JsonDict], JsonDict], format: str, keys: Optional[List[str]] = None
 ) -> None:
-    printer = FormatPrinter(keys)
-    printer.print_rows(rows, format)
+    try:
+        Printer = PRINTERS[format]
+    except KeyError:
+        print_error("This print method is not supported.")
+        exit(1)
+    printer = Printer(keys)
+    printer.print_rows(rows)
 
 
 def print_error(text: str):
@@ -46,35 +52,25 @@ def print_success(text: str):
     print(Fore.GREEN + "==> Success: " + Style.RESET_ALL + text)
 
 
-class FormatPrinter:
+class FormatPrinter(abc.ABC):
     def __init__(self, keys: Optional[List[str]] = None):
-        self.supported_formats: dict = {"json": self._json, "table": self._tabular}
         self.keys = keys
 
-    def print_rows(self, rows: Union[List[JsonDict], JsonDict], format: str) -> None:
-        try:
-            print_method = self.supported_formats[format]
-        except KeyError as e:
-            print_error(f"This print method is not supported: {e!s}")
-            exit(1)
-        print(print_method(rows))
+    def print_rows(self, rows: Union[List[JsonDict], JsonDict]) -> None:
+        print(self.format_rows(rows))
 
-    def _transform_field(self, field):
-        """transform field for displaying"""
-        if isinstance(field, (list, dict)):
-            return json.dumps(field, sort_keys=True, ensure_ascii=False)
-        elif isinstance(field, bool):
-            return "TRUE" if field else "FALSE"
-        else:
-            return field
+    @abc.abstractmethod
+    def format_rows(self, rows: Union[List[JsonDict], JsonDict]) -> str:
+        raise NotImplementedError()
 
-    def _filter_record(self, data: dict, keys: List[str]) -> JsonDict:
-        return {key: value for key, value in data.items() if key in keys}
 
-    def _json(self, rows: Union[List[JsonDict], JsonDict]) -> str:
+class JsonFormatPrinter(FormatPrinter):
+    def format_rows(self, rows: Union[List[JsonDict], JsonDict]) -> str:
         return json.dumps(rows, sort_keys=False, indent=2)
 
-    def _tabular(self, rows: Union[List[JsonDict], JsonDict]) -> str:
+
+class TableFormatPrinter(FormatPrinter):
+    def format_rows(self, rows: Union[List[JsonDict], JsonDict]) -> str:
         if rows is None:
             return ""
 
@@ -99,6 +95,25 @@ class FormatPrinter:
         # +-----+-----+
         headers = list(map(str, rows[0].keys()))
         values = [
-            [self._transform_field(row[header]) for header in headers] for row in rows
+            [self._transform_record_value(row[header]) for header in headers]
+            for row in rows
         ]
         return tabulate(values, headers=headers, tablefmt="psql", missingval="NULL")
+
+    def _filter_record(self, data: dict, keys: List[str]) -> JsonDict:
+        return {key: value for key, value in data.items() if key in keys}
+
+    def _transform_record_value(self, field):
+        """transform field for displaying"""
+        if isinstance(field, (list, dict)):
+            return json.dumps(field, sort_keys=True, ensure_ascii=False)
+        elif isinstance(field, bool):
+            return "TRUE" if field else "FALSE"
+        else:
+            return field
+
+
+PRINTERS: Dict[str, Union[Type[JsonFormatPrinter], Type[TableFormatPrinter]]] = {
+    "json": JsonFormatPrinter,
+    "table": TableFormatPrinter,
+}
