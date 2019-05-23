@@ -101,7 +101,10 @@ class Client:
                 return await resp.json()
             # API always returns JSON, unless there's an unhandled server error
             except ContentTypeError:
-                return {"message": "Invalid response type.", "success": False}
+                if resp.status == 204:
+                    return {"success": True}
+                else:
+                    return {"message": "Invalid response type.", "success": False}
 
         loop = asyncio.get_event_loop()
         return loop.run_until_complete(_decode())
