@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added ``croud products list`` command to list all available products
+ in the current region.
+
 0.12.1 - 2019/05/22
 ===================
 

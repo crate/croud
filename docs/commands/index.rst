@@ -48,4 +48,5 @@ To get help for a specific command, you can append ``--help``:
    monitoring
    organizations
    projects
+   products
    users

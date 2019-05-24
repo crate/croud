@@ -281,3 +281,7 @@ def num_instances_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> Non
         default=1,
         required=False,
     )
+
+
+def kind_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    opt_args.add_argument("--kind", type=str, help="The product kind.", required=False)

@@ -36,6 +36,7 @@ from croud.cmd import (
     crate_version_arg,
     eventhub_consumer_group_arg,
     eventhub_dsn_arg,
+    kind_arg,
     lease_storage_container_arg,
     lease_storage_dsn_arg,
     num_instances_arg,
@@ -62,6 +63,7 @@ from croud.monitoring.grafana.commands import set_grafana
 from croud.organizations.commands import organizations_create, organizations_list
 from croud.organizations.users.commands import org_users_add, org_users_remove
 from croud.parser import create_parser
+from croud.products.commands import products_list
 from croud.projects.commands import project_create, projects_list
 from croud.projects.users.commands import project_user_add, project_user_remove
 from croud.users.commands import users_list
@@ -264,6 +266,16 @@ command_tree = {
                 ],
                 "resolver": clusters_deploy,
             }
+        },
+    },
+    "products": {
+        "help": "Manage Products.",
+        "commands": {
+            "list": {
+                "help": "List all available products in the current region.",
+                "extra_args": [kind_arg],
+                "resolver": products_list,
+            },
         },
     },
     "organizations": {

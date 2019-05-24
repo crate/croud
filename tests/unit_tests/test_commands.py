@@ -764,3 +764,23 @@ class TestGrafana(CommandTestCase):
             "/api/v2/monitoring/grafana/",
             body={"project_id": self.project_id},
         )
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Query, "run", return_value={"data": []})
+class TestProducts(CommandTestCase):
+    @mock.patch.object(Client, "send")
+    def test_list(self, mock_send, mock_run, mock_load_config):
+        argv = ["croud", "products", "list"]
+        self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/products/")
+
+    @mock.patch.object(Client, "send")
+    def test_list_kind(self, mock_send, mock_run, mock_load_config):
+        argv = ["croud", "products", "list", "--kind", "cluster"]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.GET,
+            "/api/v2/products/",
+            params={"kind": "cluster"},
+        )
