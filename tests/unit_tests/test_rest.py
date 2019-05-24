@@ -87,8 +87,8 @@ class TestRestClient:
 
 @mock.patch("croud.rest.print_success")
 @mock.patch("croud.rest.print_format")
-def test_print_success(mock_print_format, mock_print_success):
-    client = Client(env="dev", region="bregenz.a1", output_fmt="json")
+def test_print_success(mock_print_format, mock_print_success, event_loop):
+    client = Client(env="dev", region="bregenz.a1", output_fmt="json", loop=event_loop)
 
     client._data = {"key": "value"}
     client.print()
@@ -104,8 +104,8 @@ def test_print_success(mock_print_format, mock_print_success):
 
 
 @mock.patch("croud.rest.print_error")
-def test_print_error(mock_print_error):
-    client = Client(env="dev", region="bregenz.a1", output_fmt="json")
+def test_print_error(mock_print_error, event_loop):
+    client = Client(env="dev", region="bregenz.a1", output_fmt="json", loop=event_loop)
 
     error = {"message": "Bad request.", "errors": {"key": "Error on 'key'"}}
     client._error = error
@@ -114,8 +114,8 @@ def test_print_error(mock_print_error):
 
 
 @mock.patch("croud.rest.print_format")
-def test_print_error_no_message(mock_print_format):
-    client = Client(env="dev", region="bregenz.a1", output_fmt="json")
+def test_print_error_no_message(mock_print_format, event_loop):
+    client = Client(env="dev", region="bregenz.a1", output_fmt="json", loop=event_loop)
 
     error = {"errors": {"key": "Error on 'key'"}}
     client._error = error
