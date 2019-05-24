@@ -50,13 +50,16 @@ class Client:
         params: dict = None
     ):
         resp = self._run(method, endpoint, body, params)
-        data = self._decode_response(resp)
+        if resp.status == 204:
+            data = {"success": True}
+        else:
+            data = self._decode_response(resp)
 
-        if resp.status >= 400:
-            self._error = data
-            return
+            if resp.status >= 400:
+                self._error = data
+                return
 
-        self._data = data["data"] if "data" in data else data
+        self._data = data["data"] if "data" in data else data  # type: ignore
 
     def print(self, success_message: str = None, keys: List[str] = None):
         if self._error:
@@ -101,10 +104,7 @@ class Client:
                 return await resp.json()
             # API always returns JSON, unless there's an unhandled server error
             except ContentTypeError:
-                if resp.status == 204:
-                    return {"success": True}
-                else:
-                    return {"message": "Invalid response type.", "success": False}
+                return {"message": "Invalid response type.", "success": False}
 
         loop = asyncio.get_event_loop()
         return loop.run_until_complete(_decode())
