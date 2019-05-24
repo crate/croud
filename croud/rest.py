@@ -52,17 +52,45 @@ class Client:
         body: dict = None,
         params: dict = None
     ):
-        resp = self._run(method, endpoint, body, params)
+        self.loop.run_until_complete(self.fetch(method, endpoint, body, params))
+
+    async def fetch(
+        self,
+        method: RequestMethod,
+        endpoint: str,
+        body: dict = None,
+        params: dict = None,
+    ):
+        resp = await self._fetch(method, endpoint, body, params)
+
         if resp.status == 204:
             data = {"success": True}
         else:
-            data = self._decode_response(resp)
-
+            data = await self._decode_response(resp)
             if resp.status >= 400:
                 self._error = data
                 return
 
         self._data = data["data"] if "data" in data else data  # type: ignore
+
+    async def _fetch(
+        self,
+        method: RequestMethod,
+        endpoint: str,
+        body: dict = None,
+        params: dict = None,
+    ) -> ClientResponse:
+        async with HttpSession(
+            self._env, Configuration.get_token(), self._region
+        ) as session:
+            return await session.fetch(method, endpoint, body, params)
+
+    async def _decode_response(self, resp: ClientResponse):
+        try:
+            return await resp.json()
+        # API always returns JSON, unless there's an unhandled server error
+        except ContentTypeError:
+            return {"message": "Invalid response type.", "success": False}
 
     def print(self, success_message: str = None, keys: List[str] = None):
         if self._error:
@@ -78,36 +106,3 @@ class Client:
             return
 
         print_format(self._data, self._output_fmt, keys)
-
-    def _run(
-        self,
-        method: RequestMethod,
-        endpoint: str,
-        body: dict = None,
-        params: dict = None,
-    ) -> ClientResponse:
-        return self.loop.run_until_complete(
-            self._fetch_data(method, endpoint, body, params)
-        )
-
-    async def _fetch_data(
-        self,
-        method: RequestMethod,
-        endpoint: str,
-        body: dict = None,
-        params: dict = None,
-    ) -> ClientResponse:
-        async with HttpSession(
-            self._env, Configuration.get_token(), self._region
-        ) as session:
-            return await session.fetch(method, endpoint, body, params)
-
-    def _decode_response(self, resp: ClientResponse):
-        async def _decode():
-            try:
-                return await resp.json()
-            # API always returns JSON, unless there's an unhandled server error
-            except ContentTypeError:
-                return {"message": "Invalid response type.", "success": False}
-
-        return self.loop.run_until_complete(_decode())
