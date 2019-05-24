@@ -51,7 +51,9 @@ class Query:
         self._response: Optional[JsonDict] = None
 
     async def _fetch_data(self, body: str, variables: Optional[Dict]) -> JsonDict:
-        async with HttpSession(self._env, self._token, self._region) as session:
+        async with HttpSession(
+            self._env, self._token, self._region, on_new_token=Configuration.set_token
+        ) as session:
             resp = await session.fetch(
                 RequestMethod.POST,
                 self._endpoint,

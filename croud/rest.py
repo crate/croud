@@ -78,7 +78,10 @@ class Client:
         params: dict = None,
     ) -> ClientResponse:
         async with HttpSession(
-            self._env, Configuration.get_token(), self._region
+            self._env,
+            Configuration.get_token(),
+            self._region,
+            on_new_token=Configuration.set_token,
         ) as session:
             return await session.fetch(method, endpoint, body, params)
 
