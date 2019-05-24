@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+- Fix client session so it stores the refreshed access token in the
+  configuration. This prevents the server from refreshing the access token sent
+  by the client in case it was already expired.
+
 - Added ``consumers delete`` command to delete existing consumers.
 
 - Added ``croud products list`` command to list all available products

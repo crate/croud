@@ -17,6 +17,7 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+from http.cookies import Morsel
 from unittest import mock
 
 import aiohttp
@@ -136,3 +137,16 @@ class TestHttpSession:
         region = "westeurope.azure"
         url = cloud_url("prod", region)
         assert url == f"https://{region}.cratedb.cloud"
+
+
+@pytest.mark.asyncio
+async def test_on_new_token():
+    update_config = mock.Mock()
+    async with HttpSession(
+        "dev", "old_token", "eastus.azure", on_new_token=update_config
+    ) as session:
+        session_cookie = Morsel()
+        session_cookie.set("session", "new_token", None)
+        session.client.cookie_jar.update_cookies({"session": session_cookie})
+
+    update_config.assert_called_once_with("new_token")

@@ -20,7 +20,7 @@
 import ssl
 from enum import Enum
 from types import TracebackType
-from typing import Dict, Optional, Type
+from typing import Callable, Dict, Optional, Type
 
 import certifi
 from aiohttp import ClientResponse, ClientSession, TCPConnector  # type: ignore
@@ -48,9 +48,11 @@ class HttpSession:
         url: Optional[str] = None,
         conn: Optional[TCPConnector] = None,
         headers: Dict[str, str] = {},
+        on_new_token: Callable[[str], None] = None,
     ) -> None:
         self.env = env
         self.token = token
+        self.on_new_token = on_new_token
 
         if not url:
             url = cloud_url(env, region)
@@ -90,6 +92,9 @@ class HttpSession:
         return self
 
     async def close(self) -> None:
+        new_token = self.client.cookie_jar.filter_cookies(self.url).get("session")
+        if new_token and self.token != new_token.value and self.on_new_token:
+            self.on_new_token(new_token.value)
         await self.client.close()
 
     async def __aexit__(
