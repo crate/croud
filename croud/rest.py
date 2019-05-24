@@ -36,10 +36,13 @@ class Client:
     _data: Optional[Union[List[dict], dict]] = None
     _error: Optional[dict] = None
 
-    def __init__(self, env: str = None, region: str = None, output_fmt: str = None):
+    def __init__(
+        self, env: str = None, region: str = None, output_fmt: str = None, loop=None
+    ):
         self._env = env or Configuration.get_env()
         self._region = region or Configuration.get_setting("region")
         self._output_fmt = output_fmt or Configuration.get_setting("output_fmt")
+        self.loop = loop or asyncio.get_event_loop()
 
     def send(
         self,
@@ -83,8 +86,9 @@ class Client:
         body: dict = None,
         params: dict = None,
     ) -> ClientResponse:
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self._fetch_data(method, endpoint, body, params))
+        return self.loop.run_until_complete(
+            self._fetch_data(method, endpoint, body, params)
+        )
 
     async def _fetch_data(
         self,
@@ -106,5 +110,4 @@ class Client:
             except ContentTypeError:
                 return {"message": "Invalid response type.", "success": False}
 
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(_decode())
+        return self.loop.run_until_complete(_decode())
