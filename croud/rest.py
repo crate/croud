@@ -50,13 +50,16 @@ class Client:
         params: dict = None
     ):
         resp = self._run(method, endpoint, body, params)
-        data = self._decode_response(resp)
+        if resp.status == 204:
+            data = {"success": True}
+        else:
+            data = self._decode_response(resp)
 
-        if resp.status >= 400:
-            self._error = data
-            return
+            if resp.status >= 400:
+                self._error = data
+                return
 
-        self._data = data["data"] if "data" in data else data
+        self._data = data["data"] if "data" in data else data  # type: ignore
 
     def print(self, success_message: str = None, keys: List[str] = None):
         if self._error:

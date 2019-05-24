@@ -81,6 +81,13 @@ class TestRestClient:
                 "success": False,
             }
 
+    def test_send_empty_response(self, mock_cloud_url, mock_token):
+        with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
+            client = Client(env="dev", region="bregenz.a1", output_fmt="json")
+            client.send(RequestMethod.GET, "/empty-response")
+
+            assert client._data == {"success": True}
+
     def _get_conn(self):
         return TCPConnector(loop=self.loop, resolver=self.resolver, ssl=True)
 

@@ -65,6 +65,7 @@ class FakeCrateDBCloud:
         self.app.router.add_routes([web.get("/data/no-key", self.data_no_key)])
         self.app.router.add_routes([web.get("/errors/400", self.error_400)])
         self.app.router.add_routes([web.get("/text-response", self.text_response)])
+        self.app.router.add_routes([web.get("/empty-response", self.empty_response)])
 
         here = pathlib.Path(__file__)
         # Load certificates and sign key used to simulate ssl/tls
@@ -123,6 +124,11 @@ class FakeCrateDBCloud:
     async def text_response(self, request: web.Request) -> web.Response:
         if self._is_authorized(request):
             return web.Response(body="Non JSON response.", status=500)
+        return web.Response(status=302)
+
+    async def empty_response(self, request: web.Request) -> web.Response:
+        if self._is_authorized(request):
+            return web.Response(body="", status=204)
         return web.Response(status=302)
 
     def _is_authorized(self, request: web.Request) -> bool:
