@@ -17,11 +17,15 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import functools
 import os
 import platform
 import subprocess
 import webbrowser
+from argparse import Namespace
 from typing import Dict, Tuple
+
+from croud.printer import print_info
 
 
 # This function was copied from the <https://github.com/Azure/azure-cli>
@@ -91,3 +95,28 @@ def clean_dict(data: Dict) -> Dict:
         else:
             cleaned[k] = v
     return cleaned
+
+
+def confirm_prompt(msg):
+    msg = f"{msg.rstrip()} [yN] "
+    resp = input(msg).lower()
+    return resp in {"y", "yes"}
+
+
+def require_confirmation(
+    confirm_msg: str, cancel_msg="Command aborted!"
+):  # decorator setup
+    def _inner(cmd):  # decorator
+        @functools.wraps(cmd)
+        def _wrapper(cmd_args: Namespace):  # decorator logic
+            is_confirmed = cmd_args.yes
+            if not is_confirmed:
+                is_confirmed = confirm_prompt(confirm_msg)
+            if is_confirmed:
+                cmd(cmd_args)
+            else:
+                print_info(cancel_msg)
+
+        return _wrapper
+
+    return _inner

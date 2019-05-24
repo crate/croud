@@ -18,6 +18,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import unittest
+from argparse import Namespace
 from unittest import mock
 
 import pytest
@@ -25,9 +26,11 @@ import pytest
 from croud.util import (
     can_launch_browser,
     clean_dict,
+    confirm_prompt,
     get_platform_info,
     is_wsl,
     open_page_in_browser,
+    require_confirmation,
 )
 
 
@@ -110,3 +113,50 @@ class TestUtils(unittest.TestCase):
 )
 def test_clean_dict(raw, cleaned):
     assert clean_dict(raw) == cleaned
+
+
+@pytest.mark.parametrize(
+    "msg,response,is_confirmed",
+    [
+        ("test", "y", True),
+        ("Other thingy", "Yes", True),
+        ("But not common phrases", "Yay", False),
+        ("Nope Nope Nope", "huh?", False),
+        ("Srsly?", "!", False),
+    ],
+)
+def test_confirm_prompt(msg, response, is_confirmed):
+    with mock.patch("builtins.input", side_effect=[response]) as mock_input:
+        assert confirm_prompt(msg) is is_confirmed
+        mock_input.assert_called_once_with(f"{msg} [yN] ")
+
+
+@pytest.mark.parametrize(
+    "confirm_msg,cancel_msg,args_yes_value,response,output",
+    [
+        ("Are you sure?", None, True, "y", "Command output"),
+        ("Are you sure?", None, False, "y", "Command output"),
+        ("Are you sure?", "Cancelled!", False, "n", "Cancelled!"),
+    ],
+)
+def test_require_confirmation(
+    confirm_msg, cancel_msg, args_yes_value, response, output, capsys
+):
+    kwargs = {}
+    if cancel_msg is not None:
+        kwargs["cancel_msg"] = cancel_msg
+
+    @require_confirmation(confirm_msg=confirm_msg, **kwargs)
+    def command(args: Namespace):
+        print("Command output")
+
+    args = Namespace(yes=args_yes_value)
+    with mock.patch("builtins.input", side_effect=[response]) as mock_input:
+        command(args)
+        if args_yes_value:
+            mock_input.assert_not_called()
+        else:
+            mock_input.assert_called()
+
+    out, _ = capsys.readouterr()
+    assert output in out
