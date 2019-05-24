@@ -63,15 +63,7 @@ class Client:
     ):
         resp = await self._fetch(method, endpoint, body, params)
 
-        if resp.status == 204:
-            data = {"success": True}
-        else:
-            data = await self._decode_response(resp)
-            if resp.status >= 400:
-                self._error = data
-                return
-
-        self._data = data["data"] if "data" in data else data  # type: ignore
+        self._data, self._error = await self._decode_response(resp)
 
     async def _fetch(
         self,
@@ -89,11 +81,21 @@ class Client:
             return await session.fetch(method, endpoint, body, params)
 
     async def _decode_response(self, resp: ClientResponse):
+        if resp.status == 204:
+            # response is empty
+            return None, None
+
         try:
-            return await resp.json()
+            body = await resp.json()
         # API always returns JSON, unless there's an unhandled server error
         except ContentTypeError:
-            return {"message": "Invalid response type.", "success": False}
+            body = {"message": "Invalid response type.", "success": False}
+
+        if resp.status >= 400:
+            return None, body
+        else:
+            data = body["data"] if "data" in body else body
+            return data, None
 
     def print(self, success_message: str = None, keys: List[str] = None):
         if self._error:

@@ -76,6 +76,7 @@ class TestRestClient:
             client = Client(env="dev", region="bregenz.a1", output_fmt="json")
             client.send(RequestMethod.GET, "/text-response")
 
+            assert client._data is None
             assert client._error == {
                 "message": "Invalid response type.",
                 "success": False,
@@ -86,7 +87,8 @@ class TestRestClient:
             client = Client(env="dev", region="bregenz.a1", output_fmt="json")
             client.send(RequestMethod.GET, "/empty-response")
 
-            assert client._data == {"success": True}
+            assert client._data is None
+            assert client._error is None
 
     def _get_conn(self):
         return TCPConnector(loop=self.loop, resolver=self.resolver, ssl=True)
