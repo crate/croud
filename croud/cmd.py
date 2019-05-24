@@ -20,6 +20,10 @@
 from argparse import _ArgumentGroup
 
 
+def yes_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    opt_args.add_argument("-y", "--yes", action="store_true", default=False)
+
+
 def project_id_arg(
     req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:

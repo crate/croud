@@ -21,6 +21,7 @@ from argparse import Namespace
 
 from croud.rest import Client
 from croud.session import RequestMethod
+from croud.util import require_confirmation
 
 
 def consumers_deploy(args: Namespace) -> None:
@@ -106,3 +107,13 @@ def consumers_edit(args: Namespace) -> None:
         RequestMethod.PATCH, f"/api/v2/consumers/{args.consumer_id}/", body=body
     )
     client.print(keys=["id"])
+
+
+@require_confirmation(
+    "Are you sure you want to delete the consumer?",
+    cancel_msg="Consumer deletion cancelled.",
+)
+def consumers_delete(args: Namespace) -> None:
+    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client.send(RequestMethod.DELETE, f"/api/v2/consumers/{args.consumer_id}/")
+    client.print("Consumer deleted.")

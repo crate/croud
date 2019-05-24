@@ -91,4 +91,24 @@ Example
    +--------------------------------------+-------------------+--------------------------------------+--------------------------------------+-------------------+---------------+-------------+--------------+---------------+
 
 
+``consumers delete``
+====================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: consumers delete
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud consumers delete \
+       --consumer-id dc40090f-e1df-4974-b751-9fc27c824368
+   Are you sure you want to delete the consumer? [yN] y
+   ==> Success: Consumer deleted.
+
+
 .. _string delimitation: https://en.wikipedia.org/wiki/Delimiter

@@ -53,9 +53,15 @@ from croud.cmd import (
     role_fqn_arg,
     user_id_arg,
     user_id_or_email_arg,
+    yes_arg,
 )
 from croud.config import Configuration, config_get, config_set
-from croud.consumers.commands import consumers_deploy, consumers_edit, consumers_list
+from croud.consumers.commands import (
+    consumers_delete,
+    consumers_deploy,
+    consumers_edit,
+    consumers_list,
+)
 from croud.login import login
 from croud.logout import logout
 from croud.me import me
@@ -181,6 +187,14 @@ command_tree = {
                     ),
                 ],
                 "resolver": consumers_edit,
+            },
+            "delete": {
+                "help": "Delete the specified consumer set.",
+                "extra_args": [
+                    consumer_id_arg,
+                    yes_arg
+                ],
+                "resolver": consumers_delete,
             },
         },
     },

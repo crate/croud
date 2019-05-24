@@ -725,6 +725,51 @@ class TestConsumers(CommandTestCase):
             },
         )
 
+    def test_consumers_delete(self, mock_send, mock_load_config, capsys):
+        consumer_id = gen_uuid()
+        argv = ["croud", "consumers", "delete", "--consumer-id", consumer_id]
+        with mock.patch("builtins.input", side_effect=["YES"]) as mock_input:
+            self.assertRest(
+                mock_send,
+                argv,
+                RequestMethod.DELETE,
+                f"/api/v2/consumers/{consumer_id}/",
+            )
+            mock_input.assert_called_once_with(
+                "Are you sure you want to delete the consumer? [yN] "
+            )
+
+        out, _ = capsys.readouterr()
+        assert "Consumer deleted." in out
+
+    def test_consumers_delete_flag(self, mock_send, mock_load_config, capsys):
+        consumer_id = gen_uuid()
+        argv = ["croud", "consumers", "delete", "--consumer-id", consumer_id, "-y"]
+        with mock.patch("builtins.input", side_effect=["y"]) as mock_input:
+            self.assertRest(
+                mock_send,
+                argv,
+                RequestMethod.DELETE,
+                f"/api/v2/consumers/{consumer_id}/",
+            )
+            mock_input.assert_not_called()
+
+        out, _ = capsys.readouterr()
+        assert "Consumer deleted." in out
+
+    def test_consumers_delete_aborted(self, mock_send, mock_load_config, capsys):
+        consumer_id = gen_uuid()
+        argv = ["croud", "consumers", "delete", "--consumer-id", consumer_id]
+        with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
+            self.execute(argv)
+            mock_send.assert_not_called()
+            mock_input.assert_called_once_with(
+                "Are you sure you want to delete the consumer? [yN] "
+            )
+
+        out, _ = capsys.readouterr()
+        assert "Consumer deletion cancelled." in out
+
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send")
