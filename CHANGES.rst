@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.12.2 - 2019/05/24
+===================
+
 - Fix client session so it stores the refreshed access token in the
   configuration. This prevents the server from refreshing the access token sent
   by the client in case it was already expired.
