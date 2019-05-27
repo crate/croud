@@ -49,8 +49,9 @@ def clusters_list(args: Namespace) -> None:
 
 def clusters_deploy(args: Namespace) -> None:
     """
-    Deploys a new cluster CrateDB cluster.
+    Deploys a new CrateDB cluster.
     """
+
     body = {
         "crate_version": args.version,
         "name": args.cluster_name,
@@ -65,3 +66,16 @@ def clusters_deploy(args: Namespace) -> None:
     client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
     client.send(RequestMethod.POST, "/api/v2/clusters/", body=body)
     client.print(keys=["id", "name", "fqdn", "url"])
+
+
+def clusters_scale(args: Namespace) -> None:
+    """
+    Scale an existing CrateDB cluster.
+    """
+
+    body = {"project_id": args.project_id, "product_unit": args.unit}
+    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client.send(
+        RequestMethod.PUT, f"/api/v2/clusters/{args.cluster_id}/scale/", body=body
+    )
+    client.print(keys=["id", "name", "num_nodes"])

@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added ``clusters scale`` command to scale existing clusters.
+
 - Added ``consumers delete`` command to delete existing consumers.
 
 - Added ``croud products list`` command to list all available products
