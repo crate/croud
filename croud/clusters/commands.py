@@ -21,6 +21,7 @@ from argparse import Namespace
 
 from croud.rest import Client
 from croud.session import RequestMethod
+from croud.util import require_confirmation
 
 
 def clusters_list(args: Namespace) -> None:
@@ -79,3 +80,13 @@ def clusters_scale(args: Namespace) -> None:
         RequestMethod.PUT, f"/api/v2/clusters/{args.cluster_id}/scale/", body=body
     )
     client.print(keys=["id", "name", "num_nodes"])
+
+
+@require_confirmation(
+    "Are you sure you want to delete the cluster?",
+    cancel_msg="Cluster deletion cancelled.",
+)
+def clusters_delete(args: Namespace) -> None:
+    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client.send(RequestMethod.DELETE, f"/api/v2/clusters/{args.cluster_id}/")
+    client.print("Cluster deleted.")

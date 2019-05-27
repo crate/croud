@@ -244,6 +244,50 @@ class TestClusters(CommandTestCase):
             body={"project_id": self.project_id, "product_unit": unit},
         )
 
+    @mock.patch.object(Client, "send")
+    def test_clusters_delete(self, mock_send, mock_run, mock_load_config, capsys):
+        cluster_id = gen_uuid()
+        argv = ["croud", "clusters", "delete", "--cluster-id", cluster_id]
+        with mock.patch("builtins.input", side_effect=["yes"]) as mock_input:
+            self.assertRest(
+                mock_send, argv, RequestMethod.DELETE, f"/api/v2/clusters/{cluster_id}/"
+            )
+            mock_input.assert_called_once_with(
+                "Are you sure you want to delete the cluster? [yN] "
+            )
+
+        out, _ = capsys.readouterr()
+        assert "Cluster deleted." in out
+
+    @mock.patch.object(Client, "send")
+    def test_clusters_delete_flag(self, mock_send, mock_run, mock_load_config, capsys):
+        cluster_id = gen_uuid()
+        argv = ["croud", "clusters", "delete", "--cluster-id", cluster_id, "-y"]
+        with mock.patch("builtins.input", side_effect=["y"]) as mock_input:
+            self.assertRest(
+                mock_send, argv, RequestMethod.DELETE, f"/api/v2/clusters/{cluster_id}/"
+            )
+            mock_input.assert_not_called()
+
+        out, _ = capsys.readouterr()
+        assert "Cluster deleted." in out
+
+    @mock.patch.object(Client, "send")
+    def test_clusters_delete_aborted(
+        self, mock_send, mock_run, mock_load_config, capsys
+    ):
+        cluster_id = gen_uuid()
+        argv = ["croud", "clusters", "delete", "--cluster-id", cluster_id]
+        with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
+            self.execute(argv)
+            mock_send.assert_not_called()
+            mock_input.assert_called_once_with(
+                "Are you sure you want to delete the cluster? [yN] "
+            )
+
+        out, _ = capsys.readouterr()
+        assert "Cluster deletion cancelled." in out
+
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "run", return_value={"data": []})

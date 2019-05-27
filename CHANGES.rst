@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added ``clusters delete`` command to delete existing clusters.
+
 - Added ``clusters scale`` command to scale existing clusters.
 
 - Added ``consumers delete`` command to delete existing consumers.

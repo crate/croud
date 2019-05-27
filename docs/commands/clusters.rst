@@ -66,7 +66,6 @@ Example
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        1 | 3.2.6        | 952cd102-91c1-4837-962a-12ecb71a6ba8 | default     | my-first-crate-cluster.eastus.azure.cratedb.net. |
    +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
 
-
 ``clusters scale``
 ==================
 
@@ -90,5 +89,22 @@ Example
    |--------------------------------------+------------------------+----------+
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        5 |
    +--------------------------------------+------------------------+----------+
+
+``clusters delete``
+===================
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters delete
+
+Example
+-------
+
+.. code-block:: console
+   sh$ croud clusters delete \
+       --cluster-id dc40090f-e1df-4974-b751-9fc27c824368
+   Are you sure you want to delete the cluster? [yN] y
+   ==> Success: Cluster deleted.
 
 .. _string delimitation: https://en.wikipedia.org/wiki/Delimiter
