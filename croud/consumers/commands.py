@@ -114,6 +114,6 @@ def consumers_edit(args: Namespace) -> None:
     cancel_msg="Consumer deletion cancelled.",
 )
 def consumers_delete(args: Namespace) -> None:
-    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
     client.send(RequestMethod.DELETE, f"/api/v2/consumers/{args.consumer_id}/")
     client.print("Consumer deleted.")
