@@ -109,4 +109,37 @@ Example
    Are you sure you want to delete the cluster? [yN] y
    ==> Success: Cluster deleted.
 
+.. note::
+
+   After deleting a cluster, existing backups will remain for 30 days since the
+   last time a backup was made. While you won't be able to restore these
+   backups yourself, you can reach out to our support_ to have them restore a
+   backup for you.
+
+   If you want a more recent backup, there are several options:
+
+   - `Create an AWS S3 repository`_ with a ``base_path`` of
+     ``/<project_id>/<cluster_id>/<name>``. ``<project_id>`` and
+     ``<cluster_id>`` refer to the "dashed" form of the corresponding ID
+     (``XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX``). ``<name>`` can be any
+     alphanumeric string. Afterwards, `create a snapshot`_ in your repository.
+
+   - Alternatively, you can create a backup as documented in the
+     `CrateDB documentation`_ on repositories and snapshots by e.g. providing your own
+     AWS S3 bucket and credentials.
+
+   - Lastly, the `COPY TO SQL statement`_ can be used to export a table to an
+     AWS S3 bucket as well.
+
+.. important::
+
+   When you provide your own external storage, please ensure that the location
+   is not world readable or writable to prevent unauthorized access to your
+   data!
+
+.. _support: support@crate.io
+.. _Create an AWS S3 repository: https://crate.io/docs/crate/reference/en/latest/sql/statements/create-repository.html
+.. _create a snapshot: https://crate.io/docs/crate/reference/en/latest/sql/statements/create-snapshot.html
+.. _CrateDB documentation: https://crate.io/docs/crate/reference/en/latest/admin/snapshots.html
+.. _COPY TO SQL statement: https://crate.io/docs/crate/reference/en/latest/sql/statements/copy-to.html
 .. _string delimitation: https://en.wikipedia.org/wiki/Delimiter
