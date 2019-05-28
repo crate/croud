@@ -25,8 +25,8 @@ Run it::
 Git
 ---
 
-Alternatively, you can clone this repository, install it into a virtualenv and add the executable to your PATH
-environment variable::
+Alternatively, you can clone this repository, install it into a virtualenv and
+add the executable to your PATH environment variable::
 
     git clone git@github.com:crate/croud.git && cd croud/
     python3.6 -m venv env
@@ -55,20 +55,18 @@ fraction of tests with python3.6::
 Release
 =======
 
-This project uses `setuptools_scm`_ for managing the package version from scm
-metadata.
+#. Create a new branch named ``<prefix>/prepare-x.y.z``.
 
-1. Create a new branch named <prefix>/prepare-x.y.z
+#. Update the ``__version__`` in ``setup.py``.
 
-2. Add new section to ``CHANGES.rst`` with the version and release date in the
-   format ``x.y.z - yyyy/mm/dd``
+#. Add new section to ``CHANGES.rst`` with the version and release date in the
+   format ``x.y.z - yyyy/mm/dd``.
 
-3. Create a PR against ``master`` or version branch (e.g. ``0.1``).
+#. Create a PR against ``master`` or version branch (e.g. ``0.1``).
 
-4. After PR is merged, tag the release::
+#. After PR is merged, tag the release by running::
 
-    git tag -a "<VERSION>" -m "Tag for version <VERSION>"
-    git push --tags
+    ./dev/tools/create_tag.sh
 
 
 Upload to `PyPI`_
@@ -82,7 +80,6 @@ See the instructions for `Generating distribution archives`_ for more details.
     for experimentation and testing.
 
 .. _pytest: https://docs.pytest.org/en/latest/
-.. _setuptools_scm: https://github.com/pypa/setuptools_scm
 .. _tox: https://tox.readthedocs.io
 .. _Generating distribution archives: https://packaging.python.org/tutorials/packaging-projects/#generating-distribution-archives
 .. _PyPI: https://pypi.org/project/croud/

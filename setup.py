@@ -19,7 +19,10 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+from pkg_resources.extern.packaging.version import Version
 from setuptools import find_packages, setup
+
+__version__ = Version("0.14.dev0")
 
 try:
     with open("README.rst", "r", encoding="utf-8") as f:
@@ -35,6 +38,7 @@ setup(
     url="https://github.com/crate/croud",
     description="A command line interface for CrateDB Cloud",
     long_description=readme,
+    version=str(__version__),
     entry_points={"console_scripts": ["croud = croud.__main__:main"]},
     packages=find_packages(),
     install_requires=[
@@ -61,6 +65,4 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
-    use_scm_version=True,
-    setup_requires=["setuptools_scm"],
 )
