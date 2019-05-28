@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.12.3 - 2019/05/28
+===================
+
 - Fixed region support in ``consumers edit`` command.
 
 0.12.2 - 2019/05/24
