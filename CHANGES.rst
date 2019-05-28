@@ -5,8 +5,6 @@ Changes for croud
 Unreleased
 ==========
 
-- Fixed region support in ``consumers edit`` command.
-
 - Added ``clusters delete`` command to delete existing clusters.
 
 - Added ``clusters scale`` command to scale existing clusters.
@@ -14,7 +12,12 @@ Unreleased
 - Added ``consumers delete`` command to delete existing consumers.
 
 - Added ``croud products list`` command to list all available products
- in the current region.
+  in the current region.
+
+0.12.3 - 2019/05/28
+===================
+
+- Fixed region support in ``consumers edit`` command.
 
 0.12.2 - 2019/05/24
 ===================
