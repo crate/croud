@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.13.0 - 2019/05/28
+===================
+
 - Added ``clusters delete`` command to delete existing clusters.
 
 - Added ``clusters scale`` command to scale existing clusters.
