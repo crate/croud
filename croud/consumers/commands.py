@@ -102,7 +102,7 @@ def consumers_edit(args: Namespace) -> None:
 
     if config:
         body["config"] = config
-    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
     client.send(
         RequestMethod.PATCH, f"/api/v2/consumers/{args.consumer_id}/", body=body
     )
