@@ -5,6 +5,11 @@ Changes for croud
 Unreleased
 ==========
 
+0.13.1 - 2019/05/29
+===================
+
+- Updated ``clusters delete`` documentation.
+
 0.13.0 - 2019/05/28
 ===================
 
