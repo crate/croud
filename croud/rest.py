@@ -105,7 +105,7 @@ class Client:
                 print_format(self._error, "json")
             return
 
-        if self._data is None or len(self._data) == 0:
+        if self._data is None:
             message = success_message or "Success."
             print_success(message)
             return
