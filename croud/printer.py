@@ -93,11 +93,15 @@ class TableFormatPrinter(FormatPrinter):
         # |-----+-----|
         # | bar |   2 |
         # +-----+-----+
-        headers = list(map(str, rows[0].keys()))
+
+        headers = list(map(str, rows[0].keys())) if len(rows) else self.keys
+        if headers is None:
+            return ""
         values = [
             [self._transform_record_value(row[header]) for header in headers]
             for row in rows
         ]
+
         return tabulate(values, headers=headers, tablefmt="psql", missingval="NULL")
 
     def _filter_record(self, data: dict, keys: List[str]) -> JsonDict:

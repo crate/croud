@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Fixed an issue that caused empty query results to print "Success" to
+  the console instead of an empty table.
+
 0.13.1 - 2019/05/29
 ===================
 

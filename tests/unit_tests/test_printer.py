@@ -54,6 +54,17 @@ def test_json_format(rows, expected):
     (
         (None, ["what", "ever"], ""),
         ({}, ["what", "ever"], ""),
+        ([], [], ""),
+        (
+            [],
+            ["what", "ever"],
+            (
+                "+--------+--------+\n"
+                "| what   | ever   |\n"
+                "|--------+--------|\n"
+                "+--------+--------+"
+            ),
+        ),
         (
             {"a": "foo", "b": 1, "c": True},
             None,
