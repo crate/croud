@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added ``clusters upgrade`` command to update an existing cluster to a later
+  version.
+
 0.13.2 - 2019/06/04
 ===================
 

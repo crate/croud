@@ -90,6 +90,29 @@ Example
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        5 |
    +--------------------------------------+------------------------+----------+
 
+``clusters upgrade``
+====================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters upgrade
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud clusters upgrade \
+       --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
+       --version 3.3.3
+   +--------------------------------------+------------------------+---------------+
+   | id                                   | name                   | crate_version |
+   |--------------------------------------+------------------------+---------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |         3.3.3 |
+   +--------------------------------------+------------------------+---------------+
+
 ``clusters delete``
 ===================
 

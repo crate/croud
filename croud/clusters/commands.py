@@ -82,6 +82,19 @@ def clusters_scale(args: Namespace) -> None:
     client.print(keys=["id", "name", "num_nodes"])
 
 
+def clusters_upgrade(args: Namespace) -> None:
+    """
+    Upgrade an existing CrateDB Cluster to a later version.
+    """
+
+    body = {"crate_version": args.version}
+    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client.send(
+        RequestMethod.PUT, f"/api/v2/clusters/{args.cluster_id}/upgrade/", body=body
+    )
+    client.print(keys=["id", "name", "crate_version"])
+
+
 @require_confirmation(
     "Are you sure you want to delete the cluster?",
     cancel_msg="Cluster deletion cancelled.",

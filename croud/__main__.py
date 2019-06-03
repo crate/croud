@@ -28,6 +28,7 @@ from croud.clusters.commands import (
     clusters_deploy,
     clusters_list,
     clusters_scale,
+    clusters_upgrade,
 )
 from croud.cmd import (
     cluster_id_arg,
@@ -297,7 +298,16 @@ command_tree = {
                 ],
                 "resolver": clusters_scale,
             },
-
+            "upgrade": {
+                "help": "Upgrade an existing CrateDB cluster to a later version.",
+                "extra_args": [
+                    lambda req_opt_group, opt_opt_group: cluster_id_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    crate_version_arg,
+                ],
+                "resolver": clusters_upgrade
+            },
             "delete": {
                 "help": "Delete the specified cluster.",
                 "extra_args": [
