@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.13.2 - 2019/06/04
+===================
+
 - Made the ``config set`` command print out a help when no attributes are set.
 
 - Removed unneeded ``--project-id`` argument from ``clusters scale`` command.
