@@ -14,6 +14,10 @@ Croud
     :target: https://crate.io/docs/cloud/en/latest/
     :alt: Documentation
 
+.. image:: https://coveralls.io/repos/github/crate/croud/badge.svg?branch=master
+    :target: https://coveralls.io/github/crate/croud?branch=master
+    :alt: Coverage
+
 |
 
 *Croud* is a *command-line interface* (CLI) tool for `CrateDB Cloud`_ ☁.

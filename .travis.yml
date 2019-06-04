@@ -16,5 +16,8 @@ install:
   - pip install pytest-cov
 script:
   - pytest --cov croud -vvv
+after_success:
+  - pip install coveralls
+  - coveralls
 notifications:
   email: false
