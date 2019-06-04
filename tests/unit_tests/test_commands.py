@@ -225,23 +225,13 @@ class TestClusters(CommandTestCase):
     def test_scale_cluster(self, mock_send, mock_run, mock_load_config):
         unit = 1
         cluster_id = gen_uuid()
-        argv = [
-            "croud",
-            "clusters",
-            "scale",
-            "--project-id",
-            self.project_id,
-            "--cluster-id",
-            cluster_id,
-            "--unit",
-            "1",
-        ]
+        argv = ["croud", "clusters", "scale", "--cluster-id", cluster_id, "--unit", "1"]
         self.assertRest(
             mock_send,
             argv,
             RequestMethod.PUT,
             f"/api/v2/clusters/{cluster_id}/scale/",
-            body={"project_id": self.project_id, "product_unit": unit},
+            body={"product_unit": unit},
         )
 
     @mock.patch.object(Client, "send")

@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Removed unneeded ``--project-id`` argument from ``clusters scale`` command.
+
 - Fixed an issue that caused empty query results to print "Success" to
   the console instead of an empty table.
 
