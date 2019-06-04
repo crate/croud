@@ -288,9 +288,6 @@ command_tree = {
             "scale": {
                 "help": "Scale an existing CrateDB cluster.",
                 "extra_args": [
-                    lambda req_opt_group, opt_opt_group: project_id_arg(
-                        req_opt_group, opt_opt_group, True
-                    ),
                     lambda req_opt_group, opt_opt_group: cluster_id_arg(
                         req_opt_group, opt_opt_group, True
                     ),

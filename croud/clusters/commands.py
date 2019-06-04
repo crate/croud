@@ -74,7 +74,7 @@ def clusters_scale(args: Namespace) -> None:
     Scale an existing CrateDB cluster.
     """
 
-    body = {"project_id": args.project_id, "product_unit": args.unit}
+    body = {"product_unit": args.unit}
     client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
     client.send(
         RequestMethod.PUT, f"/api/v2/clusters/{args.cluster_id}/scale/", body=body
