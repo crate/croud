@@ -19,7 +19,7 @@
 
 import textwrap
 import uuid
-from argparse import Namespace
+from argparse import ArgumentParser, Namespace
 from unittest import mock
 
 import pytest
@@ -97,6 +97,17 @@ class TestConfigSet:
         mock_write_config.assert_called_once_with(config)
 
         config["region"] = "bregenz.a1"
+
+    @mock.patch("croud.config.write_config")
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+    def test_set_no_arguments(self, mock_load_config, mock_write_config, capsys):
+        config = Configuration.DEFAULT_CONFIG
+        config["auth"]["current_context"] = "prod"
+
+        config_set(Namespace(), parser=ArgumentParser(usage="Some help text"))
+        out, _ = capsys.readouterr()
+        assert "Some help text" in out
+        mock_write_config.assert_not_called()
 
 
 def assert_query(mock_print, expected):

@@ -19,6 +19,8 @@
 
 
 import argparse
+import functools
+import inspect
 import sys
 
 from croud import __version__
@@ -134,7 +136,11 @@ def add_subparser(parser, tree, name="__root__"):
             add_subparser(sub, _tree, sub.prog)
     else:
         add_default_args(parser)
-        parser.set_defaults(resolver=tree["resolver"])
+        resolver = tree["resolver"]
+        signature = inspect.signature(resolver)
+        if "parser" in signature.parameters:
+            resolver = functools.partial(resolver, parser=parser)
+        parser.set_defaults(resolver=resolver)
 
 
 def create_parser(tree):
