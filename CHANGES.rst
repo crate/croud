@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Made the ``config set`` command print out a help when no attributes are set.
+
 - Removed unneeded ``--project-id`` argument from ``clusters scale`` command.
 
 - Fixed an issue that caused empty query results to print "Success" to

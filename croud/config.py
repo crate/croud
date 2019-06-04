@@ -178,10 +178,13 @@ def config_get(args: Namespace):
     print_format([{args.get: value}], args.output_fmt or fmt)
 
 
-def config_set(args: Namespace):
+def config_set(args: Namespace, parser=None):
     """
     Sets a default configuration setting
     """
+    if parser and all(val is None for val in vars(args).values()):
+        parser.print_help()
+        return
 
     for key in vars(args):
         setting = getattr(args, key)
