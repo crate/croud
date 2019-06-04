@@ -50,10 +50,7 @@ setup(
         "tabulate==0.8.2",
         "schema==0.6.8",
     ],
-    extras_require={
-        "testing": ["tox==3.6.1", "black==18.9b0"],
-        "development": ["black==18.9b0"],
-    },
+    extras_require={"testing": ["tox==3.6.1"], "development": ["black==19.3b0"]},
     python_requires=">=3.6",
     classifiers=[
         "Development Status :: 4 - Beta",

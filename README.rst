@@ -2,6 +2,10 @@
 Croud
 =====
 
+.. image:: https://travis-ci.org/crate/croud.svg?branch=master
+    :target: https://travis-ci.org/crate/croud
+    :alt: Travis CI
+
 .. image:: https://badge.fury.io/py/croud.svg
     :target: http://badge.fury.io/py/croud
     :alt: Version
