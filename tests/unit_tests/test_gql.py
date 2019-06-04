@@ -20,7 +20,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import asyncio
-from argparse import Namespace
+from argparse import ArgumentParser, Namespace
 from unittest.mock import patch
 
 import pytest
@@ -34,6 +34,7 @@ from croud.gql import Query, print_query
 )
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 def test_env_set(mock_load_config, input, expected):
+    input._subparser = ArgumentParser()
     query = Query("{}", input)
     assert query._env == expected
 
@@ -48,6 +49,7 @@ def test_env_set(mock_load_config, input, expected):
 )
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 def test_output_fmt_set(mock_load_config, input, expected):
+    input._subparser = ArgumentParser()
     query = Query("{}", input)
     assert query._output_fmt == expected
 
@@ -62,6 +64,7 @@ def test_output_fmt_set(mock_load_config, input, expected):
 )
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 def test_region_set(mock_load_config, input, expected):
+    input._subparser = ArgumentParser()
     query = Query("{}", input)
     assert query._region == expected
 

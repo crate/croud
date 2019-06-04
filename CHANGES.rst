@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Made the ``config set`` command print out a help when no attributes are set.
+
 - Fixed an issue that caused empty query results to print "Success" to
   the console instead of an empty table.
 

@@ -183,6 +183,13 @@ def config_set(args: Namespace):
     Sets a default configuration setting
     """
 
+    subparser = args._subparser
+    del args._subparser
+
+    if all(val is None for val in vars(args).values()):
+        subparser.print_help()
+        return
+
     for key in vars(args):
         setting = getattr(args, key)
 

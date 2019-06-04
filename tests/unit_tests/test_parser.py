@@ -162,8 +162,11 @@ Optional Arguments:
 
         argv = ["cmd"]
         args = parser.parse_args(argv)
+        subparser = parser._subparsers._group_actions[0].choices["cmd"]
         assert args.resolver == noop
-        assert args == Namespace(env=None, output_fmt=None, region=None, resolver=noop)
+        assert args == Namespace(
+            env=None, output_fmt=None, region=None, resolver=noop, _subparser=subparser
+        )
 
     def test_commands_with_args(self):
         tree = {

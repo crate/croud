@@ -19,7 +19,7 @@
 
 import textwrap
 import uuid
-from argparse import Namespace
+from argparse import ArgumentParser, Namespace
 from unittest import mock
 
 import pytest
@@ -83,8 +83,9 @@ class TestConfigSet:
     def test_set_env(self, mock_load_config, mock_write_config):
         config = Configuration.DEFAULT_CONFIG
         config["auth"]["current_context"] = "prod"
+        parser = ArgumentParser()
 
-        config_set(Namespace(env="prod"))
+        config_set(Namespace(env="prod", _subparser=parser))
         mock_write_config.assert_called_once_with(config)
 
     @mock.patch("croud.config.write_config")
@@ -92,8 +93,9 @@ class TestConfigSet:
     def test_set_top_level_setting(self, mock_load_config, mock_write_config):
         config = Configuration.DEFAULT_CONFIG
         config["region"] = "eastus.azure"
+        parser = ArgumentParser()
 
-        config_set(Namespace(region="eastus.azure"))
+        config_set(Namespace(region="eastus.azure", _subparser=parser))
         mock_write_config.assert_called_once_with(config)
 
         config["region"] = "bregenz.a1"

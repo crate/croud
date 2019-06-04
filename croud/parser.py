@@ -134,7 +134,7 @@ def add_subparser(parser, tree, name="__root__"):
             add_subparser(sub, _tree, sub.prog)
     else:
         add_default_args(parser)
-        parser.set_defaults(resolver=tree["resolver"])
+        parser.set_defaults(resolver=tree["resolver"], _subparser=parser)
 
 
 def create_parser(tree):
