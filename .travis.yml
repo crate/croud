@@ -17,7 +17,8 @@ install:
 script:
   - pytest --cov croud -vvv
 after_success:
-  - pip install coveralls
+  - pip install coveralls codecov
   - coveralls
+  - codecov
 notifications:
   email: false
