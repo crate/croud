@@ -28,15 +28,12 @@ LOGOUT_PATH = "/oauth2/logout"
 
 
 def logout(args: Namespace) -> None:
-    if args.env is not None:
-        Configuration.override_context(args.env)
-
     loop = asyncio.get_event_loop()
-    env = Configuration.get_env()
+    env = args.env or Configuration.get_env()
     token = Configuration.get_token()
 
     loop.run_until_complete(make_request(env, token))
-    Configuration.set_token("")
+    Configuration.set_token("", env)
 
     print_info("You have been logged out.")
 

@@ -53,8 +53,6 @@ class Configuration:
         "region": "Region",
     }
 
-    current_context: str = ""
-
     @staticmethod
     def validate(config: dict) -> dict:
         schema = Schema(
@@ -98,9 +96,6 @@ class Configuration:
 
     @staticmethod
     def get_env() -> str:
-        if Configuration.current_context:
-            return Configuration.current_context
-
         config = load_config()
         return config["auth"]["current_context"]
 
@@ -115,20 +110,10 @@ class Configuration:
         return get_auth_context().get("token", "")
 
     @staticmethod
-    def set_token(token: str) -> None:
+    def set_token(token: str, env: str) -> None:
         config = load_config()
-
-        context = Configuration.current_context
-        if not context:
-            context = config["auth"]["current_context"]
-
-        config["auth"]["contexts"][context]["token"] = token
-
+        config["auth"]["contexts"][env]["token"] = token
         write_config(config)
-
-    @staticmethod
-    def override_context(env: str) -> None:
-        Configuration.current_context = env
 
 
 def create_default_config() -> None:
@@ -160,12 +145,8 @@ def write_config(config: dict) -> None:
 
 def get_auth_context() -> dict:
     config = load_config()
-
-    context = Configuration.current_context
-    if not context:
-        context = config["auth"]["current_context"]
-
-    return config["auth"]["contexts"][context]
+    env = config["auth"]["current_context"]
+    return config["auth"]["contexts"][env]
 
 
 def config_get(args: Namespace):

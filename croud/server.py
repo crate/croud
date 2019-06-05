@@ -18,10 +18,9 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import asyncio
+from typing import Callable
 
 from aiohttp import web
-
-from croud.config import Configuration
 
 
 class Server:
@@ -34,17 +33,18 @@ class Server:
     def __init__(self, loop: asyncio.AbstractEventLoop):
         self.loop = loop
 
-    def create_web_app(self) -> web.Application:
+    def create_web_app(self, on_token: Callable[[str], None]) -> web.Application:
         app = web.Application()
         app.add_routes([web.get("/", self.handle_session)])
         app.on_response_prepare.append(self.after_request)  # type: ignore
         self.runner = web.AppRunner(app)
+        self.on_token = on_token
         return app
 
     def handle_session(self, req: web.Request) -> web.Response:
         """Token handler that receives the session token from query param"""
         try:
-            Configuration.set_token(req.rel_url.query["token"])
+            self.on_token(req.rel_url.query["token"])
         except KeyError as ex:
             return web.Response(status=500, text=f"No query param {ex!s} in request")
         return web.Response(status=200, text=Server.LOGIN_MSG, content_type="text/html")

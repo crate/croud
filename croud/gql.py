@@ -19,6 +19,7 @@
 
 import asyncio
 from argparse import Namespace
+from functools import partial
 from typing import Dict, Optional
 
 from croud.config import Configuration
@@ -52,7 +53,10 @@ class Query:
 
     async def _fetch_data(self, body: str, variables: Optional[Dict]) -> JsonDict:
         async with HttpSession(
-            self._env, self._token, self._region, on_new_token=Configuration.set_token
+            self._env,
+            self._token,
+            self._region,
+            on_new_token=partial(Configuration.set_token, env=self._env),
         ) as session:
             resp = await session.fetch(
                 RequestMethod.POST,
