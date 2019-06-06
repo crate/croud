@@ -1,0 +1,18 @@
+---
+pull_request_rules:
+  - name: default
+    actions:
+      merge:
+        method: rebase
+        rebase_fallback: null
+        strict: true
+    conditions:
+      - label=ready-to-merge
+      - '#approved-reviews-by>=1'
+      - status-success=continuous-integration/travis-ci/pr
+      - status-success=ci/jenkins/pr_crate_croud
+  - name: Delete branch after merge
+    actions:
+      delete_head_branch: {}
+    conditions:
+      - merged
