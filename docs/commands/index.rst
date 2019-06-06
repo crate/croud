@@ -35,7 +35,7 @@ To get help for a specific command, you can append ``--help``:
    the ``prod`` and ``dev`` environments. This is an internal feature used by
    developers of the Croud CLI tool itself.
 
-.. rubric:: Available Commands
+.. rubric:: Available commands
 
 .. toctree::
    :maxdepth: 1
