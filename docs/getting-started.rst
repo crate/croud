@@ -70,4 +70,4 @@ Croud supports the following command-line options:
     Some Croud :ref:`commands <commands>` take additional options.
 
 .. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/
-.. _pip: https://pypi.python.org/pypi/pip
+.. _pip: https://pypi.org/project/pip/
