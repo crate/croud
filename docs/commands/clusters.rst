@@ -113,6 +113,10 @@ Example
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |         3.3.3 |
    +--------------------------------------+------------------------+---------------+
 
+.. note::
+
+   This command is only available for superusers.
+
 ``clusters delete``
 ===================
 
