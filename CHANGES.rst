@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Improved printing of error messages by including the error details returned
+  by the server.
+
 0.14.0 - 2019/06/06
 ===================
 

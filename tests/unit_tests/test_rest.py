@@ -112,14 +112,15 @@ def test_print_success(mock_print_format, mock_print_success, event_loop):
     )
 
 
-@mock.patch("croud.rest.print_error")
-def test_print_error(mock_print_error, event_loop):
+def test_print_error(capsys, event_loop):
     client = Client(env="dev", region="bregenz.a1", output_fmt="json", loop=event_loop)
 
     error = {"message": "Bad request.", "errors": {"key": "Error on 'key'"}}
     client._error = error
     client.print()
-    mock_print_error.assert_called_once_with("Bad request.")
+    captured = capsys.readouterr()
+    assert "Bad request." in captured.out
+    assert '"key": "Error on \'key\'"' in captured.out
 
 
 @mock.patch("croud.rest.print_format")
