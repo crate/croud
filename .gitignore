@@ -73,6 +73,7 @@ env/
 .idea
 
 # Sphinx documentation
-docs/_build/
-docs/out/
-docs/.idea
+*.lint
+docs/.build
+docs/.env
+docs/.style

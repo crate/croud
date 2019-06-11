@@ -2,7 +2,7 @@
 ``config``
 ==========
 
-Croud allows you to configure the the following variables:
+Croud allows you to configure the following variables:
 
 - The region via ``region``
 - The environment via ``env``

@@ -1,6 +1,6 @@
 from crate.theme.rtd.conf.cloud_cli import *
 
-exclude_patterns = ["out/**"]
+exclude_patterns = [".*", "*.lint"]
 
 # crate.theme sets html_favicon to favicon.png which causes a warning because
 # it should be a .ico and in addition there is no favicon.png in this project

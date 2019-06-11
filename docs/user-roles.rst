@@ -55,7 +55,7 @@ The admin of a project has the following privileges:
 * Privileges to manage project settings.
 * Privileges to add and remove users to and from a project. (The user has to
   be part of the organization)
-* Privileges to administer products (clusters, consumer, ...).
+* Privileges to administer products (clusters, consumer, …).
 
 .. _project-member:
 
