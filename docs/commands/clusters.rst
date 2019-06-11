@@ -55,7 +55,7 @@ Example
    sh$ croud clusters deploy \
        --product-name cratedb.az1 \
        --tier xs \
-       --name my-first-crate-cluster \
+       --cluster-name my-first-crate-cluster \
        --project-id 952cd102-91c1-4837-962a-12ecb71a6ba8 \
        --version 3.2.6 \
        --username default \
