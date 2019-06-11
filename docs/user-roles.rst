@@ -17,12 +17,12 @@ This is an overview over the user roles users can have in the `CrateDB Cloud`_.
 
 .. _organization-roles:
 
-Organization Roles
+Organization roles
 ==================
 
 .. _org-admin:
 
-Organization Admin
+Organization admin
 ------------------
 
 The admin of an organization has the following privileges:
@@ -35,19 +35,19 @@ The admin of an organization has the following privileges:
 
 .. _org-member:
 
-Organization Member
+Organization member
 -------------------
 
 * Organization member has read-only access to the organization (settings, users).
 
 .. _project-roles:
 
-Project Roles
+Project roles
 =============
 
 .. _project-admin:
 
-Project Admin
+Project admin
 -------------
 
 The admin of a project has the following privileges:
@@ -59,7 +59,7 @@ The admin of a project has the following privileges:
 
 .. _project-member:
 
-Project Member
+Project member
 --------------
 
 * Project member has read-only access to the project (settings, products,

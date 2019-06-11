@@ -50,7 +50,7 @@ issuing any further commands.
 From here, you can go on to use :ref:`commands <commands>` to manage your
 configuration values, projects, clusters, organizations, and users.
 
-Command-Line Options
+Command-line options
 ====================
 
 Croud supports the following command-line options:
