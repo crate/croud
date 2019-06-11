@@ -246,6 +246,27 @@ class TestClusters(CommandTestCase):
         )
 
     @mock.patch.object(Client, "send")
+    def test_upgrade_cluster(self, mock_send, mock_run, mock_load_config):
+        version = "3.2.6"
+        cluster_id = gen_uuid()
+        argv = [
+            "croud",
+            "clusters",
+            "upgrade",
+            "--cluster-id",
+            cluster_id,
+            "--version",
+            version,
+        ]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.PUT,
+            f"/api/v2/clusters/{cluster_id}/upgrade/",
+            body={"crate_version": version},
+        )
+
+    @mock.patch.object(Client, "send")
     def test_clusters_delete(self, mock_send, mock_run, mock_load_config, capsys):
         cluster_id = gen_uuid()
         argv = ["croud", "clusters", "delete", "--cluster-id", cluster_id]

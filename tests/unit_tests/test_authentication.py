@@ -17,6 +17,7 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import copy
 from argparse import Namespace
 from typing import Dict
 from unittest import mock
@@ -24,7 +25,7 @@ from unittest import mock
 import pytest
 
 from croud.config import Configuration
-from croud.login import _login_url, _set_login_env, login
+from croud.login import _login_url, login
 from croud.logout import _logout_url, logout
 from croud.server import Server
 
@@ -35,7 +36,7 @@ class MockConfig:
     """
 
     def __init__(self, config: Dict) -> None:
-        self.conf = config
+        self.conf = copy.deepcopy(config)
 
     def read_config(self) -> Dict:
         return self.conf
@@ -134,16 +135,6 @@ class TestLogin:
             "Login only works with a valid browser installed."
         )
         assert e_info.value.code == 1
-
-    @mock.patch("croud.config.Configuration.override_context")
-    @mock.patch("croud.config.Configuration.get_env", return_value="dev")
-    def test_login_env_from_current_context(self, mock_get_env, mock_override_context):
-        env = _set_login_env(None)
-        assert env == "dev"
-
-    def test_login_env_override_context_from_argument(self):
-        env = _set_login_env("prod")
-        assert env == "prod"
 
     def test_login_urls_from_valid_envs(self):
         url = _login_url("dev")

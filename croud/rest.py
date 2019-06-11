@@ -18,6 +18,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import asyncio
+from functools import partial
 from typing import List, Optional, Union
 
 from aiohttp import ContentTypeError  # type: ignore
@@ -76,7 +77,7 @@ class Client:
             self._env,
             Configuration.get_token(),
             self._region,
-            on_new_token=Configuration.set_token,
+            on_new_token=partial(Configuration.set_token, env=self._env),
         ) as session:
             return await session.fetch(method, endpoint, body, params)
 

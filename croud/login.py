@@ -19,7 +19,7 @@
 
 import asyncio
 from argparse import Namespace
-from typing import Optional
+from functools import partial
 
 from croud.config import Configuration
 from croud.printer import print_error, print_info
@@ -36,12 +36,13 @@ def login(args: Namespace) -> None:
     """
 
     if can_launch_browser():
+        env = args.env or Configuration.get_env()
+
         loop = asyncio.get_event_loop()
         server = Server(loop)
-        server.create_web_app()
+        server.create_web_app(partial(Configuration.set_token, env=env))
         loop.run_until_complete(server.start())
 
-        env = _set_login_env(args.env)
         open_page_in_browser(_login_url(env))
         print_info("A browser tab has been launched for you to login.")
 
@@ -60,12 +61,6 @@ def login(args: Namespace) -> None:
         exit(1)
 
     print_info("Login successful.")
-
-
-def _set_login_env(env: Optional[str]) -> str:
-    env = Configuration.get_env() if env is None else env
-    Configuration.override_context(env)
-    return env
 
 
 def _login_url(env: str) -> str:

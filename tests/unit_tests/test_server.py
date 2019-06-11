@@ -31,7 +31,7 @@ class TestLocalServer(object):
     def test_token_handler_and_login(self, mock_write_token):
         with loop_context() as loop:
             server = Server(loop)
-            app = server.create_web_app()
+            app = server.create_web_app(on_token=lambda x: None)
             client = TestClient(TestServer(app), loop=loop)
             loop.run_until_complete(client.start_server())
 
@@ -49,7 +49,7 @@ class TestLocalServer(object):
     def test_token_missing_for_login(self, mock_write_token):
         with loop_context() as loop:
             server = Server(loop)
-            app = server.create_web_app()
+            app = server.create_web_app(on_token=lambda x: None)
             client = TestClient(TestServer(app), loop=loop)
             loop.run_until_complete(client.start_server())
 
