@@ -338,131 +338,55 @@ class TestOrganizations(CommandTestCase):
         argv = ["croud", "organizations", "list"]
         self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/organizations/")
 
-    def test_add_user(self, mock_run, mock_load_config):
-        expected_body = textwrap.dedent(
-            """
-            mutation addUserToOrganization($input: AddUserToOrganizationInput!) {
-              addUserToOrganization(input: $input) {
-                user {
-                  uid
-                  email
-                  organizationId
-                }
-              }
-            }
-        """
-        ).strip()
-        expected_vars = {"input": {"user": "test@crate.io", "organizationId": None}}
-
-        argv = ["croud", "organizations", "users", "add", "--user", "test@crate.io"]
-        self.assertGql(mock_run, argv, expected_body, expected_vars)
-
-    def test_add_user_fqn(self, mock_run, mock_load_config):
-        expected_body = textwrap.dedent(
-            """
-            mutation addUserToOrganization($input: AddUserToOrganizationInput!) {
-              addUserToOrganization(input: $input) {
-                user {
-                  uid
-                  email
-                  organizationId
-                }
-              }
-            }
-        """
-        ).strip()
-        expected_vars = {
-            "input": {
-                "roleFqn": "org_admin",
-                "user": "test@crate.io",
-                "organizationId": None,
-            }
-        }
-
+    @mock.patch.object(Client, "send")
+    def test_add_user(self, mock_send, mock_run, mock_load_config):
+        org_id = "org-c"
+        user_id = gen_uuid()
+        role = "org_member"
         argv = [
             "croud",
             "organizations",
             "users",
             "add",
-            "--user",
-            "test@crate.io",
-            "--role",
-            "org_admin",
-        ]
-        self.assertGql(mock_run, argv, expected_body, expected_vars)
-
-    def test_add_user_org_id(self, mock_run, mock_load_config):
-        expected_body = textwrap.dedent(
-            """
-            mutation addUserToOrganization($input: AddUserToOrganizationInput!) {
-              addUserToOrganization(input: $input) {
-                user {
-                  uid
-                  email
-                  organizationId
-                }
-              }
-            }
-        """
-        ).strip()
-        org_id = str(uuid.uuid4())
-        expected_vars = {"input": {"organizationId": org_id, "user": "test@crate.io"}}
-
-        argv = [
-            "croud",
-            "organizations",
-            "users",
-            "add",
-            "--user",
-            "test@crate.io",
             "--org-id",
             org_id,
+            "--user",
+            user_id,
+            "--role",
+            role,
         ]
-        self.assertGql(mock_run, argv, expected_body, expected_vars)
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.POST,
+            f"/api/v2/organizations/{org_id}/users/",
+            body={"user_id": user_id, "role_fqn": role},
+        )
 
-    def test_remove_user(self, mock_run, mock_load_config):
-        expected_body = textwrap.dedent(
-            """
-            mutation removeUserFromOrganization($input: RemoveUserFromOrganizationInput!) {
-              removeUserFromOrganization(input: $input) {
-                success
-              }
-            }
-        """  # noqa
-        ).strip()
-
-        user_id = str(uuid.uuid4())
-        expected_vars = {"input": {"user": user_id, "organizationId": None}}
-
-        argv = ["croud", "organizations", "users", "remove", "--user", user_id]
-        self.assertGql(mock_run, argv, expected_body, expected_vars)
-
-    def test_remove_user_org_id(self, mock_run, mock_load_config):
-        expected_body = textwrap.dedent(
-            """
-            mutation removeUserFromOrganization($input: RemoveUserFromOrganizationInput!) {
-              removeUserFromOrganization(input: $input) {
-                success
-              }
-            }
-        """  # noqa
-        ).strip()
-
-        user_id = str(uuid.uuid4())
-        org_id = str(uuid.uuid4())
-        expected_vars = {"input": {"user": user_id, "organizationId": org_id}}
-
+    @mock.patch.object(Client, "send")
+    def test_remove_user(self, mock_send, mock_run, mock_load_config):
+        org_id = "org-c"
+        user_id = gen_uuid()
         argv = [
             "croud",
             "organizations",
             "users",
             "remove",
-            "--user",
-            user_id,
             "--org-id",
             org_id,
+            "--user",
+            user_id,
         ]
-        self.assertGql(mock_run, argv, expected_body, expected_vars)
+        with mock.patch("builtins.input", side_effect=["YES"]) as mock_input:
+            self.assertRest(
+                mock_send,
+                argv,
+                RequestMethod.DELETE,
+                f"/api/v2/organizations/{org_id}/users/{user_id}/",
+            )
+            mock_input.assert_called_once_with(
+                "Are you sure you want to remove the user? [yN] "
+            )
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)

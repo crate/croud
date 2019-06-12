@@ -19,50 +19,31 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-
-import textwrap
 from argparse import Namespace
 
-from croud.gql import Query, print_query
+from croud.rest import Client
+from croud.session import RequestMethod
+from croud.util import require_confirmation
 
 
 def org_users_add(args: Namespace):
-    mutation = textwrap.dedent(
-        """
-        mutation addUserToOrganization($input: AddUserToOrganizationInput!) {
-          addUserToOrganization(input: $input) {
-            user {
-              uid
-              email
-              organizationId
-            }
-          }
-        }
-    """
-    ).strip()
-
-    vars = {"input": {"user": args.user, "organizationId": args.org_id}}
-    if args.role is not None:
-        vars["input"]["roleFqn"] = args.role
-
-    query = Query(mutation, args)
-    query.execute(vars)
-    print_query(query, "addUserToOrganization")
+    body = {"user_id": args.user, "role_fqn": args.role}
+    client = Client(env=args.env, region=args.region)
+    client.send(
+        RequestMethod.POST, f"/api/v2/organizations/{args.org_id}/users/", body=body
+    )
+    client.print(keys=["user_id", "organization_id", "role_fqn"])
 
 
+@require_confirmation(
+    "Are you sure you want to remove the user?",
+    cancel_msg="Removing user cancelled.",
+)
 def org_users_remove(args: Namespace):
-    mutation = textwrap.dedent(
-        """
-        mutation removeUserFromOrganization($input: RemoveUserFromOrganizationInput!) {
-          removeUserFromOrganization(input: $input) {
-            success
-          }
-        }
-    """
-    ).strip()
-
-    vars = {"input": {"user": args.user, "organizationId": args.org_id}}
-
-    query = Query(mutation, args)
-    query.execute(vars)
-    print_query(query, "removeUserFromOrganization")
+    client = Client(env=args.env, region=args.region)
+    client.send(
+        RequestMethod.DELETE, f"/api/v2/organizations/{args.org_id}/users/{args.user}/"
+    )
+    client.print(
+        f"The user with the id {args.user} was successfully removed from the org {args.org_id}"
+    )
