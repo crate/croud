@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Updated add and remove role from user for an organisation to REST.
+
 0.14.0 - 2019/06/06
 ===================
 

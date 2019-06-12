@@ -44,5 +44,6 @@ def org_users_remove(args: Namespace):
         RequestMethod.DELETE, f"/api/v2/organizations/{args.org_id}/users/{args.user}/"
     )
     client.print(
-        f"The user with the id {args.user} was successfully removed from the org {args.org_id}"
+        f"The user with the id {args.user} was successfully "
+        f"removed from the org {args.org_id}"
     )
