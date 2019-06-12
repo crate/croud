@@ -19,7 +19,8 @@
 
 from argparse import Namespace
 
-from croud.gql import Query, print_query
+from croud.rest import Client
+from croud.session import RequestMethod
 
 
 def project_user_add(args: Namespace) -> None:
@@ -27,40 +28,23 @@ def project_user_add(args: Namespace) -> None:
     Adds a user to a project.
     """
 
-    _query = f"""
-    mutation {{
-        addUserToProject(input: {{
-            projectId: "{args.project_id}",
-            user: "{args.user}"
-        }}) {{
-            success
-        }}
-    }}
-    """
+    client = Client.from_args(args)
 
-    query = Query(_query, args)
-    query.execute()
-    print_query(query, "addUserToProject", "Successfully added user to project.")
+    client.send(
+        RequestMethod.POST,
+        f"/api/v2/projects/{args.project_id}/users/",
+        body={"user": args.user, "role_fqn": args.role},
+    )
+    client.print(keys=["user_id", "project_id", "role_fqn"])
 
 
 def project_user_remove(args: Namespace) -> None:
     """
-    Removes a user to a project.
+    Removes a user from a project.
     """
 
-    _query = f"""
-    mutation {{
-        removeUserFromProject(input: {{
-            projectId: "{args.project_id}",
-            user: "{args.user}"
-        }}) {{
-            success
-        }}
-    }}
-    """
-
-    query = Query(_query, args)
-    query.execute()
-    print_query(
-        query, "removeUserFromProject", "Successfully removed user from project."
+    client = Client.from_args(args)
+    client.send(
+        RequestMethod.DELETE, f"/api/v2/projects/{args.project_id}/users/{args.user}/"
     )
+    client.print(success_message="Successfully removed user from project.")

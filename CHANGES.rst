@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- The response of the ``projects users add`` command changed from displaying only a success
+  message to displaying the data of the created user role.
+
 - Added ``projects delete`` command to delete existing projects.
 
 - Added ``organizations delete`` command to delete existing organizations.
