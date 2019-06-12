@@ -249,6 +249,9 @@ command_tree = {
                                 req_opt_group, opt_opt_group, True
                             ),
                             user_id_or_email_arg,
+                            lambda req_opt_group, opt_opt_group: role_fqn_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
                         ],
                         "resolver": project_user_add,
                     },

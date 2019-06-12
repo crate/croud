@@ -508,19 +508,14 @@ class TestProjects(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "run", return_value={"data": []})
+@mock.patch.object(Client, "send")
 class TestProjectsUsers(CommandTestCase):
-    def test_add(self, mock_run, mock_load_config):
-        expected_body = """
-    mutation {
-        addUserToProject(input: {
-            projectId: "project-id",
-            user: "user-email-or-id"
-        }) {
-            success
-        }
-    }
-    """
+    def test_add(self, mock_send, mock_load_config):
+        project_id = gen_uuid()
+
+        # uid or email would be possible for the backend
+        user = "test@crate.io"
+        role_fqn = "project_admin"
 
         argv = [
             "croud",
@@ -528,23 +523,25 @@ class TestProjectsUsers(CommandTestCase):
             "users",
             "add",
             "--project-id",
-            "project-id",
+            project_id,
             "--user",
-            "user-email-or-id",
+            user,
+            "--role",
+            role_fqn,
         ]
-        self.assertGql(mock_run, argv, expected_body)
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.POST,
+            f"/api/v2/projects/{project_id}/users/",
+            body={"user": user, "role_fqn": role_fqn},
+        )
 
-    def test_remove(self, mock_run, mock_load_config):
-        expected_body = """
-    mutation {
-        removeUserFromProject(input: {
-            projectId: "project-id",
-            user: "user-email-or-id"
-        }) {
-            success
-        }
-    }
-    """
+    def test_remove(self, mock_send, mock_load_config):
+        project_id = gen_uuid()
+
+        # uid or email would be possible for the backend
+        user = "test@crate.io"
 
         argv = [
             "croud",
@@ -552,11 +549,16 @@ class TestProjectsUsers(CommandTestCase):
             "users",
             "remove",
             "--project-id",
-            "project-id",
+            project_id,
             "--user",
-            "user-email-or-id",
+            user,
         ]
-        self.assertGql(mock_run, argv, expected_body)
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.DELETE,
+            f"/api/v2/projects/{project_id}/users/{user}/",
+        )
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
