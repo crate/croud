@@ -36,8 +36,7 @@ def org_users_add(args: Namespace):
 
 
 @require_confirmation(
-    "Are you sure you want to remove the user?",
-    cancel_msg="Removing user cancelled.",
+    "Are you sure you want to remove the user?", cancel_msg="Removing user cancelled."
 )
 def org_users_remove(args: Namespace):
     client = Client(env=args.env, region=args.region)
