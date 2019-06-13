@@ -20,49 +20,27 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 
-import textwrap
 from argparse import Namespace
 
-from croud.gql import Query, print_query
+from croud.rest import Client
+from croud.session import RequestMethod
 
 
 def org_users_add(args: Namespace):
-    mutation = textwrap.dedent(
-        """
-        mutation addUserToOrganization($input: AddUserToOrganizationInput!) {
-          addUserToOrganization(input: $input) {
-            user {
-              uid
-              email
-              organizationId
-            }
-          }
-        }
-    """
-    ).strip()
+    client = Client(env=args.env, output_fmt=args.output_fmt)
 
-    vars = {"input": {"user": args.user, "organizationId": args.org_id}}
-    if args.role is not None:
-        vars["input"]["roleFqn"] = args.role
-
-    query = Query(mutation, args)
-    query.execute(vars)
-    print_query(query, "addUserToOrganization")
+    client.send(
+        RequestMethod.POST,
+        f"/api/v2/organizations/{args.org_id}/users/",
+        body={"user_id": args.user, "role_fqn": args.role},
+    )
+    client.print(keys=["user_id", "role_fqn", "organization_id"])
 
 
 def org_users_remove(args: Namespace):
-    mutation = textwrap.dedent(
-        """
-        mutation removeUserFromOrganization($input: RemoveUserFromOrganizationInput!) {
-          removeUserFromOrganization(input: $input) {
-            success
-          }
-        }
-    """
-    ).strip()
+    client = Client(env=args.env, output_fmt=args.output_fmt)
 
-    vars = {"input": {"user": args.user, "organizationId": args.org_id}}
-
-    query = Query(mutation, args)
-    query.execute(vars)
-    print_query(query, "removeUserFromOrganization")
+    client.send(
+        RequestMethod.DELETE, f"/api/v2/organizations/{args.org_id}/users/{args.user}/"
+    )
+    client.print(success_message="Successfully removed user from organization.")

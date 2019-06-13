@@ -351,10 +351,10 @@ command_tree = {
                         "extra_args": [
                             user_id_or_email_arg,
                             lambda req_opt_group, opt_opt_group: role_fqn_arg(
-                                req_opt_group, opt_opt_group, False
+                                req_opt_group, opt_opt_group, True
                             ),
                             lambda req_opt_group, opt_opt_group: org_id_arg(
-                                req_opt_group, opt_opt_group, False
+                                req_opt_group, opt_opt_group, True
                             ),
                         ],
                         "resolver": org_users_add,
@@ -364,7 +364,7 @@ command_tree = {
                         "extra_args": [
                             user_id_or_email_arg,
                             lambda req_opt_group, opt_opt_group: org_id_arg(
-                                req_opt_group, opt_opt_group, False
+                                req_opt_group, opt_opt_group, True
                             ),
                         ],
                         "resolver": org_users_remove,

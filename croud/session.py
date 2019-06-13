@@ -24,6 +24,7 @@ from typing import Callable, Dict, Optional, Type
 
 import certifi
 from aiohttp import ClientResponse, ClientSession, TCPConnector  # type: ignore
+from yarl import URL
 
 from croud.printer import print_error
 
@@ -77,7 +78,7 @@ class HttpSession:
         body: dict = None,
         params: dict = None,
     ) -> ClientResponse:
-        url = self.url + endpoint
+        url = URL(self.url).with_path(endpoint)
         resp = await getattr(self.client, method.value)(
             url, json=body, allow_redirects=False, params=params
         )

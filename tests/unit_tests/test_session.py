@@ -24,6 +24,7 @@ import aiohttp
 import pytest
 from aiohttp.test_utils import loop_context
 from util.fake_server import FakeCrateDBCloud, FakeResolver
+from yarl import URL
 
 from croud.config import Configuration
 from croud.session import HttpSession, RequestMethod, cloud_url
@@ -71,6 +72,7 @@ class TestHttpSession:
                         "/graphql",
                         {"query": me_query, "variables": variables},
                     )
+                    assert resp.url == URL("https://cratedb.local/graphql")
                     assert resp.status == 200
 
                     data = await resp.json()
