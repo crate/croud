@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+- [Breaking] The ``organizations users add|remove`` commands now require the arguments
+  ``--user`` and ``--org-id``. Additionally the ``organizations users add`` command
+  requires the ``--role`` argument.
+
 - Improved printing of error messages by including the error details returned
   by the server.
 
