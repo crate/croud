@@ -21,6 +21,8 @@ import textwrap
 from argparse import Namespace
 
 from croud.gql import Query, print_query
+from croud.rest import Client
+from croud.session import RequestMethod
 from croud.util import clean_dict
 
 
@@ -59,22 +61,9 @@ def roles_list(args: Namespace) -> None:
     Lists all roles a user can be assigned to
     """
 
-    _query = textwrap.dedent(
-        """
-        query {
-            allRoles {
-                data {
-                    fqn
-                    friendlyName
-                }
-            }
-        }
-    """
-    ).strip()
-
-    query = Query(_query, args)
-    query.execute()
-    print_query(query, "allRoles")
+    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client.send(RequestMethod.GET, "/api/v2/roles/")
+    client.print(keys=["id", "name"])
 
 
 def roles_remove(args: Namespace) -> None:
