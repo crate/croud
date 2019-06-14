@@ -5,8 +5,6 @@ Changes for croud
 Unreleased
 ==========
 
-- Updated ``users roles list`` command to use the REST endpoint instead of GraphQL.
-
 - [Breaking] The ``organizations users add|remove`` commands now require the arguments
   ``--user`` and ``--org-id``. Additionally the ``organizations users add`` command
   requires the ``--role`` argument.
