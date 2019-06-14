@@ -534,22 +534,14 @@ class TestUsersRoles(CommandTestCase):
         ]
         self.assertGql(mock_run, argv, expected_body, expected_vars)
 
-    def test_list(self, mock_run, mock_load_config):
-        expected_body = textwrap.dedent(
-            """
-        query {
-            allRoles {
-                data {
-                    fqn
-                    friendlyName
-                }
-            }
-        }
-    """
-        ).strip()
 
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Client, "send")
+class TestUsersRolesREST(CommandTestCase):
+    def test_list(self, mock_send, mock_load_config):
         argv = ["croud", "users", "roles", "list"]
-        self.assertGql(mock_run, argv, expected_body)
+
+        self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/roles/")
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
