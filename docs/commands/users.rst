@@ -48,6 +48,21 @@ Example
 
    See :ref:`roles` for more information about the different roles.
 
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud users roles list
+   +----------------+---------------------+
+   | id             | name                |
+   |----------------+---------------------|
+   | org_admin      | Organization Admin  |
+   | org_member     | Organization Member |
+   | project_admin  | Project Admin       |
+   | project_member | Project Member      |
+   +----------------+---------------------+
+
 
 ``users roles add``
 -------------------
