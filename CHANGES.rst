@@ -5,9 +5,13 @@ Changes for croud
 Unreleased
 ==========
 
-- [Breaking] The ``organizations users add|remove`` commands now require the arguments
-  ``--user`` and ``--org-id``. Additionally the ``organizations users add`` command
-  requires the ``--role`` argument.
+- Fixed a bug that caused commands to always use the access token from the
+  ``current_context`` setting to be used, even though a context / environemnt
+  had been passed via ``--env``.
+
+- [Breaking] The ``organizations users add|remove`` commands now require the
+  arguments ``--user`` and ``--org-id``. Additionally the ``organizations users
+  add`` command requires the ``--role`` argument.
 
 - Improved printing of error messages by including the error details returned
   by the server.

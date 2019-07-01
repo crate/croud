@@ -33,9 +33,9 @@ DEFAULT_ENDPOINT = "/graphql"
 class Query:
     def __init__(self, query: str, args: Namespace, endpoint=DEFAULT_ENDPOINT) -> None:
         self._query = query
-        self._token = Configuration.get_token()
 
         self._env = args.env or Configuration.get_env()
+        self._token = Configuration.get_token(self._env)
         self._output_fmt = (
             hasattr(args, "output_fmt")  # certain commands do not have an output format
             and args.output_fmt

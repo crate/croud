@@ -106,8 +106,9 @@ class Configuration:
         write_config(config)
 
     @staticmethod
-    def get_token() -> str:
-        return get_auth_context().get("token", "")
+    def get_token(env: str) -> str:
+        config = load_config()
+        return config["auth"]["contexts"][env].get("token", "")
 
     @staticmethod
     def set_token(token: str, env: str) -> None:
@@ -141,12 +142,6 @@ def set_property(property: str, value: str):
 def write_config(config: dict) -> None:
     with open(Configuration.FILEPATH, "w", encoding="utf8") as f:
         yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
-
-
-def get_auth_context() -> dict:
-    config = load_config()
-    env = config["auth"]["current_context"]
-    return config["auth"]["contexts"][env]
 
 
 def config_get(args: Namespace):

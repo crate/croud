@@ -41,6 +41,7 @@ class Client:
         self, env: str = None, region: str = None, output_fmt: str = None, loop=None
     ):
         self._env = env or Configuration.get_env()
+        self._token = Configuration.get_token(self._env)
         self._region = region or Configuration.get_setting("region")
         self._output_fmt = output_fmt or Configuration.get_setting("output_fmt")
         self.loop = loop or asyncio.get_event_loop()
@@ -75,7 +76,7 @@ class Client:
     ) -> ClientResponse:
         async with HttpSession(
             self._env,
-            Configuration.get_token(),
+            self._token,
             self._region,
             on_new_token=partial(Configuration.set_token, env=self._env),
         ) as session:

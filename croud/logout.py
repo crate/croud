@@ -30,7 +30,7 @@ LOGOUT_PATH = "/oauth2/logout"
 def logout(args: Namespace) -> None:
     loop = asyncio.get_event_loop()
     env = args.env or Configuration.get_env()
-    token = Configuration.get_token()
+    token = Configuration.get_token(env)
 
     loop.run_until_complete(make_request(env, token))
     Configuration.set_token("", env)
