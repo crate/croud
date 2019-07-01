@@ -18,6 +18,13 @@
 # pursuant to the terms of the relevant commercial agreement.
 
 
+# This file provides a standard Crate documentation build system
+#
+# The most up-to-date version of this Makefile can be found in the
+# crate-docs-style repository:
+#
+#   https://github.com/crate/crate-docs-style/blob/master/docs/Makefile
+
 .EXPORT_ALL_VARIABLES:
 
 # `ROOT_RST_DIR` is where to look for RST files
@@ -28,12 +35,12 @@ PYTHON          := python3.7
 PIP             := $(ENV_BIN)/pip3.7
 SPHINXBUILD     := $(ENV_BIN)/sphinx-build
 SPHINXAUTOBUILD := $(ENV_BIN)/sphinx-autobuild
+AUTOBUILD_OPTS  := --ignore '.*' --ignore '*.lint'
 BUILD_DIR       := .build
 SPHINX_ARGS     := . $(BUILD_DIR)
 SPHINX_OPTS     := -W -n
-AUTOBUILD_OPTS  := --ignore '*.' --ignore '*.lint'
 STYLE_REPO      := https://github.com/crate/crate-docs-style.git
-STYLE_VERSION   := 0.1.3
+STYLE_VERSION   := 0.1.4
 STYLE_DIR       := .style
 # `STYLE_DIR_ROOT` is the path to `STYLE_DIR` from `ROOT_RST_DIR`
 STYLE_DIR_ROOT  := docs/$(STYLE_DIR)
@@ -44,7 +51,7 @@ FSWATCH         := fswatch
 # Default target
 .PHONY: help
 help:
-	@ printf 'Documentation Utils\n'
+	@ printf 'Crate Documentation Build System\n'
 	@ echo
 	@ printf 'Run `make <TARGET>`, where <TARGET> is one of:\n'
 	@ echo
@@ -114,7 +121,7 @@ lint-watch: $(STYLE_DIR)
 	done || true
 
 .PHONY: dev
-dev:
+dev: $(SPHINXAUTOBUILD) $(STYLE_DIR)
 	@ if test ! -x "`which $(FSWATCH)`"; then \
 	    printf '\033[31mYou must have fswatch installed.\033[00m\n'; \
 	    exit 1; \
