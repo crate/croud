@@ -3,6 +3,7 @@
 
 crate-docs-theme>=0.5.74
 sphinx-autobuild
+sphinx-sitemap
 
 # These versions should match the Read The Docs environment (please update if
 # you notice this is not the case)
