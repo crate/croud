@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+- Fixed a bug that caused commands to always use the access token from the
+  ``current_context`` setting to be used, even though a context / environemnt
+  had been passed via ``--env``.
+
 0.14.0 - 2019/06/06
 ===================
 

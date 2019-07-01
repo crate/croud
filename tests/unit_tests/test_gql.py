@@ -83,7 +83,7 @@ def test_region_set(mock_load_config, input, expected):
 def test_print_query_success_with_message(
     print_success, load_config, response, key, message, expected_message
 ):
-    query = Query("", Namespace(env="test"))
+    query = Query("", Namespace(env="dev"))
     query._response = response
 
     print_query(query, key, message)
@@ -106,7 +106,7 @@ def test_print_query_success_with_message(
 def test_print_query_not_successful(
     print_error, load_config, response, key, expected_message
 ):
-    query = Query("", Namespace(env="test"))
+    query = Query("", Namespace(env="dev"))
     query._response = response
 
     print_query(query, key)
@@ -116,7 +116,7 @@ def test_print_query_not_successful(
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @patch("croud.gql.print_error")
 def test_print_query_error(print_error, load_config):
-    query = Query("", Namespace(env="test"))
+    query = Query("", Namespace(env="dev"))
     query._error = "This is a GraphQL error message"
 
     print_query(query)
@@ -126,7 +126,7 @@ def test_print_query_error(print_error, load_config):
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @patch("croud.gql.print_info")
 def test_print_query_no_response(print_info, load_config):
-    query = Query("", Namespace(env="test"))
+    query = Query("", Namespace(env="dev"))
     query._response = {}
 
     print_query(query)
@@ -137,7 +137,7 @@ def test_print_query_no_response(print_info, load_config):
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @patch("croud.gql.print_error")
 def test_print_query_malformatted_response(print_error, load_config):
-    query = Query("", Namespace(env="test"))
+    query = Query("", Namespace(env="dev"))
     query._response = 42
 
     print_query(query)
@@ -157,7 +157,7 @@ def test_print_query_malformatted_response(print_error, load_config):
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @patch("croud.gql.print_format")
 def test_print_query_data(print_format, load_config, response, key, format):
-    query = Query("", Namespace(env="test", output_fmt=format))
+    query = Query("", Namespace(env="dev", output_fmt=format))
     query._response = response
 
     print_query(query, key)
@@ -175,7 +175,7 @@ def test_print_query_data(print_format, load_config, response, key, format):
 @patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @patch("croud.gql.print_info")
 def test_print_query_no_data(print_info, load_config, response, key):
-    query = Query("", Namespace(env="test"))
+    query = Query("", Namespace(env="dev"))
     query._response = response
 
     print_query(query, key)
@@ -197,7 +197,7 @@ def test_execute_query_with_variables(load_config):
     result_future = asyncio.Future()
     result_future.set_result({"data": []})
 
-    query = Query(body, Namespace(env="test"))
+    query = Query(body, Namespace(env="dev"))
     with patch.object(query, "_fetch_data", return_value=result_future) as fetch_data:
         query.execute(vars)
 
