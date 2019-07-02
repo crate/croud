@@ -21,6 +21,7 @@ from argparse import Namespace
 
 from croud.rest import Client
 from croud.session import RequestMethod
+from croud.util import require_confirmation
 
 
 def organizations_create(args: Namespace) -> None:
@@ -45,3 +46,17 @@ def organizations_list(args: Namespace) -> None:
     client = Client(env=args.env, output_fmt=args.output_fmt)
     client.send(RequestMethod.GET, "/api/v2/organizations/")
     client.print(keys=["id", "name", "plan_type"])
+
+
+@require_confirmation(
+    "Are you sure you want to delete the organization?",
+    cancel_msg="Organization deletion cancelled.",
+)
+def organizations_delete(args: Namespace) -> None:
+    """
+    Delete an organization
+    """
+
+    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client.send(RequestMethod.DELETE, f"/api/v2/organizations/{args.org_id}/")
+    client.print("Organization deleted.")

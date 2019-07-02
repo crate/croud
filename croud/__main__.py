@@ -72,7 +72,11 @@ from croud.login import login
 from croud.logout import logout
 from croud.me import me
 from croud.monitoring.grafana.commands import set_grafana
-from croud.organizations.commands import organizations_create, organizations_list
+from croud.organizations.commands import (
+    organizations_create,
+    organizations_delete,
+    organizations_list,
+)
 from croud.organizations.users.commands import org_users_add, org_users_remove
 from croud.parser import create_parser
 from croud.products.commands import products_list
@@ -342,6 +346,16 @@ command_tree = {
                 "help": "List all organizations the current user has access to.",
                 "extra_args": [],
                 "resolver": organizations_list,
+            },
+            "delete": {
+                "help": "Delete the specified organization.",
+                "extra_args": [
+                    yes_arg,
+                    lambda req_opt_group, opt_opt_group: org_id_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                ],
+                "resolver": organizations_delete,
             },
             "users": {
                 "help": "Manage users in an organization.",

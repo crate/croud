@@ -62,6 +62,26 @@ Example
    +--------------------------------------+--------+------------+
 
 
+``organizations delete``
+========================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations delete
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud organizations delete \
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209
+   Are you sure you want to delete the consumer? [yN] y
+   ==> Success: Organization deleted.
+
+
 ``organizations users``
 =======================
 

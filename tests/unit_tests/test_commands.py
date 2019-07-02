@@ -312,10 +312,9 @@ class TestClusters(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "run", return_value={"data": []})
+@mock.patch.object(Client, "send")
 class TestOrganizations(CommandTestCase):
-    @mock.patch.object(Client, "send")
-    def test_create(self, mock_send, mock_run, mock_load_config):
+    def test_create(self, mock_send, mock_load_config):
         argv = [
             "croud",
             "organizations",
@@ -333,15 +332,69 @@ class TestOrganizations(CommandTestCase):
             body={"name": "test-org", "plan_type": 1},
         )
 
-    @mock.patch.object(Client, "send")
-    def test_list(self, mock_send, mock_run, mock_load_config):
+    def test_list(self, mock_send, mock_load_config):
         argv = ["croud", "organizations", "list"]
         self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/organizations/")
 
+    def test_delete(self, mock_send, mock_load_config, capsys):
+        org_id = gen_uuid()
+        argv = ["croud", "organizations", "delete", "--org-id", org_id]
+        with mock.patch("builtins.input", side_effect=["Y"]) as mock_input:
+            self.assertRest(
+                mock_send,
+                argv,
+                RequestMethod.DELETE,
+                f"/api/v2/organizations/{org_id}/",
+            )
+            mock_input.assert_called_once_with(
+                "Are you sure you want to delete the organization? [yN] "
+            )
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send")
-class TestOrganizationsREST(CommandTestCase):
+        out, _ = capsys.readouterr()
+        assert "Organization deleted." in out
+
+    def test_delete_flag(self, mock_send, mock_load_config, capsys):
+        org_id = gen_uuid()
+        argv = ["croud", "organizations", "delete", "--org-id", org_id, "-y"]
+        with mock.patch("builtins.input") as mock_input:
+            self.assertRest(
+                mock_send,
+                argv,
+                RequestMethod.DELETE,
+                f"/api/v2/organizations/{org_id}/",
+            )
+            mock_input.assert_not_called()
+
+        out, _ = capsys.readouterr()
+        assert "Organization deleted." in out
+
+    @pytest.mark.parametrize("input", ["", "N", "No", "cancel"])
+    def test_delete_aborted(self, mock_send, mock_load_config, capsys, input):
+        org_id = gen_uuid()
+        argv = ["croud", "organizations", "delete", "--org-id", org_id]
+        with mock.patch("builtins.input", side_effect=[input]) as mock_input:
+            self.execute(argv)
+            mock_send.assert_not_called()
+            mock_input.assert_called_once_with(
+                "Are you sure you want to delete the organization? [yN] "
+            )
+
+        out, _ = capsys.readouterr()
+        assert "Organization deletion cancelled." in out
+
+    def test_delete_aborted_with_input(self, mock_send, mock_load_config, capsys):
+        org_id = gen_uuid()
+        argv = ["croud", "organizations", "delete", "--org-id", org_id]
+        with mock.patch("builtins.input", side_effect=["N"]) as mock_input:
+            self.execute(argv)
+            mock_send.assert_not_called()
+            mock_input.assert_called_once_with(
+                "Are you sure you want to delete the organization? [yN] "
+            )
+
+        out, _ = capsys.readouterr()
+        assert "Organization deletion cancelled." in out
+
     def test_add_user(self, mock_send, mock_load_config):
         org_id = gen_uuid()
         user = "test@crate.io"
