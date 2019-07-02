@@ -417,7 +417,7 @@ class TestOrganizations(CommandTestCase):
             argv,
             RequestMethod.POST,
             f"/api/v2/organizations/{org_id}/users/",
-            body={"user_id": user, "role_fqn": role_fqn},
+            body={"user": user, "role_fqn": role_fqn},
         )
 
     def test_remove_user(self, mock_send, mock_load_config):

@@ -32,7 +32,7 @@ def org_users_add(args: Namespace):
     client.send(
         RequestMethod.POST,
         f"/api/v2/organizations/{args.org_id}/users/",
-        body={"user_id": args.user, "role_fqn": args.role},
+        body={"user": args.user, "role_fqn": args.role},
     )
     client.print(keys=["user_id", "role_fqn", "organization_id"])
 
