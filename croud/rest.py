@@ -18,6 +18,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import asyncio
+from argparse import Namespace
 from functools import partial
 from typing import List, Optional, Union
 
@@ -37,14 +38,16 @@ class Client:
     _data: Optional[Union[List[dict], dict]] = None
     _error: Optional[dict] = None
 
-    def __init__(
-        self, env: str = None, region: str = None, output_fmt: str = None, loop=None
-    ):
+    def __init__(self, env: str, region: str, output_fmt: str, loop=None):
         self._env = env or Configuration.get_env()
         self._token = Configuration.get_token(self._env)
         self._region = region or Configuration.get_setting("region")
         self._output_fmt = output_fmt or Configuration.get_setting("output_fmt")
         self.loop = loop or asyncio.get_event_loop()
+
+    @staticmethod
+    def from_args(args: Namespace) -> "Client":
+        return Client(args.env, args.region, args.output_fmt)
 
     def send(
         self,

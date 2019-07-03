@@ -28,7 +28,7 @@ def products_list(args: Namespace) -> None:
     Lists available products
     """
 
-    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     url = "/api/v2/products/"
     if args.kind:
         client.send(RequestMethod.GET, url, params={"kind": args.kind})

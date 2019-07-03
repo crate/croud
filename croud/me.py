@@ -28,6 +28,6 @@ def me(args: Namespace) -> None:
     Prints the current logged in user
     """
 
-    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(RequestMethod.GET, "/api/v2/users/me/")
     client.print(keys=["email", "username"])

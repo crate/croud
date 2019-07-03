@@ -41,7 +41,7 @@ def consumers_deploy(args: Namespace) -> None:
         "table_name": args.consumer_table,
         "table_schema": args.consumer_schema,
     }
-    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(RequestMethod.POST, "/api/v2/consumers/", body=body)
     client.print(
         keys=[
@@ -67,7 +67,7 @@ def consumers_list(args: Namespace) -> None:
     if args.project_id:
         params["project_id"] = args.project_id
 
-    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(RequestMethod.GET, "/api/v2/consumers/", params=params)
     client.print(
         keys=[
@@ -102,7 +102,7 @@ def consumers_edit(args: Namespace) -> None:
 
     if config:
         body["config"] = config
-    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(
         RequestMethod.PATCH, f"/api/v2/consumers/{args.consumer_id}/", body=body
     )
@@ -114,6 +114,6 @@ def consumers_edit(args: Namespace) -> None:
     cancel_msg="Consumer deletion cancelled.",
 )
 def consumers_delete(args: Namespace) -> None:
-    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(RequestMethod.DELETE, f"/api/v2/consumers/{args.consumer_id}/")
     client.print("Consumer deleted.")

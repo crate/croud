@@ -28,7 +28,7 @@ def project_create(args: Namespace) -> None:
     Creates a project in the organization the user belongs to.
     """
 
-    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(
         RequestMethod.POST,
         "/api/v2/projects/",
@@ -42,6 +42,6 @@ def projects_list(args: Namespace) -> None:
     Lists all projects for the current user in the specified region
     """
 
-    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(RequestMethod.GET, "/api/v2/projects/")
     client.print(keys=["id", "name", "region", "organization_id"])
