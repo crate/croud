@@ -34,4 +34,4 @@ def products_list(args: Namespace) -> None:
         client.send(RequestMethod.GET, url, params={"kind": args.kind})
     else:
         client.send(RequestMethod.GET, url)
-    client.print(keys=["kind", "name", "tier", "description"])
+    client.print(keys=["kind", "name", "tier", "description", "scale_summary"])

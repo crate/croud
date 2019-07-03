@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Show additional information about the scaling capabilities of a product in
+  the output of the ``croud products list`` command.
+
 - Deprecated ``croud users roles add`` and ``croud users roles remove`` in
   favor of project and organization level commands ``croud
   organizations|projects users add|remove``.
