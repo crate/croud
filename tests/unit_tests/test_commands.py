@@ -463,6 +463,45 @@ class TestProjects(CommandTestCase):
             body={"name": "new-project", "organization_id": "organization-id"},
         )
 
+    def test_delete(self, mock_send, mock_load_config, capsys):
+        project_id = gen_uuid()
+        argv = ["croud", "projects", "delete", "--project-id", project_id]
+        with mock.patch("builtins.input", side_effect=["yes"]) as mock_input:
+            self.assertRest(
+                mock_send, argv, RequestMethod.DELETE, f"/api/v2/projects/{project_id}/"
+            )
+            mock_input.assert_called_once_with(
+                "Are you sure you want to delete the project? [yN] "
+            )
+
+        out, _ = capsys.readouterr()
+        assert "Project deleted." in out
+
+    def test_delete_flag(self, mock_send, mock_load_config, capsys):
+        project_id = gen_uuid()
+        argv = ["croud", "projects", "delete", "--project-id", project_id, "-y"]
+        with mock.patch("builtins.input", side_effect=["y"]) as mock_input:
+            self.assertRest(
+                mock_send, argv, RequestMethod.DELETE, f"/api/v2/projects/{project_id}/"
+            )
+            mock_input.assert_not_called()
+
+        out, _ = capsys.readouterr()
+        assert "Project deleted." in out
+
+    def test_delete_aborted(self, mock_send, mock_load_config, capsys):
+        project_id = gen_uuid()
+        argv = ["croud", "projects", "delete", "--project-id", project_id]
+        with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
+            self.execute(argv)
+            mock_send.assert_not_called()
+            mock_input.assert_called_once_with(
+                "Are you sure you want to delete the project? [yN] "
+            )
+
+        out, _ = capsys.readouterr()
+        assert "Project deletion cancelled." in out
+
     def test_list(self, mock_send, mock_load_config):
         argv = ["croud", "projects", "list"]
         self.assertGql(mock_send, argv, RequestMethod.GET, "/api/v2/projects/")
