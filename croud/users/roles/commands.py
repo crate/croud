@@ -61,7 +61,7 @@ def roles_list(args: Namespace) -> None:
     Lists all roles a user can be assigned to
     """
 
-    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(RequestMethod.GET, "/api/v2/roles/")
     client.print(keys=["id", "name"])
 
