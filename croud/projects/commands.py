@@ -21,6 +21,7 @@ from argparse import Namespace
 
 from croud.rest import Client
 from croud.session import RequestMethod
+from croud.util import require_confirmation
 
 
 def project_create(args: Namespace) -> None:
@@ -35,6 +36,19 @@ def project_create(args: Namespace) -> None:
         body={"name": args.name, "organization_id": args.org_id},
     )
     client.print(keys=["id"])
+
+
+@require_confirmation(
+    "Are you sure you want to delete the project?",
+    cancel_msg="Project deletion cancelled.",
+)
+def project_delete(args: Namespace) -> None:
+    """
+    Deletes a project in the organization the user belongs to.
+    """
+    client = Client.from_args(args)
+    client.send(RequestMethod.DELETE, f"/api/v2/projects/{args.project_id}/")
+    client.print("Project deleted.")
 
 
 def projects_list(args: Namespace) -> None:

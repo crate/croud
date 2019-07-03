@@ -80,7 +80,7 @@ from croud.organizations.commands import (
 from croud.organizations.users.commands import org_users_add, org_users_remove
 from croud.parser import create_parser
 from croud.products.commands import products_list
-from croud.projects.commands import project_create, projects_list
+from croud.projects.commands import project_create, project_delete, projects_list
 from croud.projects.users.commands import project_user_add, project_user_remove
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_add, roles_list, roles_remove
@@ -220,6 +220,16 @@ command_tree = {
                     ),
                 ],
                 "resolver": project_create,
+            },
+            "delete": {
+                "help": "Delete the specified project.",
+                "extra_args": [
+                    lambda req_opt_group, opt_opt_group: project_id_arg(
+                        req_opt_group, opt_opt_group, True
+                    ),
+                    yes_arg,
+                ],
+                "resolver": project_delete,
             },
             "list": {
                 "help": (

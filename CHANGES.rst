@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added ``projects delete`` command to delete existing projects.
+
 - Added ``organizations delete`` command to delete existing organizations.
 
 - Fixed a bug that caused commands to always use the access token from the

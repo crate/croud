@@ -34,6 +34,25 @@ Example
    +--------------------------------------+
 
 
+``projects delete``
+===================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: projects delete
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud projects delete --project-id 035f1161-402e-44b4-9073-0749586091e0
+   Are you sure you want to delete the project? [yN] y
+   ==> Success: Project deleted.
+
+
 ``projects list``
 =================
 
