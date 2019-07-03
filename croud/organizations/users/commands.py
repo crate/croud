@@ -27,7 +27,7 @@ from croud.session import RequestMethod
 
 
 def org_users_add(args: Namespace):
-    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
 
     client.send(
         RequestMethod.POST,
@@ -38,7 +38,7 @@ def org_users_add(args: Namespace):
 
 
 def org_users_remove(args: Namespace):
-    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
 
     client.send(
         RequestMethod.DELETE, f"/api/v2/organizations/{args.org_id}/users/{args.user}/"

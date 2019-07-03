@@ -33,7 +33,7 @@ def clusters_list(args: Namespace) -> None:
     if args.project_id:
         params["project_id"] = args.project_id
 
-    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(RequestMethod.GET, "/api/v2/clusters/", params=params)
     client.print(
         keys=[
@@ -64,7 +64,7 @@ def clusters_deploy(args: Namespace) -> None:
     }
     if args.unit:
         body["product_unit"] = args.unit
-    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(RequestMethod.POST, "/api/v2/clusters/", body=body)
     client.print(keys=["id", "name", "fqdn", "url"])
 
@@ -75,7 +75,7 @@ def clusters_scale(args: Namespace) -> None:
     """
 
     body = {"product_unit": args.unit}
-    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(
         RequestMethod.PUT, f"/api/v2/clusters/{args.cluster_id}/scale/", body=body
     )
@@ -88,7 +88,7 @@ def clusters_upgrade(args: Namespace) -> None:
     """
 
     body = {"crate_version": args.version}
-    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(
         RequestMethod.PUT, f"/api/v2/clusters/{args.cluster_id}/upgrade/", body=body
     )
@@ -100,6 +100,6 @@ def clusters_upgrade(args: Namespace) -> None:
     cancel_msg="Cluster deletion cancelled.",
 )
 def clusters_delete(args: Namespace) -> None:
-    client = Client(env=args.env, region=args.region, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(RequestMethod.DELETE, f"/api/v2/clusters/{args.cluster_id}/")
     client.print("Cluster deleted.")

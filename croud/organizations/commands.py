@@ -29,7 +29,7 @@ def organizations_create(args: Namespace) -> None:
     Creates an organization
     """
 
-    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(
         RequestMethod.POST,
         "/api/v2/organizations/",
@@ -43,7 +43,7 @@ def organizations_list(args: Namespace) -> None:
     Lists organizations
     """
 
-    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(RequestMethod.GET, "/api/v2/organizations/")
     client.print(keys=["id", "name", "plan_type"])
 
@@ -57,6 +57,6 @@ def organizations_delete(args: Namespace) -> None:
     Delete an organization
     """
 
-    client = Client(env=args.env, output_fmt=args.output_fmt)
+    client = Client.from_args(args)
     client.send(RequestMethod.DELETE, f"/api/v2/organizations/{args.org_id}/")
     client.print("Organization deleted.")
