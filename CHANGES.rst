@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added ``organizations delete`` command to delete existing organizations.
+
 - Fixed a bug that caused commands to always use the access token from the
   ``current_context`` setting to be used, even though a context / environemnt
   had been passed via ``--env``.
