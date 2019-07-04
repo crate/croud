@@ -12,16 +12,19 @@ Unreleased
 
 - Added ``organizations delete`` command to delete existing organizations.
 
-- Fixed a bug that caused commands to always use the access token from the
-  ``current_context`` setting to be used, even though a context / environemnt
-  had been passed via ``--env``.
-
 - [Breaking] The ``organizations users add|remove`` commands now require the
   arguments ``--user`` and ``--org-id``. Additionally the ``organizations users
   add`` command requires the ``--role`` argument.
 
 - Improved printing of error messages by including the error details returned
   by the server.
+
+0.14.1 - 2019/07/04
+===================
+
+- Fixed a bug that caused commands to always use the access token from the
+  ``current_context`` setting to be used, even though a context / environemnt
+  had been passed via ``--env``.
 
 0.14.0 - 2019/06/06
 ===================
