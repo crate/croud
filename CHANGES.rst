@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.15.0 - 2019/07/04
+===================
+
 - The response of the ``projects users add`` command changed from displaying only a success
   message to displaying the data of the created user role.
 
