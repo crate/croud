@@ -81,7 +81,7 @@ from croud.organizations.users.commands import org_users_add, org_users_remove
 from croud.parser import create_parser
 from croud.products.commands import products_list
 from croud.projects.commands import project_create, project_delete, projects_list
-from croud.projects.users.commands import project_user_add, project_user_remove
+from croud.projects.users.commands import project_users_add, project_users_remove
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_add, roles_list, roles_remove
 
@@ -253,7 +253,7 @@ command_tree = {
                                 req_opt_group, opt_opt_group, True
                             ),
                         ],
-                        "resolver": project_user_add,
+                        "resolver": project_users_add,
                     },
                     "remove": {
                         "help": "Remove the selected user from a project.",
@@ -263,7 +263,7 @@ command_tree = {
                             ),
                             user_id_or_email_arg,
                         ],
-                        "resolver": project_user_remove,
+                        "resolver": project_users_remove,
                     },
                 },
             },

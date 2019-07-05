@@ -23,7 +23,7 @@ from croud.rest import Client
 from croud.session import RequestMethod
 
 
-def project_user_add(args: Namespace) -> None:
+def project_users_add(args: Namespace) -> None:
     """
     Adds a user to a project.
     """
@@ -38,7 +38,7 @@ def project_user_add(args: Namespace) -> None:
     client.print(keys=["user_id", "project_id", "role_fqn"])
 
 
-def project_user_remove(args: Namespace) -> None:
+def project_users_remove(args: Namespace) -> None:
     """
     Removes a user from a project.
     """
