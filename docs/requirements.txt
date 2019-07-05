@@ -14,5 +14,6 @@ sphinx==1.7.4
 # Project specific packages
 ###############################################################################
 
+# Pip is run from the root directory, so this installs the `croud` package
+.
 sphinx-argparse==0.2.5
-..

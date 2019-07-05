@@ -27,25 +27,35 @@
 
 .EXPORT_ALL_VARIABLES:
 
-# `ROOT_RST_DIR` is where to look for RST files
-ROOT_RST_DIR    := ..
+# By default, we run commands from the the `docs` directory so that the
+# commands output by `make` can be run if you copy and paste them. However, we
+# must jump up to the top-level directory of the repository for two specific
+# commands (see below).
+#
+# Because of this, we specify `TOP_DIR` and `DOCS_DIR` so that Make can find
+# its way around.
+
+# `TOP_DIR` is the top-level directory of the repository
+TOP_DIR         := ..
+# `DOCS_DIR` is the path to `docs` from `TOP_DIR`
+DOCS_DIR        := docs
 ENV_DIR         := .env
-ENV_BIN         := $(ENV_DIR)/bin
+ACTIVATE        := $(ENV_DIR)/bin/activate
 PYTHON          := python3.7
-PIP             := $(ENV_BIN)/pip3.7
-SPHINXBUILD     := $(ENV_BIN)/sphinx-build
-SPHINXAUTOBUILD := $(ENV_BIN)/sphinx-autobuild
-AUTOBUILD_OPTS  := --ignore '.*' --ignore '*.lint'
+PIP             := $(PYTHON) -m pip
+SPHINXBUILD     := sphinx-build
+SPHINXAUTOBUILD := sphinx-autobuild
+AUTOBUILD_OPTS  := --re-ignore '^(?!.+\.rst$$)'
 BUILD_DIR       := .build
 SPHINX_ARGS     := . $(BUILD_DIR)
 SPHINX_OPTS     := -W -n
 STYLE_REPO      := https://github.com/crate/crate-docs-style.git
-STYLE_VERSION   := 0.1.4
+STYLE_VERSION   := 0.1.9
 STYLE_DIR       := .style
-# `STYLE_DIR_ROOT` is the path to `STYLE_DIR` from `ROOT_RST_DIR`
-STYLE_DIR_ROOT  := docs/$(STYLE_DIR)
+STYLE_DIR_ROOT  := $(DOCS_DIR)/$(STYLE_DIR)
 STYLE_RULES     := $(STYLE_DIR_ROOT)/utils/rules.mk
-STYLE_MAKE      := $(MAKE) -C $(ROOT_RST_DIR) -f $(STYLE_RULES)
+# Change to `TOP_DIR` so we can process all RST files in the repository
+STYLE_MAKE      := $(MAKE) -C $(TOP_DIR) -f $(STYLE_RULES)
 FSWATCH         := fswatch
 
 # Default target
@@ -55,23 +65,25 @@ help:
 	@ echo
 	@ printf 'Run `make <TARGET>`, where <TARGET> is one of:\n'
 	@ echo
-	@ printf '\033[36m  dev         \033[00m Run a Sphinx development server'
-	@ printf                               ' that builds and lints the\n'
-	@ printf '\033[36m              \033[00m documentation as you edit the'
-	@ printf                               ' source files\n'
+	@ printf '\033[36m  dev    \033[00m Run a Sphinx development server that'
+	@ printf                          ' builds and lints the \n'
+	@ printf '\033[36m         \033[00m documentation as you edit the source'
+	@ printf                          ' files\n'
 	@ echo
-	@ printf '\033[36m  check       \033[00m Build, test, and lint the'
-	@ printf                               ' documentation (run by CI)\n'
+	@ printf '\033[36m  check  \033[00m Build, test, and lint the'
+	@ printf                          ' documentation (run by CI)\n'
 	@ echo
-	@ printf '\033[36m  clean       \033[00m Clean up (e.g., remove lint'
-	@ printf                               ' files)\n'
+	@ printf '\033[36m  clean  \033[00m Clean up (e.g., remove lint files)\n'
 	@ echo
-	@ printf '\033[36m  reset       \033[00m Reset the source\n'
+	@ printf '\033[36m  reset  \033[00m Reset the source\n'
 
-$(SPHINXBUILD) $(SPHINXAUTOBUILD):
+$(ACTIVATE):
 	$(PYTHON) -m venv $(ENV_DIR)
-	$(PIP) install --upgrade pip
-	$(PIP) install -r requirements.txt
+	. $(ACTIVATE) && \
+	    $(PIP) install --upgrade pip
+	@ # Change to `TOP_DIR` to mimic how Read the Docs does it
+	. $(ACTIVATE) && cd $(TOP_DIR) && \
+	    $(PIP) install -r $(DOCS_DIR)/requirements.txt
 
 ifeq ($(UNAME),Linux)
 $(VALE):
@@ -91,7 +103,7 @@ ifeq ($(STYLE_VERSION),)
 # The documentation for the crate-docs-style project fakes an install of its
 # own code so that it can test itself
 $(STYLE_DIR):
-	@ if test ! -d ../utils; then\
+	@ if test ! -d ../utils; then \
 	    printf '\033[31mYou must set `STYLE_VERSION` to lint the '; \
 	    printf 'documentation.\033[00m\n'; \
 	    exit 1; \
@@ -107,8 +119,9 @@ $(STYLE_DIR):
 endif
 
 .PHONY: autobuild
-autobuild: $(SPHINXAUTOBUILD)
-	$(SPHINXAUTOBUILD) $(SPHINX_ARGS) $(SPHINX_OPTS) $(AUTOBUILD_OPTS) $(O)
+autobuild: $(ACTIVATE)
+	. $(ACTIVATE) && \
+	    $(SPHINXAUTOBUILD) $(SPHINX_ARGS) $(SPHINX_OPTS) $(AUTOBUILD_OPTS) $(O)
 
 .PHONY: lint
 lint: $(STYLE_DIR)
@@ -121,7 +134,7 @@ lint-watch: $(STYLE_DIR)
 	done || true
 
 .PHONY: dev
-dev: $(SPHINXAUTOBUILD) $(STYLE_DIR)
+dev: lint
 	@ if test ! -x "`which $(FSWATCH)`"; then \
 	    printf '\033[31mYou must have fswatch installed.\033[00m\n'; \
 	    exit 1; \
@@ -136,17 +149,16 @@ check: html linkcheck lint
 Makefile:
 
 # Route unknown targets to `sphinx-build`
-%: $(SPHINXBUILD)
-	$(SPHINXBUILD) -M $@ $(SPHINX_ARGS) $(SPHINX_OPTS) $(O)
+%: $(ACTIVATE)
+	. $(ACTIVATE) && \
+	    $(SPHINXBUILD) -M $@ $(SPHINX_ARGS) $(SPHINX_OPTS) $(O)
 
 .PHONY: clean
-clean:
-	@ if test -d $(STYLE_DIR); then \
-	    $(STYLE_MAKE) clean; \
-	fi
+clean: $(STYLE_DIR)
+	$(STYLE_MAKE) clean
 
 .PHONY: reset
-reset: clean
+reset:
 	rm -rf $(ENV_DIR)
 	rm -rf $(BUILD_DIR)
 	rm -rf $(STYLE_DIR)
