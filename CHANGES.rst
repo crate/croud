@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added support for specifying the user through their email address in ``croud
+  users roles add`` and ``croud users roles remove``.
+
 0.15.0 - 2019/07/04
 ===================
 
