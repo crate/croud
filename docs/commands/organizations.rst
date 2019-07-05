@@ -108,9 +108,9 @@ Example
 .. code-block:: console
 
    sh$ croud organizations users add \
-       --user john.doe@example.com \
        --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
-       --role org_member
+       --role org_member \
+       --user john.doe@example.com
    +--------------------------------------+------------+--------------------------------------+
    | organization_id                      | role_fqn   | user_id                              |
    |--------------------------------------+------------+--------------------------------------|
@@ -133,6 +133,6 @@ Example
 .. code-block:: console
 
    sh$ croud organizations users remove \
-       --user john.doe@crate.io \
-       --org-id f6c39580-5719-431d-a508-0cee4f9e8209
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
+       --user john.doe@crate.io
    ==> Success: Successfully removed user from organization.
