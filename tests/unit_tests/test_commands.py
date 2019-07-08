@@ -564,7 +564,7 @@ class TestProjectsUsers(CommandTestCase):
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "run", return_value={"data": []})
 class TestUsersRoles(CommandTestCase):
-    def test_add(self, mock_run, mock_load_config):
+    def test_add(self, mock_run, mock_load_config, capsys):
         user_id = gen_uuid()
         role_fqn = "org_admin"
         resource_id = gen_uuid()
@@ -595,10 +595,15 @@ class TestUsersRoles(CommandTestCase):
             resource_id,
         ]
         self.assertGql(mock_run, argv, expected_body, expected_vars)
+        out, _ = capsys.readouterr()
+        assert (
+            "This command is deprecated. Please use `croud organizations users add` instead."  # noqa
+            in out
+        )
 
-    def test_remove(self, mock_run, mock_load_config):
+    def test_remove(self, mock_run, mock_load_config, capsys):
         user_id = gen_uuid()
-        role_fqn = "org_admin"
+        role_fqn = "project_member"
         resource_id = gen_uuid()
 
         expected_body = textwrap.dedent(
@@ -627,6 +632,11 @@ class TestUsersRoles(CommandTestCase):
             resource_id,
         ]
         self.assertGql(mock_run, argv, expected_body, expected_vars)
+        out, _ = capsys.readouterr()
+        assert (
+            "This command is deprecated. Please use `croud projects users remove` instead."  # noqa
+            in out
+        )
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)

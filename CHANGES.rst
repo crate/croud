@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+- Deprecated ``croud users roles add`` and ``croud users roles remove`` in
+  favor of project and organization level commands ``croud
+  organizations|projects users add|remove``.
+
 - [Reverted] Added support for specifying the user through their email address
   in ``croud users roles add`` and ``croud users roles remove``.
 
