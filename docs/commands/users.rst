@@ -79,9 +79,9 @@ Example
 .. code-block:: console
 
    sh$ croud users roles add \
+       --user 6ac0f500-f9f8-4c12-82e2-3ad6192525d4 \
        --resource 035f1161-402e-44b4-9073-0749586091e0 \
-       --role project_admin \
-       --user john.doe@example.com
+       --role project_admin
    +--------------------------------------+--------------------------------------+---------------+
    | userId                               | resourceId                           | roleFqn       |
    |--------------------------------------+--------------------------------------+---------------|
@@ -104,9 +104,9 @@ Example
 .. code-block:: console
 
    sh$ croud users roles remove \
+       --user 6ac0f500-f9f8-4c12-82e2-3ad6192525d4 \
        --resource 035f1161-402e-44b4-9073-0749586091e0 \
-       --role project_admin \
-       --user john.doe@example.com
+       --role project_admin
    +--------------------------------------+--------------------------------------+---------------+
    | userId                               | resourceId                           | roleFqn       |
    |--------------------------------------+--------------------------------------+---------------|

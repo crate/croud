@@ -562,24 +562,25 @@ class TestProjectsUsers(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send")
+@mock.patch.object(Query, "run", return_value={"data": []})
 class TestUsersRoles(CommandTestCase):
-    @pytest.mark.parametrize(
-        "role_fqn,user",
-        [
-            ("org_admin", gen_uuid()),
-            ("org_member", "foo@crate-dev.cloud"),
-            ("project_admin", "bar@crate-dev.cloud"),
-            ("project_member", gen_uuid()),
-        ],
-    )
-    def test_add(self, mock_send, mock_load_config, role_fqn, user, capsys):
+    def test_add(self, mock_run, mock_load_config):
+        user_id = gen_uuid()
+        role_fqn = "org_admin"
         resource_id = gen_uuid()
 
-        if role_fqn.startswith("org_"):
-            resource_endpoint = "organizations"
-        else:
-            resource_endpoint = "projects"
+        expected_body = textwrap.dedent(
+            """
+            mutation addRoleToUser($input: UserRoleInput!) {
+                addRoleToUser(input: $input) {
+                    success
+                }
+            }
+        """
+        ).strip()
+        expected_vars = {
+            "input": {"userId": user_id, "roleFqn": role_fqn, "resourceId": resource_id}
+        }
 
         argv = [
             "croud",
@@ -587,56 +588,31 @@ class TestUsersRoles(CommandTestCase):
             "roles",
             "add",
             "--user",
-            user,
+            user_id,
             "--role",
             role_fqn,
             "--resource",
             resource_id,
         ]
-        self.assertRest(
-            mock_send,
-            argv,
-            RequestMethod.POST,
-            f"/api/v2/{resource_endpoint}/{resource_id}/users/",
-            body={"user": user, "role_fqn": role_fqn},
-        )
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
 
-    def test_add_invalid(self, mock_send, mock_load_config, capsys):
-        resource_id = gen_uuid()
-        user = gen_uuid()
-
-        argv = [
-            "croud",
-            "users",
-            "roles",
-            "add",
-            "--user",
-            user,
-            "--role",
-            "invalid",
-            "--resource",
-            resource_id,
-        ]
-        self.execute(argv)
-        out, _ = capsys.readouterr()
-        assert "Invalid role 'invalid'." in out
-
-    @pytest.mark.parametrize(
-        "role_fqn,user",
-        [
-            ("org_admin", gen_uuid()),
-            ("org_member", "foo@crate-dev.cloud"),
-            ("project_admin", "bar@crate-dev.cloud"),
-            ("project_member", gen_uuid()),
-        ],
-    )
-    def test_remove(self, mock_send, mock_load_config, role_fqn, user, capsys):
+    def test_remove(self, mock_run, mock_load_config):
+        user_id = gen_uuid()
+        role_fqn = "org_admin"
         resource_id = gen_uuid()
 
-        if role_fqn.startswith("org_"):
-            resource_endpoint = "organizations"
-        else:
-            resource_endpoint = "projects"
+        expected_body = textwrap.dedent(
+            """
+            mutation removeRoleFromUser($input: UserRoleInput!) {
+                removeRoleFromUser(input: $input) {
+                    success
+                }
+            }
+        """
+        ).strip()
+        expected_vars = {
+            "input": {"userId": user_id, "roleFqn": role_fqn, "resourceId": resource_id}
+        }
 
         argv = [
             "croud",
@@ -644,40 +620,13 @@ class TestUsersRoles(CommandTestCase):
             "roles",
             "remove",
             "--user",
-            user,
+            user_id,
             "--role",
             role_fqn,
             "--resource",
             resource_id,
         ]
-
-        self.assertRest(
-            mock_send,
-            argv,
-            RequestMethod.DELETE,
-            f"/api/v2/{resource_endpoint}/{resource_id}/users/{user}/",
-        )
-
-    def test_remove_invalid(self, mock_send, mock_load_config, capsys):
-        resource_id = gen_uuid()
-        user = gen_uuid()
-
-        argv = [
-            "croud",
-            "users",
-            "roles",
-            "remove",
-            "--user",
-            user,
-            "--role",
-            "invalid",
-            "--resource",
-            resource_id,
-        ]
-
-        self.execute(argv)
-        out, _ = capsys.readouterr()
-        assert "Invalid role 'invalid'." in out
+        self.assertGql(mock_run, argv, expected_body, expected_vars)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
