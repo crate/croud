@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.15.2 - 2019/07/09
+===================
+
 - Deprecated ``croud users roles add`` and ``croud users roles remove`` in
   favor of project and organization level commands ``croud
   organizations|projects users add|remove``.
