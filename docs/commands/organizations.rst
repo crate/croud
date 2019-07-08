@@ -134,5 +134,5 @@ Example
 
    sh$ croud organizations users remove \
        --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
-       --user john.doe@crate.io
+       --user john.doe@example.io
    ==> Success: Successfully removed user from organization.
