@@ -57,6 +57,7 @@ from croud.cmd import (
     project_name_arg,
     resource_id_arg,
     role_fqn_arg,
+    user_id_arg,
     user_id_or_email_arg,
     yes_arg,
 )
@@ -418,7 +419,9 @@ command_tree = {
                             lambda req_opt_group, opt_opt_group: resource_id_arg(
                                 req_opt_group, opt_opt_group, True
                             ),
-                            user_id_or_email_arg,
+                            lambda req_opt_group, opt_opt_group: user_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
                             lambda req_opt_group, opt_opt_group: role_fqn_arg(
                                 req_opt_group, opt_opt_group, True
                             ),
@@ -431,7 +434,9 @@ command_tree = {
                             lambda req_opt_group, opt_opt_group: resource_id_arg(
                                 req_opt_group, opt_opt_group, True
                             ),
-                            user_id_or_email_arg,
+                            lambda req_opt_group, opt_opt_group: user_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
                             lambda req_opt_group, opt_opt_group: role_fqn_arg(
                                 req_opt_group, opt_opt_group, True
                             ),

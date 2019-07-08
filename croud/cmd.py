@@ -107,6 +107,15 @@ def role_fqn_arg(
     )
 
 
+def user_id_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "--user", type=str, help="The user ID to use.", required=required
+    )
+
+
 def user_id_or_email_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     req_args.add_argument(
         "--user", type=str, help="The user email address or ID to use.", required=True
