@@ -127,5 +127,5 @@ Example
 
    sh$ croud projects users remove \
        --project-id 035f1161-402e-44b4-9073-0749586091e0 \
-       --user 6ac0f500-f9f8-4c12-82e2-3ad6192525d4
+       --user john.doe@example.com
    ==> Success: Successfully removed user from project.
