@@ -21,6 +21,7 @@ import textwrap
 from argparse import Namespace
 
 from croud.gql import Query, print_query
+from croud.printer import print_warning
 from croud.rest import Client
 from croud.session import RequestMethod
 from croud.util import clean_dict
@@ -30,6 +31,17 @@ def roles_add(args: Namespace) -> None:
     """
     Adds a new role to a user
     """
+
+    deprecation_msg = "This command is deprecated."
+    if args.role in {"org_admin", "org_member"}:
+        deprecation_msg += " Please use `croud organizations users add` instead."
+    elif args.role in {"project_admin", "project_member"}:
+        deprecation_msg += " Please use `croud projects users add` instead."
+    else:
+        deprecation_msg += (
+            " Please use `croud organizations|projects users add` instead."
+        )
+    print_warning(deprecation_msg)
 
     mutation = textwrap.dedent(
         """
@@ -70,6 +82,17 @@ def roles_remove(args: Namespace) -> None:
     """
     Removes a role from a user
     """
+
+    deprecation_msg = "This command is deprecated."
+    if args.role in {"org_admin", "org_member"}:
+        deprecation_msg += " Please use `croud organizations users remove` instead."
+    elif args.role in {"project_admin", "project_member"}:
+        deprecation_msg += " Please use `croud projects users remove` instead."
+    else:
+        deprecation_msg += (
+            " Please use `croud organizations|projects users remove` instead."
+        )
+    print_warning(deprecation_msg)
 
     mutation = textwrap.dedent(
         """

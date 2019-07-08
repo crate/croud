@@ -48,6 +48,10 @@ def print_info(text: str):
     print(Fore.CYAN + "==> Info: " + Style.RESET_ALL + text)
 
 
+def print_warning(text: str):
+    print(Fore.YELLOW + "==> Warning: " + Style.RESET_ALL + text)
+
+
 def print_success(text: str):
     print(Fore.GREEN + "==> Success: " + Style.RESET_ALL + text)
 
