@@ -17,27 +17,43 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import textwrap
 from argparse import Namespace
 
-from croud.organizations.users.commands import org_users_add, org_users_remove
-from croud.printer import print_error
-from croud.projects.users.commands import project_users_add, project_users_remove
+from croud.gql import Query, print_query
 from croud.rest import Client
 from croud.session import RequestMethod
+from croud.util import clean_dict
 
 
 def roles_add(args: Namespace) -> None:
     """
     Adds a new role to a user
     """
-    if args.role in {"org_admin", "org_member"}:
-        args.org_id = args.resource
-        org_users_add(args)
-    elif args.role in {"project_admin", "project_member"}:
-        args.project_id = args.resource
-        project_users_add(args)
-    else:
-        print_error(f"Invalid role '{args.role}'.")
+
+    mutation = textwrap.dedent(
+        """
+        mutation addRoleToUser($input: UserRoleInput!) {
+            addRoleToUser(input: $input) {
+                success
+            }
+        }
+    """
+    ).strip()
+
+    vars = clean_dict(
+        {
+            "input": {
+                "userId": args.user,
+                "roleFqn": args.role,
+                "resourceId": args.resource,
+            }
+        }
+    )
+
+    query = Query(mutation, args)
+    query.execute(vars)
+    print_query(query, "addRoleToUser")
 
 
 def roles_list(args: Namespace) -> None:
@@ -54,11 +70,27 @@ def roles_remove(args: Namespace) -> None:
     """
     Removes a role from a user
     """
-    if args.role in {"org_admin", "org_member"}:
-        args.org_id = args.resource
-        org_users_remove(args)
-    elif args.role in {"project_admin", "project_member"}:
-        args.project_id = args.resource
-        project_users_remove(args)
-    else:
-        print_error(f"Invalid role '{args.role}'.")
+
+    mutation = textwrap.dedent(
+        """
+        mutation removeRoleFromUser($input: UserRoleInput!) {
+            removeRoleFromUser(input: $input) {
+                success
+            }
+        }
+    """
+    ).strip()
+
+    vars = clean_dict(
+        {
+            "input": {
+                "userId": args.user,
+                "roleFqn": args.role,
+                "resourceId": args.resource,
+            }
+        }
+    )
+
+    query = Query(mutation, args)
+    query.execute(vars)
+    print_query(query, "removeRoleFromUser", "Successfully removed role from user.")
