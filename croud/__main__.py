@@ -31,6 +31,7 @@ from croud.clusters.commands import (
     clusters_upgrade,
 )
 from croud.cmd import (
+    channel_arg,
     cluster_id_arg,
     cluster_name_arg,
     consumer_id_arg,
@@ -300,6 +301,9 @@ command_tree = {
                     crate_version_arg,
                     crate_username_arg,
                     crate_password_arg,
+                    lambda req_opt_group, opt_opt_group: channel_arg(
+                        req_opt_group, opt_opt_group, False
+                    ),
                 ],
                 "resolver": clusters_deploy,
             },

@@ -44,6 +44,7 @@ def clusters_list(args: Namespace) -> None:
             "project_id",
             "username",
             "fqdn",
+            "channel",
         ]
     )
 
@@ -61,6 +62,7 @@ def clusters_deploy(args: Namespace) -> None:
         "product_tier": args.tier,
         "project_id": args.project_id,
         "username": args.username,
+        "channel": args.channel,
     }
     if args.unit:
         body["product_unit"] = args.unit
