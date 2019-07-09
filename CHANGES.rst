@@ -5,6 +5,11 @@ Changes for croud
 Unreleased
 ==========
 
+- Added the ``channel`` argument to the ``cluster deploy`` command. This argument
+  can be used to specify the release channel of the specified CrateDB version.
+  The channel can be either ``stable`` (default), ``testing`` or ``nightly``.
+  Testing and nightly deployments can only be performed by superusers.
+
 - Show additional information about the scaling capabilities of a product in
   the output of the ``croud products list`` command.
 
