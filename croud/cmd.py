@@ -289,3 +289,16 @@ def num_instances_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> Non
 
 def kind_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
     opt_args.add_argument("--kind", type=str, help="The product kind.", required=False)
+
+
+def channel_arg(
+    req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool = True
+) -> None:
+    group = req_args if required else opt_args
+    group.add_argument(
+        "--channel",
+        type=str,
+        help="The channel of the CrateDB version.",
+        default="stable",
+        required=False,
+    )

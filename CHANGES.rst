@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Add the ``channel`` argument to the cluster deploy command. This is needed 
+  to be able to specify either a stable, testing or nightly version.
+
 - Deprecated ``croud users roles add`` and ``croud users roles remove`` in
   favor of project and organization level commands ``croud
   organizations|projects users add|remove``.
