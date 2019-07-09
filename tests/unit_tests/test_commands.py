@@ -192,6 +192,7 @@ class TestClusters(CommandTestCase):
                 "product_unit": 1,
                 "project_id": self.project_id,
                 "username": "foobar",
+                "channel": "stable",
             },
         )
 
@@ -229,6 +230,50 @@ class TestClusters(CommandTestCase):
                 "product_tier": "xs",
                 "project_id": self.project_id,
                 "username": "foobar",
+                "channel": "stable",
+            },
+        )
+
+    @mock.patch.object(Client, "send")
+    def test_deploy_cluster_nightly(self, mock_send, mock_run, mock_load_config):
+        argv = [
+            "croud",
+            "clusters",
+            "deploy",
+            "--product-name",
+            "cratedb.az1",
+            "--tier",
+            "xs",
+            "--unit",
+            "1",
+            "--project-id",
+            self.project_id,
+            "--cluster-name",
+            "crate_cluster",
+            "--version",
+            "nightly-4.1.0-20190712",
+            "--username",
+            "foobar",
+            "--password",
+            "s3cr3t!",
+            "--channel",
+            "nightly",
+        ]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.POST,
+            "/api/v2/clusters/",
+            body={
+                "crate_version": "nightly-4.1.0-20190712",
+                "name": "crate_cluster",
+                "password": "s3cr3t!",
+                "product_name": "cratedb.az1",
+                "product_tier": "xs",
+                "project_id": self.project_id,
+                "username": "foobar",
+                "channel": "nightly",
+                "product_unit": 1,
             },
         )
 
