@@ -17,7 +17,8 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-from argparse import _ArgumentGroup
+import re
+from argparse import _ArgumentGroup, ArgumentTypeError
 
 
 def yes_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
@@ -170,9 +171,32 @@ def product_name_arg(
     )
 
 
+NIGHTLY_VERSION_RE = re.compile(
+    r"^(?:(?P<nightly>nightly)-)?(?P<version>\d+\.\d+\.\d+)(?:-(?P<date>\d{8}))?$",
+    re.ASCII,
+)
+
+
+def _crate_version_arg_parse(val):
+    match = NIGHTLY_VERSION_RE.match(val)
+    if match:
+        nightly, version, date = match.group("nightly", "version", "date")
+        if nightly and not date:
+            raise ArgumentTypeError(f"'{val}' is not a valid version.")
+        return (nightly, version, date)
+    else:
+        raise ArgumentTypeError(f"'{val}' is not a valid version.")
+
+
 def crate_version_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    # nightly-a.b.c-yyyymmdd
+    # a.b.c-yyyymmdd
+
     req_args.add_argument(
-        "--version", type=str, help="The CrateDB version to use.", required=True
+        "--version",
+        type=_crate_version_arg_parse,
+        help="The CrateDB version to use.",
+        required=True,
     )
 
 

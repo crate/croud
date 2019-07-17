@@ -31,6 +31,7 @@ from croud.util import (
     is_wsl,
     open_page_in_browser,
     require_confirmation,
+    validate_normalize_channel_version_input,
 )
 
 
@@ -160,3 +161,30 @@ def test_require_confirmation(
 
     out, _ = capsys.readouterr()
     assert output in out
+
+
+@pytest.mark.parametrize(
+    "channel,version,expected",
+    [
+        ("stable", (None, "1.2.3", None), "1.2.3"),
+        ("nightly", ("nightly", "1.2.3", "20190717"), "nightly-1.2.3-20190717"),
+        ("nightly", (None, "1.2.3", "20190717"), "nightly-1.2.3-20190717"),
+    ],
+)
+def test_validate_normalize_channel_version_input(channel, version, expected):
+    assert validate_normalize_channel_version_input(channel, version) == expected
+
+
+@pytest.mark.parametrize(
+    "channel,version",
+    [
+        ("stable", ("nightly", "1.2.3", "20190717")),
+        ("stable", ("nightly", "1.2.3", None)),
+        ("stable", (None, "1.2.3", "20190717")),
+        ("nightly", ("nightly", "1.2.3", None)),
+        ("nightly", (None, "1.2.3", None)),
+    ],
+)
+def test_validate_normalize_channel_version_input_invalid(channel, version):
+    with pytest.raises(ValueError):
+        validate_normalize_channel_version_input(channel, version)

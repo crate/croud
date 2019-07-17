@@ -19,9 +19,10 @@
 
 from argparse import Namespace
 
+from croud.printer import print_error, print_info
 from croud.rest import Client
 from croud.session import RequestMethod
-from croud.util import require_confirmation
+from croud.util import require_confirmation, validate_normalize_channel_version_input
 
 
 def clusters_list(args: Namespace) -> None:
@@ -53,9 +54,19 @@ def clusters_deploy(args: Namespace) -> None:
     """
     Deploys a new CrateDB cluster.
     """
+    try:
+        crate_version = validate_normalize_channel_version_input(
+            args.channel, args.version
+        )
+    except ValueError as e:
+        print_error(str(e))
+        return
+
+    print_info(crate_version)
+    return
 
     body = {
-        "crate_version": args.version,
+        "crate_version": crate_version,
         "name": args.cluster_name,
         "password": args.password,
         "product_name": args.product_name,

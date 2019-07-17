@@ -23,7 +23,7 @@ import platform
 import subprocess
 import webbrowser
 from argparse import Namespace
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 from croud.printer import print_info
 
@@ -120,3 +120,31 @@ def require_confirmation(
         return _wrapper
 
     return _inner
+
+
+def validate_normalize_channel_version_input(
+    channel: str, version: Tuple[Optional[str], str, Optional[str]]
+):
+    nightly, vstring, date = version
+    if channel == "nightly":
+        if date is None:
+            raise ValueError(
+                "The date in the CrateDB version is required "
+                f"for {channel} deployments."
+            )
+        if nightly is None:
+            nightly = "nightly"
+        return f"{nightly}-{vstring}-{date}"
+    else:
+        if nightly or date:
+            if nightly:
+                raise ValueError(
+                    "The 'nightly-' prefix for the CrateDB version is not "
+                    f"allowed for {channel} deployments."
+                )
+            else:
+                raise ValueError(
+                    "The date in the CrateDB version is not allowed "
+                    f"for {channel} deployments."
+                )
+        return vstring
