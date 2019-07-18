@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Updated the feedback messages for several commands.
+
 0.16.0 - 2019/07/18
 ===================
 

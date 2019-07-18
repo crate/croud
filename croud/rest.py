@@ -99,11 +99,12 @@ class Client:
         if resp.status >= 400:
             return None, body
         else:
+            import pdb; pdb.set_trace()
             data = body["data"] if "data" in body else body
             return data, None
 
     def print(self, success_message: str = None, keys: List[str] = None):
-        if self._error:
+        if self._error and success_message is None:
             if "message" in self._error:
                 print_error(self._error["message"])
                 if "errors" in self._error:
@@ -117,4 +118,9 @@ class Client:
             print_success(message)
             return
 
-        print_format(self._data, self._output_fmt, keys)
+        if keys is not None:
+            print_format(self._data, self._output_fmt, keys)
+
+        if self._data and success_message is not None:
+            message = success_message
+            print_success(message)

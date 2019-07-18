@@ -22,7 +22,7 @@ from argparse import Namespace
 from functools import partial
 
 from croud.config import Configuration
-from croud.printer import print_error, print_info
+from croud.printer import print_error, print_info, print_success
 from croud.server import Server
 from croud.session import cloud_url
 from croud.util import can_launch_browser, open_page_in_browser
@@ -60,7 +60,7 @@ def login(args: Namespace) -> None:
         print_error("Login only works with a valid browser installed.")
         exit(1)
 
-    print_info("Login successful.")
+    print_success("You are logged in.")
 
 
 def _login_url(env: str) -> str:

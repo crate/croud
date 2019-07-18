@@ -35,7 +35,8 @@ def project_users_add(args: Namespace) -> None:
         f"/api/v2/projects/{args.project_id}/users/",
         body={"user": args.user, "role_fqn": args.role},
     )
-    client.print(keys=["user_id", "project_id", "role_fqn"])
+    client.print(keys=["user_id", "project_id", "role_fqn"],
+                 success_message="User added to project.")
 
 
 def project_users_remove(args: Namespace) -> None:
@@ -47,4 +48,4 @@ def project_users_remove(args: Namespace) -> None:
     client.send(
         RequestMethod.DELETE, f"/api/v2/projects/{args.project_id}/users/{args.user}/"
     )
-    client.print(success_message="Successfully removed user from project.")
+    client.print(success_message="User removed from project.")

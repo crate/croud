@@ -21,7 +21,7 @@ import asyncio
 from argparse import Namespace
 
 from croud.config import Configuration
-from croud.printer import print_info
+from croud.printer import print_success
 from croud.session import HttpSession, cloud_url
 
 LOGOUT_PATH = "/oauth2/logout"
@@ -35,7 +35,7 @@ def logout(args: Namespace) -> None:
     loop.run_until_complete(make_request(env, token))
     Configuration.set_token("", env)
 
-    print_info("You have been logged out.")
+    print_success("You've been logged out.")
 
 
 async def make_request(env: str, token: str) -> None:

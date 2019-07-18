@@ -68,7 +68,11 @@ def clusters_deploy(args: Namespace) -> None:
         body["product_unit"] = args.unit
     client = Client.from_args(args)
     client.send(RequestMethod.POST, "/api/v2/clusters/", body=body)
-    client.print(keys=["id", "name", "fqdn", "url"])
+    client.print(
+        keys=["id", "name", "fqdn", "url"],
+        success_message="Cluster deployed. It may take a few minutes to "
+        "complete the changes.",
+    )
 
 
 def clusters_scale(args: Namespace) -> None:
@@ -81,7 +85,9 @@ def clusters_scale(args: Namespace) -> None:
     client.send(
         RequestMethod.PUT, f"/api/v2/clusters/{args.cluster_id}/scale/", body=body
     )
-    client.print(keys=["id", "name", "num_nodes"])
+    client.print(keys=["id", "name", "num_nodes"],
+                 success_message="Cluster scaled. It may take a few minutes "
+                 "to complete the changes.",)
 
 
 def clusters_upgrade(args: Namespace) -> None:
@@ -94,7 +100,9 @@ def clusters_upgrade(args: Namespace) -> None:
     client.send(
         RequestMethod.PUT, f"/api/v2/clusters/{args.cluster_id}/upgrade/", body=body
     )
-    client.print(keys=["id", "name", "crate_version"])
+    client.print(keys=["id", "name", "crate_version"],
+                 success_message="Cluster upgraded. It may take a few minutes to "
+                 "complete the changes.",)
 
 
 @require_confirmation(

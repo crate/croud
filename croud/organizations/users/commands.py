@@ -34,7 +34,10 @@ def org_users_add(args: Namespace):
         f"/api/v2/organizations/{args.org_id}/users/",
         body={"user": args.user, "role_fqn": args.role},
     )
-    client.print(keys=["user_id", "role_fqn", "organization_id"])
+    if "@" in args.user:
+        client.print(success_message=f"User with mail {args.user} was added.")
+    else:
+        client.print(success_message=f"User with id {args.user} was added.")
 
 
 def org_users_remove(args: Namespace):
@@ -43,4 +46,4 @@ def org_users_remove(args: Namespace):
     client.send(
         RequestMethod.DELETE, f"/api/v2/organizations/{args.org_id}/users/{args.user}/"
     )
-    client.print(success_message="Successfully removed user from organization.")
+    client.print(success_message="User removed from organization.")

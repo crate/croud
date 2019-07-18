@@ -54,7 +54,9 @@ def consumers_deploy(args: Namespace) -> None:
             "project_id",
             "table_name",
             "table_schema",
-        ]
+        ],
+        success_message="Consumer deployed. It may take a few minutes to "
+        "complete the changes.",
     )
 
 

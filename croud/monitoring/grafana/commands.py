@@ -30,4 +30,6 @@ def set_grafana(enable: bool, args: Namespace) -> None:
     client.send(
         method, "/api/v2/monitoring/grafana/", body={"project_id": args.project_id}
     )
-    client.print()
+    state = "enabled" if enable else "disabled"
+    client.print(success_message=f"Grafana {state}.")
+3
