@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.16.0 - 2019/07/18
+===================
+
 - Added the ``channel`` argument to the ``cluster deploy`` command. This argument
   can be used to specify the release channel of the specified CrateDB version.
   The channel can be either ``stable`` (default), ``testing`` or ``nightly``.
