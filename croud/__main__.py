@@ -489,19 +489,19 @@ command_tree = {
 # fmt: on
 
 
-def get_parser():
+def get_parser(config: Configuration):
     tree = {
         "help": "A command line interface for CrateDB Cloud.",
         "commands": command_tree,
     }
-    return create_parser(tree)
+    return create_parser(tree, config)
 
 
 def main():
-    Configuration.create()
+    config = Configuration().load()
     colorama.init()
 
-    parser = get_parser()
+    parser = get_parser(config)
     params = parser.parse_args(sys.argv[1:])
     if "resolver" in params:
         fn = params.resolver

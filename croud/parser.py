@@ -24,6 +24,7 @@ import inspect
 import sys
 
 from croud import __version__
+from croud.config import Configuration
 
 POSITIONALS_TITLE = "Available Commands"
 REQUIRED_TITLE = "Required Arguments"
@@ -120,7 +121,7 @@ def help_print_factory(parser: argparse.ArgumentParser):
     return print_help
 
 
-def add_subparser(parser, tree, name="__root__"):
+def add_subparser(parser, tree, config: Configuration, name="__root__"):
     if "extra_args" in tree:
         for arg_provider in tree["extra_args"]:
             arg_provider(
@@ -133,17 +134,22 @@ def add_subparser(parser, tree, name="__root__"):
         subparsers = parser.add_subparsers()
         for _cmd, _tree in tree["commands"].items():
             sub = subparsers.add_parser(_cmd, help=_tree.get("help"))
-            add_subparser(sub, _tree, sub.prog)
+            add_subparser(sub, _tree, config, sub.prog)
     else:
         add_default_args(parser)
         resolver = tree["resolver"]
         signature = inspect.signature(resolver)
+        resolver_kwargs = {}
         if "parser" in signature.parameters:
-            resolver = functools.partial(resolver, parser=parser)
+            resolver_kwargs["parser"] = parser
+        if "config" in signature.parameters:
+            resolver_kwargs["config"] = config
+        if resolver_kwargs:
+            resolver = functools.partial(resolver, **resolver_kwargs)
         parser.set_defaults(resolver=resolver)
 
 
-def create_parser(tree):
+def create_parser(tree, config: Configuration):
     parser = CroudCliArgumentParser(prog="croud", description=tree["help"])
     parser._group_optional.add_argument(
         "-v",
@@ -152,5 +158,5 @@ def create_parser(tree):
         version="%(prog)s " + __version__,
         help="Show program's version number and exit.",
     )
-    add_subparser(parser, tree, parser.prog)
+    add_subparser(parser, tree, config, parser.prog)
     return parser
