@@ -22,6 +22,7 @@ import functools
 import json
 from typing import Dict, List, Optional, Type, Union
 
+import yaml
 from colorama import Fore, Style
 from tabulate import tabulate
 
@@ -121,7 +122,13 @@ class TableFormatPrinter(FormatPrinter):
             return field
 
 
-PRINTERS: Dict[str, Union[Type[JsonFormatPrinter], Type[TableFormatPrinter]]] = {
+class YamlFormatPrinter(FormatPrinter):
+    def format_rows(self, rows: Union[List[JsonDict], JsonDict]) -> str:
+        return yaml.dump(rows, default_flow_style=False)
+
+
+PRINTERS: Dict[str, Type[FormatPrinter]] = {
     "json": JsonFormatPrinter,
     "table": TableFormatPrinter,
+    "yaml": YamlFormatPrinter,
 }

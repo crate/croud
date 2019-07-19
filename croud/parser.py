@@ -108,7 +108,7 @@ def add_default_args(parser):
         "--output-fmt",
         "-o",
         required=False,
-        choices={"table", "json"},
+        choices={"table", "json", "yaml"},
         help="Change the formatting of the output",
     )
 
