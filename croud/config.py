@@ -17,8 +17,11 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import copy
 import os
 from argparse import Namespace
+from pathlib import Path
+from typing import Optional
 
 import yaml
 from appdirs import user_config_dir
@@ -26,122 +29,134 @@ from schema import Schema, SchemaError
 
 from croud.printer import print_error, print_format, print_info
 
-
-class IncompatibleConfigException(Exception):
-    pass
+DEFAULT_CONFIG = {
+    "current-profile": "prod",
+    "global": {"region": "", "output-format": "", "organization": ""},
+    "profile": {
+        "prod": {"token": "", "region": "", "output-format": "", "organization": ""},
+        "dev": {"token": "", "region": "", "output-format": "", "organization": ""},
+        "local": {"token": "", "region": "", "output-format": "", "organization": ""},
+    },
+}
+DEFAULT_CONFIG_SCHEMA = Schema(
+    {
+        "current-profile": str,
+        "global": {"region": str, "output-format": str, "organization": str},
+        "profile": {
+            "prod": {
+                "token": str,
+                "region": str,
+                "output-format": str,
+                "organization": str,
+            },
+            "dev": {
+                "token": str,
+                "region": str,
+                "output-format": str,
+                "organization": str,
+            },
+            "local": {
+                "token": str,
+                "region": str,
+                "output-format": str,
+                "organization": str,
+            },
+        },
+    }
+)
+OLD_CONFIG_SCHEMA = Schema(
+    {
+        "auth": {
+            "current_context": str,
+            "contexts": {
+                "prod": {"token": str},
+                "dev": {"token": str},
+                "local": {"token": str},
+            },
+        },
+        "region": str,
+        "output_fmt": str,
+    }
+)
 
 
 class Configuration:
-    USER_CONFIG_DIR: str = user_config_dir("Crate")
-    FILENAME: str = "croud.yaml"
-    FILEPATH: str = f"{USER_CONFIG_DIR}/{FILENAME}"
-    DEFAULT_CONFIG: dict = {
-        "auth": {
-            "current_context": "prod",
-            "contexts": {
-                "prod": {"token": ""},
-                "dev": {"token": ""},
-                "local": {"token": ""},
-            },
-        },
-        "region": "bregenz.a1",
-        "output_fmt": "table",
-    }
     CONFIG_NAMES: dict = {
         "env": "Environment",
         "output_fmt": "Output format",
         "region": "Region",
     }
 
-    @staticmethod
-    def validate(config: dict) -> dict:
-        schema = Schema(
-            {
-                "auth": {
-                    "current_context": str,
-                    "contexts": {
-                        "prod": {"token": str},
-                        "dev": {"token": str},
-                        "local": {"token": str},
-                    },
-                },
-                "region": str,
-                "output_fmt": str,
-            }
-        )
+    _path: Path
+    _config: dict
+
+    def __init__(self, path: Optional[Path] = None):
+        if path is None:
+            path = Path(user_config_dir("Crate")) / "crate.yaml"
+        self._path = path
+
+    def load(self):
+        with self._path.open("r") as f:
+            self._config = yaml.safe_load(f)
+
+        self._validate()
+
+    def save(self) -> None:
+        self._path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+        with self._path.open("w") as f:
+            self._path.chmod(0o600)
+            yaml.dump(self._config, f, default_flow_style=False, allow_unicode=True)
+
+    def _validate(self, config: dict):
         try:
-            return schema.validate(config)
+            DEFAULT_CONFIG_SCHEMA.validate(config)
         except SchemaError:
-            os.remove(Configuration.FILEPATH)
-            create_default_config()
+            try:
+                self._config = self._load_old_config(config)
+            except SchemaError:
+                self._config = copy.deepcopy(DEFAULT_CONFIG)
+            self.save()
 
-            return schema.validate(Configuration.DEFAULT_CONFIG)
+    def _load_old_config(self, config: dict):
+        OLD_CONFIG_SCHEMA.validate(config)
+        new_config: dict = copy.deepcopy(DEFAULT_CONFIG)
+        # fmt: off
+        new_config["current-profile"] = config["auth"]["current_context"]
+        new_config["global"]["region"] = config["region"]
+        new_config["global"]["output-format"] = config["output_fmt"]
+        new_config["profile"]["prod"]["token"] = config["auth"]["contexts"]["prod"]["token"]  # noqa
+        new_config["profile"]["dev"]["token"] = config["auth"]["contexts"]["dev"]["token"]  # noqa
+        new_config["profile"]["local"]["token"] = config["auth"]["contexts"]["local"]["token"]  # noqa
+        # fmt: on
+        return new_config
 
-    @staticmethod
-    def create() -> None:
-        if not os.path.exists(Configuration.USER_CONFIG_DIR):
-            os.makedirs(Configuration.USER_CONFIG_DIR)
+    def get_current_profile(self) -> str:
+        return self._config["current-profile"]
 
-        if not os.path.isfile(Configuration.FILEPATH):
-            create_default_config()
-        else:
-            load_config()
+    def set_current_profile(self, value):
+        self._config["current-profile"] = value
 
-    @staticmethod
-    def get_setting(setting: str) -> str:
-        setting = setting.replace("-", "_")
-        if setting == "env":
-            return Configuration.get_env()
-        return load_config()[setting]
+    def get_global(self, key) -> str:
+        return self._config["global"].get(key)
 
-    @staticmethod
-    def get_env() -> str:
-        config = load_config()
-        return config["auth"]["current_context"]
+    def set_global(self, key, value):
+        self._config["global"][key] = value
 
-    @staticmethod
-    def set_context(env: str) -> None:
-        config = load_config()
-        config["auth"]["current_context"] = env
-        write_config(config)
+    def get_profile(self, profile, key, default=None) -> str:
+        if profile not in self._config:
+            self._config[profile] = {}
+        return self._config[profile].get(key, default)
 
-    @staticmethod
-    def get_token(env: str) -> str:
-        config = load_config()
-        return config["auth"]["contexts"][env].get("token", "")
-
-    @staticmethod
-    def set_token(token: str, env: str) -> None:
-        config = load_config()
-        config["auth"]["contexts"][env]["token"] = token
-        write_config(config)
-
-
-def create_default_config() -> None:
-    write_config(Configuration.DEFAULT_CONFIG)
-    os.chmod(Configuration.FILEPATH, 0o600)
-
-
-def load_config() -> dict:
-    with open(Configuration.FILEPATH, "r") as f:
-        config = yaml.safe_load(f)
-
-    try:
-        return Configuration.validate(config)
-    except IncompatibleConfigException as e:
-        print_error(str(e))
-        exit(1)
+    def set_profile(self, profile, key, default=None) -> str:
+        if profile not in self._config:
+            self._config[profile] = {}
+        return self._config[profile].get(key, default)
 
 
 def set_property(property: str, value: str):
     config = load_config()
     config[property] = value
     write_config(config)
-
-
-def write_config(config: dict) -> None:
-    with open(Configuration.FILEPATH, "w", encoding="utf8") as f:
-        yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
 
 
 def config_get(args: Namespace):
