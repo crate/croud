@@ -164,11 +164,24 @@ def config_get(args: Namespace, config: Configuration):
         "or `croud config get-global` instead."
     )
 
-    context
+    profile = config.get_current_profile()
+    fmt = args.output_fmt or config.get_profile(profile, "output-format")
+    key = args.get
+    if key == "output-fmt":
+        print_warning(
+            "The configuration setting 'output-fmt' was renamed to 'output-format'."
+        )
+        value = config.get_profile(profile, "output-format")
+    elif key == "env":
+        print_warning(
+            "Environments (envs) were renamed to profiles. To get the current "
+            "environment use `croud config current-profile`."
+        )
+        value = config.get_current_profile()
+    else:
+        value = config.get_profile(profile, key)
 
-    fmt = Configuration.get_setting("output_fmt")
-    value = Configuration.get_setting(args.get)
-    print_format([{args.get: value}], args.output_fmt or fmt)
+    print_format([{key: value}], args.output_fmt or fmt)
 
 
 def config_set(args: Namespace, parser=None):
