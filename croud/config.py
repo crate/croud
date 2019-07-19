@@ -30,7 +30,7 @@ from croud.printer import print_format, print_info, print_warning, print_success
 
 DEFAULT_CONFIG = {
     "current-profile": "prod",
-    "global": {"region": "", "output-format": "", "organization": ""},
+    "global": {"region": "", "output-format": "table", "organization": ""},
     "profile": {
         "prod": {"token": "", "region": "", "output-format": "", "organization": ""},
         "dev": {"token": "", "region": "", "output-format": "", "organization": ""},
@@ -144,12 +144,16 @@ class Configuration:
     def set_global(self, key, value):
         self._config["global"][key] = value
 
-    def get_profile(self, profile, key) -> str:
+    def get_profile(self, key, profile=None) -> str:
+        if profile is None:
+            profile = self.get_current_profile()
         if profile not in self._config:
             self._config[profile] = {}
         return self._config[profile].get(key) or self.get_global(key)
 
-    def set_profile(self, profile, key, value):
+    def set_profile(self, key, value, profile=None):
+        if profile is None:
+            profile = self.get_current_profile()
         if profile not in self._config:
             self._config[profile] = {}
         self._config[profile][key] = value
@@ -157,7 +161,9 @@ class Configuration:
 
 def current_profile(args: Namespace, config: Configuration):
     key = "current_profile"
-    print_format([{key: config.get_current_profile()}], "table")
+    print_format(
+        [{key: config.get_current_profile()}], config.get_global("output-format")
+    )
 
 
 def use_profile(args: Namespace, config: Configuration):
@@ -175,14 +181,13 @@ def config_get(args: Namespace, config: Configuration):
         "or `croud config get-global` instead."
     )
 
-    profile = config.get_current_profile()
-    fmt = args.output_fmt or config.get_profile(profile, "output-format")
+    fmt = args.output_fmt or config.get_profile("output-format")
     key = args.get
     if key == "output-fmt":
         print_warning(
             "The configuration setting 'output-fmt' was renamed to 'output-format'."
         )
-        value = config.get_profile(profile, "output-format")
+        value = config.get_profile("output-format")
     elif key == "env":
         print_warning(
             "Environments (envs) were renamed to profiles. To get the current "
@@ -190,7 +195,7 @@ def config_get(args: Namespace, config: Configuration):
         )
         value = config.get_current_profile()
     else:
-        value = config.get_profile(profile, key)
+        value = config.get_profile(key)
 
     print_format([{key: value}], args.output_fmt or fmt)
 
