@@ -62,7 +62,13 @@ from croud.cmd import (
     user_id_or_email_arg,
     yes_arg,
 )
-from croud.config import Configuration, config_get, config_set
+from croud.config import (
+    Configuration,
+    config_get,
+    config_set,
+    current_profile,
+    use_profile,
+)
 from croud.consumers.commands import (
     consumers_delete,
     consumers_deploy,
@@ -98,6 +104,15 @@ command_tree = {
     "config": {
         "help": "Manage croud default configuration values.",
         "commands": {
+            "current-profile": {
+                "help": "Get the current profile.",
+                "resolver": current_profile,
+            },
+            "use-profile": {
+                "help": "Switch the current profile.",
+                "extra_args": [],
+                "resolver": use_profile,
+            },
             "get": {
                 "help": "Get default configuration values.",
                 "resolver": config_get,

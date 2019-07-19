@@ -26,7 +26,7 @@ import yaml
 from appdirs import user_config_dir
 from schema import Schema, SchemaError
 
-from croud.printer import print_format, print_info, print_warning
+from croud.printer import print_format, print_info, print_warning, print_success
 
 DEFAULT_CONFIG = {
     "current-profile": "prod",
@@ -155,6 +155,17 @@ class Configuration:
         self._config[profile][key] = value
 
 
+def current_profile(args: Namespace, config: Configuration):
+    key = "current_profile"
+    print_format([{key: config.get_current_profile()}], "table")
+
+
+def use_profile(args: Namespace, config: Configuration):
+    config.set_current_profile(args.env)
+    config.save()
+    print_success(f"Default profile switched to '{args.env}'.")
+
+
 def config_get(args: Namespace, config: Configuration):
     """
     Gets a default configuration setting
@@ -184,13 +195,13 @@ def config_get(args: Namespace, config: Configuration):
     print_format([{key: value}], args.output_fmt or fmt)
 
 
-def config_set(args: Namespace, parser=None):
+def config_set(args: Namespace, parser, config: Configuration):
     """
     Sets a default configuration setting
     """
     print_warning(
-        "This command is deprecated. Please use `croud config get-profile` "
-        "or `croud config get-global` instead."
+        "This command is deprecated. Please use `croud config set-profile` "
+        "or `croud config set-global` instead."
     )
 
     if parser and all(val is None for val in vars(args).values()):
