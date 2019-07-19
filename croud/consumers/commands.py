@@ -19,6 +19,8 @@
 
 from argparse import Namespace
 
+from croud.config import get_output_format
+from croud.printer import print_response
 from croud.rest import Client
 from croud.session import RequestMethod
 from croud.util import require_confirmation
@@ -42,8 +44,10 @@ def consumers_deploy(args: Namespace) -> None:
         "table_schema": args.consumer_schema,
     }
     client = Client.from_args(args)
-    client.send(RequestMethod.POST, "/api/v2/consumers/", body=body)
-    client.print(
+    data, errors = client.send(RequestMethod.POST, "/api/v2/consumers/", body=body)
+    print_response(
+        data=data,
+        errors=errors,
         keys=[
             "cluster_id",
             "id",
@@ -54,7 +58,11 @@ def consumers_deploy(args: Namespace) -> None:
             "project_id",
             "table_name",
             "table_schema",
-        ]
+        ],
+        success_message=(
+            "Consumer deployed. It may take a few minutes to complete the changes."
+        ),
+        output_fmt=get_output_format(args),
     )
 
 
@@ -68,8 +76,10 @@ def consumers_list(args: Namespace) -> None:
         params["project_id"] = args.project_id
 
     client = Client.from_args(args)
-    client.send(RequestMethod.GET, "/api/v2/consumers/", params=params)
-    client.print(
+    data, errors = client.send(RequestMethod.GET, "/api/v2/consumers/", params=params)
+    print_response(
+        data=data,
+        errors=errors,
         keys=[
             "cluster_id",
             "id",
@@ -80,7 +90,8 @@ def consumers_list(args: Namespace) -> None:
             "project_id",
             "table_name",
             "table_schema",
-        ]
+        ],
+        output_fmt=get_output_format(args),
     )
 
 
@@ -103,10 +114,12 @@ def consumers_edit(args: Namespace) -> None:
     if config:
         body["config"] = config
     client = Client.from_args(args)
-    client.send(
+    data, errors = client.send(
         RequestMethod.PATCH, f"/api/v2/consumers/{args.consumer_id}/", body=body
     )
-    client.print(keys=["id"])
+    print_response(
+        data=data, errors=errors, keys=["id"], output_fmt=get_output_format(args)
+    )
 
 
 @require_confirmation(
@@ -115,5 +128,12 @@ def consumers_edit(args: Namespace) -> None:
 )
 def consumers_delete(args: Namespace) -> None:
     client = Client.from_args(args)
-    client.send(RequestMethod.DELETE, f"/api/v2/consumers/{args.consumer_id}/")
-    client.print("Consumer deleted.")
+    data, errors = client.send(
+        RequestMethod.DELETE, f"/api/v2/consumers/{args.consumer_id}/"
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        success_message="Consumer deleted.",
+        output_fmt=get_output_format(args),
+    )

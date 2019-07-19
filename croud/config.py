@@ -186,3 +186,14 @@ def config_set(args: Namespace, parser=None):
             else:
                 set_property(key, setting)
                 print_info(f"{Configuration.CONFIG_NAMES[key]} switched to {setting}")
+
+
+def get_output_format(args: Namespace) -> str:
+    """
+    Gets the default output_format
+    """
+    return (
+        args.output_fmt
+        if args.output_fmt is not None
+        else Configuration.get_setting("output_fmt")
+    )

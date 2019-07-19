@@ -38,9 +38,8 @@ def get_org_id() -> Optional[str]:
         Configuration.get_setting("region"),
         Configuration.get_setting("output-fmt"),
     )
-    client.send(RequestMethod.GET, "/api/v2/users/me/")
-    if client._data and not client._error:
-        data: dict = client._data  # type: ignore
+    data, error = client.send(RequestMethod.GET, "/api/v2/users/me/")
+    if data and not error:
         if not data.get("is_superuser") and "organization_id" in data:
             return data.get("organization_id")
     return None

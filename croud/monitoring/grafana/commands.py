@@ -19,6 +19,8 @@
 
 from argparse import Namespace
 
+from croud.config import get_output_format
+from croud.printer import print_response
 from croud.rest import Client
 from croud.session import RequestMethod
 
@@ -27,7 +29,13 @@ def set_grafana(enable: bool, args: Namespace) -> None:
     method = RequestMethod.POST if enable else RequestMethod.DELETE
 
     client = Client.from_args(args)
-    client.send(
+    data, errors = client.send(
         method, "/api/v2/monitoring/grafana/", body={"project_id": args.project_id}
     )
-    client.print()
+    state = "enabled" if enable else "disabled"
+    print_response(
+        data=data,
+        errors=errors,
+        success_message=f"Grafana {state}.",
+        output_fmt=get_output_format(args),
+    )

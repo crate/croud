@@ -19,6 +19,8 @@
 
 from argparse import Namespace
 
+from croud.config import get_output_format
+from croud.printer import print_response
 from croud.rest import Client
 from croud.session import RequestMethod
 from croud.util import require_confirmation
@@ -34,8 +36,10 @@ def clusters_list(args: Namespace) -> None:
         params["project_id"] = args.project_id
 
     client = Client.from_args(args)
-    client.send(RequestMethod.GET, "/api/v2/clusters/", params=params)
-    client.print(
+    data, errors = client.send(RequestMethod.GET, "/api/v2/clusters/", params=params)
+    print_response(
+        data=data,
+        errors=errors,
         keys=[
             "id",
             "name",
@@ -45,7 +49,8 @@ def clusters_list(args: Namespace) -> None:
             "username",
             "fqdn",
             "channel",
-        ]
+        ],
+        output_fmt=get_output_format(args),
     )
 
 
@@ -67,8 +72,16 @@ def clusters_deploy(args: Namespace) -> None:
     if args.unit:
         body["product_unit"] = args.unit
     client = Client.from_args(args)
-    client.send(RequestMethod.POST, "/api/v2/clusters/", body=body)
-    client.print(keys=["id", "name", "fqdn", "url"])
+    data, errors = client.send(RequestMethod.POST, "/api/v2/clusters/", body=body)
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "fqdn", "url"],
+        success_message=(
+            "Cluster deployed. It may take a few minutes to complete the changes."
+        ),
+        output_fmt=get_output_format(args),
+    )
 
 
 def clusters_scale(args: Namespace) -> None:
@@ -78,10 +91,18 @@ def clusters_scale(args: Namespace) -> None:
 
     body = {"product_unit": args.unit}
     client = Client.from_args(args)
-    client.send(
+    data, errors = client.send(
         RequestMethod.PUT, f"/api/v2/clusters/{args.cluster_id}/scale/", body=body
     )
-    client.print(keys=["id", "name", "num_nodes"])
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "num_nodes"],
+        success_message=(
+            "Cluster scaled. It may take a few minutes to complete the changes."
+        ),
+        output_fmt=get_output_format(args),
+    )
 
 
 def clusters_upgrade(args: Namespace) -> None:
@@ -91,10 +112,18 @@ def clusters_upgrade(args: Namespace) -> None:
 
     body = {"crate_version": args.version}
     client = Client.from_args(args)
-    client.send(
+    data, errors = client.send(
         RequestMethod.PUT, f"/api/v2/clusters/{args.cluster_id}/upgrade/", body=body
     )
-    client.print(keys=["id", "name", "crate_version"])
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "num_nodes"],
+        success_message=(
+            "Cluster upgraded. It may take a few minutes to complete the changes."
+        ),
+        output_fmt=get_output_format(args),
+    )
 
 
 @require_confirmation(
@@ -103,5 +132,12 @@ def clusters_upgrade(args: Namespace) -> None:
 )
 def clusters_delete(args: Namespace) -> None:
     client = Client.from_args(args)
-    client.send(RequestMethod.DELETE, f"/api/v2/clusters/{args.cluster_id}/")
-    client.print("Cluster deleted.")
+    data, errors = client.send(
+        RequestMethod.DELETE, f"/api/v2/clusters/{args.cluster_id}/"
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        success_message="Cluster deleted.",
+        output_fmt=get_output_format(args),
+    )

@@ -19,7 +19,8 @@
 
 from argparse import Namespace
 
-from croud.config import Configuration
+from croud.config import Configuration, get_output_format
+from croud.printer import print_response
 from croud.rest import Client
 from croud.session import RequestMethod
 from croud.util import org_id_config_fallback, require_confirmation
@@ -31,12 +32,18 @@ def organizations_create(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    client.send(
+    data, errors = client.send(
         RequestMethod.POST,
         "/api/v2/organizations/",
         body={"name": args.name, "plan_type": args.plan_type},
     )
-    client.print(keys=["id", "name", "plan_type"])
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "plan_type"],
+        success_message="Organization created.",
+        output_fmt=get_output_format(args),
+    )
 
 
 def organizations_list(args: Namespace) -> None:
@@ -45,8 +52,13 @@ def organizations_list(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    client.send(RequestMethod.GET, "/api/v2/organizations/")
-    client.print(keys=["id", "name", "plan_type"])
+    data, errors = client.send(RequestMethod.GET, "/api/v2/organizations/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "plan_type"],
+        output_fmt=get_output_format(args),
+    )
 
 
 @org_id_config_fallback
@@ -60,8 +72,15 @@ def organizations_delete(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    client.send(RequestMethod.DELETE, f"/api/v2/organizations/{args.org_id}/")
-    client.print("Organization deleted.")
+    data, errors = client.send(
+        RequestMethod.DELETE, f"/api/v2/organizations/{args.org_id}/"
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        success_message="Organization deleted.",
+        output_fmt=get_output_format(args),
+    )
 
     env = args.env or Configuration.get_env()
     config_org_id = Configuration.get_organization_id(env)

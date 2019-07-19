@@ -20,13 +20,11 @@
 import asyncio
 from argparse import Namespace
 from functools import partial
-from typing import List, Optional, Union
 
 from aiohttp import ContentTypeError  # type: ignore
 from aiohttp.client_reqrep import ClientResponse
 
 from croud.config import Configuration
-from croud.printer import print_error, print_format, print_success
 from croud.session import HttpSession, RequestMethod
 
 
@@ -34,15 +32,11 @@ class Client:
     _env: str
     _token: str
     _region: str
-    _output_fmt: str
-    _data: Optional[Union[List[dict], dict]] = None
-    _error: Optional[dict] = None
 
     def __init__(self, env: str, region: str, output_fmt: str, loop=None):
         self._env = env or Configuration.get_env()
         self._token = Configuration.get_token(self._env)
         self._region = region or Configuration.get_setting("region")
-        self._output_fmt = output_fmt or Configuration.get_setting("output_fmt")
         self.loop = loop or asyncio.get_event_loop()
 
     @staticmethod
@@ -57,7 +51,7 @@ class Client:
         body: dict = None,
         params: dict = None
     ):
-        self.loop.run_until_complete(self.fetch(method, endpoint, body, params))
+        return self.loop.run_until_complete(self.fetch(method, endpoint, body, params))
 
     async def fetch(
         self,
@@ -66,24 +60,14 @@ class Client:
         body: dict = None,
         params: dict = None,
     ):
-        resp = await self._fetch(method, endpoint, body, params)
-
-        self._data, self._error = await self._decode_response(resp)
-
-    async def _fetch(
-        self,
-        method: RequestMethod,
-        endpoint: str,
-        body: dict = None,
-        params: dict = None,
-    ) -> ClientResponse:
         async with HttpSession(
             self._env,
             self._token,
             self._region,
             on_new_token=partial(Configuration.set_token, env=self._env),
         ) as session:
-            return await session.fetch(method, endpoint, body, params)
+            resp = await session.fetch(method, endpoint, body, params)
+            return await self._decode_response(resp)
 
     async def _decode_response(self, resp: ClientResponse):
         if resp.status == 204:
@@ -99,22 +83,4 @@ class Client:
         if resp.status >= 400:
             return None, body
         else:
-            data = body["data"] if "data" in body else body
-            return data, None
-
-    def print(self, success_message: str = None, keys: List[str] = None):
-        if self._error:
-            if "message" in self._error:
-                print_error(self._error["message"])
-                if "errors" in self._error:
-                    print_format(self._error["errors"], "json")
-            else:
-                print_format(self._error, "json")
-            return
-
-        if self._data is None:
-            message = success_message or "Success."
-            print_success(message)
-            return
-
-        print_format(self._data, self._output_fmt, keys)
+            return body, None

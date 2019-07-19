@@ -19,6 +19,8 @@
 
 from argparse import Namespace
 
+from croud.config import get_output_format
+from croud.printer import print_response
 from croud.rest import Client
 from croud.session import RequestMethod
 
@@ -30,12 +32,23 @@ def project_users_add(args: Namespace) -> None:
 
     client = Client.from_args(args)
 
-    client.send(
+    data, errors = client.send(
         RequestMethod.POST,
         f"/api/v2/projects/{args.project_id}/users/",
         body={"user": args.user, "role_fqn": args.role},
     )
-    client.print(keys=["user_id", "project_id", "role_fqn"])
+    if data is not None and data.get("added", False):
+        success_message = "User added to project."
+    else:
+        success_message = "Role altered for user."
+
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["user_id", "project_id", "role_fqn"],
+        success_message=success_message,
+        output_fmt=get_output_format(args),
+    )
 
 
 def project_users_remove(args: Namespace) -> None:
@@ -44,7 +57,12 @@ def project_users_remove(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    client.send(
+    data, errors = client.send(
         RequestMethod.DELETE, f"/api/v2/projects/{args.project_id}/users/{args.user}/"
     )
-    client.print(success_message="Successfully removed user from project.")
+    print_response(
+        data=data,
+        errors=errors,
+        success_message="User removed from project.",
+        output_fmt=get_output_format(args),
+    )

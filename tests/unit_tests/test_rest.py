@@ -48,25 +48,25 @@ class TestRestClient:
             data = {"key": "value"}
 
             client = Client(env="dev", region="bregenz.a1", output_fmt="json")
-            client.send(RequestMethod.GET, "/data/data-key")
+            resp_data, errors = client.send(RequestMethod.GET, "/data/data-key")
 
-            assert client._data == data
-            assert client._error is None
+            assert resp_data["data"] == data
+            assert errors is None
 
     def test_send_success_sets_data_without_key(self, mock_cloud_url, mock_token):
         with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
             client = Client(env="dev", region="bregenz.a1", output_fmt="json")
-            client.send(RequestMethod.GET, "/data/no-key")
+            resp_data, errors = client.send(RequestMethod.GET, "/data/no-key")
 
-            assert client._data == {"key": "value"}
-            assert client._error is None
+            assert resp_data == {"key": "value"}
+            assert errors is None
 
     def test_send_error_sets_error(self, mock_cloud_url, mock_token):
         with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
             client = Client(env="dev", region="bregenz.a1", output_fmt="json")
-            client.send(RequestMethod.GET, "/errors/400")
+            resp_data, errors = client.send(RequestMethod.GET, "/errors/400")
 
-            assert client._error == {
+            assert errors == {
                 "message": "Bad request.",
                 "errors": {"key": "Error on 'key'"},
             }
@@ -74,63 +74,18 @@ class TestRestClient:
     def test_send_text_response(self, mock_cloud_url, mock_token):
         with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
             client = Client(env="dev", region="bregenz.a1", output_fmt="json")
-            client.send(RequestMethod.GET, "/text-response")
+            resp_data, errors = client.send(RequestMethod.GET, "/text-response")
 
-            assert client._data is None
-            assert client._error == {
-                "message": "Invalid response type.",
-                "success": False,
-            }
+            assert resp_data is None
+            assert errors == {"message": "Invalid response type.", "success": False}
 
     def test_send_empty_response(self, mock_cloud_url, mock_token):
         with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
             client = Client(env="dev", region="bregenz.a1", output_fmt="json")
-            client.send(RequestMethod.GET, "/empty-response")
+            resp_data, errors = client.send(RequestMethod.GET, "/empty-response")
 
-            assert client._data is None
-            assert client._error is None
+            assert resp_data is None
+            assert errors is None
 
     def _get_conn(self):
         return TCPConnector(loop=self.loop, resolver=self.resolver, ssl=True)
-
-
-@mock.patch.object(Configuration, "get_token", return_value="eyJraWQiOiIx")
-@mock.patch("croud.rest.print_success")
-@mock.patch("croud.rest.print_format")
-def test_print_success(mock_print_format, mock_print_success, mock_token, event_loop):
-    client = Client(env="dev", region="bregenz.a1", output_fmt="json", loop=event_loop)
-
-    client._data = {"key": "value"}
-    client.print()
-    mock_print_format.assert_called_once_with({"key": "value"}, "json", None)
-
-    client._data = None
-    client.print("Success message.")
-    client.print()
-
-    mock_print_success.assert_has_calls(
-        [mock.call("Success message."), mock.call("Success.")]
-    )
-
-
-@mock.patch.object(Configuration, "get_token", return_value="eyJraWQiOiIx")
-def test_print_error(mock_token, capsys, event_loop):
-    client = Client(env="dev", region="bregenz.a1", output_fmt="json", loop=event_loop)
-
-    error = {"message": "Bad request.", "errors": {"key": "Error on 'key'"}}
-    client._error = error
-    client.print()
-    captured = capsys.readouterr()
-    assert "Bad request." in captured.out
-    assert '"key": "Error on \'key\'"' in captured.out
-
-
-@mock.patch.object(Configuration, "get_token", return_value="eyJraWQiOiIx")
-@mock.patch("croud.rest.print_format")
-def test_print_error_no_message(mock_print_format, mock_token, event_loop):
-    client = Client(env="dev", region="bregenz.a1", output_fmt="json", loop=event_loop)
-
-    error = {"errors": {"key": "Error on 'key'"}}
-    client._error = error
-    client.print()
-    mock_print_format.assert_called_once_with(error, "json")
