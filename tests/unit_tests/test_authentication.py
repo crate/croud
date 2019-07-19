@@ -112,7 +112,8 @@ class TestLogin:
 
         with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
             with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
-                login(Namespace(env="local"))
+                with mock.patch("croud.rest.Client.send", return_value=[None, None]):
+                    login(Namespace(env="local"))
 
         new_cfg = cfg.read_config()
         assert new_cfg["auth"]["current_context"] == "local"
@@ -159,48 +160,60 @@ class TestLogin:
     def test_get_org_id_no_org_is_superuser(self):
         cfg = MockConfig(Configuration.DEFAULT_CONFIG)
         cfg.conf["auth"]["contexts"]["dev"]["organization_id"]
-        client = mock.Mock(
-            _data={"is_superuser": True, "organization_id": None}, _error=None
-        )
         with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
             with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
-                with mock.patch("croud.login.Client", return_value=client):
+                with mock.patch(
+                    "croud.rest.Client.send",
+                    return_value=[
+                        {"is_superuser": True, "organization_id": None},
+                        None,
+                    ],
+                ):
                     org_id = get_org_id()
         assert org_id is None
 
     def test_get_org_id_org_is_superuser(self):
         cfg = MockConfig(Configuration.DEFAULT_CONFIG)
         cfg.conf["auth"]["contexts"]["dev"]["organization_id"]
-        client = mock.Mock(
-            _data={"is_superuser": True, "organization_id": "some-id"}, _error=None
-        )
         with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
             with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
-                with mock.patch("croud.login.Client", return_value=client):
+                with mock.patch(
+                    "croud.rest.Client.send",
+                    return_value=[
+                        {"is_superuser": True, "organization_id": "some_id"},
+                        None,
+                    ],
+                ):
                     org_id = get_org_id()
         assert org_id is None
 
     def test_get_org_id_no_org_is_not_superuser(self):
         cfg = MockConfig(Configuration.DEFAULT_CONFIG)
         cfg.conf["auth"]["contexts"]["dev"]["organization_id"]
-        client = mock.Mock(
-            _data={"is_superuser": False, "organization_id": None}, _error=None
-        )
         with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
             with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
-                with mock.patch("croud.login.Client", return_value=client):
+                with mock.patch(
+                    "croud.rest.Client.send",
+                    return_value=[
+                        {"is_superuser": False, "organization_id": None},
+                        None,
+                    ],
+                ):
                     org_id = get_org_id()
         assert org_id is None
 
     def test_get_org_id_org_is_not_superuser(self):
         cfg = MockConfig(Configuration.DEFAULT_CONFIG)
         cfg.conf["auth"]["contexts"]["dev"]["organization_id"]
-        client = mock.Mock(
-            _data={"is_superuser": False, "organization_id": "some-id"}, _error=None
-        )
         with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
             with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
-                with mock.patch("croud.login.Client", return_value=client):
+                with mock.patch(
+                    "croud.rest.Client.send",
+                    return_value=[
+                        {"is_superuser": False, "organization_id": "some-id"},
+                        None,
+                    ],
+                ):
                     org_id = get_org_id()
         assert org_id == "some-id"
 

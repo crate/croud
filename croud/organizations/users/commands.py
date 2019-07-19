@@ -22,6 +22,8 @@
 
 from argparse import Namespace
 
+from croud.config import get_output_format
+from croud.printer import print_response
 from croud.rest import Client
 from croud.session import RequestMethod
 from croud.util import org_id_config_fallback
@@ -31,19 +33,35 @@ from croud.util import org_id_config_fallback
 def org_users_add(args: Namespace):
     client = Client.from_args(args)
 
-    client.send(
+    data, errors = client.send(
         RequestMethod.POST,
         f"/api/v2/organizations/{args.org_id}/users/",
         body={"user": args.user, "role_fqn": args.role},
     )
-    client.print(keys=["user_id", "role_fqn", "organization_id"])
+    if data is not None and data.get("added", False):
+        success_message = "User added to organization."
+    else:
+        success_message = "Role altered for user."
+
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["user_id", "organization_id", "role_fqn"],
+        success_message=success_message,
+        output_fmt=get_output_format(args),
+    )
 
 
 @org_id_config_fallback
 def org_users_remove(args: Namespace):
     client = Client.from_args(args)
 
-    client.send(
+    data, errors = client.send(
         RequestMethod.DELETE, f"/api/v2/organizations/{args.org_id}/users/{args.user}/"
     )
-    client.print(success_message="Successfully removed user from organization.")
+    print_response(
+        data=data,
+        errors=errors,
+        success_message="User removed from organization.",
+        output_fmt=get_output_format(args),
+    )

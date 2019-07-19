@@ -20,6 +20,7 @@
 import abc
 import functools
 import json
+import sys
 from typing import Dict, List, Optional, Type, Union
 
 import yaml
@@ -27,6 +28,8 @@ from colorama import Fore, Style
 from tabulate import tabulate
 
 from croud.typing import JsonDict
+
+print_stderr = functools.partial(print, file=sys.stderr)
 
 
 def print_format(
@@ -41,20 +44,46 @@ def print_format(
     printer.print_rows(rows)
 
 
+def print_response(
+    data, errors, output_fmt, success_message: str = None, keys: List[str] = None
+):
+    if errors:
+        if "message" in errors:
+            print_error(errors["message"])
+            if "errors" in errors:
+                print_format(errors["errors"], "json")
+        else:
+            print_format(errors, "json")
+        return
+
+    if data is None:
+        message = success_message or "Success."
+        print_success(message)
+        return
+
+    print_format(data, output_fmt, keys)
+
+    if data and success_message is not None:
+        message = success_message
+        print_success(message)
+
+
 def print_error(text: str):
-    print(Fore.RED + "==> Error: " + Style.RESET_ALL + text)
+    print_stderr(Fore.RED + "==> Error: " + Style.RESET_ALL + text, file=sys.stderr)
 
 
 def print_info(text: str):
-    print(Fore.CYAN + "==> Info: " + Style.RESET_ALL + text)
+    print_stderr(Fore.CYAN + "==> Info: " + Style.RESET_ALL + text, file=sys.stderr)
 
 
 def print_warning(text: str):
-    print(Fore.YELLOW + "==> Warning: " + Style.RESET_ALL + text)
+    print_stderr(
+        Fore.YELLOW + "==> Warning: " + Style.RESET_ALL + text, file=sys.stderr
+    )
 
 
 def print_success(text: str):
-    print(Fore.GREEN + "==> Success: " + Style.RESET_ALL + text)
+    print_stderr(Fore.GREEN + "==> Success: " + Style.RESET_ALL + text, file=sys.stderr)
 
 
 class FormatPrinter(abc.ABC):

@@ -19,6 +19,8 @@
 
 from argparse import Namespace
 
+from croud.config import get_output_format
+from croud.printer import print_response
 from croud.rest import Client
 from croud.session import RequestMethod
 
@@ -29,5 +31,10 @@ def me(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    client.send(RequestMethod.GET, "/api/v2/users/me/")
-    client.print(keys=["email", "username"])
+    data, errors = client.send(RequestMethod.GET, "/api/v2/users/me/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["email", "username"],
+        output_fmt=get_output_format(args),
+    )

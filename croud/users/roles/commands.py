@@ -20,8 +20,9 @@
 import textwrap
 from argparse import Namespace
 
+from croud.config import get_output_format
 from croud.gql import Query, print_query
-from croud.printer import print_warning
+from croud.printer import print_response, print_warning
 from croud.rest import Client
 from croud.session import RequestMethod
 from croud.util import clean_dict
@@ -74,8 +75,13 @@ def roles_list(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    client.send(RequestMethod.GET, "/api/v2/roles/")
-    client.print(keys=["id", "name"])
+    data, errors = client.send(RequestMethod.GET, "/api/v2/roles/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name"],
+        output_fmt=get_output_format(args),
+    )
 
 
 def roles_remove(args: Namespace) -> None:

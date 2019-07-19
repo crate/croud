@@ -36,7 +36,7 @@ def gen_uuid() -> str:
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send")
+@mock.patch.object(Client, "send", return_value=({}, None))
 class TestMe(CommandTestCase):
     def test_me(self, mock_send, mock_config):
         argv = ["croud", "me"]
@@ -137,14 +137,14 @@ class TestClusters(CommandTestCase):
     """
     ).strip()
 
-    @mock.patch.object(Client, "send")
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_list_no_project_id(self, mock_send, mock_run, mock_load_config):
         argv = ["croud", "clusters", "list"]
         self.assertRest(
             mock_send, argv, RequestMethod.GET, "/api/v2/clusters/", params={}
         )
 
-    @mock.patch.object(Client, "send")
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_list_with_project_id(self, mock_send, mock_run, mock_load_config):
         argv = ["croud", "clusters", "list", "--project-id", self.project_id]
         self.assertRest(
@@ -155,7 +155,7 @@ class TestClusters(CommandTestCase):
             params={"project_id": self.project_id},
         )
 
-    @mock.patch.object(Client, "send")
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_deploy_cluster(self, mock_send, mock_run, mock_load_config):
         argv = [
             "croud",
@@ -196,7 +196,7 @@ class TestClusters(CommandTestCase):
             },
         )
 
-    @mock.patch.object(Client, "send")
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_deploy_cluster_no_unit(self, mock_send, mock_run, mock_load_config):
         argv = [
             "croud",
@@ -234,7 +234,7 @@ class TestClusters(CommandTestCase):
             },
         )
 
-    @mock.patch.object(Client, "send")
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_deploy_cluster_nightly(self, mock_send, mock_run, mock_load_config):
         argv = [
             "croud",
@@ -277,7 +277,7 @@ class TestClusters(CommandTestCase):
             },
         )
 
-    @mock.patch.object(Client, "send")
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_scale_cluster(self, mock_send, mock_run, mock_load_config):
         unit = 1
         cluster_id = gen_uuid()
@@ -290,7 +290,7 @@ class TestClusters(CommandTestCase):
             body={"product_unit": unit},
         )
 
-    @mock.patch.object(Client, "send")
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_upgrade_cluster(self, mock_send, mock_run, mock_load_config):
         version = "3.2.6"
         cluster_id = gen_uuid()
@@ -311,7 +311,7 @@ class TestClusters(CommandTestCase):
             body={"crate_version": version},
         )
 
-    @mock.patch.object(Client, "send")
+    @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_clusters_delete(self, mock_send, mock_run, mock_load_config, capsys):
         cluster_id = gen_uuid()
         argv = ["croud", "clusters", "delete", "--cluster-id", cluster_id]
@@ -323,10 +323,11 @@ class TestClusters(CommandTestCase):
                 "Are you sure you want to delete the cluster? [yN] "
             )
 
-        out, _ = capsys.readouterr()
-        assert "Cluster deleted." in out
+        _, err_output = capsys.readouterr()
+        assert "Success" in err_output
+        assert "Cluster deleted." in err_output
 
-    @mock.patch.object(Client, "send")
+    @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_clusters_delete_flag(self, mock_send, mock_run, mock_load_config, capsys):
         cluster_id = gen_uuid()
         argv = ["croud", "clusters", "delete", "--cluster-id", cluster_id, "-y"]
@@ -336,10 +337,11 @@ class TestClusters(CommandTestCase):
             )
             mock_input.assert_not_called()
 
-        out, _ = capsys.readouterr()
-        assert "Cluster deleted." in out
+        _, err_output = capsys.readouterr()
+        assert "Success" in err_output
+        assert "Cluster deleted." in err_output
 
-    @mock.patch.object(Client, "send")
+    @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_clusters_delete_aborted(
         self, mock_send, mock_run, mock_load_config, capsys
     ):
@@ -352,13 +354,13 @@ class TestClusters(CommandTestCase):
                 "Are you sure you want to delete the cluster? [yN] "
             )
 
-        out, _ = capsys.readouterr()
-        assert "Cluster deletion cancelled." in out
+        _, err_output = capsys.readouterr()
+        assert "Cluster deletion cancelled." in err_output
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send")
 class TestOrganizations(CommandTestCase):
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_create(self, mock_send, mock_load_config):
         argv = [
             "croud",
@@ -377,10 +379,12 @@ class TestOrganizations(CommandTestCase):
             body={"name": "test-org", "plan_type": 1},
         )
 
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_list(self, mock_send, mock_load_config):
         argv = ["croud", "organizations", "list"]
         self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/organizations/")
 
+    @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_delete(self, mock_send, mock_load_config, capsys):
         org_id = gen_uuid()
         argv = ["croud", "organizations", "delete", "--org-id", org_id]
@@ -395,9 +399,10 @@ class TestOrganizations(CommandTestCase):
                 "Are you sure you want to delete the organization? [yN] "
             )
 
-        out, _ = capsys.readouterr()
-        assert "Organization deleted." in out
+        _, err_output = capsys.readouterr()
+        assert "Organization deleted." in err_output
 
+    @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_delete_flag(self, mock_send, mock_load_config, capsys):
         org_id = gen_uuid()
         argv = ["croud", "organizations", "delete", "--org-id", org_id, "-y"]
@@ -410,10 +415,11 @@ class TestOrganizations(CommandTestCase):
             )
             mock_input.assert_not_called()
 
-        out, _ = capsys.readouterr()
-        assert "Organization deleted." in out
+        _, err_output = capsys.readouterr()
+        assert "Organization deleted." in err_output
 
     @pytest.mark.parametrize("input", ["", "N", "No", "cancel"])
+    @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_delete_aborted(self, mock_send, mock_load_config, capsys, input):
         org_id = gen_uuid()
         argv = ["croud", "organizations", "delete", "--org-id", org_id]
@@ -424,9 +430,10 @@ class TestOrganizations(CommandTestCase):
                 "Are you sure you want to delete the organization? [yN] "
             )
 
-        out, _ = capsys.readouterr()
-        assert "Organization deletion cancelled." in out
+        _, err_output = capsys.readouterr()
+        assert "Organization deletion cancelled." in err_output
 
+    @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_delete_aborted_with_input(self, mock_send, mock_load_config, capsys):
         org_id = gen_uuid()
         argv = ["croud", "organizations", "delete", "--org-id", org_id]
@@ -437,9 +444,10 @@ class TestOrganizations(CommandTestCase):
                 "Are you sure you want to delete the organization? [yN] "
             )
 
-        out, _ = capsys.readouterr()
-        assert "Organization deletion cancelled." in out
+        _, err_output = capsys.readouterr()
+        assert "Organization deletion cancelled." in err_output
 
+    @mock.patch.object(Client, "send", return_value=({"added": True}, None))
     def test_add_user(self, mock_send, mock_load_config):
         org_id = gen_uuid()
         user = "test@crate.io"
@@ -465,6 +473,36 @@ class TestOrganizations(CommandTestCase):
             body={"user": user, "role_fqn": role_fqn},
         )
 
+    @mock.patch.object(Client, "send", return_value=({"added": False}, None))
+    def test_update_user(self, mock_send, mock_load_confg, capsys):
+        org_id = gen_uuid()
+        user = "test@crate.io"
+        role_fqn = "org_admin"
+
+        argv = [
+            "croud",
+            "organizations",
+            "users",
+            "add",
+            "--user",
+            user,
+            "--org-id",
+            org_id,
+            "--role",
+            role_fqn,
+        ]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.POST,
+            f"/api/v2/organizations/{org_id}/users/",
+            body={"user": user, "role_fqn": role_fqn},
+        )
+        _, err_output = capsys.readouterr()
+        assert "Success" in err_output
+        assert "Role altered for user." in err_output
+
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_remove_user(self, mock_send, mock_load_config):
         org_id = gen_uuid()
         user = "test@crate.io"
@@ -488,8 +526,8 @@ class TestOrganizations(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send")
 class TestProjects(CommandTestCase):
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_create(self, mock_send, mock_load_config):
         argv = [
             "croud",
@@ -508,6 +546,7 @@ class TestProjects(CommandTestCase):
             body={"name": "new-project", "organization_id": "organization-id"},
         )
 
+    @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_delete(self, mock_send, mock_load_config, capsys):
         project_id = gen_uuid()
         argv = ["croud", "projects", "delete", "--project-id", project_id]
@@ -519,9 +558,11 @@ class TestProjects(CommandTestCase):
                 "Are you sure you want to delete the project? [yN] "
             )
 
-        out, _ = capsys.readouterr()
-        assert "Project deleted." in out
+        _, err_output = capsys.readouterr()
+        assert "Success" in err_output
+        assert "Project deleted." in err_output
 
+    @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_delete_flag(self, mock_send, mock_load_config, capsys):
         project_id = gen_uuid()
         argv = ["croud", "projects", "delete", "--project-id", project_id, "-y"]
@@ -531,9 +572,11 @@ class TestProjects(CommandTestCase):
             )
             mock_input.assert_not_called()
 
-        out, _ = capsys.readouterr()
-        assert "Project deleted." in out
+        _, err_output = capsys.readouterr()
+        assert "Success" in err_output
+        assert "Project deleted." in err_output
 
+    @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_delete_aborted(self, mock_send, mock_load_config, capsys):
         project_id = gen_uuid()
         argv = ["croud", "projects", "delete", "--project-id", project_id]
@@ -544,17 +587,18 @@ class TestProjects(CommandTestCase):
                 "Are you sure you want to delete the project? [yN] "
             )
 
-        out, _ = capsys.readouterr()
-        assert "Project deletion cancelled." in out
+        _, err_output = capsys.readouterr()
+        assert "Project deletion cancelled." in err_output
 
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_list(self, mock_send, mock_load_config):
         argv = ["croud", "projects", "list"]
-        self.assertGql(mock_send, argv, RequestMethod.GET, "/api/v2/projects/")
+        self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/projects/")
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send")
 class TestProjectsUsers(CommandTestCase):
+    @mock.patch.object(Client, "send", return_value=({"added": True}, None))
     def test_add(self, mock_send, mock_load_config):
         project_id = gen_uuid()
 
@@ -582,6 +626,36 @@ class TestProjectsUsers(CommandTestCase):
             body={"user": user, "role_fqn": role_fqn},
         )
 
+    @mock.patch.object(Client, "send", return_value=({"added": False}, None))
+    def test_update(self, mock_send, mock_load_config, capsys):
+        project_id = gen_uuid()
+        user = "test@crate.io"
+        role_fqn = "project_admin"
+
+        argv = [
+            "croud",
+            "projects",
+            "users",
+            "add",
+            "--project-id",
+            project_id,
+            "--user",
+            user,
+            "--role",
+            role_fqn,
+        ]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.POST,
+            f"/api/v2/projects/{project_id}/users/",
+            body={"user": user, "role_fqn": role_fqn},
+        )
+        _, err_output = capsys.readouterr()
+        assert "Success" in err_output
+        assert "Role altered for user." in err_output
+
+    @mock.patch.object(Client, "send", return_value=({"added": True}, None))
     def test_remove(self, mock_send, mock_load_config):
         project_id = gen_uuid()
 
@@ -640,10 +714,10 @@ class TestUsersRoles(CommandTestCase):
             resource_id,
         ]
         self.assertGql(mock_run, argv, expected_body, expected_vars)
-        out, _ = capsys.readouterr()
+        _, err_output = capsys.readouterr()
         assert (
             "This command is deprecated. Please use `croud organizations users add` instead."  # noqa
-            in out
+            in err_output
         )
 
     def test_remove(self, mock_run, mock_load_config, capsys):
@@ -677,15 +751,15 @@ class TestUsersRoles(CommandTestCase):
             resource_id,
         ]
         self.assertGql(mock_run, argv, expected_body, expected_vars)
-        out, _ = capsys.readouterr()
+        _, err_output = capsys.readouterr()
         assert (
             "This command is deprecated. Please use `croud projects users remove` instead."  # noqa
-            in out
+            in err_output
         )
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send")
+@mock.patch.object(Client, "send", return_value=({}, None))
 class TestUsersRolesREST(CommandTestCase):
     def test_list(self, mock_send, mock_load_config):
         argv = ["croud", "users", "roles", "list"]
@@ -739,13 +813,13 @@ class TestUsers(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send")
 class TestConsumers(CommandTestCase):
     # fmt: off
     eventhub_dsn = "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=..."  # noqa
     storage_dsn = "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net"  # noqa
     # fmt: on
 
+    @mock.patch.object(Client, "send", return_value=["data", "errors"])
     def test_deploy_consumer(self, mock_send, mock_load_config):
         project_id = gen_uuid()
         cluster_id = gen_uuid()
@@ -803,12 +877,14 @@ class TestConsumers(CommandTestCase):
             },
         )
 
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_consumers_list(self, mock_send, mock_load_config):
         argv = ["croud", "consumers", "list"]
         self.assertRest(
             mock_send, argv, RequestMethod.GET, "/api/v2/consumers/", params={}
         )
 
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_consumers_list_with_params(self, mock_send, mock_load_config):
         project_id = gen_uuid()
         cluster_id = gen_uuid()
@@ -835,6 +911,7 @@ class TestConsumers(CommandTestCase):
             },
         )
 
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_consumers_edit(self, mock_send, mock_load_config):
         consumer_id = gen_uuid()
         cluster_id = gen_uuid()
@@ -879,6 +956,7 @@ class TestConsumers(CommandTestCase):
             },
         )
 
+    @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_consumers_delete(self, mock_send, mock_load_config, capsys):
         consumer_id = gen_uuid()
         argv = ["croud", "consumers", "delete", "--consumer-id", consumer_id]
@@ -893,9 +971,11 @@ class TestConsumers(CommandTestCase):
                 "Are you sure you want to delete the consumer? [yN] "
             )
 
-        out, _ = capsys.readouterr()
-        assert "Consumer deleted." in out
+        _, err_output = capsys.readouterr()
+        assert "Success" in err_output
+        assert "Consumer deleted." in err_output
 
+    @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_consumers_delete_flag(self, mock_send, mock_load_config, capsys):
         consumer_id = gen_uuid()
         argv = ["croud", "consumers", "delete", "--consumer-id", consumer_id, "-y"]
@@ -908,9 +988,11 @@ class TestConsumers(CommandTestCase):
             )
             mock_input.assert_not_called()
 
-        out, _ = capsys.readouterr()
-        assert "Consumer deleted." in out
+        _, err_output = capsys.readouterr()
+        assert "Success" in err_output
+        assert "Consumer deleted." in err_output
 
+    @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_consumers_delete_aborted(self, mock_send, mock_load_config, capsys):
         consumer_id = gen_uuid()
         argv = ["croud", "consumers", "delete", "--consumer-id", consumer_id]
@@ -921,12 +1003,12 @@ class TestConsumers(CommandTestCase):
                 "Are you sure you want to delete the consumer? [yN] "
             )
 
-        out, _ = capsys.readouterr()
-        assert "Consumer deletion cancelled." in out
+        _, err_output = capsys.readouterr()
+        assert "Consumer deletion cancelled." in err_output
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send")
+@mock.patch.object(Client, "send", return_value=({}, None))
 class TestGrafana(CommandTestCase):
     project_id = gen_uuid()
 
@@ -968,12 +1050,12 @@ class TestGrafana(CommandTestCase):
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Query, "run", return_value={"data": []})
 class TestProducts(CommandTestCase):
-    @mock.patch.object(Client, "send")
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_list(self, mock_send, mock_run, mock_load_config):
         argv = ["croud", "products", "list"]
         self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/products/")
 
-    @mock.patch.object(Client, "send")
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_list_kind(self, mock_send, mock_run, mock_load_config):
         argv = ["croud", "products", "list", "--kind", "cluster"]
         self.assertRest(

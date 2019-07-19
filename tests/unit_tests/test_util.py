@@ -161,8 +161,11 @@ def test_require_confirmation(
         else:
             mock_input.assert_called()
 
-    out, _ = capsys.readouterr()
-    assert output in out
+    out, err_output = capsys.readouterr()
+    if err_output != "":
+        assert out in err_output
+    else:
+        assert output in out
 
 
 @pytest.mark.parametrize(

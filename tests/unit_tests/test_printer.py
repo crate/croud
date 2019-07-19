@@ -19,7 +19,12 @@
 
 import pytest
 
-from croud.printer import JsonFormatPrinter, TableFormatPrinter, YamlFormatPrinter
+from croud.printer import (
+    JsonFormatPrinter,
+    TableFormatPrinter,
+    YamlFormatPrinter,
+    print_response,
+)
 
 
 @pytest.mark.parametrize(
@@ -161,3 +166,47 @@ def test_yaml_format(rows, expected):
 def test_tabular_format(rows, keys, expected):
     out = TableFormatPrinter(keys=keys).format_rows(rows)
     assert out == expected
+
+
+def test_print_response(capsys):
+    data = {"email": "test@crate.io", "username": "Google_1234"}
+    errors = None
+    output_fmt = "json"
+    print_response(data, errors, output_fmt)
+    output, _ = capsys.readouterr()
+    assert "test@crate.io" in output
+    assert "Google_1234" in output
+
+
+def test_print_response_success_message(capsys):
+    data = None
+    errors = {}
+    output_fmt = "json"
+    success_message = "Deleted cluster."
+    print_response(data, errors, output_fmt, success_message)
+    _, err_output = capsys.readouterr()
+    assert "Success" in err_output
+    assert "Deleted cluster." in err_output
+
+
+def test_print_response_error(capsys):
+    data = None
+    errors = {"message": "Resource not found.", "success": False}
+    output_fmt = "table"
+    print_response(data, errors, output_fmt)
+    _, err_output = capsys.readouterr()
+    assert "Error" in err_output
+    assert "Resource not found." in err_output
+
+
+def test_print_response_data_success(capsys):
+    data = {"a": 1, "b": 2}
+    errors = {}
+    output_fmt = "json"
+    success_message = "Posted numbers."
+    print_response(data, errors, output_fmt, success_message)
+    output, err_output = capsys.readouterr()
+    assert '"a": 1' in output
+    assert '"b": 2' in output
+    assert "Success" in err_output
+    assert "Posted numbers." in err_output

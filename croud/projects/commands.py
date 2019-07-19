@@ -19,6 +19,8 @@
 
 from argparse import Namespace
 
+from croud.config import get_output_format
+from croud.printer import print_response
 from croud.rest import Client
 from croud.session import RequestMethod
 from croud.util import org_id_config_fallback, require_confirmation
@@ -31,12 +33,18 @@ def project_create(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    client.send(
+    data, errors = client.send(
         RequestMethod.POST,
         "/api/v2/projects/",
         body={"name": args.name, "organization_id": args.org_id},
     )
-    client.print(keys=["id"])
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id"],
+        success_message="Project created.",
+        output_fmt=get_output_format(args),
+    )
 
 
 @require_confirmation(
@@ -48,8 +56,15 @@ def project_delete(args: Namespace) -> None:
     Deletes a project in the organization the user belongs to.
     """
     client = Client.from_args(args)
-    client.send(RequestMethod.DELETE, f"/api/v2/projects/{args.project_id}/")
-    client.print("Project deleted.")
+    data, errors = client.send(
+        RequestMethod.DELETE, f"/api/v2/projects/{args.project_id}/"
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        success_message="Project deleted.",
+        output_fmt=get_output_format(args),
+    )
 
 
 def projects_list(args: Namespace) -> None:
@@ -58,5 +73,10 @@ def projects_list(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    client.send(RequestMethod.GET, "/api/v2/projects/")
-    client.print(keys=["id", "name", "region", "organization_id"])
+    data, errors = client.send(RequestMethod.GET, "/api/v2/projects/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "region", "organization_id"],
+        output_fmt=get_output_format(args),
+    )
