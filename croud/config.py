@@ -18,7 +18,6 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import copy
-import os
 from argparse import Namespace
 from pathlib import Path
 from typing import Optional
@@ -27,7 +26,7 @@ import yaml
 from appdirs import user_config_dir
 from schema import Schema, SchemaError
 
-from croud.printer import print_error, print_format, print_info
+from croud.printer import print_format, print_info
 
 DEFAULT_CONFIG = {
     "current-profile": "prod",
@@ -92,14 +91,17 @@ class Configuration:
 
     def __init__(self, path: Optional[Path] = None):
         if path is None:
-            path = Path(user_config_dir("Crate")) / "crate.yaml"
+            path = Path(user_config_dir("Crate")) / "croud.yaml"
         self._path = path
 
     def load(self):
-        with self._path.open("r") as f:
-            self._config = yaml.safe_load(f)
-
-        self._validate()
+        if self._path.exists:
+            with self._path.open("r") as f:
+                self._config = yaml.safe_load(f)
+            self._validate()
+        else:
+            self._config = copy.deepcopy(DEFAULT_CONFIG)
+        return self
 
     def save(self) -> None:
         self._path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -107,12 +109,12 @@ class Configuration:
             self._path.chmod(0o600)
             yaml.dump(self._config, f, default_flow_style=False, allow_unicode=True)
 
-    def _validate(self, config: dict):
+    def _validate(self):
         try:
-            DEFAULT_CONFIG_SCHEMA.validate(config)
+            DEFAULT_CONFIG_SCHEMA.validate(self._config)
         except SchemaError:
             try:
-                self._config = self._load_old_config(config)
+                self._config = self._load_old_config(self._config)
             except SchemaError:
                 self._config = copy.deepcopy(DEFAULT_CONFIG)
             self.save()
