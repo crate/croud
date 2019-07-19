@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added support for YAML output. It can be specified with the ``-o yaml``
+  argument.
+
 0.16.0 - 2019/07/18
 ===================
 

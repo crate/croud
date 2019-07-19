@@ -19,7 +19,7 @@
 
 import pytest
 
-from croud.printer import JsonFormatPrinter, TableFormatPrinter
+from croud.printer import JsonFormatPrinter, TableFormatPrinter, YamlFormatPrinter
 
 
 @pytest.mark.parametrize(
@@ -46,6 +46,30 @@ from croud.printer import JsonFormatPrinter, TableFormatPrinter
 )
 def test_json_format(rows, expected):
     out = JsonFormatPrinter().format_rows(rows)
+    assert out == expected
+
+
+@pytest.mark.parametrize(
+    "rows,expected",
+    (
+        (None, "null\n...\n"),
+        ({}, "{}\n"),
+        (
+            {"a": "foo : bar", "b": 1, "c": True, "d": {"x": 1, "y": None, "z": False}},
+            (
+                "a: 'foo : bar'\n"
+                "b: 1\n"
+                "c: true\n"
+                "d:\n"
+                "  x: 1\n"
+                "  y: null\n"
+                "  z: false\n"
+            ),
+        ),
+    ),
+)
+def test_yaml_format(rows, expected):
+    out = YamlFormatPrinter().format_rows(rows)
     assert out == expected
 
 
