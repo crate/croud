@@ -26,7 +26,7 @@ import yaml
 from appdirs import user_config_dir
 from schema import Schema, SchemaError
 
-from croud.printer import print_format, print_info
+from croud.printer import print_format, print_info, print_warning
 
 DEFAULT_CONFIG = {
     "current-profile": "prod",
@@ -144,27 +144,27 @@ class Configuration:
     def set_global(self, key, value):
         self._config["global"][key] = value
 
-    def get_profile(self, profile, key, default=None) -> str:
+    def get_profile(self, profile, key) -> str:
         if profile not in self._config:
             self._config[profile] = {}
-        return self._config[profile].get(key, default)
+        return self._config[profile].get(key) or self.get_global(key)
 
-    def set_profile(self, profile, key, default=None) -> str:
+    def set_profile(self, profile, key, value):
         if profile not in self._config:
             self._config[profile] = {}
-        return self._config[profile].get(key, default)
+        self._config[profile][key] = value
 
 
-def set_property(property: str, value: str):
-    config = load_config()
-    config[property] = value
-    write_config(config)
-
-
-def config_get(args: Namespace):
+def config_get(args: Namespace, config: Configuration):
     """
     Gets a default configuration setting
     """
+    print_warning(
+        "This command is deprecated. Please use `croud config get-profile` "
+        "or `croud config get-global` instead."
+    )
+
+    context
 
     fmt = Configuration.get_setting("output_fmt")
     value = Configuration.get_setting(args.get)
@@ -175,6 +175,11 @@ def config_set(args: Namespace, parser=None):
     """
     Sets a default configuration setting
     """
+    print_warning(
+        "This command is deprecated. Please use `croud config get-profile` "
+        "or `croud config get-global` instead."
+    )
+
     if parser and all(val is None for val in vars(args).values()):
         parser.print_help()
         return
