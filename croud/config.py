@@ -26,9 +26,16 @@ import yaml
 from appdirs import user_config_dir
 from schema import Schema, SchemaError
 
-from croud.printer import print_format, print_info, print_warning, print_success
+from croud.printer import (
+    PRINTERS,
+    print_error,
+    print_format,
+    print_info,
+    print_success,
+    print_warning,
+)
 
-DEFAULT_CONFIG = {
+DEFAULT_CONFIG: dict = {
     "current-profile": "prod",
     "global": {"region": "", "output-format": "table", "organization": ""},
     "profile": {
@@ -77,6 +84,22 @@ OLD_CONFIG_SCHEMA = Schema(
         "output_fmt": str,
     }
 )
+
+
+class ConfigError(ValueError):
+    pass
+
+
+class InvalidProfile(ConfigError):
+    pass
+
+
+class InvalidConfigOption(ConfigError):
+    pass
+
+
+class InvalidConfigValue(ConfigError):
+    pass
 
 
 class Configuration:
@@ -132,44 +155,182 @@ class Configuration:
         # fmt: on
         return new_config
 
-    def get_current_profile(self) -> str:
-        return self._config["current-profile"]
+    @property
+    def current_profile(self) -> str:
+        return self._config["current-profile"] or "prod"
 
-    def set_current_profile(self, value):
+    @current_profile.setter
+    def current_profile(self, value):
+        if value not in DEFAULT_CONFIG["profile"]:
+            allowed = ", ".join(DEFAULT_CONFIG["profile"])
+            raise InvalidProfile(
+                f"'{value}' is not a valid configuration profile. "
+                f"Allowed profiles are {allowed}."
+            )
+
         self._config["current-profile"] = value
 
     def get_global(self, key) -> str:
+        if key not in DEFAULT_CONFIG["global"]:
+            allowed = ", ".join(DEFAULT_CONFIG["global"])
+            raise InvalidConfigOption(
+                f"'{key}' is not a valid global configuration option. "
+                f"Allowed values are {allowed}."
+            )
+
         return self._config["global"].get(key)
 
     def set_global(self, key, value):
+        if key not in DEFAULT_CONFIG["global"]:
+            allowed = ", ".join(DEFAULT_CONFIG["global"])
+            raise InvalidConfigOption(
+                f"'{key}' is not a valid global configuration option. "
+                f"Allowed values are {allowed}."
+            )
+
+        if key == "output-format" and value not in PRINTERS:
+            allowed = ", ".join(PRINTERS)
+            raise InvalidConfigValue(
+                f"'{value}' is not a valid configuration value for 'output-format'. "
+                f"Allowed values are {allowed}."
+            )
+
         self._config["global"][key] = value
 
     def get_profile(self, key, profile=None) -> str:
         if profile is None:
-            profile = self.get_current_profile()
-        if profile not in self._config:
-            self._config[profile] = {}
-        return self._config[profile].get(key) or self.get_global(key)
+            profile = self.current_profile
+
+        if profile not in DEFAULT_CONFIG["profile"]:
+            allowed = ", ".join(DEFAULT_CONFIG["profile"])
+            raise InvalidProfile(
+                f"'{profile}' is not a valid configuration profile. "
+                f"Allowed profiles are {allowed}."
+            )
+
+        if key not in DEFAULT_CONFIG["profile"][profile]:
+            allowed = ", ".join(DEFAULT_CONFIG["profile"][profile])
+            raise InvalidConfigOption(
+                f"'{key}' is not a valid configuration option for profile '{profile}'. "
+                f"Allowed values are {allowed}."
+            )
+
+        return self._config["profile"][profile].get(key) or self.get_global(key)
 
     def set_profile(self, key, value, profile=None):
         if profile is None:
-            profile = self.get_current_profile()
-        if profile not in self._config:
-            self._config[profile] = {}
-        self._config[profile][key] = value
+            profile = self.current_profile
+
+        if profile not in DEFAULT_CONFIG["profile"]:
+            allowed = ", ".join(DEFAULT_CONFIG["profile"])
+            raise InvalidProfile(
+                f"'{profile}' is not a valid configuration profile. "
+                f"Allowed profiles are {allowed}."
+            )
+
+        if key not in DEFAULT_CONFIG["profile"][profile]:
+            allowed = ", ".join(DEFAULT_CONFIG["profile"][profile])
+            raise InvalidConfigOption(
+                f"'{key}' is not a valid configuration option for profile '{profile}'. "
+                f"Allowed values are {allowed}."
+            )
+
+        if key == "output-format" and value not in PRINTERS:
+            allowed = ", ".join(PRINTERS)
+            raise InvalidConfigValue(
+                f"'{value}' is not a valid configuration value for 'output-format'. "
+                f"Allowed values are {allowed}."
+            )
+
+        self._config["profile"][profile][key] = value
 
 
-def current_profile(args: Namespace, config: Configuration):
+def config_current_profile(args: Namespace, config: Configuration):
+    """Set or switches the default profile."""
     key = "current_profile"
-    print_format(
-        [{key: config.get_current_profile()}], config.get_global("output-format")
-    )
+    print_format([{key: config.current_profile}], config.get_global("output-format"))
 
 
-def use_profile(args: Namespace, config: Configuration):
-    config.set_current_profile(args.env)
-    config.save()
-    print_success(f"Default profile switched to '{args.env}'.")
+def config_use_profile(args: Namespace, config: Configuration):
+    """Print the default profile."""
+    try:
+        config.current_profile = args.use_profile
+    except ConfigError as e:
+        print_error(str(e))
+    else:
+        config.save()
+        print_success(f"Default profile switched to '{args.use_profile}'.")
+
+
+def config_get_global(args: Namespace, config: Configuration):
+    try:
+        data = [
+            {"option": option, "value": config.get_global(option)}
+            for option in args.options
+        ]
+    except ConfigError as e:
+        print_error(str(e))
+    else:
+        print_format(data, config.get_profile("output-format"))
+
+
+def config_set_global(args: Namespace, config: Configuration):
+    options = {}
+    for option in args.options:
+        param = option.split("=", 1)
+        if len(param) == 1:
+            print_error(f"Invalid option '{option}'")
+        else:
+            options[param[0]] = param[1]
+
+    try:
+        queued_messages = []
+        for option, value in options.items():
+            config.set_global(option, value)
+            queued_messages.append(f"Set '{option}' to '{value}'")
+    except ConfigError as e:
+        print_error(str(e))
+    else:
+        for m in queued_messages:
+            print_info(m)
+        config.save()
+
+
+def config_get_profile(args: Namespace, config: Configuration):
+    try:
+        data = [
+            {
+                "option": option,
+                "value": config.get_profile(option, profile=args.profile),
+            }
+            for option in args.options
+        ]
+    except ConfigError as e:
+        print_error(str(e))
+    else:
+        print_format(data, config.get_profile("output-format"))
+
+
+def config_set_profile(args: Namespace, config: Configuration):
+    options = {}
+    for option in args.options:
+        param = option.split("=", 1)
+        if len(param) == 1:
+            print_error(f"Invalid option '{option}'")
+        else:
+            options[param[0]] = param[1]
+
+    try:
+        queued_messages = []
+        for option, value in options.items():
+            config.set_profile(option, value, profile=args.profile)
+            queued_messages.append(f"Set '{option}' to '{value}'")
+    except ConfigError as e:
+        print_error(str(e))
+    else:
+        for m in queued_messages:
+            print_info(m)
+        config.save()
 
 
 def config_get(args: Namespace, config: Configuration):
@@ -193,7 +354,7 @@ def config_get(args: Namespace, config: Configuration):
             "Environments (envs) were renamed to profiles. To get the current "
             "environment use `croud config current-profile`."
         )
-        value = config.get_current_profile()
+        value = config.current_profile
     else:
         value = config.get_profile(key)
 

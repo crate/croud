@@ -106,6 +106,12 @@ def add_default_args(parser):
         help="Switches auth context.",
     )
     parser._group_optional.add_argument(
+        "--profile",
+        required=False,
+        choices={"prod", "dev", "local"},
+        help="Switches the profile.",
+    )
+    parser._group_optional.add_argument(
         "--output-fmt",
         "-o",
         required=False,
@@ -128,7 +134,9 @@ def add_subparser(parser, tree, config: Configuration, name="__root__"):
                 parser._group_required, parser._group_optional
             )  # keep existing behaviour
     if "noop_arg" in tree:
-        parser.add_argument(name.split(" ")[-1], choices=tree["noop_arg"]["choices"])
+        parser.add_argument(
+            name.split(" ")[-1].replace("-", "_"), choices=tree["noop_arg"]["choices"]
+        )
     if "commands" in tree:
         parser.set_defaults(resolver=help_print_factory(parser))
         subparsers = parser.add_subparsers()

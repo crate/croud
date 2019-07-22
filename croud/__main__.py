@@ -54,6 +54,8 @@ from croud.cmd import (
     product_name_arg,
     product_tier_arg,
     product_unit_arg,
+    profile_arg,
+    profile_option_args,
     project_id_arg,
     project_name_arg,
     resource_id_arg,
@@ -64,10 +66,14 @@ from croud.cmd import (
 )
 from croud.config import (
     Configuration,
+    config_current_profile,
     config_get,
+    config_get_global,
+    config_get_profile,
     config_set,
-    current_profile,
-    use_profile,
+    config_set_global,
+    config_set_profile,
+    config_use_profile,
 )
 from croud.consumers.commands import (
     consumers_delete,
@@ -106,12 +112,40 @@ command_tree = {
         "commands": {
             "current-profile": {
                 "help": "Get the current profile.",
-                "resolver": current_profile,
+                "resolver": config_current_profile,
             },
             "use-profile": {
                 "help": "Switch the current profile.",
-                "extra_args": [],
-                "resolver": use_profile,
+                "noop_arg": {"choices": ["prod", "dev", "local"]},
+                "resolver": config_use_profile,
+            },
+            "get-global": {
+                "help": "Show the globally set configuration options.",
+                "extra_args": [
+                    profile_option_args,
+                ],
+                "resolver": config_get_global,
+            },
+            "set-global": {
+                "help": "Set or change the gloabl configuration options.",
+                "extra_args": [
+                    profile_option_args,
+                ],
+                "resolver": config_set_global,
+            },
+            "get-profile": {
+                "help": "Show the globally set configuration options.",
+                "extra_args": [
+                    profile_option_args,
+                ],
+                "resolver": config_get_profile,
+            },
+            "set-profile": {
+                "help": "Set or change the gloabl configuration options.",
+                "extra_args": [
+                    profile_option_args,
+                ],
+                "resolver": config_set_profile,
             },
             "get": {
                 "help": "Get default configuration values.",
