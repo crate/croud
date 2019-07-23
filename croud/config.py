@@ -20,9 +20,9 @@
 import os
 from argparse import Namespace
 
+import schema
 import yaml
 from appdirs import user_config_dir
-from schema import Schema, SchemaError
 
 from croud.printer import print_error, print_format, print_info
 
@@ -39,9 +39,9 @@ class Configuration:
         "auth": {
             "current_context": "prod",
             "contexts": {
-                "prod": {"token": ""},
-                "dev": {"token": ""},
-                "local": {"token": ""},
+                "prod": {"token": "", "organization_id": ""},
+                "dev": {"token": "", "organization_id": ""},
+                "local": {"token": "", "organization_id": ""},
             },
         },
         "region": "bregenz.a1",
@@ -55,14 +55,17 @@ class Configuration:
 
     @staticmethod
     def validate(config: dict) -> dict:
-        schema = Schema(
+        s = schema.Schema(
             {
                 "auth": {
                     "current_context": str,
                     "contexts": {
-                        "prod": {"token": str},
-                        "dev": {"token": str},
-                        "local": {"token": str},
+                        "prod": {"token": str, schema.Optional("organization_id"): str},
+                        "dev": {"token": str, schema.Optional("organization_id"): str},
+                        "local": {
+                            "token": str,
+                            schema.Optional("organization_id"): str,
+                        },
                     },
                 },
                 "region": str,
@@ -70,12 +73,12 @@ class Configuration:
             }
         )
         try:
-            return schema.validate(config)
-        except SchemaError:
+            return s.validate(config)
+        except schema.SchemaError:
             os.remove(Configuration.FILEPATH)
             create_default_config()
 
-            return schema.validate(Configuration.DEFAULT_CONFIG)
+            return s.validate(Configuration.DEFAULT_CONFIG)
 
     @staticmethod
     def create() -> None:
@@ -114,6 +117,17 @@ class Configuration:
     def set_token(token: str, env: str) -> None:
         config = load_config()
         config["auth"]["contexts"][env]["token"] = token
+        write_config(config)
+
+    @staticmethod
+    def get_organization_id(env: str) -> str:
+        config = load_config()
+        return config["auth"]["contexts"][env].get("organization_id", "")
+
+    @staticmethod
+    def set_organization_id(organization_id: str, env: str) -> None:
+        config = load_config()
+        config["auth"]["contexts"][env]["organization_id"] = organization_id
         write_config(config)
 
 

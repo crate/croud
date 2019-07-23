@@ -217,7 +217,7 @@ command_tree = {
                 "extra_args": [
                     project_name_arg,
                     lambda req_opt_group, opt_opt_group: org_id_arg(
-                        req_opt_group, opt_opt_group, True
+                        req_opt_group, opt_opt_group, False
                     ),
                 ],
                 "resolver": project_create,
@@ -369,7 +369,7 @@ command_tree = {
                 "extra_args": [
                     yes_arg,
                     lambda req_opt_group, opt_opt_group: org_id_arg(
-                        req_opt_group, opt_opt_group, True
+                        req_opt_group, opt_opt_group, False
                     ),
                 ],
                 "resolver": organizations_delete,
@@ -385,7 +385,7 @@ command_tree = {
                                 req_opt_group, opt_opt_group, True
                             ),
                             lambda req_opt_group, opt_opt_group: org_id_arg(
-                                req_opt_group, opt_opt_group, True
+                                req_opt_group, opt_opt_group, False
                             ),
                         ],
                         "resolver": org_users_add,
@@ -395,7 +395,7 @@ command_tree = {
                         "extra_args": [
                             user_id_or_email_arg,
                             lambda req_opt_group, opt_opt_group: org_id_arg(
-                                req_opt_group, opt_opt_group, True
+                                req_opt_group, opt_opt_group, False
                             ),
                         ],
                         "resolver": org_users_remove,

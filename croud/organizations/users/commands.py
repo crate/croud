@@ -24,8 +24,10 @@ from argparse import Namespace
 
 from croud.rest import Client
 from croud.session import RequestMethod
+from croud.util import org_id_config_fallback
 
 
+@org_id_config_fallback
 def org_users_add(args: Namespace):
     client = Client.from_args(args)
 
@@ -37,6 +39,7 @@ def org_users_add(args: Namespace):
     client.print(keys=["user_id", "role_fqn", "organization_id"])
 
 
+@org_id_config_fallback
 def org_users_remove(args: Namespace):
     client = Client.from_args(args)
 

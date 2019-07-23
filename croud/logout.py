@@ -34,6 +34,7 @@ def logout(args: Namespace) -> None:
 
     loop.run_until_complete(make_request(env, token))
     Configuration.set_token("", env)
+    Configuration.set_organization_id("", env)
 
     print_info("You have been logged out.")
 

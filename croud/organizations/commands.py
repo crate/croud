@@ -19,9 +19,10 @@
 
 from argparse import Namespace
 
+from croud.config import Configuration
 from croud.rest import Client
 from croud.session import RequestMethod
-from croud.util import require_confirmation
+from croud.util import org_id_config_fallback, require_confirmation
 
 
 def organizations_create(args: Namespace) -> None:
@@ -48,6 +49,7 @@ def organizations_list(args: Namespace) -> None:
     client.print(keys=["id", "name", "plan_type"])
 
 
+@org_id_config_fallback
 @require_confirmation(
     "Are you sure you want to delete the organization?",
     cancel_msg="Organization deletion cancelled.",
@@ -60,3 +62,8 @@ def organizations_delete(args: Namespace) -> None:
     client = Client.from_args(args)
     client.send(RequestMethod.DELETE, f"/api/v2/organizations/{args.org_id}/")
     client.print("Organization deleted.")
+
+    env = args.env or Configuration.get_env()
+    config_org_id = Configuration.get_organization_id(env)
+    if args.org_id == config_org_id:
+        Configuration.set_organization_id("", Configuration.get_env())

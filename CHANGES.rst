@@ -5,6 +5,11 @@ Changes for croud
 Unreleased
 ==========
 
+- The ``-org-id`` parameter is now optional for non-superusers. Upon login, a
+  user's organization will be retrieved and stored in the configuration file.
+  Whenever the ``--org-id`` parameter is needed, a fallback to the default
+  organization will be made.
+
 - Added support for YAML output. It can be specified with the ``-o yaml``
   argument.
 
