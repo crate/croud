@@ -158,16 +158,11 @@ def help_print_factory(parser: argparse.ArgumentParser):
 
 def add_subparser(parser, tree, name="__root__"):
     if "extra_args" in tree:
-        for arg_provider in tree["extra_args"]:
-            if isinstance(arg_provider, Argument):
-                if arg_provider.required:
-                    arg_provider.add_to_parser(parser._group_required)
-                else:
-                    arg_provider.add_to_parser(parser._group_optional)
+        for argument in tree["extra_args"]:
+            if argument.required:
+                argument.add_to_parser(parser._group_required)
             else:
-                arg_provider(
-                    parser._group_required, parser._group_optional
-                )  # keep existing behaviour
+                argument.add_to_parser(parser._group_optional)
     if "noop_arg" in tree:
         parser.add_argument(name.split(" ")[-1], choices=tree["noop_arg"]["choices"])
     if "commands" in tree:

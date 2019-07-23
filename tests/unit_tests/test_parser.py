@@ -16,7 +16,6 @@
 
 import io
 from argparse import Namespace
-from typing import Callable
 from unittest import mock
 
 import pytest
@@ -24,7 +23,12 @@ from util import assert_ellipsis_match
 
 from croud import __version__
 from croud.__main__ import get_parser
-from croud.parser import CroudCliArgumentParser, CroudCliHelpFormatter, create_parser
+from croud.parser import (
+    Argument,
+    CroudCliArgumentParser,
+    CroudCliHelpFormatter,
+    create_parser,
+)
 
 
 def noop(args: Namespace):
@@ -82,27 +86,14 @@ Available Commands:
         )
 
     def test_parser_argument_groups(self):
-        def argument_provider_factory(argument: str, required: bool) -> Callable:
-            """
-            Create an argument provider that adds an argument to the optional
-            or required group depending on the value of the ``required``
-            argument.
-            """
-
-            def argument_provider(req_group, opt_group):
-                group = req_group if required else opt_group
-                group.add_argument(argument, required=required)
-
-            return argument_provider
-
         tree = {
             "help": "help text",
             "commands": {
                 "cmd": {
                     "resolver": noop,
                     "extra_args": [
-                        argument_provider_factory("--arg-a", True),
-                        argument_provider_factory("--arg-b", False),
+                        Argument("--arg-a", required=True),
+                        Argument("--arg-b", required=False),
                     ],
                     "help": "Command help",
                 }
@@ -116,6 +107,7 @@ Available Commands:
                 parser.parse_args(["cmd"])
             assert ex_info.value.code == 2
             output = stdout.call_args[0][0]
+
         assert_ellipsis_match(
             output,
             """
@@ -175,8 +167,8 @@ Optional Arguments:
                 "cmd": {
                     "resolver": noop,
                     "extra_args": [
-                        lambda a, b: a.add_argument("-a", type=int, required=True),
-                        lambda a, b: b.add_argument("-b", type=str, required=False),
+                        Argument("-a", type=int, required=True),
+                        Argument("-b", type=str, required=False),
                     ],
                 }
             },
@@ -198,12 +190,8 @@ Optional Arguments:
                         "list": {
                             "resolver": noop,
                             "extra_args": [
-                                lambda a, b: a.add_argument(
-                                    "-a", type=int, required=True
-                                ),
-                                lambda a, b: b.add_argument(
-                                    "-b", type=str, required=False
-                                ),
+                                Argument("-a", type=int, required=True),
+                                Argument("-b", type=str, required=False),
                             ],
                         }
                     }
