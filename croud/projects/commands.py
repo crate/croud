@@ -21,9 +21,10 @@ from argparse import Namespace
 
 from croud.rest import Client
 from croud.session import RequestMethod
-from croud.util import require_confirmation
+from croud.util import org_id_config_fallback, require_confirmation
 
 
+@org_id_config_fallback
 def project_create(args: Namespace) -> None:
     """
     Creates a project in the organization the user belongs to.

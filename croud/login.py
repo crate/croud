@@ -20,14 +20,30 @@
 import asyncio
 from argparse import Namespace
 from functools import partial
+from typing import Optional
 
 from croud.config import Configuration
 from croud.printer import print_error, print_info
+from croud.rest import Client, RequestMethod
 from croud.server import Server
 from croud.session import cloud_url
 from croud.util import can_launch_browser, open_page_in_browser
 
 LOGIN_PATH = "/oauth2/login?cli=true"
+
+
+def get_org_id() -> Optional[str]:
+    client = Client(
+        Configuration.get_env(),
+        Configuration.get_setting("region"),
+        Configuration.get_setting("output-fmt"),
+    )
+    client.send(RequestMethod.GET, "/api/v2/users/me/")
+    if client._data and not client._error:
+        data: dict = client._data  # type: ignore
+        if not data.get("is_superuser") and "organization_id" in data:
+            return data.get("organization_id")
+    return None
 
 
 def login(args: Namespace) -> None:
@@ -53,9 +69,17 @@ def login(args: Namespace) -> None:
             exit(1)
         finally:
             loop.run_until_complete(server.stop())
-        loop.close()
 
         Configuration.set_context(env.lower())
+
+        organization_id = get_org_id()
+        if organization_id:
+            Configuration.set_organization_id(organization_id, env)
+        else:
+            Configuration.set_organization_id("", env)
+
+        loop.close()
+
     else:
         print_error("Login only works with a valid browser installed.")
         exit(1)

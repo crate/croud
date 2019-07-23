@@ -25,7 +25,7 @@ from unittest import mock
 import pytest
 
 from croud.config import Configuration
-from croud.login import _login_url, login
+from croud.login import _login_url, get_org_id, login
 from croud.logout import _logout_url, logout
 from croud.server import Server
 
@@ -65,14 +65,17 @@ class TestLogin:
 
         with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
             with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
-                login(Namespace(env="dev"))
+                with mock.patch("croud.login.get_org_id", return_value="my-org-id"):
+                    login(Namespace(env="dev"))
 
         calls = [
             mock.call("A browser tab has been launched for you to login."),
             mock.call("Login successful."),
         ]
         mock_print_info.assert_has_calls(calls)
-        assert cfg.read_config()["auth"]["current_context"] == "dev"
+        config = cfg.read_config()
+        assert config["auth"]["current_context"] == "dev"
+        assert config["auth"]["contexts"]["dev"]["organization_id"] == "my-org-id"
 
     @mock.patch.object(Server, "stop")
     @mock.patch.object(Server, "start")
@@ -152,6 +155,54 @@ class TestLogin:
     def test_env_fallback_url(self):
         url = _login_url("invalid")
         assert "https://bregenz.a1.cratedb.cloud/oauth2/login?cli=true" == url
+
+    def test_get_org_id_no_org_is_superuser(self):
+        cfg = MockConfig(Configuration.DEFAULT_CONFIG)
+        cfg.conf["auth"]["contexts"]["dev"]["organization_id"]
+        client = mock.Mock(
+            _data={"is_superuser": True, "organization_id": None}, _error=None
+        )
+        with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
+            with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
+                with mock.patch("croud.login.Client", return_value=client):
+                    org_id = get_org_id()
+        assert org_id is None
+
+    def test_get_org_id_org_is_superuser(self):
+        cfg = MockConfig(Configuration.DEFAULT_CONFIG)
+        cfg.conf["auth"]["contexts"]["dev"]["organization_id"]
+        client = mock.Mock(
+            _data={"is_superuser": True, "organization_id": "some-id"}, _error=None
+        )
+        with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
+            with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
+                with mock.patch("croud.login.Client", return_value=client):
+                    org_id = get_org_id()
+        assert org_id is None
+
+    def test_get_org_id_no_org_is_not_superuser(self):
+        cfg = MockConfig(Configuration.DEFAULT_CONFIG)
+        cfg.conf["auth"]["contexts"]["dev"]["organization_id"]
+        client = mock.Mock(
+            _data={"is_superuser": False, "organization_id": None}, _error=None
+        )
+        with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
+            with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
+                with mock.patch("croud.login.Client", return_value=client):
+                    org_id = get_org_id()
+        assert org_id is None
+
+    def test_get_org_id_org_is_not_superuser(self):
+        cfg = MockConfig(Configuration.DEFAULT_CONFIG)
+        cfg.conf["auth"]["contexts"]["dev"]["organization_id"]
+        client = mock.Mock(
+            _data={"is_superuser": False, "organization_id": "some-id"}, _error=None
+        )
+        with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
+            with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
+                with mock.patch("croud.login.Client", return_value=client):
+                    org_id = get_org_id()
+        assert org_id == "some-id"
 
 
 class TestLogout:

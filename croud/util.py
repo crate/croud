@@ -25,7 +25,8 @@ import webbrowser
 from argparse import Namespace
 from typing import Dict, Tuple
 
-from croud.printer import print_info
+from croud.config import Configuration
+from croud.printer import print_error, print_info
 
 
 # This function was copied from the <https://github.com/Azure/azure-cli>
@@ -120,3 +121,17 @@ def require_confirmation(
         return _wrapper
 
     return _inner
+
+
+def org_id_config_fallback(cmd):  # decorator
+    @functools.wraps(cmd)
+    def _wrapper(cmd_args: Namespace):  # decorator logic
+        env = cmd_args.env or Configuration.get_env()
+        cmd_args.org_id = cmd_args.org_id or Configuration.get_organization_id(env)
+        if not cmd_args.org_id:
+            print_error("An organization ID is required. Please pass --org-id.")
+            exit(1)
+
+        cmd(cmd_args)
+
+    return _wrapper

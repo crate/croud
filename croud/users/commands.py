@@ -20,6 +20,7 @@
 import textwrap
 from argparse import Namespace
 
+from croud.config import Configuration
 from croud.gql import Query, print_query
 from croud.util import clean_dict
 
@@ -28,6 +29,13 @@ def users_list(args: Namespace) -> None:
     """
     List all users within organizations that the logged in user is part of
     """
+    org_id = (
+        args.org_id
+        or Configuration.get_organization_id(args.env or Configuration.get_env())
+        or None
+    )
+    if args.no_org:
+        org_id = None
 
     body = textwrap.dedent(
         """
@@ -43,9 +51,7 @@ def users_list(args: Namespace) -> None:
     """
     ).strip()
 
-    vars = clean_dict(
-        {"queryArgs": {"noOrg": args.no_org, "organizationId": args.org_id}}
-    )
+    vars = clean_dict({"queryArgs": {"noOrg": args.no_org, "organizationId": org_id}})
 
     query = Query(body, args)
     query.execute(vars)
