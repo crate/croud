@@ -30,39 +30,6 @@ from croud.clusters.commands import (
     clusters_scale,
     clusters_upgrade,
 )
-from croud.cmd import (
-    channel_arg,
-    cluster_id_arg,
-    cluster_name_arg,
-    consumer_id_arg,
-    consumer_name_arg,
-    consumer_schema_arg,
-    consumer_table_arg,
-    crate_password_arg,
-    crate_username_arg,
-    crate_version_arg,
-    eventhub_consumer_group_arg,
-    eventhub_dsn_arg,
-    kind_arg,
-    lease_storage_container_arg,
-    lease_storage_dsn_arg,
-    no_org_arg,
-    no_roles_arg,
-    num_instances_arg,
-    org_id_arg,
-    org_name_arg,
-    org_plan_type_arg,
-    product_name_arg,
-    product_tier_arg,
-    product_unit_arg,
-    project_id_arg,
-    project_name_arg,
-    resource_id_arg,
-    role_fqn_arg,
-    user_id_arg,
-    user_id_or_email_arg,
-    yes_arg,
-)
 from croud.config import Configuration, config_get, config_set
 from croud.consumers.commands import (
     consumers_delete,
@@ -84,7 +51,7 @@ from croud.organizations.users.commands import (
     org_users_list,
     org_users_remove,
 )
-from croud.parser import create_parser
+from croud.parser import Argument, create_parser
 from croud.products.commands import products_list
 from croud.projects.commands import project_create, project_delete, projects_list
 from croud.projects.users.commands import (
@@ -125,35 +92,71 @@ command_tree = {
             "deploy": {
                 "help": "Deploy a new consumer.",
                 "extra_args": [
-                    lambda req_opt_group, opt_opt_group: product_name_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--product-name", type=str, required=True,
+                        help="The product name to use.",
                     ),
-                    product_tier_arg,
-                    consumer_name_arg,
-                    num_instances_arg,
-                    lambda req_opt_group, opt_opt_group: consumer_schema_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--tier", type=str, required=True,
+                        help="The product tier to use.",
                     ),
-                    lambda req_opt_group, opt_opt_group: consumer_table_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--consumer-name", type=str, required=True,
+                        help="The consumer name to use.",
                     ),
-                    lambda req_opt_group, opt_opt_group: project_id_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--num-instances", type=int, default=1, required=False,
+                        help="The number of instances to deploy.",
                     ),
-                    lambda req_opt_group, opt_opt_group: cluster_id_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--consumer-schema", type=str, required=True,
+                        help=(
+                            "The CrateDB database schema used by the Azure EventHub "
+                            "consumer."
+                        ),
                     ),
-                    lambda req_opt_group, opt_opt_group: eventhub_dsn_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--consumer-table", type=str, required=True,
+                        help=(
+                            "The CrateDB database table used by the Azure EventHub "
+                            "consumer."
+                        ),
                     ),
-                    lambda req_opt_group, opt_opt_group: eventhub_consumer_group_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "-p", "--project-id", type=str, required=True,
+                        help="The project ID to use.",
                     ),
-                    lambda req_opt_group, opt_opt_group: lease_storage_dsn_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--cluster-id", type=str, required=True,
+                        help="The CrateDB cluster ID to use.",
                     ),
-                    lambda req_opt_group, opt_opt_group: lease_storage_container_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--eventhub-dsn", type=str, required=True,
+                        help=(
+                            "The connection string to the Azure EventHub from which to "
+                            "consume."
+                        ),
+                    ),
+                    Argument(
+                        "--eventhub-consumer-group", type=str, required=True,
+                        help=(
+                            "The consumer group of the Azure EventHub from which to "
+                            "consume."
+                        ),
+                    ),
+                    Argument(
+                        "--lease-storage-dsn", type=str, required=True,
+                        help=(
+                            "The connection string to an Azure storage account to use "
+                            "as lease storage."
+                        ),
+                    ),
+                    Argument(
+                        "--lease-storage-container", type=str, required=True,
+                        help=(
+                            "The container name in the lease storage for the Azure "
+                            "EventHub consumer to use."
+                        ),
                     ),
                 ],
                 "resolver": consumers_deploy,
@@ -161,49 +164,73 @@ command_tree = {
             "list": {
                 "help": "List all consumers the current user has access to.",
                 "extra_args": [
-                    lambda req_opt_group, opt_opt_group: project_id_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument(
+                        "-p", "--project-id", type=str, required=False,
+                        help="The project ID to use.",
                     ),
-                    lambda req_opt_group, opt_opt_group: cluster_id_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument(
+                        "--cluster-id", type=str, required=False,
+                        help="The CrateDB cluster ID to use.",
                     ),
-                    lambda req_opt_group, opt_opt_group: product_name_arg(
-                        req_opt_group, opt_opt_group, False
-                    )
+                    Argument(
+                        "--product-name", type=str, required=False,
+                        help="The product name to use.",
+                    ),
                 ],
                 "resolver": consumers_list,
             },
             "edit": {
                 "help": "Edit the specified consumer set.",
                 "extra_args": [
-                    consumer_id_arg,
-                    lambda req_opt_group, opt_opt_group:
-                    eventhub_dsn_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument(
+                        "--consumer-id", type=str, required=True,
+                        help="The consumer set ID to use.",
                     ),
-                    lambda req_opt_group, opt_opt_group:
-                    eventhub_consumer_group_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument(
+                        "--eventhub-dsn", type=str, required=False,
+                        help=(
+                            "The connection string to the Azure EventHub from which to "
+                            "consume."
+                        ),
                     ),
-                    lambda req_opt_group, opt_opt_group:
-                    lease_storage_dsn_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument(
+                        "--eventhub-consumer-group", type=str, required=False,
+                        help=(
+                            "The consumer group of the Azure EventHub from which to "
+                            "consume."
+                        ),
                     ),
-                    lambda req_opt_group, opt_opt_group:
-                    lease_storage_container_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument(
+                        "--lease-storage-dsn", type=str, required=False,
+                        help=(
+                            "The connection string to an Azure storage account to use "
+                            "as lease storage."
+                        ),
                     ),
-                    lambda req_opt_group, opt_opt_group:
-                    consumer_schema_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument(
+                        "--lease-storage-container", type=str, required=False,
+                        help=(
+                            "The container name in the lease storage for the Azure "
+                            "EventHub consumer to use."
+                        ),
                     ),
-                    lambda req_opt_group, opt_opt_group:
-                    consumer_table_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument(
+                        "--consumer-schema", type=str, required=False,
+                        help=(
+                            "The CrateDB database schema used by the Azure EventHub "
+                            "consumer."
+                        ),
                     ),
-                    lambda req_opt_group, opt_opt_group:
-                    cluster_id_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument(
+                        "--consumer-table", type=str, required=False,
+                        help=(
+                            "The CrateDB database table used by the Azure EventHub "
+                            "consumer."
+                        ),
+                    ),
+                    Argument(
+                        "--cluster-id", type=str, required=False,
+                        help="The CrateDB cluster ID to use.",
                     ),
                 ],
                 "resolver": consumers_edit,
@@ -211,8 +238,11 @@ command_tree = {
             "delete": {
                 "help": "Delete the specified consumer set.",
                 "extra_args": [
-                    consumer_id_arg,
-                    yes_arg
+                    Argument(
+                        "--consumer-id", type=str, required=True,
+                        help="The consumer set ID to use.",
+                    ),
+                    Argument("-y", "--yes", action="store_true", default=False)
                 ],
                 "resolver": consumers_delete,
             },
@@ -224,9 +254,13 @@ command_tree = {
             "create": {
                 "help": "Create a project in the specified organization and region.",
                 "extra_args": [
-                    project_name_arg,
-                    lambda req_opt_group, opt_opt_group: org_id_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument(
+                        "--name", type=str, required=True,
+                        help="The project name to use.",
+                    ),
+                    Argument(
+                        "--org-id", type=str, required=False,
+                        help="The organization ID to use.",
                     ),
                 ],
                 "resolver": project_create,
@@ -234,10 +268,11 @@ command_tree = {
             "delete": {
                 "help": "Delete the specified project.",
                 "extra_args": [
-                    lambda req_opt_group, opt_opt_group: project_id_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "-p", "--project-id", type=str, required=True,
+                        help="The project ID to use.",
                     ),
-                    yes_arg,
+                    Argument("-y", "--yes", action="store_true", default=False),
                 ],
                 "resolver": project_delete,
             },
@@ -254,12 +289,20 @@ command_tree = {
                     "add": {
                         "help": "Add the selected user to a project.",
                         "extra_args": [
-                            lambda req_opt_group, opt_opt_group: project_id_arg(
-                                req_opt_group, opt_opt_group, True
+                            Argument(
+                                "-p", "--project-id", type=str, required=True,
+                                help="The project ID to use.",
                             ),
-                            user_id_or_email_arg,
-                            lambda req_opt_group, opt_opt_group: role_fqn_arg(
-                                req_opt_group, opt_opt_group, True
+                            Argument(
+                                "--user", type=str, required=True,
+                                help="The user email address or ID to use.",
+                            ),
+                            Argument(
+                                "--role", type=str, required=True,
+                                help=(
+                                    "The role FQN to use. Run `croud users roles list` "
+                                    "for a list of available roles."
+                                ),
                             ),
                         ],
                         "resolver": project_users_add,
@@ -267,8 +310,9 @@ command_tree = {
                     "list": {
                         "help": "List all users within a project.",
                         "extra_args": [
-                            lambda req_opt_group, opt_opt_group: project_id_arg(
-                                req_opt_group, opt_opt_group, True
+                            Argument(
+                                "-p", "--project-id", type=str, required=True,
+                                help="The project ID to use.",
                             ),
                         ],
                         "resolver": project_users_list,
@@ -276,10 +320,14 @@ command_tree = {
                     "remove": {
                         "help": "Remove the selected user from a project.",
                         "extra_args": [
-                            lambda req_opt_group, opt_opt_group: project_id_arg(
-                                req_opt_group, opt_opt_group, True
+                            Argument(
+                                "-p", "--project-id", type=str, required=True,
+                                help="The project ID to use.",
                             ),
-                            user_id_or_email_arg,
+                            Argument(
+                                "--user", type=str, required=True,
+                                help="The user email address or ID to use.",
+                            ),
                         ],
                         "resolver": project_users_remove,
                     },
@@ -293,8 +341,9 @@ command_tree = {
             "list": {
                 "help": "List all clusters the current user has access to.",
                 "extra_args": [
-                    lambda req_opt_group, opt_opt_group: project_id_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument(
+                        "-p", "--project-id", type=str, required=False,
+                        help="The project ID to use.",
                     ),
                 ],
                 "resolver": clusters_list,
@@ -302,24 +351,42 @@ command_tree = {
             "deploy": {
                 "help": "Deploy a new CrateDB cluster.",
                 "extra_args": [
-                    lambda req_opt_group, opt_opt_group: product_name_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--product-name", type=str, required=True,
+                        help="The product name to use.",
                     ),
-                    product_tier_arg,
-                    lambda req_opt_group, opt_opt_group: product_unit_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument(
+                        "--tier", type=str, required=True,
+                        help="The product tier to use.",
                     ),
-                    lambda req_opt_group, opt_opt_group: project_id_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--unit", type=int, required=False,
+                        help="The product scale unit to use.",
                     ),
-                    lambda req_opt_group, opt_opt_group: cluster_name_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "-p", "--project-id", type=str, required=True,
+                        help="The project ID to use.",
                     ),
-                    crate_version_arg,
-                    crate_username_arg,
-                    crate_password_arg,
-                    lambda req_opt_group, opt_opt_group: channel_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument(
+                        "--cluster-name", type=str, required=True,
+                        help="The CrateDB cluster name to use.",
+                    ),
+                    Argument(
+                        "--version", type=str, required=True,
+                        help="The CrateDB version to use.",
+                    ),
+                    Argument(
+                        "--username", type=str, required=True,
+                        help="The CrateDB username to use.",
+                    ),
+                    Argument(
+                        "--password", type=str, required=True,
+                        help="The CrateDB password to use.",
+                    ),
+                    Argument(
+                        "--channel", type=str, default="stable", required=False,
+                        choices={"stable", "testing", "nightly"},
+                        help="The channel of the CrateDB version (superusers only).",
                     ),
                 ],
                 "resolver": clusters_deploy,
@@ -327,11 +394,13 @@ command_tree = {
             "scale": {
                 "help": "Scale an existing CrateDB cluster.",
                 "extra_args": [
-                    lambda req_opt_group, opt_opt_group: cluster_id_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--cluster-id", type=str, required=True,
+                        help="The CrateDB cluster ID to use.",
                     ),
-                    lambda req_opt_group, opt_opt_group: product_unit_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--unit", type=int, required=True,
+                        help="The product scale unit to use.",
                     ),
                 ],
                 "resolver": clusters_scale,
@@ -339,20 +408,25 @@ command_tree = {
             "upgrade": {
                 "help": "Upgrade an existing CrateDB cluster to a later version.",
                 "extra_args": [
-                    lambda req_opt_group, opt_opt_group: cluster_id_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--cluster-id", type=str, required=True,
+                        help="The CrateDB cluster ID to use.",
                     ),
-                    crate_version_arg,
+                    Argument(
+                        "--version", type=str, required=True,
+                        help="The CrateDB version to use.",
+                    ),
                 ],
                 "resolver": clusters_upgrade
             },
             "delete": {
                 "help": "Delete the specified cluster.",
                 "extra_args": [
-                    lambda req_opt_group, opt_opt_group: cluster_id_arg(
-                        req_opt_group, opt_opt_group, True
+                    Argument(
+                        "--cluster-id", type=str, required=True,
+                        help="The CrateDB cluster ID to use.",
                     ),
-                    yes_arg
+                    Argument("-y", "--yes", action="store_true", default=False)
                 ],
                 "resolver": clusters_delete,
             },
@@ -363,7 +437,11 @@ command_tree = {
         "commands": {
             "list": {
                 "help": "List all available products in the current region.",
-                "extra_args": [kind_arg],
+                "extra_args": [
+                    Argument(
+                        "--kind", type=str, required=False, help="The product kind."
+                    ),
+                ],
                 "resolver": products_list,
             },
         },
@@ -373,7 +451,17 @@ command_tree = {
         "commands": {
             "create": {
                 "help": "Create a new organization.",
-                "extra_args": [org_name_arg, org_plan_type_arg],
+                "extra_args": [
+                    Argument(
+                        "--name", type=str, required=True,
+                        help="The organization name to use.",
+                    ),
+                    Argument(
+                        "--plan-type", type=int, required=True,
+                        choices=[1, 2, 3, 4, 5, 6],
+                        help="The support plan to use for the organization.",
+                    ),
+                ],
                 "resolver": organizations_create,
             },
             "list": {
@@ -383,9 +471,10 @@ command_tree = {
             "delete": {
                 "help": "Delete the specified organization.",
                 "extra_args": [
-                    yes_arg,
-                    lambda req_opt_group, opt_opt_group: org_id_arg(
-                        req_opt_group, opt_opt_group, False
+                    Argument("-y", "--yes", action="store_true", default=False),
+                    Argument(
+                        "--org-id", type=str, required=False,
+                        help="The organization ID to use.",
                     ),
                 ],
                 "resolver": organizations_delete,
@@ -396,12 +485,20 @@ command_tree = {
                     "add": {
                         "help": "Add the selected user to an organization.",
                         "extra_args": [
-                            user_id_or_email_arg,
-                            lambda req_opt_group, opt_opt_group: role_fqn_arg(
-                                req_opt_group, opt_opt_group, True
+                            Argument(
+                                "--user", type=str, required=True,
+                                help="The user email address or ID to use.",
                             ),
-                            lambda req_opt_group, opt_opt_group: org_id_arg(
-                                req_opt_group, opt_opt_group, False
+                            Argument(
+                                "--role", type=str, required=True,
+                                help=(
+                                    "The role FQN to use. Run `croud users roles list` "
+                                    "for a list of available roles."
+                                ),
+                            ),
+                            Argument(
+                                "--org-id", type=str, required=False,
+                                help="The organization ID to use.",
                             ),
                         ],
                         "resolver": org_users_add,
@@ -409,8 +506,9 @@ command_tree = {
                     "list": {
                         "help": "List all users within an organization.",
                         "extra_args": [
-                            lambda req_opt_group, opt_opt_group: org_id_arg(
-                                req_opt_group, opt_opt_group, False
+                            Argument(
+                                "--org-id", type=str, required=False,
+                                help="The organization ID to use.",
                             ),
                         ],
                         "resolver": org_users_list,
@@ -418,9 +516,13 @@ command_tree = {
                     "remove": {
                         "help": "Remove the selected user from an organization.",
                         "extra_args": [
-                            user_id_or_email_arg,
-                            lambda req_opt_group, opt_opt_group: org_id_arg(
-                                req_opt_group, opt_opt_group, False
+                            Argument(
+                                "--user", type=str, required=True,
+                                help="The user email address or ID to use.",
+                            ),
+                            Argument(
+                                "--org-id", type=str, required=False,
+                                help="The organization ID to use.",
                             ),
                         ],
                         "resolver": org_users_remove,
@@ -435,12 +537,14 @@ command_tree = {
             "list": {
                 "help": "List all users.",
                 "extra_args": [
-                    lambda req_opt_group, opt_opt_group: no_roles_arg(
-                        req_opt_group, opt_opt_group
+                    Argument(
+                        "--no-roles", action="store_true",
+                        help="List users without roles.",
                     ),
-                    lambda req_opt_group, opt_opt_group: no_org_arg(
-                        req_opt_group, opt_opt_group
-                    ),
+                    Argument(
+                        "--no-org", action="store_true",
+                        help="Only show users that are not part of any organization.",
+                    )
                 ],
                 "resolver": users_list,
             },
@@ -450,14 +554,20 @@ command_tree = {
                     "add": {
                         "help": "Assign a role to the selected user.",
                         "extra_args": [
-                            lambda req_opt_group, opt_opt_group: resource_id_arg(
-                                req_opt_group, opt_opt_group, True
+                            Argument(
+                                "--resource", type=str, required=True,
+                                help="The resource ID to use.",
                             ),
-                            lambda req_opt_group, opt_opt_group: user_id_arg(
-                                req_opt_group, opt_opt_group, True
+                            Argument(
+                                "--user", type=str, required=True,
+                                help="The user ID to use.",
                             ),
-                            lambda req_opt_group, opt_opt_group: role_fqn_arg(
-                                req_opt_group, opt_opt_group, True
+                            Argument(
+                                "--role", type=str, required=True,
+                                help=(
+                                    "The role FQN to use. Run `croud users roles list` "
+                                    "for a list of available roles."
+                                ),
                             ),
                         ],
                         "resolver": roles_add,
@@ -465,14 +575,20 @@ command_tree = {
                     "remove": {
                         "help": "Unassign a role from the selected user.",
                         "extra_args": [
-                            lambda req_opt_group, opt_opt_group: resource_id_arg(
-                                req_opt_group, opt_opt_group, True
+                            Argument(
+                                "--resource", type=str, required=True,
+                                help="The resource ID to use.",
                             ),
-                            lambda req_opt_group, opt_opt_group: user_id_arg(
-                                req_opt_group, opt_opt_group, True
+                            Argument(
+                                "--user", type=str, required=True,
+                                help="The user ID to use.",
                             ),
-                            lambda req_opt_group, opt_opt_group: role_fqn_arg(
-                                req_opt_group, opt_opt_group, True
+                            Argument(
+                                "--role", type=str, required=True,
+                                help=(
+                                    "The role FQN to use. Run `croud users roles list` "
+                                    "for a list of available roles."
+                                ),
                             ),
                         ],
                         "resolver": roles_remove,
@@ -495,8 +611,9 @@ command_tree = {
                         "help": "Enable Grafana dashboards to visualize metrics for a "
                         "project.",
                         "extra_args": [
-                            lambda req_opt_group, opt_opt_group: project_id_arg(
-                                req_opt_group, opt_opt_group, True
+                            Argument(
+                                "-p", "--project-id", type=str, required=True,
+                                help="The project ID to use.",
                             ),
                         ],
                         "resolver": lambda args: set_grafana(True, args),
@@ -504,8 +621,9 @@ command_tree = {
                     "disable": {
                         "help": "Disable Grafana dashboards for a project.",
                         "extra_args": [
-                            lambda req_opt_group, opt_opt_group: project_id_arg(
-                                req_opt_group, opt_opt_group, True
+                            Argument(
+                                "-p", "--project-id", type=str, required=True,
+                                help="The project ID to use.",
                             ),
                         ],
                         "resolver": lambda args: set_grafana(False, args),
