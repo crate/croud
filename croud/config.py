@@ -37,36 +37,21 @@ from croud.printer import (
 
 DEFAULT_CONFIG: dict = {
     "current-profile": "prod",
-    "global": {"region": "", "output-format": "table", "organization": ""},
+    "global": {"region": "", "output-format": "table"},
     "profile": {
-        "prod": {"token": "", "region": "", "output-format": "", "organization": ""},
-        "dev": {"token": "", "region": "", "output-format": "", "organization": ""},
-        "local": {"token": "", "region": "", "output-format": "", "organization": ""},
+        "prod": {"token": "", "region": "", "output-format": ""},
+        "dev": {"token": "", "region": "", "output-format": ""},
+        "local": {"token": "", "region": "", "output-format": ""},
     },
 }
 DEFAULT_CONFIG_SCHEMA = Schema(
     {
         "current-profile": str,
-        "global": {"region": str, "output-format": str, "organization": str},
+        "global": {"region": str, "output-format": str},
         "profile": {
-            "prod": {
-                "token": str,
-                "region": str,
-                "output-format": str,
-                "organization": str,
-            },
-            "dev": {
-                "token": str,
-                "region": str,
-                "output-format": str,
-                "organization": str,
-            },
-            "local": {
-                "token": str,
-                "region": str,
-                "output-format": str,
-                "organization": str,
-            },
+            "prod": {"token": str, "region": str, "output-format": str},
+            "dev": {"token": str, "region": str, "output-format": str},
+            "local": {"token": str, "region": str, "output-format": str},
         },
     }
 )
