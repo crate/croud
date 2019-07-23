@@ -99,7 +99,6 @@ from croud.users.roles.commands import roles_add, roles_list, roles_remove
 command_tree = {
     "me": {
         "help": "Print information about the current logged in user.",
-        "extra_args": [],
         "resolver": me,
     },
     "login": {"help": "Log in to CrateDB Cloud.", "resolver": login},
@@ -115,7 +114,6 @@ command_tree = {
             },
             "set": {
                 "help": "Set default configuration values.",
-                "extra_args": [],
                 "resolver": config_set,
                 "omit_sudo": True,
             },
@@ -248,7 +246,6 @@ command_tree = {
                     "List all projects the current user has access to in "
                     "the specified region."
                 ),
-                "extra_args": [],
                 "resolver": projects_list,
             },
             "users": {
@@ -381,7 +378,6 @@ command_tree = {
             },
             "list": {
                 "help": "List all organizations the current user has access to.",
-                "extra_args": [],
                 "resolver": organizations_list,
             },
             "delete": {
@@ -483,7 +479,6 @@ command_tree = {
                     },
                     "list": {
                         "help": "List all available roles.",
-                        "extra_args": [],
                         "resolver": roles_list,
                     },
                 },
