@@ -379,8 +379,22 @@ def config_set(args: Namespace, parser, config: Configuration):
 
         if setting is not None:
             if key == "env":
-                Configuration.set_context(setting)
+                print_warning(
+                    "Environments (envs) were renamed to profiles. To set or change "
+                    "the default profile use `croud config use-profile`."
+                )
+                config.current_profile = setting
                 print_info(f"Environment switched to {setting}")
+            elif key == "output-fmt":
+                print_warning(
+                    "The configuration setting 'output-fmt' was renamed to "
+                    "'output-format'."
+                )
+                config.set_profile("output-format", setting)
+                config.set_global("output-format", setting)
             else:
-                set_property(key, setting)
-                print_info(f"{Configuration.CONFIG_NAMES[key]} switched to {setting}")
+                config.set_profile(key, setting)
+                config.set_global(key, setting)
+                print_info(f"output-fmt switched to {setting}")
+
+    config.save()

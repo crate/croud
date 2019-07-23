@@ -136,6 +136,7 @@ command_tree = {
             "get-profile": {
                 "help": "Show the globally set configuration options.",
                 "extra_args": [
+                    profile_arg,
                     profile_option_args,
                 ],
                 "resolver": config_get_profile,
@@ -143,6 +144,7 @@ command_tree = {
             "set-profile": {
                 "help": "Set or change the gloabl configuration options.",
                 "extra_args": [
+                    profile_arg,
                     profile_option_args,
                 ],
                 "resolver": config_set_profile,
