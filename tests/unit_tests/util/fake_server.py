@@ -60,12 +60,17 @@ class FakeCrateDBCloud:
         self.loop = loop
         self.app = web.Application()
         # thi will allow us to register multiple endpoints/handlers to test
-        self.app.router.add_routes([web.post("/graphql", self.on_graphql)])
-        self.app.router.add_routes([web.get("/data/data-key", self.data_data_key)])
-        self.app.router.add_routes([web.get("/data/no-key", self.data_no_key)])
-        self.app.router.add_routes([web.get("/errors/400", self.error_400)])
-        self.app.router.add_routes([web.get("/text-response", self.text_response)])
-        self.app.router.add_routes([web.get("/empty-response", self.empty_response)])
+        self.app.router.add_routes(
+            [
+                web.post("/graphql", self.on_graphql),
+                web.get("/data/data-key", self.data_data_key),
+                web.get("/data/no-key", self.data_no_key),
+                web.get("/errors/400", self.error_400),
+                web.get("/text-response", self.text_response),
+                web.get("/empty-response", self.empty_response),
+                web.get("/test-x-sudo", self.assert_x_sudo),
+            ]
+        )
 
         here = pathlib.Path(__file__)
         # Load certificates and sign key used to simulate ssl/tls
@@ -145,3 +150,11 @@ class FakeCrateDBCloud:
                 else:
                     return ""
         return ""
+
+    async def assert_x_sudo(self, request: web.Request):
+        if request.headers.get("X-Auth-Sudo") is not None:
+            return web.json_response({}, status=200)
+        else:
+            return web.json_response(
+                {"message": "Header not set, as expected."}, status=200
+            )

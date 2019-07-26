@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added the optional ``--sudo`` argument to be able to specify when a command should
+  be run as ``superuser``.
+
 - The ``-org-id`` parameter is now optional for non-superusers. Upon login, a
   user's organization will be retrieved and stored in the configuration file.
   Whenever the ``--org-id`` parameter is needed, a fallback to the default

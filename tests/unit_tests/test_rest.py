@@ -47,7 +47,7 @@ class TestRestClient:
         with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
             data = {"key": "value"}
 
-            client = Client(env="dev", region="bregenz.a1", output_fmt="json")
+            client = Client(env="dev", region="bregenz.a1")
             resp_data, errors = client.send(RequestMethod.GET, "/data/data-key")
 
             assert resp_data["data"] == data
@@ -55,7 +55,7 @@ class TestRestClient:
 
     def test_send_success_sets_data_without_key(self, mock_cloud_url, mock_token):
         with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
-            client = Client(env="dev", region="bregenz.a1", output_fmt="json")
+            client = Client(env="dev", region="bregenz.a1")
             resp_data, errors = client.send(RequestMethod.GET, "/data/no-key")
 
             assert resp_data == {"key": "value"}
@@ -63,9 +63,8 @@ class TestRestClient:
 
     def test_send_error_sets_error(self, mock_cloud_url, mock_token):
         with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
-            client = Client(env="dev", region="bregenz.a1", output_fmt="json")
+            client = Client(env="dev", region="bregenz.a1")
             resp_data, errors = client.send(RequestMethod.GET, "/errors/400")
-
             assert errors == {
                 "message": "Bad request.",
                 "errors": {"key": "Error on 'key'"},
@@ -73,7 +72,7 @@ class TestRestClient:
 
     def test_send_text_response(self, mock_cloud_url, mock_token):
         with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
-            client = Client(env="dev", region="bregenz.a1", output_fmt="json")
+            client = Client(env="dev", region="bregenz.a1")
             resp_data, errors = client.send(RequestMethod.GET, "/text-response")
 
             assert resp_data is None
@@ -81,10 +80,26 @@ class TestRestClient:
 
     def test_send_empty_response(self, mock_cloud_url, mock_token):
         with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
-            client = Client(env="dev", region="bregenz.a1", output_fmt="json")
+            client = Client(env="dev", region="bregenz.a1")
             resp_data, errors = client.send(RequestMethod.GET, "/empty-response")
 
             assert resp_data is None
+            assert errors is None
+
+    # If the --sudo argument is given, any value is valid for the header, this
+    # checks if the header is set if the --sudo argument was given.
+    def test_send_sudo_header_set(self, mock_cloud_url, mock_token):
+        with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
+            client = Client(env="dev", region="bregenz.a1", sudo=True)
+            resp_data, errors = client.send(RequestMethod.GET, f"/test-x-sudo")
+            assert resp_data == {}
+            assert errors is None
+
+    def test_send_sudo_header_not_set(self, mock_cloud_url, mock_token):
+        with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
+            client = Client(env="dev", region="bregenz.a1", sudo=False)
+            resp_data, errors = client.send(RequestMethod.GET, f"/test-x-sudo")
+            assert resp_data == {"message": "Header not set, as expected."}
             assert errors is None
 
     def _get_conn(self):
