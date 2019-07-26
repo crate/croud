@@ -111,6 +111,12 @@ def add_default_args(parser):
         choices={"table", "json", "yaml"},
         help="Change the formatting of the output",
     )
+    parser._group_optional.add_argument(
+        "--sudo",
+        required=False,
+        action="store_true",
+        help="Run the given command as superuser.",
+    )
 
 
 def help_print_factory(parser: argparse.ArgumentParser):

@@ -163,7 +163,9 @@ Optional Arguments:
         argv = ["cmd"]
         args = parser.parse_args(argv)
         assert args.resolver == noop
-        assert args == Namespace(env=None, output_fmt=None, region=None, resolver=noop)
+        assert args == Namespace(
+            env=None, output_fmt=None, region=None, sudo=False, resolver=noop
+        )
 
     def test_commands_with_args(self):
         tree = {
@@ -227,8 +229,10 @@ Optional Arguments:
             "local",
             "--output-fmt",
             "json",
+            "--sudo",
         ]
         args = parser.parse_args(argv)
         assert args.env == "local"
         assert args.region == "eastus.azure"
         assert args.output_fmt == "json"
+        assert args.sudo is True

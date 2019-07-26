@@ -18,6 +18,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import asyncio
+import uuid
 from argparse import Namespace
 from functools import partial
 
@@ -32,16 +33,18 @@ class Client:
     _env: str
     _token: str
     _region: str
+    _sudo: bool
 
-    def __init__(self, env: str, region: str, output_fmt: str, loop=None):
+    def __init__(self, env: str, region: str, loop=None, sudo: bool = False):
         self._env = env or Configuration.get_env()
         self._token = Configuration.get_token(self._env)
         self._region = region or Configuration.get_setting("region")
+        self._sudo = sudo
         self.loop = loop or asyncio.get_event_loop()
 
     @staticmethod
     def from_args(args: Namespace) -> "Client":
-        return Client(args.env, args.region, args.output_fmt)
+        return Client(args.env, args.region, args.output_fmt, args.sudo)
 
     def send(
         self,
@@ -65,6 +68,7 @@ class Client:
             self._token,
             self._region,
             on_new_token=partial(Configuration.set_token, env=self._env),
+            headers={"X-Auth-Sudo": str(uuid.uuid4())} if self._sudo is True else {},
         ) as session:
             resp = await session.fetch(method, endpoint, body, params)
             return await self._decode_response(resp)
