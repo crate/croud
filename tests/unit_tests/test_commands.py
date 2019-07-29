@@ -35,6 +35,7 @@ from croud.projects.users.commands import (
 )
 from croud.rest import Client
 from croud.session import RequestMethod
+from croud.users.commands import transform_roles_list
 
 
 def gen_uuid() -> str:
@@ -814,48 +815,73 @@ class TestUsersRolesREST(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "run", return_value={"data": []})
+@mock.patch.object(Client, "send", return_value=({}, None))
 class TestUsers(CommandTestCase):
-    org_id = gen_uuid()
-    expected_body = textwrap.dedent(
-        """
-        query allUsers($queryArgs: UserQueryArgs) {
-            allUsers(sort: EMAIL, queryArgs: $queryArgs) {
-                data {
-                    uid
-                    email
-                    username
-                }
-            }
-        }
-    """
-    ).strip()
-
-    def test_list_no_filter(self, mock_run, mock_load_config):
-        expected_vars = {"queryArgs": {"noOrg": False}}
+    def test_list(self, mock_send, mock_load_config):
         argv = ["croud", "users", "list"]
-        self.assertGql(mock_run, argv, self.expected_body, expected_vars)
+        self.assertRest(
+            mock_send, argv, RequestMethod.GET, "/api/v2/users/", params=None
+        )
 
-    def test_list_org_filter(self, mock_run, mock_load_config):
-        expected_vars = {"queryArgs": {"organizationId": self.org_id, "noOrg": False}}
-        argv = ["croud", "users", "list", "--org-id", self.org_id]
-        self.assertGql(mock_run, argv, self.expected_body, expected_vars)
+    def test_transform_roles_list(self, mock_send, mock_load_config):
+        user = {
+            "organization_roles": [
+                {"organization_id": "org-1", "role_fqn": "org_admin"},
+                {"organization_id": "org-2", "role_fqn": "org_member"},
+                {"organization_id": "org-3", "role_fqn": "org_member"},
+            ],
+            "project_roles": [
+                {"project_id": "project-1", "role_fqn": "project_admin"},
+                {"project_id": "project-2", "role_fqn": "project_member"},
+                {"project_id": "project-3", "role_fqn": "project_member"},
+            ],
+        }
+        response = transform_roles_list("organization_id")(user["organization_roles"])
+        assert response == "org-1: org_admin,\norg-2: org_member,\norg-3: org_member"
+        response = transform_roles_list("project_id")(user["project_roles"])
+        assert response == (
+            "project-1: project_admin,\n"
+            "project-2: project_member,\n"
+            "project-3: project_member"
+        )
 
-    def test_list_no_org_filter(self, mock_run, mock_load_config):
-        expected_vars = {"queryArgs": {"noOrg": True}}
+    def test_list_no_org(self, mock_send, mock_load_config, capsys):
         argv = ["croud", "users", "list", "--no-org"]
-        self.assertGql(mock_run, argv, self.expected_body, expected_vars)
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.GET,
+            "/api/v2/users/",
+            params={"no-roles": "1"},
+        )
+        _, err = capsys.readouterr()
+        assert (
+            "The --no-org argument is deprecated. Please use --no-roles instead." in err
+        )
 
-    def test_list_filter_conflict(self, mock_run, mock_load_config):
-        expected_vars = None
-        argv = ["croud", "users", "list", "--org-id", self.org_id, "--no-org"]
-        with mock.patch("sys.stderr.write") as stderr:
-            with pytest.raises(SystemExit) as ex_info:
-                self.assertGql(mock_run, argv, self.expected_body, expected_vars)
-            stderr.assert_called_once()
-            expected_error = "Argument --no-org: not allowed with argument --org-id\n\n"
-            assert stderr.call_args[0][0] == expected_error
-            assert ex_info.value.code == 2
+    def test_list_no_roles(self, mock_send, mock_load_config):
+        argv = ["croud", "users", "list", "--no-roles"]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.GET,
+            "/api/v2/users/",
+            params={"no-roles": "1"},
+        )
+
+    def test_list_no_org_no_roles(self, mock_send, mock_load_config, capsys):
+        argv = ["croud", "users", "list", "--no-roles", "--no-org"]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.GET,
+            "/api/v2/users/",
+            params={"no-roles": "1"},
+        )
+        _, err = capsys.readouterr()
+        assert (
+            "The --no-org argument is deprecated. Please use --no-roles instead." in err
+        )
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)

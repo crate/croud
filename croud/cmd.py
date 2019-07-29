@@ -39,6 +39,12 @@ def project_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None
     )
 
 
+def no_roles_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
+    opt_args.add_argument(
+        "--no-roles", action="store_true", help="List users without roles."
+    )
+
+
 def org_id_arg(
     req_args: _ArgumentGroup, opt_args: _ArgumentGroup, required: bool
 ) -> None:
@@ -57,14 +63,6 @@ def no_org_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
         type=bool,
         help="Only show users that are not part of any organization.",
     )
-
-
-def org_id_no_org_arg_mutual_exclusive(
-    req_args: _ArgumentGroup, opt_args: _ArgumentGroup
-) -> None:
-    exclusive = opt_args.add_mutually_exclusive_group()
-    org_id_arg(req_args, exclusive, False)
-    no_org_arg(req_args, exclusive)
 
 
 def org_name_arg(req_args: _ArgumentGroup, opt_args: _ArgumentGroup) -> None:
