@@ -21,7 +21,7 @@ import abc
 import functools
 import json
 import sys
-from typing import Dict, List, Optional, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Type, Union
 
 import yaml
 from colorama import Fore, Style
@@ -33,19 +33,27 @@ print_stderr = functools.partial(print, file=sys.stderr)
 
 
 def print_format(
-    rows: Union[List[JsonDict], JsonDict], format: str, keys: Optional[List[str]] = None
+    rows: Union[List[JsonDict], JsonDict],
+    format: str,
+    keys: Optional[List[str]] = None,
+    transforms: List[Optional[Callable[[Any], Any]]] = None,
 ) -> None:
     try:
         Printer = PRINTERS[format]
     except KeyError:
         print_error("This print method is not supported.")
         exit(1)
-    printer = Printer(keys)
+    printer = Printer(keys, transforms)
     printer.print_rows(rows)
 
 
 def print_response(
-    data, errors, output_fmt, success_message: str = None, keys: List[str] = None
+    data,
+    errors,
+    output_fmt,
+    success_message: str = None,
+    keys: List[str] = None,
+    transforms: List[Optional[Callable[[Any], Any]]] = None,
 ):
     if errors:
         if "message" in errors:
@@ -61,7 +69,7 @@ def print_response(
         print_success(message)
         return
 
-    print_format(data, output_fmt, keys)
+    print_format(data, output_fmt, keys, transforms)
 
     if data and success_message is not None:
         message = success_message
@@ -87,8 +95,18 @@ def print_success(text: str):
 
 
 class FormatPrinter(abc.ABC):
-    def __init__(self, keys: Optional[List[str]] = None):
+    def __init__(
+        self,
+        keys: Optional[List[str]] = None,
+        transforms: List[Optional[Callable[[Any], Any]]] = None,
+    ):
+        assert not transforms or transforms and keys and len(keys) == len(transforms), (
+            "When providing transforms the number of transforms must match the number "
+            "of provided keys."
+        )
+
         self.keys = keys
+        self.transforms = transforms
 
     def print_rows(self, rows: Union[List[JsonDict], JsonDict]) -> None:
         print(self.format_rows(rows))
@@ -104,6 +122,20 @@ class JsonFormatPrinter(FormatPrinter):
 
 
 class TableFormatPrinter(FormatPrinter):
+    transform_funcs: Dict[str, Callable[[Any], Any]] = {}
+
+    def __init__(
+        self,
+        keys: Optional[List[str]] = None,
+        transforms: List[Optional[Callable[[Any], Any]]] = None,
+    ):
+        super().__init__(keys=keys, transforms=transforms)
+        if keys and transforms:
+            self.transform_funcs = {
+                key: transform or TableFormatPrinter._identity_transform
+                for key, transform in zip(keys, transforms)
+            }
+
     def format_rows(self, rows: Union[List[JsonDict], JsonDict]) -> str:
         if rows is None:
             return ""
@@ -132,7 +164,12 @@ class TableFormatPrinter(FormatPrinter):
         if headers is None:
             return ""
         values = [
-            [self._transform_record_value(row[header]) for header in headers]
+            [
+                self.transform_funcs.get(
+                    header, TableFormatPrinter._identity_transform
+                )(row[header])
+                for header in headers
+            ]
             for row in rows
         ]
 
@@ -141,7 +178,8 @@ class TableFormatPrinter(FormatPrinter):
     def _filter_record(self, data: dict, keys: List[str]) -> JsonDict:
         return {key: value for key, value in data.items() if key in keys}
 
-    def _transform_record_value(self, field):
+    @staticmethod
+    def _identity_transform(field):
         """transform field for displaying"""
         if isinstance(field, (list, dict)):
             return json.dumps(field, sort_keys=True, ensure_ascii=False)
