@@ -52,6 +52,29 @@ def org_users_add(args: Namespace):
     )
 
 
+def role_fqn_transform(field):
+    return field[0]["role_fqn"]
+
+
+@org_id_config_fallback
+def org_users_list(args: Namespace) -> None:
+    """
+    Lists organization users
+    """
+
+    client = Client.from_args(args)
+    data, errors = client.send(
+        RequestMethod.GET, f"/api/v2/organizations/{args.org_id}/users/"
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        output_fmt=get_output_format(args),
+        keys=["uid", "email", "username", "organization_roles"],
+        transforms=[None, None, None, role_fqn_transform],
+    )
+
+
 @org_id_config_fallback
 def org_users_remove(args: Namespace):
     client = Client.from_args(args)

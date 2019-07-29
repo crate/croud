@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added the ``croud organizations users list`` command to list all user within an
+  organization.
+
 - Added the optional ``--sudo`` argument to be able to specify when a command should
   be run as ``superuser``.
 

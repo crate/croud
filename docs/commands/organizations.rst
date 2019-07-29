@@ -118,6 +118,29 @@ Example
    +--------------------------------------+------------+--------------------------------------+
 
 
+``organizations users list``
+----------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations users list
+
+Example
+.......
+
+.. code-block:: console
+
+   sh$ croud organizations users list \
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209
+   +----------------------+--------------------+----------+--------------------------------------+
+   | email                | organization_roles | username | uid                                  |
+   |----------------------+--------------------+----------+--------------------------------------|
+   | john.doe@example.com | org_admin          | john.doe | e4c6e51f-bd56-4d92-bdf8-9947531c3225 |
+   +----------------------+--------------------+----------+--------------------------------------+
+
+
 ``organizations users remove``
 ------------------------------
 
