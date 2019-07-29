@@ -51,6 +51,28 @@ def project_users_add(args: Namespace) -> None:
     )
 
 
+def role_fqn_transform(field):
+    return field[0]["role_fqn"]
+
+
+def project_users_list(args: Namespace) -> None:
+    """
+    Lists project users
+    """
+
+    client = Client.from_args(args)
+    data, errors = client.send(
+        RequestMethod.GET, f"/api/v2/projects/{args.project_id}/users/"
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        output_fmt=get_output_format(args),
+        keys=["uid", "email", "username", "project_roles"],
+        transforms=[None, None, None, role_fqn_transform],
+    )
+
+
 def project_users_remove(args: Namespace) -> None:
     """
     Removes a user from a project.
