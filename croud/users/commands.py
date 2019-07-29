@@ -17,42 +17,42 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import textwrap
 from argparse import Namespace
 
-from croud.config import Configuration
-from croud.gql import Query, print_query
-from croud.util import clean_dict
+from croud.config import get_output_format
+from croud.printer import print_response, print_warning
+from croud.rest import Client, RequestMethod
+
+
+def transform_roles_list(key):
+    def _transform(field):
+        return ",\n".join(f"{r[key]}: {r['role_fqn']}" for r in field)
+
+    return _transform
 
 
 def users_list(args: Namespace) -> None:
     """
-    List all users within organizations that the logged in user is part of
+    List all users
     """
-    org_id = (
-        args.org_id
-        or Configuration.get_organization_id(args.env or Configuration.get_env())
-        or None
-    )
+    client = Client.from_args(args)
     if args.no_org:
-        org_id = None
+        print_warning(
+            "The --no-org argument is deprecated. Please use --no-roles instead."
+        )
 
-    body = textwrap.dedent(
-        """
-        query allUsers($queryArgs: UserQueryArgs) {
-            allUsers(sort: EMAIL, queryArgs: $queryArgs) {
-                data {
-                    uid
-                    email
-                    username
-                }
-            }
-        }
-    """
-    ).strip()
-
-    vars = clean_dict({"queryArgs": {"noOrg": args.no_org, "organizationId": org_id}})
-
-    query = Query(body, args)
-    query.execute(vars)
-    print_query(query, "allUsers")
+    no_roles = {"no-roles": "1"} if (args.no_roles or args.no_org) else None
+    data, errors = client.send(RequestMethod.GET, f"/api/v2/users/", params=no_roles)
+    print_response(
+        data=data,
+        errors=errors,
+        output_fmt=get_output_format(args),
+        keys=["uid", "email", "username", "organization_roles", "project_roles"],
+        transforms=[
+            None,
+            None,
+            None,
+            transform_roles_list("organization_id"),
+            transform_roles_list("project_id"),
+        ],
+    )

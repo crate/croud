@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+- Updated ``croud users list`` to include all user roles.
+
+- Depreated ``--no-org`` argument to ``croud users list`` in favor of ``--no-roles``.
+
 - Added the ``croud projects users list`` command to list all user within a project.
 
 - Added the ``croud organizations users list`` command to list all user within an

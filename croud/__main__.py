@@ -46,9 +46,10 @@ from croud.cmd import (
     kind_arg,
     lease_storage_container_arg,
     lease_storage_dsn_arg,
+    no_org_arg,
+    no_roles_arg,
     num_instances_arg,
     org_id_arg,
-    org_id_no_org_arg_mutual_exclusive,
     org_name_arg,
     org_plan_type_arg,
     product_name_arg,
@@ -434,9 +435,14 @@ command_tree = {
         "help": "Manage users.",
         "commands": {
             "list": {
-                "help": "List all users within the specified organization.",
+                "help": "List all users.",
                 "extra_args": [
-                    org_id_no_org_arg_mutual_exclusive,
+                    lambda req_opt_group, opt_opt_group: no_roles_arg(
+                        req_opt_group, opt_opt_group
+                    ),
+                    lambda req_opt_group, opt_opt_group: no_org_arg(
+                        req_opt_group, opt_opt_group
+                    ),
                 ],
                 "resolver": users_list,
             },

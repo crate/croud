@@ -8,6 +8,8 @@ from croud.__main__ import get_parser
 
 normalize = partial(re.sub, r"\s+", "")
 
+UNDEFINED = object()
+
 
 def ndiff(actual: str, expected: str) -> str:
     engine = difflib.Differ(charjunk=difflib.IS_CHARACTER_JUNK)
@@ -40,13 +42,15 @@ class CommandTestCase:
         self.execute(argv)
         mock_run.assert_called_once_with(expected_body, expected_vars)
 
-    def assertRest(self, mock_send, argv, method, endpoint, *, body=None, params=None):
+    def assertRest(
+        self, mock_send, argv, method, endpoint, *, body=UNDEFINED, params=UNDEFINED
+    ):
         self.execute(argv)
 
         args = [method, endpoint]
         kwargs = {}
-        if body is not None:
+        if body is not UNDEFINED:
             kwargs["body"] = body
-        if params is not None:
+        if params is not UNDEFINED:
             kwargs["params"] = params
         mock_send.assert_called_once_with(*args, **kwargs)
