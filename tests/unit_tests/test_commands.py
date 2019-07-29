@@ -26,7 +26,6 @@ import pytest
 from util import CommandTestCase
 
 from croud.config import Configuration, config_get, config_set
-from croud.gql import Query
 from croud.organizations.users.commands import (
     role_fqn_transform as organization_role_fqn_transform,
 )
@@ -117,42 +116,19 @@ class TestConfigSet:
         mock_write_config.assert_not_called()
 
 
-def assert_query(mock_print, expected):
-    actual = mock_print.call_args[0][0]._query
-    assert actual == expected
-
-
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "run", return_value={"data": []})
 class TestClusters(CommandTestCase):
     project_id = gen_uuid()
-    expected_body = textwrap.dedent(
-        """
-        query allClusters($filter: [ClusterFilter]) {
-            allClusters(sort: [CRATE_VERSION_DESC], filter: $filter) {
-                data {
-                    id
-                    name
-                    numNodes
-                    crateVersion
-                    projectId
-                    username
-                    fqdn
-                }
-            }
-        }
-    """
-    ).strip()
 
     @mock.patch.object(Client, "send", return_value=({}, None))
-    def test_list_no_project_id(self, mock_send, mock_run, mock_load_config):
+    def test_list_no_project_id(self, mock_send, mock_load_config):
         argv = ["croud", "clusters", "list"]
         self.assertRest(
             mock_send, argv, RequestMethod.GET, "/api/v2/clusters/", params={}
         )
 
     @mock.patch.object(Client, "send", return_value=({}, None))
-    def test_list_with_project_id(self, mock_send, mock_run, mock_load_config):
+    def test_list_with_project_id(self, mock_send, mock_load_config):
         argv = ["croud", "clusters", "list", "--project-id", self.project_id]
         self.assertRest(
             mock_send,
@@ -163,7 +139,7 @@ class TestClusters(CommandTestCase):
         )
 
     @mock.patch.object(Client, "send", return_value=({}, None))
-    def test_deploy_cluster(self, mock_send, mock_run, mock_load_config):
+    def test_deploy_cluster(self, mock_send, mock_load_config):
         argv = [
             "croud",
             "clusters",
@@ -204,7 +180,7 @@ class TestClusters(CommandTestCase):
         )
 
     @mock.patch.object(Client, "send", return_value=({}, None))
-    def test_deploy_cluster_no_unit(self, mock_send, mock_run, mock_load_config):
+    def test_deploy_cluster_no_unit(self, mock_send, mock_load_config):
         argv = [
             "croud",
             "clusters",
@@ -242,7 +218,7 @@ class TestClusters(CommandTestCase):
         )
 
     @mock.patch.object(Client, "send", return_value=({}, None))
-    def test_deploy_cluster_nightly(self, mock_send, mock_run, mock_load_config):
+    def test_deploy_cluster_nightly(self, mock_send, mock_load_config):
         argv = [
             "croud",
             "clusters",
@@ -285,7 +261,7 @@ class TestClusters(CommandTestCase):
         )
 
     @mock.patch.object(Client, "send", return_value=({}, None))
-    def test_scale_cluster(self, mock_send, mock_run, mock_load_config):
+    def test_scale_cluster(self, mock_send, mock_load_config):
         unit = 1
         cluster_id = gen_uuid()
         argv = ["croud", "clusters", "scale", "--cluster-id", cluster_id, "--unit", "1"]
@@ -298,7 +274,7 @@ class TestClusters(CommandTestCase):
         )
 
     @mock.patch.object(Client, "send", return_value=({}, None))
-    def test_upgrade_cluster(self, mock_send, mock_run, mock_load_config):
+    def test_upgrade_cluster(self, mock_send, mock_load_config):
         version = "3.2.6"
         cluster_id = gen_uuid()
         argv = [
@@ -319,7 +295,7 @@ class TestClusters(CommandTestCase):
         )
 
     @mock.patch.object(Client, "send", return_value=(None, {}))
-    def test_clusters_delete(self, mock_send, mock_run, mock_load_config, capsys):
+    def test_clusters_delete(self, mock_send, mock_load_config, capsys):
         cluster_id = gen_uuid()
         argv = ["croud", "clusters", "delete", "--cluster-id", cluster_id]
         with mock.patch("builtins.input", side_effect=["yes"]) as mock_input:
@@ -335,7 +311,7 @@ class TestClusters(CommandTestCase):
         assert "Cluster deleted." in err_output
 
     @mock.patch.object(Client, "send", return_value=(None, {}))
-    def test_clusters_delete_flag(self, mock_send, mock_run, mock_load_config, capsys):
+    def test_clusters_delete_flag(self, mock_send, mock_load_config, capsys):
         cluster_id = gen_uuid()
         argv = ["croud", "clusters", "delete", "--cluster-id", cluster_id, "-y"]
         with mock.patch("builtins.input", side_effect=["y"]) as mock_input:
@@ -349,9 +325,7 @@ class TestClusters(CommandTestCase):
         assert "Cluster deleted." in err_output
 
     @mock.patch.object(Client, "send", return_value=(None, {}))
-    def test_clusters_delete_aborted(
-        self, mock_send, mock_run, mock_load_config, capsys
-    ):
+    def test_clusters_delete_aborted(self, mock_send, mock_load_config, capsys):
         cluster_id = gen_uuid()
         argv = ["croud", "clusters", "delete", "--cluster-id", cluster_id]
         with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
@@ -728,84 +702,6 @@ class TestProjectsUsers(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "run", return_value={"data": []})
-class TestUsersRoles(CommandTestCase):
-    def test_add(self, mock_run, mock_load_config, capsys):
-        user_id = gen_uuid()
-        role_fqn = "org_admin"
-        resource_id = gen_uuid()
-
-        expected_body = textwrap.dedent(
-            """
-            mutation addRoleToUser($input: UserRoleInput!) {
-                addRoleToUser(input: $input) {
-                    success
-                }
-            }
-        """
-        ).strip()
-        expected_vars = {
-            "input": {"userId": user_id, "roleFqn": role_fqn, "resourceId": resource_id}
-        }
-
-        argv = [
-            "croud",
-            "users",
-            "roles",
-            "add",
-            "--user",
-            user_id,
-            "--role",
-            role_fqn,
-            "--resource",
-            resource_id,
-        ]
-        self.assertGql(mock_run, argv, expected_body, expected_vars)
-        _, err_output = capsys.readouterr()
-        assert (
-            "This command is deprecated. Please use `croud organizations users add` instead."  # noqa
-            in err_output
-        )
-
-    def test_remove(self, mock_run, mock_load_config, capsys):
-        user_id = gen_uuid()
-        role_fqn = "project_member"
-        resource_id = gen_uuid()
-
-        expected_body = textwrap.dedent(
-            """
-            mutation removeRoleFromUser($input: UserRoleInput!) {
-                removeRoleFromUser(input: $input) {
-                    success
-                }
-            }
-        """
-        ).strip()
-        expected_vars = {
-            "input": {"userId": user_id, "roleFqn": role_fqn, "resourceId": resource_id}
-        }
-
-        argv = [
-            "croud",
-            "users",
-            "roles",
-            "remove",
-            "--user",
-            user_id,
-            "--role",
-            role_fqn,
-            "--resource",
-            resource_id,
-        ]
-        self.assertGql(mock_run, argv, expected_body, expected_vars)
-        _, err_output = capsys.readouterr()
-        assert (
-            "This command is deprecated. Please use `croud projects users remove` instead."  # noqa
-            in err_output
-        )
-
-
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
 class TestUsersRolesREST(CommandTestCase):
     def test_list(self, mock_send, mock_load_config):
@@ -1120,15 +1016,14 @@ class TestGrafana(CommandTestCase):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Query, "run", return_value={"data": []})
 class TestProducts(CommandTestCase):
     @mock.patch.object(Client, "send", return_value=({}, None))
-    def test_list(self, mock_send, mock_run, mock_load_config):
+    def test_list(self, mock_send, mock_load_config):
         argv = ["croud", "products", "list"]
         self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/products/")
 
     @mock.patch.object(Client, "send", return_value=({}, None))
-    def test_list_kind(self, mock_send, mock_run, mock_load_config):
+    def test_list_kind(self, mock_send, mock_load_config):
         argv = ["croud", "products", "list", "--kind", "cluster"]
         self.assertRest(
             mock_send,

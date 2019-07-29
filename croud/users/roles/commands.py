@@ -17,56 +17,12 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import textwrap
 from argparse import Namespace
 
 from croud.config import get_output_format
-from croud.gql import Query, print_query
-from croud.printer import print_response, print_warning
+from croud.printer import print_response
 from croud.rest import Client
 from croud.session import RequestMethod
-from croud.util import clean_dict
-
-
-def roles_add(args: Namespace) -> None:
-    """
-    Adds a new role to a user
-    """
-
-    deprecation_msg = "This command is deprecated."
-    if args.role in {"org_admin", "org_member"}:
-        deprecation_msg += " Please use `croud organizations users add` instead."
-    elif args.role in {"project_admin", "project_member"}:
-        deprecation_msg += " Please use `croud projects users add` instead."
-    else:
-        deprecation_msg += (
-            " Please use `croud organizations|projects users add` instead."
-        )
-    print_warning(deprecation_msg)
-
-    mutation = textwrap.dedent(
-        """
-        mutation addRoleToUser($input: UserRoleInput!) {
-            addRoleToUser(input: $input) {
-                success
-            }
-        }
-    """
-    ).strip()
-
-    vars = clean_dict(
-        {
-            "input": {
-                "userId": args.user,
-                "roleFqn": args.role,
-                "resourceId": args.resource,
-            }
-        }
-    )
-
-    query = Query(mutation, args)
-    query.execute(vars)
-    print_query(query, "addRoleToUser")
 
 
 def roles_list(args: Namespace) -> None:
@@ -82,44 +38,3 @@ def roles_list(args: Namespace) -> None:
         keys=["id", "name"],
         output_fmt=get_output_format(args),
     )
-
-
-def roles_remove(args: Namespace) -> None:
-    """
-    Removes a role from a user
-    """
-
-    deprecation_msg = "This command is deprecated."
-    if args.role in {"org_admin", "org_member"}:
-        deprecation_msg += " Please use `croud organizations users remove` instead."
-    elif args.role in {"project_admin", "project_member"}:
-        deprecation_msg += " Please use `croud projects users remove` instead."
-    else:
-        deprecation_msg += (
-            " Please use `croud organizations|projects users remove` instead."
-        )
-    print_warning(deprecation_msg)
-
-    mutation = textwrap.dedent(
-        """
-        mutation removeRoleFromUser($input: UserRoleInput!) {
-            removeRoleFromUser(input: $input) {
-                success
-            }
-        }
-    """
-    ).strip()
-
-    vars = clean_dict(
-        {
-            "input": {
-                "userId": args.user,
-                "roleFqn": args.role,
-                "resourceId": args.resource,
-            }
-        }
-    )
-
-    query = Query(mutation, args)
-    query.execute(vars)
-    print_query(query, "removeRoleFromUser", "Successfully removed role from user.")

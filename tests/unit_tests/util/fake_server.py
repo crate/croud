@@ -62,7 +62,6 @@ class FakeCrateDBCloud:
         # thi will allow us to register multiple endpoints/handlers to test
         self.app.router.add_routes(
             [
-                web.post("/graphql", self.on_graphql),
                 web.get("/data/data-key", self.data_data_key),
                 web.get("/data/no-key", self.data_no_key),
                 web.get("/errors/400", self.error_400),
@@ -89,24 +88,6 @@ class FakeCrateDBCloud:
 
     async def stop(self) -> None:
         await self.runner.cleanup()
-
-    async def on_graphql(self, request: web.Request) -> web.Response:
-        if self._is_authorized(request):
-            if self._get_query_header(request) == "me":
-                return web.json_response(
-                    {
-                        "data": {
-                            "me": {
-                                "email": "sheldon@crate.io",
-                                "username": "Google_1234",
-                                "name": "Sheldon Cooper",
-                            }
-                        }
-                    }
-                )
-            resp = {"data": {"message": "Bad request"}}
-            return web.json_response(resp, status=400)
-        return web.Response(status=302)
 
     async def data_data_key(self, request: web.Request) -> web.Response:
         if self._is_authorized(request):
@@ -141,15 +122,6 @@ class FakeCrateDBCloud:
             if request.cookies["session"]:
                 return True
         return False
-
-    def _get_query_header(self, request: web.Request) -> str:
-        if request.content_type == "application/json":
-            if "query" in request.headers:
-                if request.headers["query"] == "me":
-                    return "me"
-                else:
-                    return ""
-        return ""
 
     async def assert_x_sudo(self, request: web.Request):
         if request.headers.get("X-Auth-Sudo") is not None:

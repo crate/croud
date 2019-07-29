@@ -60,7 +60,7 @@ from croud.projects.users.commands import (
     project_users_remove,
 )
 from croud.users.commands import users_list
-from croud.users.roles.commands import roles_add, roles_list, roles_remove
+from croud.users.roles.commands import roles_list
 
 # fmt: off
 command_tree = {
@@ -551,48 +551,6 @@ command_tree = {
             "roles": {
                 "help": "Manage user roles.",
                 "commands": {
-                    "add": {
-                        "help": "Assign a role to the selected user.",
-                        "extra_args": [
-                            Argument(
-                                "--resource", type=str, required=True,
-                                help="The resource ID to use.",
-                            ),
-                            Argument(
-                                "--user", type=str, required=True,
-                                help="The user ID to use.",
-                            ),
-                            Argument(
-                                "--role", type=str, required=True,
-                                help=(
-                                    "The role FQN to use. Run `croud users roles list` "
-                                    "for a list of available roles."
-                                ),
-                            ),
-                        ],
-                        "resolver": roles_add,
-                    },
-                    "remove": {
-                        "help": "Unassign a role from the selected user.",
-                        "extra_args": [
-                            Argument(
-                                "--resource", type=str, required=True,
-                                help="The resource ID to use.",
-                            ),
-                            Argument(
-                                "--user", type=str, required=True,
-                                help="The user ID to use.",
-                            ),
-                            Argument(
-                                "--role", type=str, required=True,
-                                help=(
-                                    "The role FQN to use. Run `croud users roles list` "
-                                    "for a list of available roles."
-                                ),
-                            ),
-                        ],
-                        "resolver": roles_remove,
-                    },
                     "list": {
                         "help": "List all available roles.",
                         "resolver": roles_list,

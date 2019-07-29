@@ -38,9 +38,6 @@ from croud.util import (
 
 
 class TestUtils(unittest.TestCase):
-    authd_mutation = {"mutationName": {"prop1": "propvalue"}}
-    unauthd_mutation = {"errors": [{"message": "An error message"}]}
-    authd_entity_list = {"entityListName": {"data": [{"key": "value"}]}}
 
     # This function was copied from the <https://github.com/Azure/azure-cli>
     # project. See `LICENSE` for more information.

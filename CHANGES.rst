@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Removed the previously deprecated ``croud users roles add`` and ``croud users
+  roles remove`` commands.
+
 0.17.0 - 2019/07/31
 ===================
 
