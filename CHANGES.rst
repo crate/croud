@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added the ``croud projects users list`` command to list all user within a project.
+
 - Added the ``croud organizations users list`` command to list all user within an
   organization.
 

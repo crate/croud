@@ -30,6 +30,9 @@ from croud.gql import Query
 from croud.organizations.users.commands import (
     role_fqn_transform as organization_role_fqn_transform,
 )
+from croud.projects.users.commands import (
+    role_fqn_transform as project_role_fqn_transform,
+)
 from croud.rest import Client
 from croud.session import RequestMethod
 
@@ -621,6 +624,17 @@ class TestProjects(CommandTestCase):
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 class TestProjectsUsers(CommandTestCase):
+    def test_role_fqn_transform(self, mock_load_config):
+        user = {
+            "project_roles": [
+                {"project_id": "project-1", "role_fqn": "project_admin"},
+                {"project_id": "project-2", "role_fqn": "project_member"},
+                {"project_id": "project-3", "role_fqn": "project_member"},
+            ]
+        }
+        response = project_role_fqn_transform(user["project_roles"])
+        assert response == "project_admin"
+
     @mock.patch.object(Client, "send", return_value=({"added": True}, None))
     def test_add(self, mock_send, mock_load_config):
         project_id = gen_uuid()
@@ -678,7 +692,16 @@ class TestProjectsUsers(CommandTestCase):
         assert "Success" in err_output
         assert "Role altered for user." in err_output
 
-    @mock.patch.object(Client, "send", return_value=({"added": True}, None))
+    @mock.patch.object(Client, "send", return_value=({}, None))
+    def test_list(self, mock_send, mock_load_config):
+        project_id = gen_uuid()
+
+        argv = ["croud", "projects", "users", "list", "--project-id", project_id]
+        self.assertRest(
+            mock_send, argv, RequestMethod.GET, f"/api/v2/projects/{project_id}/users/"
+        )
+
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_remove(self, mock_send, mock_load_config):
         project_id = gen_uuid()
 

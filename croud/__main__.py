@@ -86,7 +86,11 @@ from croud.organizations.users.commands import (
 from croud.parser import create_parser
 from croud.products.commands import products_list
 from croud.projects.commands import project_create, project_delete, projects_list
-from croud.projects.users.commands import project_users_add, project_users_remove
+from croud.projects.users.commands import (
+    project_users_add,
+    project_users_list,
+    project_users_remove,
+)
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_add, roles_list, roles_remove
 
@@ -259,6 +263,15 @@ command_tree = {
                             ),
                         ],
                         "resolver": project_users_add,
+                    },
+                    "list": {
+                        "help": "List all users within a project.",
+                        "extra_args": [
+                            lambda req_opt_group, opt_opt_group: project_id_arg(
+                                req_opt_group, opt_opt_group, True
+                            ),
+                        ],
+                        "resolver": project_users_list,
                     },
                     "remove": {
                         "help": "Remove the selected user from a project.",
