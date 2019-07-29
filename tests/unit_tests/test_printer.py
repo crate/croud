@@ -79,14 +79,15 @@ def test_yaml_format(rows, expected):
 
 
 @pytest.mark.parametrize(
-    "rows,keys,expected",
+    "rows,keys,transforms,expected",
     (
-        (None, ["what", "ever"], ""),
-        ({}, ["what", "ever"], ""),
-        ([], [], ""),
+        (None, ["what", "ever"], None, ""),
+        ({}, ["what", "ever"], None, ""),
+        ([], [], None, ""),
         (
             [],
             ["what", "ever"],
+            None,
             (
                 "+--------+--------+\n"
                 "| what   | ever   |\n"
@@ -95,13 +96,14 @@ def test_yaml_format(rows, expected):
             ),
         ),
         (
-            {"a": "foo", "b": 1, "c": True},
-            None,
+            {"a": "foo", "b": 1.234, "c": True},
+            ["a", "b", "c"],
+            [str.upper, int, None],
             (
                 "+-----+-----+------+\n"
                 "| a   |   b | c    |\n"
                 "|-----+-----+------|\n"
-                "| foo |   1 | TRUE |\n"
+                "| FOO |   1 | TRUE |\n"
                 "+-----+-----+------+"
             ),
         ),
@@ -110,6 +112,7 @@ def test_yaml_format(rows, expected):
                 {"a": "foo", "b": 1, "c": True},
                 {"b": 2, "c": False, "a": {"bar": [{"value": 0}, {"value": 1}]}},
             ],
+            None,
             None,
             (
                 "+---------------------------------------+-----+-------+\n"
@@ -121,8 +124,22 @@ def test_yaml_format(rows, expected):
             ),
         ),
         (
+            [{"a": {"bar": "X"}, "b": [1, 2, 3]}, {"b": [2, 4, 8], "a": {"foo": "Y"}}],
+            ["a", "b"],
+            [lambda field: field.get("bar", "N/A"), sum],
+            (
+                "+-----+-----+\n"
+                "| a   |   b |\n"
+                "|-----+-----|\n"
+                "| X   |   6 |\n"
+                "| N/A |  14 |\n"
+                "+-----+-----+"
+            ),
+        ),
+        (
             {"k1": "v1", "k2": "v2", "k3": "v3"},
             ["k1", "k3"],
+            None,
             (
                 "+------+------+\n"
                 "| k1   | k3   |\n"
@@ -137,6 +154,7 @@ def test_yaml_format(rows, expected):
                 {"k1": "v11", "k2": "v12", "k3": "v13"},
             ],
             ["k1", "k2"],
+            None,
             (
                 "+------+------+\n"
                 "| k1   | k2   |\n"
@@ -152,6 +170,7 @@ def test_yaml_format(rows, expected):
                 {"k1": "v11", "k2": "v12", "k3": "v13"},
             ],
             ["k1", "k2", "k4"],
+            None,
             (
                 "+------+------+\n"
                 "| k1   | k2   |\n"
@@ -163,8 +182,8 @@ def test_yaml_format(rows, expected):
         ),
     ),
 )
-def test_tabular_format(rows, keys, expected):
-    out = TableFormatPrinter(keys=keys).format_rows(rows)
+def test_tabular_format(rows, keys, transforms, expected):
+    out = TableFormatPrinter(keys=keys, transforms=transforms).format_rows(rows)
     assert out == expected
 
 
