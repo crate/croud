@@ -78,7 +78,11 @@ from croud.organizations.commands import (
     organizations_delete,
     organizations_list,
 )
-from croud.organizations.users.commands import org_users_add, org_users_remove
+from croud.organizations.users.commands import (
+    org_users_add,
+    org_users_list,
+    org_users_remove,
+)
 from croud.parser import create_parser
 from croud.products.commands import products_list
 from croud.projects.commands import project_create, project_delete, projects_list
@@ -389,6 +393,15 @@ command_tree = {
                             ),
                         ],
                         "resolver": org_users_add,
+                    },
+                    "list": {
+                        "help": "List all users within an organization.",
+                        "extra_args": [
+                            lambda req_opt_group, opt_opt_group: org_id_arg(
+                                req_opt_group, opt_opt_group, False
+                            ),
+                        ],
+                        "resolver": org_users_list,
                     },
                     "remove": {
                         "help": "Remove the selected user from an organization.",

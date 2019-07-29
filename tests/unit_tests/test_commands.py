@@ -27,6 +27,9 @@ from util import CommandTestCase
 
 from croud.config import Configuration, config_get, config_set
 from croud.gql import Query
+from croud.organizations.users.commands import (
+    role_fqn_transform as organization_role_fqn_transform,
+)
 from croud.rest import Client
 from croud.session import RequestMethod
 
@@ -501,6 +504,26 @@ class TestOrganizations(CommandTestCase):
         _, err_output = capsys.readouterr()
         assert "Success" in err_output
         assert "Role altered for user." in err_output
+
+    def test_role_fqn_transform(self, mock_load_config):
+        user = {
+            "organization_roles": [
+                {"organization_id": "org-1", "role_fqn": "organization_admin"},
+                {"organization_id": "org-2", "role_fqn": "organization_member"},
+                {"organization_id": "org-3", "role_fqn": "organization_member"},
+            ]
+        }
+        response = organization_role_fqn_transform(user["organization_roles"])
+        assert response == "organization_admin"
+
+    @mock.patch.object(Client, "send", return_value=({}, None))
+    def test_list_user(self, mock_send, mock_load_config):
+        org_id = gen_uuid()
+
+        argv = ["croud", "organizations", "users", "list", "--org-id", org_id]
+        self.assertRest(
+            mock_send, argv, RequestMethod.GET, f"/api/v2/organizations/{org_id}/users/"
+        )
 
     @mock.patch.object(Client, "send", return_value=({}, None))
     def test_remove_user(self, mock_send, mock_load_config):
