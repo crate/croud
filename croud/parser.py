@@ -111,6 +111,9 @@ def add_default_args(parser):
         choices={"table", "json", "yaml"},
         help="Change the formatting of the output",
     )
+
+
+def add_default_sudo_arg(parser):
     parser._group_optional.add_argument(
         "--sudo",
         required=False,
@@ -142,6 +145,8 @@ def add_subparser(parser, tree, name="__root__"):
             add_subparser(sub, _tree, sub.prog)
     else:
         add_default_args(parser)
+        if not tree.get("omit_sudo", False):
+            add_default_sudo_arg(parser)
         resolver = tree["resolver"]
         signature = inspect.signature(resolver)
         if "parser" in signature.parameters:

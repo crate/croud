@@ -111,11 +111,13 @@ command_tree = {
                 "help": "Get default configuration values.",
                 "resolver": config_get,
                 "noop_arg": {"choices": ["env", "region", "output-fmt"]},
+                "omit_sudo": True,
             },
             "set": {
                 "help": "Set default configuration values.",
                 "extra_args": [],
                 "resolver": config_set,
+                "omit_sudo": True,
             },
         },
     },
