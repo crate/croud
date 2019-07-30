@@ -88,7 +88,7 @@ Available Commands:
 """,
         )
 
-    def test_parser_argument_groups(self):
+    def test_parser_argument_groups(self, capsys):
         tree = {
             "help": "help text",
             "commands": {
@@ -104,15 +104,13 @@ Available Commands:
         }
         parser = create_parser(tree)
 
-        output = ""
-        with mock.patch("sys.stdout.write") as stdout:
-            with pytest.raises(SystemExit) as ex_info:
-                parser.parse_args(["cmd"])
-            assert ex_info.value.code == 2
-            output = stdout.call_args[0][0]
+        with pytest.raises(SystemExit) as ex_info:
+            parser.parse_args(["cmd"])
+        assert ex_info.value.code == 2
+        out, err = capsys.readouterr()
 
         assert_ellipsis_match(
-            output,
+            out,
             """
 Usage: croud cmd [-h] --arg-a ARG_A [--arg-b ARG_B]
 ...
@@ -125,6 +123,7 @@ Optional Arguments:
 ...
 """,
         )
+        assert "The following arguments are required: --arg-a" in err
 
     def test_parser_version(self):
         tree = {"help": "help text", "commands": {}}
