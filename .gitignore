@@ -74,6 +74,5 @@ env/
 
 # Sphinx documentation
 *.lint
-docs/.build
-docs/.env
-docs/.style
+docs/.utils
+
