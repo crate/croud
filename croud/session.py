@@ -69,7 +69,7 @@ class HttpSession:
 
     def _get_conn(self) -> TCPConnector:
         ssl_context = ssl.create_default_context(cafile=certifi.where())
-        return TCPConnector(ssl_context=ssl_context)
+        return TCPConnector(ssl=ssl_context)
 
     async def fetch(
         self,
