@@ -18,147 +18,58 @@
 # pursuant to the terms of the relevant commercial agreement.
 
 
-# This file provides a standard Crate documentation build system
-#
-# The most up-to-date version of this Makefile can be found in the
-# crate-docs-style repository:
-#
-#   https://github.com/crate/crate-docs-style/blob/master/docs/Makefile
-
-.EXPORT_ALL_VARIABLES:
-
-# By default, we run commands from the the `docs` directory so that the
-# commands output by `make` can be run if you copy and paste them. However, we
-# must jump up to the top-level directory of the repository for two specific
-# commands (see below).
-#
-# Because of this, we specify `TOP_DIR` and `DOCS_DIR` so that Make can find
-# its way around.
+# Wrapper for the Crate Docs Utils
 
 # `TOP_DIR` is the top-level directory of the repository
-TOP_DIR         := ..
+export TOP_DIR  := ..
+
 # `DOCS_DIR` is the path to `docs` from `TOP_DIR`
-DOCS_DIR        := docs
-ENV_DIR         := .env
-ACTIVATE        := $(ENV_DIR)/bin/activate
-PYTHON          := python3.7
-PIP             := $(PYTHON) -m pip
-SPHINXBUILD     := sphinx-build
-SPHINXAUTOBUILD := sphinx-autobuild
-AUTOBUILD_OPTS  := --re-ignore '^(?!.+\.rst$$)'
-BUILD_DIR       := .build
-SPHINX_ARGS     := . $(BUILD_DIR)
-SPHINX_OPTS     := -W -n
-STYLE_REPO      := https://github.com/crate/crate-docs-style.git
-STYLE_VERSION   := 0.1.9
-STYLE_DIR       := .style
-STYLE_DIR_ROOT  := $(DOCS_DIR)/$(STYLE_DIR)
-STYLE_RULES     := $(STYLE_DIR_ROOT)/utils/rules.mk
-# Change to `TOP_DIR` so we can process all RST files in the repository
-STYLE_MAKE      := $(MAKE) -C $(TOP_DIR) -f $(STYLE_RULES)
-FSWATCH         := fswatch
+export DOCS_DIR := docs
 
-# Default target
+
+# Do not edit anything below this line
+###############################################################################
+
+UTILS_JSON := utils.json
+UTILS_REPO := https://github.com/crate/crate-docs-utils.git
+UTILS_DIR  := .utils
+UTILS_MAKE := $(MAKE) -f $(UTILS_DIR)/utils/rules.mk
+
+# Parse the JSON file
+UTILS_VERSION = $(shell cat $(UTILS_JSON) | \
+    python -c 'import json, sys; print(json.load(sys.stdin)["message"])')
+
+ifeq ($(UTILS_VERSION),)
+$(error No version specified in $(UTILS_JSON))
+endif
+
+# Default rule
 .PHONY: help
-help:
-	@ printf 'Crate Documentation Build System\n'
-	@ echo
-	@ printf 'Run `make <TARGET>`, where <TARGET> is one of:\n'
-	@ echo
-	@ printf '\033[36m  dev    \033[00m Run a Sphinx development server that'
-	@ printf                          ' builds and lints the \n'
-	@ printf '\033[36m         \033[00m documentation as you edit the source'
-	@ printf                          ' files\n'
-	@ echo
-	@ printf '\033[36m  check  \033[00m Build, test, and lint the'
-	@ printf                          ' documentation (run by CI)\n'
-	@ echo
-	@ printf '\033[36m  clean  \033[00m Clean up (e.g., remove lint files)\n'
-	@ echo
-	@ printf '\033[36m  reset  \033[00m Reset the source\n'
+help: $(UTILS_DIR)
+	@ $(UTILS_MAKE) $@
 
-$(ACTIVATE):
-	$(PYTHON) -m venv $(ENV_DIR)
-	. $(ACTIVATE) && \
-	    $(PIP) install --upgrade pip
-	@ # Change to `TOP_DIR` to mimic how Read the Docs does it
-	. $(ACTIVATE) && cd $(TOP_DIR) && \
-	    $(PIP) install -r $(DOCS_DIR)/requirements.txt
-
-ifeq ($(UNAME),Linux)
-$(VALE):
-	mkdir -p $(TOOLS_DIR)
-	curl -L $(VALE_URL)/$(VALE_LINUX) -o $(TOOLS_DIR)/$(VALE_LINUX)
-	cd $(TOOLS_DIR) && tar -xzf $(VALE_LINUX)
-endif
-
-ifeq ($(UNAME),Darwin)
-$(VALE):
-	mkdir -p $(TOOLS_DIR)
-	curl -L $(VALE_URL)/$(VALE_MACOS) -o $(TOOLS_DIR)/$(VALE_MACOS)
-	cd $(TOOLS_DIR) && tar -xzf $(VALE_MACOS)
-endif
-
-ifeq ($(STYLE_VERSION),)
-# The documentation for the crate-docs-style project fakes an install of its
-# own code so that it can test itself
-$(STYLE_DIR):
-	@ if test ! -d ../utils; then \
-	    printf '\033[31mYou must set `STYLE_VERSION` to lint the '; \
-	    printf 'documentation.\033[00m\n'; \
-	    exit 1; \
-	fi
+ifneq ($(wildcard $(TOP_DIR)/utils/rules.mk),)
+# The utils project detects itself and fakes an install of its own code so that
+# it can test itself
+$(UTILS_DIR):
 	mkdir -p $@
-	cp -R ../utils $@/utils
+	cp -R $(TOP_DIR)/utils $@
 else
-# The documentation for all other projects must install a versioned copy of the
-# crate-docs-style project
-$(STYLE_DIR):
+# All other projects install a versioned copy of the utils
+$(UTILS_DIR):
 	git clone --depth=1 -c advice.detachedHead=false \
-	    --branch=$(STYLE_VERSION) $(STYLE_REPO) $(STYLE_DIR)
+	    --branch=$(UTILS_VERSION) $(UTILS_REPO) $(UTILS_DIR)
 endif
 
-.PHONY: autobuild
-autobuild: $(ACTIVATE)
-	. $(ACTIVATE) && \
-	    $(SPHINXAUTOBUILD) $(SPHINX_ARGS) $(SPHINX_OPTS) $(AUTOBUILD_OPTS) $(O)
-
-.PHONY: lint
-lint: $(STYLE_DIR)
-	$(STYLE_MAKE) lint
-
-.PHONY: lint-watch
-lint-watch: $(STYLE_DIR)
-	@ $(FSWATCH) .build/sitemap.xml | while read num; do \
-	    $(STYLE_MAKE) lint; \
-	done || true
-
-.PHONY: dev
-dev: lint
-	@ if test ! -x "`which $(FSWATCH)`"; then \
-	    printf '\033[31mYou must have fswatch installed.\033[00m\n'; \
-	    exit 1; \
-	fi
-	$(MAKE) -j autobuild lint-watch
-
-.PHONY: check
-check: html linkcheck lint
-
-# Needed by `sphinx-build`
+# Don't pass through this target
 .PHONY: Makefile
 Makefile:
 
-# Route unknown targets to `sphinx-build`
-%: $(ACTIVATE)
-	. $(ACTIVATE) && \
-	    $(SPHINXBUILD) -M $@ $(SPHINX_ARGS) $(SPHINX_OPTS) $(O)
-
-.PHONY: clean
-clean: $(STYLE_DIR)
-	$(STYLE_MAKE) clean
+# By default, pass targets through to the utils rules
+.PHONY:
+%: $(UTILS_DIR)
+	@ $(UTILS_MAKE) $@
 
 .PHONY: reset
 reset:
-	rm -rf $(ENV_DIR)
-	rm -rf $(BUILD_DIR)
-	rm -rf $(STYLE_DIR)
+	rm -rf $(UTILS_DIR)
