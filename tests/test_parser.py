@@ -19,7 +19,6 @@ from argparse import Namespace
 from unittest import mock
 
 import pytest
-from util import assert_ellipsis_match
 
 from croud import __version__
 from croud.__main__ import get_parser
@@ -29,6 +28,7 @@ from croud.parser import (
     CroudCliHelpFormatter,
     create_parser,
 )
+from tests.util import assert_ellipsis_match
 
 
 def noop(args: Namespace):
