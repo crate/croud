@@ -17,14 +17,12 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import textwrap
 import uuid
-from argparse import ArgumentParser, Namespace
 from unittest import mock
 
 import pytest
 
-from croud.config import Configuration, config_get, config_set
+from croud.config import Configuration
 from croud.organizations.users.commands import (
     role_fqn_transform as organization_role_fqn_transform,
 )
@@ -54,73 +52,6 @@ FALLBACK_ORG_ID_CONFIG: dict = {
     "region": "bregenz.a1",
     "output_fmt": "table",
 }
-
-
-class TestConfigGet:
-    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-    @mock.patch("builtins.print", autospec=True, side_effect=print)
-    def test_get_env(self, mock_print, mock_load_config):
-        config_get(Namespace(get="env", output_fmt=None))
-        mock_print.assert_called_once_with(
-            textwrap.dedent(
-                """
-                +-------+
-                | env   |
-                |-------|
-                | prod  |
-                +-------+
-            """
-            ).strip()
-        )
-
-    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-    @mock.patch("builtins.print", autospec=True, side_effect=print)
-    def test_get_top_level_setting(self, mock_print, mock_load_config):
-        config_get(Namespace(get="region", output_fmt=None))
-        mock_print.assert_called_once_with(
-            textwrap.dedent(
-                """
-                +------------+
-                | region     |
-                |------------|
-                | bregenz.a1 |
-                +------------+
-            """
-            ).strip()
-        )
-
-
-class TestConfigSet:
-    @mock.patch("croud.config.write_config")
-    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-    def test_set_env(self, mock_load_config, mock_write_config):
-        config = Configuration.DEFAULT_CONFIG
-        config["auth"]["current_context"] = "prod"
-
-        config_set(Namespace(env="prod"))
-        mock_write_config.assert_called_once_with(config)
-
-    @mock.patch("croud.config.write_config")
-    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-    def test_set_top_level_setting(self, mock_load_config, mock_write_config):
-        config = Configuration.DEFAULT_CONFIG
-        config["region"] = "eastus.azure"
-
-        config_set(Namespace(region="eastus.azure"))
-        mock_write_config.assert_called_once_with(config)
-
-        config["region"] = "bregenz.a1"
-
-    @mock.patch("croud.config.write_config")
-    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-    def test_set_no_arguments(self, mock_load_config, mock_write_config, capsys):
-        config = Configuration.DEFAULT_CONFIG
-        config["auth"]["current_context"] = "prod"
-
-        config_set(Namespace(), parser=ArgumentParser(usage="Some help text"))
-        out, _ = capsys.readouterr()
-        assert "Some help text" in out
-        mock_write_config.assert_not_called()
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
