@@ -23,10 +23,10 @@ from unittest import mock
 import aiohttp
 import pytest
 from aiohttp.test_utils import loop_context
-from util.fake_server import FakeCrateDBCloud, FakeResolver
 
 from croud.config import Configuration
 from croud.session import HttpSession, RequestMethod, cloud_url
+from tests.util.fake_server import FakeCrateDBCloud, FakeResolver
 
 
 @mock.patch.object(Configuration, "get_env", return_value="dev")

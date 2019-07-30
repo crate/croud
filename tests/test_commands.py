@@ -23,7 +23,6 @@ from argparse import ArgumentParser, Namespace
 from unittest import mock
 
 import pytest
-from util import CommandTestCase
 
 from croud.config import Configuration, config_get, config_set
 from croud.organizations.users.commands import (
@@ -35,6 +34,7 @@ from croud.projects.users.commands import (
 from croud.rest import Client
 from croud.session import RequestMethod
 from croud.users.commands import transform_roles_list
+from tests.util import CommandTestCase
 
 
 def gen_uuid() -> str:

@@ -54,7 +54,7 @@ python versions run::
 Alongside ``--`` it's possible to pass ``pytest`` args e.g. to run only a
 fraction of tests with python3.6::
 
-    tox -e py36 -- tests/unit_tests/
+    tox -e py36 -- -k test_rest
 
 
 Release

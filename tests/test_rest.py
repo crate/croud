@@ -23,11 +23,11 @@ from unittest import mock
 
 from aiohttp import TCPConnector  # type: ignore
 from aiohttp.test_utils import setup_test_loop, teardown_test_loop
-from util.fake_server import FakeCrateDBCloud, FakeResolver
 
 from croud.config import Configuration
 from croud.rest import Client
 from croud.session import HttpSession, RequestMethod
+from tests.util.fake_server import FakeCrateDBCloud, FakeResolver
 
 
 @mock.patch.object(Configuration, "get_token", return_value="eyJraWQiOiIx")
