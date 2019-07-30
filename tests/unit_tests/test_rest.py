@@ -17,6 +17,8 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import argparse
+import asyncio
 from unittest import mock
 
 from aiohttp import TCPConnector  # type: ignore
@@ -104,3 +106,15 @@ class TestRestClient:
 
     def _get_conn(self):
         return TCPConnector(loop=self.loop, resolver=self.resolver, ssl=True)
+
+    # This test makes sure that the client is instantiated with the correct arguments,
+    # and does not fail if the arguments are in a random positional order.
+    def test_client_initialization(self, mock_cloud_url, mock_token):
+        args = argparse.Namespace(
+            output_fmt="json", sudo=True, region="bregenz.a1", env="dev"
+        )
+        client = Client.from_args(args)
+        assert client._env == "dev"
+        assert client._region == "bregenz.a1"
+        assert client._sudo is True
+        assert isinstance(client.loop, asyncio.AbstractEventLoop)
