@@ -21,100 +21,103 @@ import argparse
 import asyncio
 from unittest import mock
 
-from aiohttp import TCPConnector  # type: ignore
-from aiohttp.test_utils import setup_test_loop, teardown_test_loop
+import pytest
 
 from croud.config import Configuration
 from croud.rest import Client
-from croud.session import HttpSession, RequestMethod
-from tests.util.fake_server import FakeCrateDBCloud, FakeResolver
+from croud.session import RequestMethod
 
 
+@pytest.fixture
+def client(fake_cloud_connector, event_loop):
+    with mock.patch.object(Configuration, "get_token", return_value="eyJraWQiOiIx"):
+        yield Client(
+            env="dev", region="bregenz.a1", conn=fake_cloud_connector, loop=event_loop
+        )
+
+
+@mock.patch("croud.session.cloud_url", return_value="https://cratedb.local")
+def test_send_success_sets_data_with_key(mock_cloud_url, client):
+    resp_data, errors = client.send(RequestMethod.GET, "/data/data-key")
+    assert resp_data["data"] == {"key": "value"}
+    assert errors is None
+
+
+@mock.patch("croud.session.cloud_url", return_value="https://cratedb.local")
+def test_send_success_sets_data_without_key(mock_cloud_url, client):
+    resp_data, errors = client.send(RequestMethod.GET, "/data/no-key")
+    assert resp_data == {"key": "value"}
+    assert errors is None
+
+
+@mock.patch("croud.session.cloud_url", return_value="https://cratedb.local")
+def test_send_error_sets_error(mock_cloud_url, client):
+    resp_data, errors = client.send(RequestMethod.GET, "/errors/400")
+    assert errors == {"message": "Bad request.", "errors": {"key": "Error on 'key'"}}
+
+
+@mock.patch("croud.session.cloud_url", return_value="https://cratedb.local")
+def test_send_text_response(mock_cloud_url, client):
+    resp_data, errors = client.send(RequestMethod.GET, "/text-response")
+    assert resp_data is None
+    assert errors == {"message": "Invalid response type.", "success": False}
+
+
+@mock.patch("croud.session.cloud_url", return_value="https://cratedb.local")
+def test_send_empty_response(mock_cloud_url, client):
+    resp_data, errors = client.send(RequestMethod.GET, "/empty-response")
+    assert resp_data is None
+    assert errors is None
+
+
+# If ``sudo=True``, the X-Auth-Sudo header should be set with any value. This
+# test checks that the header is set.
 @mock.patch.object(Configuration, "get_token", return_value="eyJraWQiOiIx")
 @mock.patch("croud.session.cloud_url", return_value="https://cratedb.local")
-class TestRestClient:
-    @classmethod
-    def setup_class(cls):
-        cls.loop = setup_test_loop()
-        cls.fake_cloud = FakeCrateDBCloud(loop=cls.loop)
-        cls.info = cls.loop.run_until_complete(cls.fake_cloud.start())
-        cls.resolver = FakeResolver(cls.info, loop=cls.loop)
+def test_send_sudo_header_set(
+    mock_cloud_url, mock_token, fake_cloud_connector, event_loop
+):
+    client = Client(
+        env="dev",
+        region="bregenz.a1",
+        sudo=True,
+        conn=fake_cloud_connector,
+        loop=event_loop,
+    )
+    resp_data, errors = client.send(RequestMethod.GET, f"/test-x-sudo")
+    assert resp_data == {}
+    assert errors is None
 
-    @classmethod
-    def teardown_class(cls):
-        cls.loop.run_until_complete(cls.fake_cloud.stop())
-        teardown_test_loop(cls.loop)
 
-    def test_send_success_sets_data_with_key(self, mock_cloud_url, mock_token):
-        with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
-            data = {"key": "value"}
+# If ``sudo=False``, no X-Auth-Sudo header should be set. This test checks that
+# the header is not set.
+@mock.patch.object(Configuration, "get_token", return_value="eyJraWQiOiIx")
+@mock.patch("croud.session.cloud_url", return_value="https://cratedb.local")
+def test_send_sudo_header_not_set(
+    mock_cloud_url, mock_token, fake_cloud_connector, event_loop
+):
+    client = Client(
+        env="dev",
+        region="bregenz.a1",
+        sudo=False,
+        conn=fake_cloud_connector,
+        loop=event_loop,
+    )
+    resp_data, errors = client.send(RequestMethod.GET, f"/test-x-sudo")
+    assert resp_data == {"message": "Header not set, as expected."}
+    assert errors is None
 
-            client = Client(env="dev", region="bregenz.a1")
-            resp_data, errors = client.send(RequestMethod.GET, "/data/data-key")
 
-            assert resp_data["data"] == data
-            assert errors is None
-
-    def test_send_success_sets_data_without_key(self, mock_cloud_url, mock_token):
-        with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
-            client = Client(env="dev", region="bregenz.a1")
-            resp_data, errors = client.send(RequestMethod.GET, "/data/no-key")
-
-            assert resp_data == {"key": "value"}
-            assert errors is None
-
-    def test_send_error_sets_error(self, mock_cloud_url, mock_token):
-        with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
-            client = Client(env="dev", region="bregenz.a1")
-            resp_data, errors = client.send(RequestMethod.GET, "/errors/400")
-            assert errors == {
-                "message": "Bad request.",
-                "errors": {"key": "Error on 'key'"},
-            }
-
-    def test_send_text_response(self, mock_cloud_url, mock_token):
-        with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
-            client = Client(env="dev", region="bregenz.a1")
-            resp_data, errors = client.send(RequestMethod.GET, "/text-response")
-
-            assert resp_data is None
-            assert errors == {"message": "Invalid response type.", "success": False}
-
-    def test_send_empty_response(self, mock_cloud_url, mock_token):
-        with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
-            client = Client(env="dev", region="bregenz.a1")
-            resp_data, errors = client.send(RequestMethod.GET, "/empty-response")
-
-            assert resp_data is None
-            assert errors is None
-
-    # If the --sudo argument is given, any value is valid for the header, this
-    # checks if the header is set if the --sudo argument was given.
-    def test_send_sudo_header_set(self, mock_cloud_url, mock_token):
-        with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
-            client = Client(env="dev", region="bregenz.a1", sudo=True)
-            resp_data, errors = client.send(RequestMethod.GET, f"/test-x-sudo")
-            assert resp_data == {}
-            assert errors is None
-
-    def test_send_sudo_header_not_set(self, mock_cloud_url, mock_token):
-        with mock.patch.object(HttpSession, "_get_conn", return_value=self._get_conn()):
-            client = Client(env="dev", region="bregenz.a1", sudo=False)
-            resp_data, errors = client.send(RequestMethod.GET, f"/test-x-sudo")
-            assert resp_data == {"message": "Header not set, as expected."}
-            assert errors is None
-
-    def _get_conn(self):
-        return TCPConnector(loop=self.loop, resolver=self.resolver, ssl=True)
-
-    # This test makes sure that the client is instantiated with the correct arguments,
-    # and does not fail if the arguments are in a random positional order.
-    def test_client_initialization(self, mock_cloud_url, mock_token):
-        args = argparse.Namespace(
-            output_fmt="json", sudo=True, region="bregenz.a1", env="dev"
-        )
-        client = Client.from_args(args)
-        assert client._env == "dev"
-        assert client._region == "bregenz.a1"
-        assert client._sudo is True
-        assert isinstance(client.loop, asyncio.AbstractEventLoop)
+# This test makes sure that the client is instantiated with the correct arguments,
+# and does not fail if the arguments are in a random positional order.
+@mock.patch.object(Configuration, "get_token", return_value="eyJraWQiOiIx")
+@mock.patch("croud.session.cloud_url", return_value="https://cratedb.local")
+def test_client_initialization(mock_cloud_url, mock_token, event_loop):
+    args = argparse.Namespace(
+        output_fmt="json", sudo=True, region="bregenz.a1", env="dev"
+    )
+    client = Client.from_args(args)
+    assert client._env == "dev"
+    assert client._region == "bregenz.a1"
+    assert client._sudo is True
+    assert isinstance(client.loop, asyncio.AbstractEventLoop)
