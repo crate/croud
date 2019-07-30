@@ -20,45 +20,44 @@
 
 from unittest import mock
 
-from aiohttp.test_utils import TestClient, TestServer, loop_context
+import pytest
+from aiohttp.test_utils import TestClient, TestServer
 
 from croud.config import Configuration
 from croud.server import Server
 
 
-class TestLocalServer:
-    @mock.patch.object(Configuration, "set_token")
-    def test_token_handler_and_login(self, mock_write_token):
-        with loop_context() as loop:
-            server = Server(loop)
-            app = server.create_web_app(on_token=lambda x: None)
-            client = TestClient(TestServer(app), loop=loop)
-            loop.run_until_complete(client.start_server())
+@pytest.mark.asyncio
+@mock.patch.object(Configuration, "set_token")
+async def test_token_handler_and_login(mock_write_token, event_loop):
+    server = Server(event_loop)
+    app = server.create_web_app(on_token=lambda x: None)
+    client = TestClient(TestServer(app), loop=event_loop)
+    await client.start_server()
 
-            async def test_get_route():
-                with mock.patch.object(loop, "stop"):
-                    resp = await client.get("?token=123")
-                    assert resp.status == 200
-                    text = await resp.text()
-                    assert "You have successfully logged into CrateDB Cloud!" in text
+    with mock.patch.object(event_loop, "stop"):  # We exit the server after the request
+        resp = await client.get("?token=123")
+        assert resp.status == 200
+        text = await resp.text()
 
-            loop.run_until_complete(test_get_route())
-            loop.run_until_complete(client.close())
+    assert "You have successfully logged into CrateDB Cloud!" in text
 
-    @mock.patch.object(Configuration, "set_token")
-    def test_token_missing_for_login(self, mock_write_token):
-        with loop_context() as loop:
-            server = Server(loop)
-            app = server.create_web_app(on_token=lambda x: None)
-            client = TestClient(TestServer(app), loop=loop)
-            loop.run_until_complete(client.start_server())
+    await client.close()
 
-            async def test_get_route():
-                with mock.patch.object(loop, "stop"):
-                    resp = await client.get("/")
-                    assert resp.status == 500
-                    text = await resp.text()
-                    assert "No query param 'token' in request" in text
 
-            loop.run_until_complete(test_get_route())
-            loop.run_until_complete(client.close())
+@pytest.mark.asyncio
+@mock.patch.object(Configuration, "set_token")
+async def test_token_missing_for_login(mock_write_token, event_loop):
+    server = Server(event_loop)
+    app = server.create_web_app(on_token=lambda x: None)
+    client = TestClient(TestServer(app), loop=event_loop)
+    await client.start_server()
+
+    with mock.patch.object(event_loop, "stop"):  # We exit the server after the request
+        resp = await client.get("/")
+        assert resp.status == 500
+        text = await resp.text()
+
+    assert "No query param 'token' in request" in text
+
+    await client.close()

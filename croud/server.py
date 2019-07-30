@@ -41,7 +41,7 @@ class Server:
         self.on_token = on_token
         return app
 
-    def handle_session(self, req: web.Request) -> web.Response:
+    async def handle_session(self, req: web.Request) -> web.Response:
         """Token handler that receives the session token from query param"""
         try:
             self.on_token(req.rel_url.query["token"])
