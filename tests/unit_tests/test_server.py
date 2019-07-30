@@ -26,7 +26,7 @@ from croud.config import Configuration
 from croud.server import Server
 
 
-class TestLocalServer(object):
+class TestLocalServer:
     @mock.patch.object(Configuration, "set_token")
     def test_token_handler_and_login(self, mock_write_token):
         with loop_context() as loop:

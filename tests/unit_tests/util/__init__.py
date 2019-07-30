@@ -1,4 +1,3 @@
-import argparse
 import difflib
 import re
 from doctest import _ellipsis_match  # type: ignore
@@ -24,19 +23,15 @@ def assert_ellipsis_match(actual: str, expected: str) -> None:
 
 
 class CommandTestCase:
-    parser = get_parser()
-
-    def parse(self, argv) -> argparse.Namespace:
-        return self.parser.parse_args(argv[1:])
-
     def execute(self, argv) -> None:
-        params = self.parse(argv)
+        parser = get_parser()
+        params = parser.parse_args(argv[1:])
         if "resolver" in params:
             fn = params.resolver
             del params.resolver
             fn(params)
         else:
-            self.parser.print_help()
+            parser.print_help()
 
     def assertRest(
         self, mock_send, argv, method, endpoint, *, body=UNDEFINED, params=UNDEFINED
