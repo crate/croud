@@ -34,9 +34,7 @@ LOGIN_PATH = "/oauth2/login?cli=true"
 
 def get_org_id() -> Optional[str]:
     client = Client(
-        Configuration.get_env(),
-        Configuration.get_setting("region"),
-        Configuration.get_setting("output-fmt"),
+        env=Configuration.get_env(), region=Configuration.get_setting("region")
     )
     data, error = client.send(RequestMethod.GET, "/api/v2/users/me/")
     if data and not error:

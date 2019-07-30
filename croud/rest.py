@@ -44,7 +44,7 @@ class Client:
 
     @staticmethod
     def from_args(args: Namespace) -> "Client":
-        return Client(args.env, args.region, args.output_fmt, args.sudo)
+        return Client(env=args.env, region=args.region, sudo=args.sudo)
 
     def send(
         self,
