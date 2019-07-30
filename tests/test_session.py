@@ -20,26 +20,17 @@
 from http.cookies import Morsel
 from unittest import mock
 
-import aiohttp
 import pytest
 
 from croud.config import Configuration
 from croud.session import HttpSession, RequestMethod, cloud_url
-from tests.util.fake_server import FakeCrateDBCloud, FakeResolver
 
 
 @pytest.mark.asyncio
-async def test_request_unauthorized(event_loop):
-    fake_cloud = FakeCrateDBCloud(loop=event_loop)
-    info = await fake_cloud.start()
-    resolver = FakeResolver(info, loop=event_loop)
-    connector = aiohttp.TCPConnector(loop=event_loop, resolver=resolver, ssl=True)
-
-    env = "dev"
-    token = ""
+async def test_request_unauthorized(fake_cloud_connector):
     with pytest.raises(SystemExit) as cm:
         async with HttpSession(
-            env, token, url="https://cratedb.local", conn=connector
+            "dev", "", url="https://cratedb.local", conn=fake_cloud_connector
         ) as session:
             with mock.patch("croud.session.print_error") as mock_print_error:
                 await session.fetch(RequestMethod.GET, "/data/data-key")
@@ -48,8 +39,6 @@ async def test_request_unauthorized(event_loop):
     mock_print_error.assert_called_once_with(
         "Unauthorized. Use `croud login` to login to CrateDB Cloud."
     )
-
-    await fake_cloud.stop()
 
 
 @mock.patch.object(Configuration, "get_env", return_value="dev")

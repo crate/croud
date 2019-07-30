@@ -78,6 +78,12 @@ class FakeCrateDBCloud:
         self.ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         self.ssl_context.load_cert_chain(str(ssl_cert), str(ssl_key))
 
+    async def __aenter__(self):
+        return await self.start()
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.stop()
+
     async def start(self) -> Dict[str, int]:
         port = unused_port()
         self.runner = web.AppRunner(self.app)
