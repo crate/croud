@@ -26,7 +26,6 @@ import pytest
 from croud.config import Configuration
 from croud.util import (
     can_launch_browser,
-    clean_dict,
     confirm_prompt,
     get_platform_info,
     is_wsl,
@@ -93,24 +92,6 @@ def test_can_launch_browser(webbrowser_get_mock, get_platform_mock):
         env_mock.get.return_value = "foo"
         result = can_launch_browser()
         assert not result
-
-
-@pytest.mark.parametrize(
-    ["raw", "cleaned"],
-    [
-        ({}, {}),
-        (
-            {"int": 0, "str": "", "none": None, "list": []},
-            {"int": 0, "str": "", "list": []},
-        ),
-        (
-            {"empty": {}, "nested": {"value": 42, "none": None}},
-            {"empty": {}, "nested": {"value": 42}},
-        ),
-    ],
-)
-def test_clean_dict(raw, cleaned):
-    assert clean_dict(raw) == cleaned
 
 
 @pytest.mark.parametrize(
