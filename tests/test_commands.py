@@ -56,14 +56,6 @@ FALLBACK_ORG_ID_CONFIG: dict = {
 }
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-class TestMe(CommandTestCase):
-    def test_me(self, mock_send, mock_config):
-        argv = ["croud", "me"]
-        self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/users/me/")
-
-
 class TestConfigGet:
     @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch("builtins.print", autospec=True, side_effect=print)
