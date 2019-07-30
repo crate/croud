@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Fixed a bug with the ``croud config set/get`` command which would the command
+  to fail.
+
 - Updated ``croud users list`` to include all user roles.
 
 - Depreated ``--no-org`` argument to ``croud users list`` in favor of ``--no-roles``.
