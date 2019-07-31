@@ -17,10 +17,12 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import copy
 import difflib
 import re
 from doctest import _ellipsis_match  # type: ignore
 from functools import partial
+from typing import Dict
 
 from croud.__main__ import get_parser
 
@@ -39,6 +41,21 @@ def assert_ellipsis_match(actual: str, expected: str) -> None:
     diff = ndiff(expected.strip(), actual.strip())
     equality = _ellipsis_match(normalize(expected.strip()), normalize(actual.strip()))
     assert equality, diff
+
+
+class MockConfig:
+    """
+    A mocked configuration which emulates reading and writing file from/to disk.
+    """
+
+    def __init__(self, config: Dict) -> None:
+        self.conf = copy.deepcopy(config)
+
+    def read_config(self) -> Dict:
+        return self.conf
+
+    def write_config(self, config) -> None:
+        self.conf = config
 
 
 def call_command(*argv):
