@@ -41,26 +41,31 @@ def assert_ellipsis_match(actual: str, expected: str) -> None:
     assert equality, diff
 
 
-class CommandTestCase:
-    def execute(self, argv) -> None:
-        parser = get_parser()
-        params = parser.parse_args(argv[1:])
-        if "resolver" in params:
-            fn = params.resolver
-            del params.resolver
-            fn(params)
-        else:
-            parser.print_help()
+def call_command(*argv):
+    parser = get_parser()
+    args = parser.parse_args(argv[1:])
+    if "resolver" in args:
+        fn = args.resolver
+        del args.resolver
+        fn(args)
+    else:
+        parser.print_help()
 
+
+def assert_rest(mock_send, method, endpoint, *, body=UNDEFINED, params=UNDEFINED):
+    args = [method, endpoint]
+    kwargs = {}
+    if body is not UNDEFINED:
+        kwargs["body"] = body
+    if params is not UNDEFINED:
+        kwargs["params"] = params
+
+    mock_send.assert_called_once_with(*args, **kwargs)
+
+
+class CommandTestCase:
     def assertRest(
         self, mock_send, argv, method, endpoint, *, body=UNDEFINED, params=UNDEFINED
     ):
-        self.execute(argv)
-
-        args = [method, endpoint]
-        kwargs = {}
-        if body is not UNDEFINED:
-            kwargs["body"] = body
-        if params is not UNDEFINED:
-            kwargs["params"] = params
-        mock_send.assert_called_once_with(*args, **kwargs)
+        call_command(*argv)
+        assert_rest(mock_send, method, endpoint, body=body, params=params)
