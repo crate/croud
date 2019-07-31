@@ -126,6 +126,10 @@ def require_confirmation(
 def org_id_config_fallback(cmd):  # decorator
     @functools.wraps(cmd)
     def _wrapper(cmd_args: Namespace):  # decorator logic
+        if cmd_args.sudo and not cmd_args.org_id:
+            print_error("An organization ID is required. Please pass --org-id.")
+            exit(1)
+
         env = cmd_args.env or Configuration.get_env()
         cmd_args.org_id = cmd_args.org_id or Configuration.get_organization_id(env)
         if not cmd_args.org_id:

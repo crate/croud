@@ -189,11 +189,29 @@ def test_org_id_config_fallback(
     config["auth"]["contexts"]["dev"]["organization_id"] = dev_org_id
 
     with mock.patch("croud.config.load_config", return_value=config):
-        args = Namespace(env=env_arg, org_id=org_id_arg)
+        args = Namespace(env=env_arg, org_id=org_id_arg, sudo=False)
 
         command(args)
         out, _ = capsys.readouterr()
         assert expected in out
+
+
+def test_org_id_config_fallback_for_sudo(capsys):
+    @org_id_config_fallback
+    def command(args: Namespace):
+        print(args.org_id)
+
+    config = copy.deepcopy(Configuration.DEFAULT_CONFIG)
+    config["auth"]["current_context"] = "dev"
+    config["auth"]["contexts"]["dev"]["organization_id"] = "some-org-id"
+
+    with mock.patch("croud.config.load_config", return_value=config):
+        args = Namespace(env="dev", org_id="some-other-org-id", sudo=True)
+
+        command(args)
+
+        out, _ = capsys.readouterr()
+        assert "some-other-org-id" in out
 
 
 @pytest.mark.parametrize(
@@ -217,7 +235,23 @@ def test_org_id_config_fallback_failed(
     config["auth"]["contexts"]["dev"]["organization_id"] = dev_org_id
 
     with mock.patch("croud.config.load_config", return_value=config):
-        args = Namespace(env=env_arg, org_id=org_id_arg)
+        args = Namespace(env=env_arg, org_id=org_id_arg, sudo=False)
+
+        with pytest.raises(SystemExit):
+            command(args)
+
+
+def test_org_id_config_fallback_failed_for_sudo(capsys):
+    @org_id_config_fallback
+    def command(args: Namespace):
+        print(args.org_id)
+
+    config = copy.deepcopy(Configuration.DEFAULT_CONFIG)
+    config["auth"]["current_context"] = "dev"
+    config["auth"]["contexts"]["dev"]["organization_id"] = "some-org-id"
+
+    with mock.patch("croud.config.load_config", return_value=config):
+        args = Namespace(env="dev", org_id=None, sudo=True)
 
         with pytest.raises(SystemExit):
             command(args)

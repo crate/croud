@@ -38,8 +38,7 @@ def get_org_id() -> Optional[str]:
     )
     data, error = client.send(RequestMethod.GET, "/api/v2/users/me/")
     if data and not error:
-        if not data.get("is_superuser") and "organization_id" in data:
-            return data.get("organization_id")
+        return data.get("organization_id")
     return None
 
 
