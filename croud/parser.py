@@ -30,6 +30,33 @@ REQUIRED_TITLE = "Required Arguments"
 OPTIONALS_TITLE = "Optional Arguments"
 
 
+class Argument:
+    """
+    An :class:`argparse.ArgumentParser` argument class.
+
+    Create an instance of it with the positional and keyword arguments usually
+    passed to :meth:`~argparse.ArgumentParser.add_argument`. When calling
+    :meth:`add_to_parser` with a parser instance, the positional and keyword
+    arguments will be passed as-is::
+
+        >>> import argparse
+        >>> argument = Argument("integer", type=int)
+        >>> parser = argparse.ArgumentParser()
+        >>> argument.add_to_parser(parser)
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
+    def add_to_parser(self, parser: argparse._ActionsContainer):
+        parser.add_argument(*self.args, **self.kwargs)
+
+    @property
+    def required(self):
+        return self.kwargs.get("required", False)
+
+
 class CroudCliArgumentParser(argparse.ArgumentParser):
     def __init__(self, **kwargs):
         super().__init__(
@@ -131,10 +158,11 @@ def help_print_factory(parser: argparse.ArgumentParser):
 
 def add_subparser(parser, tree, name="__root__"):
     if "extra_args" in tree:
-        for arg_provider in tree["extra_args"]:
-            arg_provider(
-                parser._group_required, parser._group_optional
-            )  # keep existing behaviour
+        for argument in tree["extra_args"]:
+            if argument.required:
+                argument.add_to_parser(parser._group_required)
+            else:
+                argument.add_to_parser(parser._group_optional)
     if "noop_arg" in tree:
         parser.add_argument(name.split(" ")[-1], choices=tree["noop_arg"]["choices"])
     if "commands" in tree:

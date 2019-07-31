@@ -5,8 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
-- Fixed a bug with the ``croud config set/get`` command which would the command
-  to fail.
+0.17.0 - 2019/07/31
+===================
 
 - Updated ``croud users list`` to include all user roles.
 
