@@ -34,7 +34,7 @@ from croud.projects.users.commands import (
 from croud.rest import Client
 from croud.session import RequestMethod
 from croud.users.commands import transform_roles_list
-from tests.util import CommandTestCase
+from tests.util import CommandTestCase, call_command
 
 
 def gen_uuid() -> str:
@@ -344,7 +344,7 @@ class TestClusters(CommandTestCase):
         cluster_id = gen_uuid()
         argv = ["croud", "clusters", "delete", "--cluster-id", cluster_id]
         with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
-            self.execute(argv)
+            call_command(*argv)
             mock_send.assert_not_called()
             mock_input.assert_called_once_with(
                 "Are you sure you want to delete the cluster? [yN] "
@@ -552,7 +552,7 @@ class TestOrganizations(CommandTestCase):
         org_id = gen_uuid()
         argv = ["croud", "organizations", "delete", "--org-id", org_id]
         with mock.patch("builtins.input", side_effect=[input]) as mock_input:
-            self.execute(argv)
+            call_command(*argv)
             mock_send.assert_not_called()
             mock_input.assert_called_once_with(
                 "Are you sure you want to delete the organization? [yN] "
@@ -567,7 +567,7 @@ class TestOrganizations(CommandTestCase):
         org_id = gen_uuid()
         argv = ["croud", "organizations", "delete", "--org-id", org_id]
         with mock.patch("builtins.input", side_effect=["N"]) as mock_input:
-            self.execute(argv)
+            call_command(*argv)
             mock_send.assert_not_called()
             mock_input.assert_called_once_with(
                 "Are you sure you want to delete the organization? [yN] "
@@ -735,7 +735,7 @@ class TestProjects(CommandTestCase):
         project_id = gen_uuid()
         argv = ["croud", "projects", "delete", "--project-id", project_id]
         with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
-            self.execute(argv)
+            call_command(*argv)
             mock_send.assert_not_called()
             mock_input.assert_called_once_with(
                 "Are you sure you want to delete the project? [yN] "
@@ -1118,7 +1118,7 @@ class TestConsumers(CommandTestCase):
         consumer_id = gen_uuid()
         argv = ["croud", "consumers", "delete", "--consumer-id", consumer_id]
         with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
-            self.execute(argv)
+            call_command(*argv)
             mock_send.assert_not_called()
             mock_input.assert_called_once_with(
                 "Are you sure you want to delete the consumer? [yN] "
