@@ -32,6 +32,7 @@ Example
    |--------------------------------------|
    | 035f1161-402e-44b4-9073-0749586091e0 |
    +--------------------------------------+
+   ==> Success: Project created.
 
 
 ``projects delete``
@@ -109,6 +110,7 @@ Example
    |--------------------------------------+----------------+--------------------------------------|
    | 035f1161-402e-44b4-9073-0749586091e0 | project_member | 6ac0f500-f9f8-4c12-82e2-3ad6192525d4 |
    +--------------------------------------+----------------+--------------------------------------+
+   ==> Success: User added to project.
 
 
 ``projects users list``
@@ -151,4 +153,4 @@ Example
    sh$ croud projects users remove \
        --project-id 035f1161-402e-44b4-9073-0749586091e0 \
        --user john.doe@example.com
-   ==> Success: Successfully removed user from project.
+   ==> Success: User removed from project.

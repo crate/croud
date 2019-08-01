@@ -38,6 +38,7 @@ Example
    |--------------------------------------+--------+------------|
    | f6c39580-5719-431d-a508-0cee4f9e8209 | my-org |          6 |
    +--------------------------------------+--------+------------+
+   ==> Success: Organization created.
 
 
 ``organizations list``
@@ -116,6 +117,7 @@ Example
    |--------------------------------------+------------+--------------------------------------|
    | f6c39580-5719-431d-a508-0cee4f9e8209 | org_member | e4c6e51f-bd56-4d92-bdf8-9947531c3225 |
    +--------------------------------------+------------+--------------------------------------+
+   ==> Success: User added to organization.
 
 
 ``organizations users list``
@@ -158,4 +160,4 @@ Example
    sh$ croud organizations users remove \
        --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
        --user john.doe@example.io
-   ==> Success: Successfully removed user from organization.
+   ==> Success: User removed from organization.
