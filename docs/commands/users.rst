@@ -2,7 +2,7 @@
 ``users``
 =========
 
-The ``users`` command allows you to create, modify and view user resources.
+The ``users`` command allows you to view user resources.
 
 .. argparse::
    :module: croud.__main__
