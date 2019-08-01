@@ -349,15 +349,13 @@ class TestOrganizations(CommandTestCase):
             "create",
             "--name",
             "test-org",
-            "--plan-type",
-            "1",
         ]
         self.assertRest(
             mock_send,
             argv,
             RequestMethod.POST,
             "/api/v2/organizations/",
-            body={"name": "test-org", "plan_type": 1},
+            body={"name": "test-org", "plan_type": 3},
         )
 
     @mock.patch.object(Client, "send", return_value=({}, None))

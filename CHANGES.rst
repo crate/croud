@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- The ``plan-type`` argument for creating an organization is now optional and defaults
+  to `3`, which is ``HOSTED_24x7``.
+
 - Removed the previously deprecated ``croud users roles add`` and ``croud users
   roles remove`` commands.
 
