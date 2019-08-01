@@ -42,6 +42,7 @@ Example
    |----------------------------------|
    | rX7qd2e0KmAIew74gs6AXQitnl8zbQ3W |
    +----------------------------------+
+   ==> Success: Grafana enabled.
 
 .. note::
 
@@ -63,7 +64,7 @@ Example
 .. code-block:: console
 
    sh$ croud monioring grafana disable --project-id 57d3434e-2abc-4d6a-8542-8b33e0881599
-   ==> Info: Success
+   ==> Success: Grafana disabled.
 
 
 .. note::
