@@ -32,11 +32,12 @@ def organizations_create(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    data, errors = client.send(
-        RequestMethod.POST,
-        "/api/v2/organizations/",
-        body={"name": args.name, "plan_type": args.plan_type},
-    )
+    if args.plan_type:
+        body = {"name": args.name, "plan_type": args.plan_type}
+    else:
+        body = {"name": args.name}
+
+    data, errors = client.send(RequestMethod.POST, "/api/v2/organizations/", body=body)
     print_response(
         data=data,
         errors=errors,

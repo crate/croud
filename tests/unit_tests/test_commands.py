@@ -343,6 +343,17 @@ class TestClusters(CommandTestCase):
 class TestOrganizations(CommandTestCase):
     @mock.patch.object(Client, "send", return_value=({}, None))
     def test_create(self, mock_send, mock_load_config):
+        argv = ["croud", "organizations", "create", "--name", "test-org"]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.POST,
+            "/api/v2/organizations/",
+            body={"name": "test-org"},
+        )
+
+    @mock.patch.object(Client, "send", return_value=({}, None))
+    def test_create_name_plan_type(self, mock_send, mock_load_config):
         argv = [
             "croud",
             "organizations",
@@ -350,14 +361,14 @@ class TestOrganizations(CommandTestCase):
             "--name",
             "test-org",
             "--plan-type",
-            "1",
+            "3",
         ]
         self.assertRest(
             mock_send,
             argv,
             RequestMethod.POST,
             "/api/v2/organizations/",
-            body={"name": "test-org", "plan_type": 1},
+            body={"name": "test-org", "plan_type": 3},
         )
 
     @mock.patch.object(Client, "send", return_value=({}, None))
