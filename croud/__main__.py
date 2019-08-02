@@ -44,6 +44,7 @@ from croud.monitoring.grafana.commands import set_grafana
 from croud.organizations.commands import (
     organizations_create,
     organizations_delete,
+    organizations_edit,
     organizations_list,
 )
 from croud.organizations.users.commands import (
@@ -467,6 +468,25 @@ command_tree = {
             "list": {
                 "help": "List all organizations the current user has access to.",
                 "resolver": organizations_list,
+            },
+            "edit": {
+                "help": "Edit the specified organization.",
+                "extra_args": [
+                    Argument(
+                        "--name", type=str, required=False,
+                        help="The new organization name to use.",
+                    ),
+                    Argument(
+                        "--plan-type", type=int, required=False,
+                        choices=[1, 2, 3, 4, 5, 6],
+                        help="The new support plan to use for the organization.",
+                    ),
+                    Argument(
+                        "--org-id", type=str, required=False,
+                        help="The organization ID to use.",
+                    ),
+                ],
+                "resolver": organizations_edit,
             },
             "delete": {
                 "help": "Delete the specified organization.",

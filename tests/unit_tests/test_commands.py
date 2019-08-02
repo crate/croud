@@ -361,6 +361,79 @@ class TestOrganizations(CommandTestCase):
         )
 
     @mock.patch.object(Client, "send", return_value=({}, None))
+    def test_edit_name(self, mock_send, mock_load_config):
+        org_id = gen_uuid()
+        argv = [
+            "croud",
+            "organizations",
+            "edit",
+            "--name",
+            "new-org-name",
+            "--org-id",
+            org_id,
+        ]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.PUT,
+            f"/api/v2/organizations/{org_id}/",
+            body={"name": "new-org-name"},
+        )
+
+    @mock.patch.object(Client, "send", return_value=({}, None))
+    def test_edit_plan_type(self, mock_send, mock_load_config):
+        org_id = gen_uuid()
+        argv = [
+            "croud",
+            "organizations",
+            "edit",
+            "--plan-type",
+            "3",
+            "--org-id",
+            org_id,
+        ]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.PUT,
+            f"/api/v2/organizations/{org_id}/",
+            body={"plan_type": 3},
+        )
+
+    @mock.patch.object(Client, "send", return_value=({}, None))
+    def test_edit_name_plan_type(self, mock_send, mock_load_config):
+        org_id = gen_uuid()
+        argv = [
+            "croud",
+            "organizations",
+            "edit",
+            "--name",
+            "new-org-name",
+            "--plan-type",
+            "3",
+            "--org-id",
+            org_id,
+        ]
+        self.assertRest(
+            mock_send,
+            argv,
+            RequestMethod.PUT,
+            f"/api/v2/organizations/{org_id}/",
+            body={"name": "new-org-name", "plan_type": 3},
+        )
+
+    @mock.patch.object(Client, "send", return_value=(None, {}))
+    def test_edit_no_arguments(self, mock_send, mock_load_config, capsys):
+        org_id = gen_uuid()
+        argv = ["croud", "organizations", "edit", "--org-id", org_id]
+        with pytest.raises(SystemExit):
+            self.assertRest(
+                mock_send, argv, RequestMethod.PUT, f"/api/v2/organizations/{org_id}/"
+            )
+        _, err = capsys.readouterr()
+        assert "No input arguments found." in err
+
+    @mock.patch.object(Client, "send", return_value=({}, None))
     def test_list(self, mock_send, mock_load_config):
         argv = ["croud", "organizations", "list"]
         self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/organizations/")

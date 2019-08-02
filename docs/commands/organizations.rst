@@ -63,6 +63,29 @@ Example
    +--------------------------------------+--------+------------+
 
 
+``organizations edit``
+======================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations edit
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud organizations edit --name new-name
+   +--------------------------------------+-------------+-------------+
+   | id                                   | name        |   plan_type |
+   |--------------------------------------+-------------+-------------|
+   | f6c39580-5719-431d-a508-0cee4f9e8209 | new-name    |           3 |
+   +--------------------------------------+-------------+-------------+
+   ==> Success: Organization edited.
+
+
 ``organizations delete``
 ========================
 
