@@ -41,6 +41,21 @@ def gen_uuid() -> str:
     return str(uuid.uuid4())
 
 
+config_org_id = gen_uuid()
+FALLBACK_ORG_ID_CONFIG: dict = {
+    "auth": {
+        "current_context": "prod",
+        "contexts": {
+            "prod": {"token": "", "organization_id": config_org_id},
+            "dev": {"token": "", "organization_id": config_org_id},
+            "local": {"token": "", "organization_id": config_org_id},
+        },
+    },
+    "region": "bregenz.a1",
+    "output_fmt": "table",
+}
+
+
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
 class TestMe(CommandTestCase):
@@ -339,8 +354,8 @@ class TestClusters(CommandTestCase):
         assert "Cluster deletion cancelled." in err_output
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 class TestOrganizations(CommandTestCase):
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=({}, None))
     def test_create(self, mock_send, mock_load_config):
         argv = ["croud", "organizations", "create", "--name", "test-org"]
@@ -352,6 +367,7 @@ class TestOrganizations(CommandTestCase):
             body={"name": "test-org"},
         )
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=({}, None))
     def test_create_name_plan_type(self, mock_send, mock_load_config):
         argv = [
@@ -371,6 +387,7 @@ class TestOrganizations(CommandTestCase):
             body={"name": "test-org", "plan_type": 3},
         )
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=({}, None))
     def test_edit_name(self, mock_send, mock_load_config):
         org_id = gen_uuid()
@@ -391,6 +408,7 @@ class TestOrganizations(CommandTestCase):
             body={"name": "new-org-name"},
         )
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=({}, None))
     def test_edit_plan_type(self, mock_send, mock_load_config):
         org_id = gen_uuid()
@@ -411,6 +429,7 @@ class TestOrganizations(CommandTestCase):
             body={"plan_type": 3},
         )
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=({}, None))
     def test_edit_name_plan_type(self, mock_send, mock_load_config):
         org_id = gen_uuid()
@@ -433,6 +452,7 @@ class TestOrganizations(CommandTestCase):
             body={"name": "new-org-name", "plan_type": 3},
         )
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_edit_no_arguments(self, mock_send, mock_load_config, capsys):
         org_id = gen_uuid()
@@ -444,11 +464,13 @@ class TestOrganizations(CommandTestCase):
         _, err = capsys.readouterr()
         assert "No input arguments found." in err
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=({}, None))
     def test_list(self, mock_send, mock_load_config):
         argv = ["croud", "organizations", "list"]
         self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/organizations/")
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_delete(self, mock_send, mock_load_config, capsys):
         org_id = gen_uuid()
@@ -467,6 +489,46 @@ class TestOrganizations(CommandTestCase):
         _, err_output = capsys.readouterr()
         assert "Organization deleted." in err_output
 
+    @mock.patch("croud.config.Configuration.set_organization_id")
+    @mock.patch("croud.config.load_config", return_value=FALLBACK_ORG_ID_CONFIG)
+    @mock.patch.object(Client, "send", return_value=(None, {"errors": "Message"}))
+    def test_delete_failure_org_id_not_deleted_from_config(
+        self, mock_send, mock_load_config, mock_set_config, capsys
+    ):
+        argv = ["croud", "organizations", "delete"]
+        with mock.patch("builtins.input", side_effect=["Y"]):
+            self.assertRest(
+                mock_send,
+                argv,
+                RequestMethod.DELETE,
+                f"/api/v2/organizations/{mock_load_config.return_value['auth']['contexts']['local']['organization_id']}/",  # noqa
+            )
+        _, err = capsys.readouterr()
+        assert err is not None
+        assert (
+            mock_set_config.called is False
+        )  # This means that the org_id is still in the local config
+
+    @mock.patch("croud.config.Configuration.set_organization_id")
+    @mock.patch("croud.config.load_config", return_value=FALLBACK_ORG_ID_CONFIG)
+    @mock.patch.object(Client, "send", return_value=({}, None))
+    def test_delete_org_id_from_local_config(
+        self, mock_send, mock_load_config, mock_set_config, capsys
+    ):
+        argv = ["croud", "organizations", "delete"]
+        with mock.patch("builtins.input", side_effect=["Y"]):
+            self.assertRest(
+                mock_send,
+                argv,
+                RequestMethod.DELETE,
+                f"/api/v2/organizations/{mock_load_config.return_value['auth']['contexts']['local']['organization_id']}/",  # noqa
+            )
+        _, err = capsys.readouterr()
+        assert (
+            mock_set_config.called is True
+        )  # This means that the org_id was deleted from the local config
+
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_delete_flag(self, mock_send, mock_load_config, capsys):
         org_id = gen_uuid()
@@ -483,6 +545,7 @@ class TestOrganizations(CommandTestCase):
         _, err_output = capsys.readouterr()
         assert "Organization deleted." in err_output
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @pytest.mark.parametrize("input", ["", "N", "No", "cancel"])
     @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_delete_aborted(self, mock_send, mock_load_config, capsys, input):
@@ -498,6 +561,7 @@ class TestOrganizations(CommandTestCase):
         _, err_output = capsys.readouterr()
         assert "Organization deletion cancelled." in err_output
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=(None, {}))
     def test_delete_aborted_with_input(self, mock_send, mock_load_config, capsys):
         org_id = gen_uuid()
@@ -512,6 +576,7 @@ class TestOrganizations(CommandTestCase):
         _, err_output = capsys.readouterr()
         assert "Organization deletion cancelled." in err_output
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=({"added": True}, None))
     def test_add_user(self, mock_send, mock_load_config):
         org_id = gen_uuid()
@@ -538,6 +603,7 @@ class TestOrganizations(CommandTestCase):
             body={"user": user, "role_fqn": role_fqn},
         )
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=({"added": False}, None))
     def test_update_user(self, mock_send, mock_load_confg, capsys):
         org_id = gen_uuid()
@@ -567,6 +633,7 @@ class TestOrganizations(CommandTestCase):
         assert "Success" in err_output
         assert "Role altered for user." in err_output
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     def test_role_fqn_transform(self, mock_load_config):
         user = {
             "organization_roles": [
@@ -578,6 +645,7 @@ class TestOrganizations(CommandTestCase):
         response = organization_role_fqn_transform(user["organization_roles"])
         assert response == "organization_admin"
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=({}, None))
     def test_list_user(self, mock_send, mock_load_config):
         org_id = gen_uuid()
@@ -587,6 +655,7 @@ class TestOrganizations(CommandTestCase):
             mock_send, argv, RequestMethod.GET, f"/api/v2/organizations/{org_id}/users/"
         )
 
+    @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
     @mock.patch.object(Client, "send", return_value=({}, None))
     def test_remove_user(self, mock_send, mock_load_config):
         org_id = gen_uuid()
