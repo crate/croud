@@ -82,7 +82,8 @@ def organizations_delete(args: Namespace) -> None:
         output_fmt=get_output_format(args),
     )
 
-    env = args.env or Configuration.get_env()
-    config_org_id = Configuration.get_organization_id(env)
-    if args.org_id == config_org_id:
-        Configuration.set_organization_id("", Configuration.get_env())
+    if errors is None:
+        env = args.env or Configuration.get_env()
+        config_org_id = Configuration.get_organization_id(env)
+        if args.org_id == config_org_id:
+            Configuration.set_organization_id("", Configuration.get_env())
