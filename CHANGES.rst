@@ -5,9 +5,13 @@ Changes for croud
 Unreleased
 ==========
 
-- The ``plan-type`` argument has been made optional and is only available for superusers.
+- Fix bug where the ``org_id`` was deleted from the local config when deleting a
+  organization, even though the organization was not deleted because an error
+  occured.
 
 - Added new ``croud organizations edit`` command to edit an existing organization.
+
+- The ``plan-type`` argument has been made optional and is only available for superusers.
 
 - Removed the previously deprecated ``croud users roles add`` and ``croud users
   roles remove`` commands.
