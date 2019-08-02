@@ -458,9 +458,10 @@ command_tree = {
                         help="The organization name to use.",
                     ),
                     Argument(
-                        "--plan-type", type=int, required=True,
+                        "--plan-type", type=int, required=False,
                         choices=[1, 2, 3, 4, 5, 6],
-                        help="The support plan to use for the organization.",
+                        help="The support plan to use for the organization. Argument "
+                             "is for superusers only.",
                     ),
                 ],
                 "resolver": organizations_create,

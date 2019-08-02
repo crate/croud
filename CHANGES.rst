@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- The ``plan-type`` argument has been made optional and is only available for superusers.
+
 - Added new ``croud organizations edit`` command to edit an existing organization.
 
 - Removed the previously deprecated ``croud users roles add`` and ``croud users
