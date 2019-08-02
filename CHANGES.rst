@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added new ``croud organizations edit`` command to edit an existing organization.
+
 - Removed the previously deprecated ``croud users roles add`` and ``croud users
   roles remove`` commands.
 
