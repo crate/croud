@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.17.1 - 2019/08/05
+===================
+
 - Fix bug where the ``org_id`` was deleted from the local config when deleting a
   organization, even though the organization was not deleted because an error
   occured.
