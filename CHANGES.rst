@@ -5,16 +5,19 @@ Changes for croud
 Unreleased
 ==========
 
-- Fix bug where the ``org_id`` was deleted from the local config when deleting a
-  organization, even though the organization was not deleted because an error
-  occured.
-
 - Added new ``croud organizations edit`` command to edit an existing organization.
 
 - The ``plan-type`` argument has been made optional and is only available for superusers.
 
 - Removed the previously deprecated ``croud users roles add`` and ``croud users
   roles remove`` commands.
+
+0.17.1 - 2019/08/05
+===================
+
+- Fix bug where the ``org_id`` was deleted from the local config when deleting a
+  organization, even though the organization was not deleted because an error
+  occured.
 
 0.17.0 - 2019/07/31
 ===================
