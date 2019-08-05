@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.18.0 - 2019/08/06
+===================
+
 - Added new ``croud organizations edit`` command to edit an existing organization.
 
 - The ``plan-type`` argument has been made optional and is only available for superusers.
