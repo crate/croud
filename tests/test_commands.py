@@ -23,91 +23,11 @@ from unittest import mock
 from croud.config import Configuration
 from croud.rest import Client
 from croud.session import RequestMethod
-from croud.users.commands import transform_roles_list
 from tests.util import CommandTestCase, call_command
 
 
 def gen_uuid() -> str:
     return str(uuid.uuid4())
-
-
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-class TestUsersRolesREST(CommandTestCase):
-    def test_list(self, mock_send, mock_load_config):
-        argv = ["croud", "users", "roles", "list"]
-
-        self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/roles/")
-
-
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-class TestUsers(CommandTestCase):
-    def test_list(self, mock_send, mock_load_config):
-        argv = ["croud", "users", "list"]
-        self.assertRest(
-            mock_send, argv, RequestMethod.GET, "/api/v2/users/", params=None
-        )
-
-    def test_transform_roles_list(self, mock_send, mock_load_config):
-        user = {
-            "organization_roles": [
-                {"organization_id": "org-1", "role_fqn": "org_admin"},
-                {"organization_id": "org-2", "role_fqn": "org_member"},
-                {"organization_id": "org-3", "role_fqn": "org_member"},
-            ],
-            "project_roles": [
-                {"project_id": "project-1", "role_fqn": "project_admin"},
-                {"project_id": "project-2", "role_fqn": "project_member"},
-                {"project_id": "project-3", "role_fqn": "project_member"},
-            ],
-        }
-        response = transform_roles_list("organization_id")(user["organization_roles"])
-        assert response == "org-1: org_admin,\norg-2: org_member,\norg-3: org_member"
-        response = transform_roles_list("project_id")(user["project_roles"])
-        assert response == (
-            "project-1: project_admin,\n"
-            "project-2: project_member,\n"
-            "project-3: project_member"
-        )
-
-    def test_list_no_org(self, mock_send, mock_load_config, capsys):
-        argv = ["croud", "users", "list", "--no-org"]
-        self.assertRest(
-            mock_send,
-            argv,
-            RequestMethod.GET,
-            "/api/v2/users/",
-            params={"no-roles": "1"},
-        )
-        _, err = capsys.readouterr()
-        assert (
-            "The --no-org argument is deprecated. Please use --no-roles instead." in err
-        )
-
-    def test_list_no_roles(self, mock_send, mock_load_config):
-        argv = ["croud", "users", "list", "--no-roles"]
-        self.assertRest(
-            mock_send,
-            argv,
-            RequestMethod.GET,
-            "/api/v2/users/",
-            params={"no-roles": "1"},
-        )
-
-    def test_list_no_org_no_roles(self, mock_send, mock_load_config, capsys):
-        argv = ["croud", "users", "list", "--no-roles", "--no-org"]
-        self.assertRest(
-            mock_send,
-            argv,
-            RequestMethod.GET,
-            "/api/v2/users/",
-            params={"no-roles": "1"},
-        )
-        _, err = capsys.readouterr()
-        assert (
-            "The --no-org argument is deprecated. Please use --no-roles instead." in err
-        )
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
