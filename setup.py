@@ -45,7 +45,7 @@ setup(
         "aiohttp==3.4.4",
         "colorama==0.4.1",
         "appdirs==1.4.3",
-        "pyyaml==3.13",
+        "pyyaml==5.1.2",
         "certifi",
         "tabulate==0.8.2",
         "schema==0.6.8",
