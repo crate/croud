@@ -33,7 +33,7 @@ from tests.util import MockConfig, call_command
 @mock.patch("croud.login.can_launch_browser", return_value=True)
 @mock.patch("croud.login.open_page_in_browser")
 @mock.patch("croud.login.print_info")
-def test_login_success(
+def test_login(
     mock_print_info,
     mock_open_page_in_browser,
     mock_can_launch_browser,
@@ -64,7 +64,7 @@ def test_login_success(
 @mock.patch("croud.login.can_launch_browser", return_value=True)
 @mock.patch("croud.login.open_page_in_browser")
 @mock.patch("croud.login.print_info")
-def test_local_login(
+def test_login_local(
     mock_print_info,
     mock_open_page_in_browser,
     mock_can_launch_browser,

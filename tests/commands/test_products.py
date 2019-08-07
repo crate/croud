@@ -32,14 +32,14 @@ def gen_uuid() -> str:
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_list(mock_send, mock_load_config):
+def test_products_list(mock_send, mock_load_config):
     call_command("croud", "products", "list")
     assert_rest(mock_send, RequestMethod.GET, "/api/v2/products/")
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_list_kind(mock_send, mock_load_config):
+def test_products_list_kind(mock_send, mock_load_config):
     call_command("croud", "products", "list", "--kind", "cluster")
     assert_rest(
         mock_send, RequestMethod.GET, "/api/v2/products/", params={"kind": "cluster"}
