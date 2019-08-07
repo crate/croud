@@ -56,6 +56,32 @@ fraction of tests with python3.6::
 
     tox -e py36 -- -k test_rest
 
+The test setup uses `pytest-random-order`_ to ensure better test separation.
+By default, the order will be random on the Python module level. That means,
+essentially, the order of ``*.py`` files will be randomized when running tests.
+
+When running tests using ``tox`` or ``py.test``, `pytest-random-order`_ will
+emit a seed value at the beginning which can be used to rerun tests with the
+specific order::
+
+
+    $ tox -e py37
+    ...
+    py37 run-test-pre: PYTHONHASHSEED='2789788418'
+    py37 run-test: commands[0] | pytest
+    ======================== test session starts =========================
+    platform linux -- Python 3.7.3, pytest-3.10.1, py-1.8.0, pluggy-0.12.0
+    Using --random-order-bucket=module
+    Using --random-order-seed=240261
+    ...
+
+
+One can rerun a random test setup by passing ``--random-order-seed=<seed>`` to
+py.test::
+
+    $ tox -e py37 -- --random-order-seed=240261
+
+
 
 Release
 =======
@@ -143,6 +169,7 @@ branch is updated.
 .. _Generating distribution archives: https://packaging.python.org/tutorials/packaging-projects/#generating-distribution-archives
 .. _PyPI: https://pypi.org/project/croud/
 .. _pytest: https://docs.pytest.org/en/latest/
+.. _pytest-random-order: https://pypi.org/project/pytest-random-order/
 .. _Read the Docs: http://readthedocs.org
 .. _ReStructuredText: http://docutils.sourceforge.net/rst.html
 .. _Sphinx: http://sphinx-doc.org/
