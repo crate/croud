@@ -23,7 +23,7 @@ from unittest import mock
 from croud.config import Configuration
 from croud.rest import Client
 from croud.session import RequestMethod
-from tests.util import CommandTestCase
+from tests.util import assert_rest, call_command
 
 
 def gen_uuid() -> str:
@@ -31,19 +31,16 @@ def gen_uuid() -> str:
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-class TestProducts(CommandTestCase):
-    @mock.patch.object(Client, "send", return_value=({}, None))
-    def test_list(self, mock_send, mock_load_config):
-        argv = ["croud", "products", "list"]
-        self.assertRest(mock_send, argv, RequestMethod.GET, "/api/v2/products/")
+@mock.patch.object(Client, "send", return_value=({}, None))
+def test_list(mock_send, mock_load_config):
+    call_command("croud", "products", "list")
+    assert_rest(mock_send, RequestMethod.GET, "/api/v2/products/")
 
-    @mock.patch.object(Client, "send", return_value=({}, None))
-    def test_list_kind(self, mock_send, mock_load_config):
-        argv = ["croud", "products", "list", "--kind", "cluster"]
-        self.assertRest(
-            mock_send,
-            argv,
-            RequestMethod.GET,
-            "/api/v2/products/",
-            params={"kind": "cluster"},
-        )
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Client, "send", return_value=({}, None))
+def test_list_kind(mock_send, mock_load_config):
+    call_command("croud", "products", "list", "--kind", "cluster")
+    assert_rest(
+        mock_send, RequestMethod.GET, "/api/v2/products/", params={"kind": "cluster"}
+    )
