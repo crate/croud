@@ -20,6 +20,7 @@
 import copy
 import difflib
 import re
+import uuid
 from doctest import _ellipsis_match  # type: ignore
 from functools import partial
 from typing import Dict
@@ -80,9 +81,5 @@ def assert_rest(mock_send, method, endpoint, *, body=UNDEFINED, params=UNDEFINED
     mock_send.assert_called_once_with(*args, **kwargs)
 
 
-class CommandTestCase:
-    def assertRest(
-        self, mock_send, argv, method, endpoint, *, body=UNDEFINED, params=UNDEFINED
-    ):
-        call_command(*argv)
-        assert_rest(mock_send, method, endpoint, body=body, params=params)
+def gen_uuid():
+    return str(uuid.uuid4())
