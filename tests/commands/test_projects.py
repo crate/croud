@@ -17,7 +17,6 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import uuid
 from unittest import mock
 
 import pytest
@@ -28,11 +27,7 @@ from croud.projects.users.commands import (
 )
 from croud.rest import Client
 from croud.session import RequestMethod
-from tests.util import assert_rest, call_command
-
-
-def gen_uuid() -> str:
-    return str(uuid.uuid4())
+from tests.util import assert_rest, call_command, gen_uuid
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
