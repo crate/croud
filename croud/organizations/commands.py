@@ -21,7 +21,8 @@ from argparse import Namespace
 
 from croud.config import Configuration, get_output_format
 from croud.printer import print_error, print_response
-from croud.rest import Client
+from croud.printer import print_response
+from croud.transport import Client
 from croud.session import RequestMethod
 from croud.util import org_id_config_fallback, require_confirmation
 
@@ -53,7 +54,6 @@ def organizations_edit(args: Namespace) -> None:
     Edit an organization
     """
 
-    client = Client.from_args(args)
     body = {}
     if args.plan_type:
         body["plan_type"] = args.plan_type
@@ -63,6 +63,7 @@ def organizations_edit(args: Namespace) -> None:
         print_error("No input arguments found.")
         exit(1)
 
+    client = Client.from_args(args)
     data, errors = client.send(
         RequestMethod.PUT, f"/api/v2/organizations/{args.org_id}/", body=body
     )

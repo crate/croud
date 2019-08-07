@@ -17,7 +17,6 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import asyncio
 from argparse import Namespace
 
 from croud.config import Configuration
@@ -28,20 +27,20 @@ LOGOUT_PATH = "/oauth2/logout"
 
 
 def logout(args: Namespace) -> None:
-    loop = asyncio.get_event_loop()
     env = args.env or Configuration.get_env()
     token = Configuration.get_token(env)
 
-    loop.run_until_complete(make_request(env, token))
+    make_request(env, token)
     Configuration.set_token("", env)
     Configuration.set_organization_id("", env)
 
     print_info("You have been logged out.")
 
 
-async def make_request(env: str, token: str) -> None:
-    async with HttpSession(env, token) as session:
-        await session.logout(_logout_url(env))
+def make_request(env: str, token: str) -> None:
+    with HttpSession(env, token) as session:
+        session.client.cookies.clear()
+        session.logout(_logout_url(env))
 
 
 def _logout_url(env: str) -> str:

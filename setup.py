@@ -49,6 +49,7 @@ setup(
         "certifi",
         "tabulate==0.8.2",
         "schema==0.6.8",
+        "requests==2.21.0",
     ],
     extras_require={"testing": ["tox==3.6.1"], "development": ["black==19.3b0"]},
     python_requires=">=3.6",

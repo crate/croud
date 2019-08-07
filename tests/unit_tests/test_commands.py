@@ -32,7 +32,7 @@ from croud.organizations.users.commands import (
 from croud.projects.users.commands import (
     role_fqn_transform as project_role_fqn_transform,
 )
-from croud.rest import Client
+from croud.transport import Client
 from croud.session import RequestMethod
 from croud.users.commands import transform_roles_list
 

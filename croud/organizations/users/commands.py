@@ -24,7 +24,7 @@ from argparse import Namespace
 
 from croud.config import get_output_format
 from croud.printer import print_response
-from croud.rest import Client
+from croud.transport import Client
 from croud.session import RequestMethod
 from croud.util import org_id_config_fallback
 

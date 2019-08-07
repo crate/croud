@@ -17,15 +17,14 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import asyncio
+from croud.server import run_server, token_queue
 from argparse import Namespace
 from functools import partial
 from typing import Optional
 
 from croud.config import Configuration
 from croud.printer import print_error, print_info
-from croud.rest import Client, RequestMethod
-from croud.server import Server
+from croud.transport import Client, RequestMethod
 from croud.session import cloud_url
 from croud.util import can_launch_browser, open_page_in_browser
 
@@ -49,32 +48,25 @@ def login(args: Namespace) -> None:
 
     if can_launch_browser():
         env = args.env or Configuration.get_env()
-
-        loop = asyncio.get_event_loop()
-        server = Server(loop)
-        server.create_web_app(partial(Configuration.set_token, env=env))
-        loop.run_until_complete(server.start())
-
+        server_thread = run_server(partial(Configuration.set_token, env=env))
         open_page_in_browser(_login_url(env))
         print_info("A browser tab has been launched for you to login.")
-
-        try:
-            loop.run_forever()
-        except KeyboardInterrupt:
-            loop.run_until_complete(server.stop())
-            exit(1)
-        finally:
-            loop.run_until_complete(server.stop())
-
         Configuration.set_context(env.lower())
+        # Get token from the request and save it in the configuration.
+        try:
+            token = token_queue.get()
+        except (KeyboardInterrupt, SystemExit):
+            server_thread.join(0)
+        else:
+            server_thread.join()
+
+        Configuration.set_token(token, env.lower())
 
         organization_id = get_org_id()
         if organization_id:
             Configuration.set_organization_id(organization_id, env)
         else:
             Configuration.set_organization_id("", env)
-
-        loop.close()
 
     else:
         print_error("Login only works with a valid browser installed.")

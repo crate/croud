@@ -16,14 +16,13 @@
 # However, if you have executed another commercial license agreement
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
-
-import ssl
+import requests
+from requests.cookies import cookiejar_from_dict
+from http.cookies import SimpleCookie
 from enum import Enum
 from types import TracebackType
 from typing import Callable, Dict, Optional, Type
 
-import certifi
-from aiohttp import ClientResponse, ClientSession, TCPConnector  # type: ignore
 from yarl import URL
 
 from croud.printer import print_error
@@ -48,7 +47,6 @@ class HttpSession:
         token: str,
         region: str = "bregenz.a1",
         url: Optional[str] = None,
-        conn: Optional[TCPConnector] = None,
         headers: Dict[str, str] = {},
         on_new_token: Callable[[str], None] = None,
     ) -> None:
@@ -60,52 +58,49 @@ class HttpSession:
             url = cloud_url(env, region)
 
         self.url = url
-        if conn is None:
-            conn = self._get_conn()
 
-        self.client = ClientSession(
-            cookies={"session": self.token}, connector=conn, headers=headers
-        )
+        self.client = requests.Session()
+        self.client.headers = headers
+        self.client.cookies = cookiejar_from_dict({"session": self.token})
 
-    def _get_conn(self) -> TCPConnector:
-        ssl_context = ssl.create_default_context(cafile=certifi.where())
-        return TCPConnector(ssl_context=ssl_context)
-
-    async def fetch(
+    def fetch(
         self,
         method: RequestMethod,
         endpoint: str,
         body: dict = None,
         params: dict = None,
-    ) -> ClientResponse:
+    ) -> requests.Response:
         url = URL(self.url).with_path(endpoint)
-        resp = await getattr(self.client, method.value)(
-            url, json=body, allow_redirects=False, params=params
+        resp = getattr(self.client, method.value)(
+            url,
+            json=body,
+            allow_redirects=False,
+            params=params,
         )
-        if resp.status == 302:  # login redirect
+        if resp.status_code == 302:  # login redirect
             print_error("Unauthorized. Use `croud login` to login to CrateDB Cloud.")
             exit(1)
         return resp
 
-    async def logout(self, url: str):
-        await self.client.get(url)
-
-    async def __aenter__(self) -> "HttpSession":
+    def __enter__(self):
         return self
 
-    async def close(self) -> None:
-        new_token = self.client.cookie_jar.filter_cookies(self.url).get("session")
-        if new_token and self.token != new_token.value and self.on_new_token:
-            self.on_new_token(new_token.value)
-        await self.client.close()
+    def close(self) -> None:
+        new_token = self.client.cookies.get("session")
+        if new_token and self.token != new_token and self.on_new_token:
+            self.on_new_token(new_token)
+        self.client.close()
 
-    async def __aexit__(
+    def __exit__(
         self,
         exc_type: Optional[Type[BaseException]],
         exc_val: Optional[BaseException],
         exc_tb: Optional[TracebackType],
-    ) -> None:
-        await self.close()
+    ):
+        self.close()
+
+    def logout(self, url: str):
+        self.client.get(url)
 
 
 def cloud_url(env: str, region: str = "bregenz.a1") -> str:

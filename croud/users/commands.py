@@ -21,7 +21,7 @@ from argparse import Namespace
 
 from croud.config import get_output_format
 from croud.printer import print_response, print_warning
-from croud.rest import Client, RequestMethod
+from croud.transport import Client, RequestMethod
 
 
 def transform_roles_list(key):
