@@ -33,14 +33,14 @@ def gen_uuid() -> str:
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_list(mock_send, mock_load_config):
+def test_users_list(mock_send, mock_load_config):
     call_command("croud", "users", "list")
     assert_rest(mock_send, RequestMethod.GET, "/api/v2/users/", params=None)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_list_no_org(mock_send, mock_load_config, capsys):
+def test_users_list_no_org(mock_send, mock_load_config, capsys):
     call_command("croud", "users", "list", "--no-org")
     assert_rest(
         mock_send, RequestMethod.GET, "/api/v2/users/", params={"no-roles": "1"}
@@ -51,7 +51,7 @@ def test_list_no_org(mock_send, mock_load_config, capsys):
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_list_no_roles(mock_send, mock_load_config):
+def test_users_list_no_roles(mock_send, mock_load_config):
     call_command("croud", "users", "list", "--no-roles")
     assert_rest(
         mock_send, RequestMethod.GET, "/api/v2/users/", params={"no-roles": "1"}
@@ -60,7 +60,7 @@ def test_list_no_roles(mock_send, mock_load_config):
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_list_no_org_no_roles(mock_send, mock_load_config, capsys):
+def test_users_list_no_org_no_roles(mock_send, mock_load_config, capsys):
     call_command("croud", "users", "list", "--no-roles", "--no-org")
     assert_rest(
         mock_send, RequestMethod.GET, "/api/v2/users/", params={"no-roles": "1"}
@@ -71,7 +71,7 @@ def test_list_no_org_no_roles(mock_send, mock_load_config, capsys):
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_roles_list(mock_send, mock_load_config):
+def test_users_roles_list(mock_send, mock_load_config):
     call_command("croud", "users", "roles", "list")
     assert_rest(mock_send, RequestMethod.GET, "/api/v2/roles/")
 

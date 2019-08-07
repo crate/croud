@@ -32,7 +32,7 @@ def gen_uuid() -> str:
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_grafana_enable(mock_send, mock_config):
+def test_monitoring_grafana_enable(mock_send, mock_config):
     project_id = gen_uuid()
     call_command("croud", "monitoring", "grafana", "enable", "--project-id", project_id)
     assert_rest(
@@ -45,7 +45,7 @@ def test_grafana_enable(mock_send, mock_config):
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_grafana_disable(mock_send, mock_config):
+def test_monitoring_grafana_disable(mock_send, mock_config):
     project_id = gen_uuid()
     call_command(
         "croud", "monitoring", "grafana", "disable", "--project-id", project_id

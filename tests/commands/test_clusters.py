@@ -32,14 +32,14 @@ def gen_uuid() -> str:
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_list_no_project_id(mock_send, mock_load_config):
+def test_clusers_list(mock_send, mock_load_config):
     call_command("croud", "clusters", "list")
     assert_rest(mock_send, RequestMethod.GET, "/api/v2/clusters/", params={})
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_list_with_project_id(mock_send, mock_load_config):
+def test_clusers_list_with_project_id(mock_send, mock_load_config):
     project_id = gen_uuid()
     call_command("croud", "clusters", "list", "--project-id", project_id)
     assert_rest(
@@ -52,7 +52,7 @@ def test_list_with_project_id(mock_send, mock_load_config):
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_deploy_cluster(mock_send, mock_load_config):
+def test_clusers_deploy(mock_send, mock_load_config):
     project_id = gen_uuid()
     call_command(
         "croud",
@@ -95,7 +95,7 @@ def test_deploy_cluster(mock_send, mock_load_config):
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_deploy_cluster_no_unit(mock_send, mock_load_config):
+def test_clusers_deploy_no_unit(mock_send, mock_load_config):
     project_id = gen_uuid()
     call_command(
         "croud",
@@ -135,7 +135,7 @@ def test_deploy_cluster_no_unit(mock_send, mock_load_config):
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_deploy_cluster_nightly(mock_send, mock_load_config):
+def test_clusers_deploy_nightly(mock_send, mock_load_config):
     project_id = gen_uuid()
     call_command(
         "croud",
@@ -180,7 +180,7 @@ def test_deploy_cluster_nightly(mock_send, mock_load_config):
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_scale_cluster(mock_send, mock_load_config):
+def test_clusers_scale(mock_send, mock_load_config):
     unit = 1
     cluster_id = gen_uuid()
     call_command(
@@ -196,7 +196,7 @@ def test_scale_cluster(mock_send, mock_load_config):
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "send", return_value=({}, None))
-def test_upgrade_cluster(mock_send, mock_load_config):
+def test_clusers_upgrade(mock_send, mock_load_config):
     version = "3.2.6"
     cluster_id = gen_uuid()
     call_command(
