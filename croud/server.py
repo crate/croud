@@ -53,9 +53,11 @@ class SetTokenHandler(BaseHTTPRequestHandler):
         query = parse.parse_qs(query_string)
         if "token" not in query:
             code = 400
+            token_queue.put("")
             msg = SetTokenHandler.MISSING_TOKEN_MSG
         elif len(query["token"]) != 1:
             code = 400
+            token_queue.put("")
             msg = SetTokenHandler.DUPLICATE_TOKEN_MSG
         else:
             token = query["token"][0]
