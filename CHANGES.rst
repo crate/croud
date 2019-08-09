@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.18.1 - 2019/08/09
+===================
+
 - Fix column selection in table output for ``croud clusters upgrade`` command.
 
 0.18.0 - 2019/08/06
