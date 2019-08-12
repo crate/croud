@@ -17,15 +17,14 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-from croud.server import run_server, token_queue
 from argparse import Namespace
 from functools import partial
 from typing import Optional
 
 from croud.config import Configuration
 from croud.printer import print_error, print_info
-from croud.transport import Client, RequestMethod
-from croud.session import cloud_url
+from croud.server import run_server, token_queue
+from croud.transport import Client, RequestMethod, cloud_url
 from croud.util import can_launch_browser, open_page_in_browser
 
 LOGIN_PATH = "/oauth2/login?cli=true"
@@ -49,6 +48,7 @@ def login(args: Namespace) -> None:
     if can_launch_browser():
         env = args.env or Configuration.get_env()
         server_thread = run_server(partial(Configuration.set_token, env=env))
+        import pdb; pdb.set_trace()
         open_page_in_browser(_login_url(env))
         print_info("A browser tab has been launched for you to login.")
         Configuration.set_context(env.lower())

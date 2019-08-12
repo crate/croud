@@ -17,6 +17,9 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+from unittest import mock
+from threading import Thread
+from croud.server import token_queue, run_server
 import copy
 from argparse import Namespace
 from typing import Dict
@@ -27,7 +30,6 @@ import pytest
 from croud.config import Configuration
 from croud.login import _login_url, get_org_id, login
 from croud.logout import _logout_url, logout
-from croud.server import Server
 
 
 class MockConfig:
@@ -46,9 +48,7 @@ class MockConfig:
 
 
 class TestLogin:
-    @mock.patch.object(Server, "stop")
-    @mock.patch.object(Server, "start")
-    @mock.patch("croud.login.asyncio.get_event_loop")
+    @mock.patch.object(token_queue, "get", return_value="abcd")
     @mock.patch("croud.login.can_launch_browser", return_value=True)
     @mock.patch("croud.login.open_page_in_browser")
     @mock.patch("croud.login.print_info")
@@ -57,16 +57,16 @@ class TestLogin:
         mock_print_info,
         mock_open_page_in_browser,
         mock_can_launch_browser,
-        mock_loop,
-        mock_start,
-        mock_stop,
+        mock_token_queue,
     ):
         cfg = MockConfig(Configuration.DEFAULT_CONFIG)
-
         with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
             with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
                 with mock.patch("croud.login.get_org_id", return_value="my-org-id"):
-                    login(Namespace(env="dev"))
+                    with mock.patch(
+                        "croud.login.run_server", return_value=Thread(target=mock.Mock()).start()
+                    ):
+                        login(Namespace(env="dev"))
 
         calls = [
             mock.call("A browser tab has been launched for you to login."),
@@ -77,9 +77,7 @@ class TestLogin:
         assert config["auth"]["current_context"] == "dev"
         assert config["auth"]["contexts"]["dev"]["organization_id"] == "my-org-id"
 
-    @mock.patch.object(Server, "stop")
-    @mock.patch.object(Server, "start")
-    @mock.patch("croud.login.asyncio.get_event_loop")
+    @mock.patch.object(token_queue, "get", return_value="abcd")
     @mock.patch("croud.login.can_launch_browser", return_value=True)
     @mock.patch("croud.login.open_page_in_browser")
     @mock.patch("croud.login.print_info")
@@ -88,9 +86,7 @@ class TestLogin:
         mock_print_info,
         mock_open_page_in_browser,
         mock_can_launch_browser,
-        mock_loop,
-        mock_start,
-        mock_stop,
+        mock_token_queue,
     ):
         """
         Test for a bug that caused that upon login to local env the local token
@@ -112,8 +108,13 @@ class TestLogin:
 
         with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
             with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
-                with mock.patch("croud.rest.Client.send", return_value=[None, None]):
-                    login(Namespace(env="local"))
+                with mock.patch(
+                    "croud.transport.Client.send", return_value=[None, None]
+                ):
+                    with mock.patch(
+                        "croud.login.run_server", return_value=Thread(target=mock.Mock()).start()
+                    ):
+                        login(Namespace(env="local"))
 
         new_cfg = cfg.read_config()
         assert new_cfg["auth"]["current_context"] == "local"
@@ -163,7 +164,7 @@ class TestLogin:
         with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
             with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
                 with mock.patch(
-                    "croud.rest.Client.send",
+                    "croud.transport.Client.send",
                     return_value=[{"organization_id": None}, None],
                 ):
                     org_id = get_org_id()
@@ -175,7 +176,7 @@ class TestLogin:
         with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
             with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
                 with mock.patch(
-                    "croud.rest.Client.send",
+                    "croud.transport.Client.send",
                     return_value=[{"organization_id": "some_id"}, None],
                 ):
                     org_id = get_org_id()
@@ -183,9 +184,8 @@ class TestLogin:
 
 
 class TestLogout:
-    @mock.patch("croud.logout.asyncio.get_event_loop")
     @mock.patch("croud.logout.print_info")
-    def test_logout(self, mock_print_info, mock_loop):
+    def test_logout(self, mock_print_info):
         conf = {
             "auth": {
                 "current_context": "prod",

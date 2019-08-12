@@ -21,26 +21,27 @@ from argparse import Namespace
 
 from croud.config import Configuration
 from croud.printer import print_info
-from croud.session import HttpSession, cloud_url
+from croud.transport import Client, cloud_url, session_logout
 
 LOGOUT_PATH = "/oauth2/logout"
 
 
 def logout(args: Namespace) -> None:
     env = args.env or Configuration.get_env()
-    token = Configuration.get_token(env)
+    region = args.region or Configuration.get_setting("region")
 
-    make_request(env, token)
+    make_request(env, region)
     Configuration.set_token("", env)
     Configuration.set_organization_id("", env)
 
     print_info("You have been logged out.")
 
 
-def make_request(env: str, token: str) -> None:
-    with HttpSession(env, token) as session:
-        session.client.cookies.clear()
-        session.logout(_logout_url(env))
+def make_request(env: str, region: str) -> None:
+    client_session = Client(env=env, region=region)
+    with client_session._session as session:
+        session.cookies.clear()
+        session_logout(session, _logout_url(env))
 
 
 def _logout_url(env: str) -> str:

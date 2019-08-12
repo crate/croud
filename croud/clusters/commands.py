@@ -21,8 +21,7 @@ from argparse import Namespace
 
 from croud.config import get_output_format
 from croud.printer import print_response
-from croud.transport import Client
-from croud.session import RequestMethod
+from croud.transport import Client, RequestMethod
 from croud.util import require_confirmation
 
 

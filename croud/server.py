@@ -17,9 +17,9 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from queue import Queue
 from threading import Thread
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Callable
 from urllib import parse
 
@@ -71,11 +71,12 @@ class SetTokenHandler(BaseHTTPRequestHandler):
         self.wfile.write(msg)
         self.server.shutdown()
 
-    def log_request(self, code='-', size='-'):
+    def log_request(self, code="-", size="-"):
         pass
 
 
 def run_server(on_token) -> Thread:
+    import pdb; pdb.set_trace()
     server = SetTokenHTTPServer(on_token, (HOST, PORT), SetTokenHandler)
     server_thread = Thread(target=server.serve_forever, daemon=True)
     server_thread.start()
