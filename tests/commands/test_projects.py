@@ -21,18 +21,17 @@ from unittest import mock
 
 import pytest
 
+from croud.api import Client, RequestMethod
 from croud.config import Configuration
 from croud.projects.users.commands import (
     role_fqn_transform as project_role_fqn_transform,
 )
-from croud.rest import Client
-from croud.session import RequestMethod
 from tests.util import assert_rest, call_command, gen_uuid
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_projects_create(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_projects_create(mock_request, mock_load_config):
     call_command(
         "croud",
         "projects",
@@ -43,7 +42,7 @@ def test_projects_create(mock_send, mock_load_config):
         "organization-id",
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.POST,
         "/api/v2/projects/",
         body={"name": "new-project", "organization_id": "organization-id"},
@@ -51,12 +50,12 @@ def test_projects_create(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_projects_delete(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_projects_delete(mock_request, mock_load_config, capsys):
     project_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["yes"]) as mock_input:
         call_command("croud", "projects", "delete", "--project-id", project_id)
-    assert_rest(mock_send, RequestMethod.DELETE, f"/api/v2/projects/{project_id}/")
+    assert_rest(mock_request, RequestMethod.DELETE, f"/api/v2/projects/{project_id}/")
     mock_input.assert_called_once_with(
         "Are you sure you want to delete the project? [yN] "
     )
@@ -67,12 +66,12 @@ def test_projects_delete(mock_send, mock_load_config, capsys):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_projects_delete_flag(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_projects_delete_flag(mock_request, mock_load_config, capsys):
     project_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["y"]) as mock_input:
         call_command("croud", "projects", "delete", "--project-id", project_id, "-y")
-    assert_rest(mock_send, RequestMethod.DELETE, f"/api/v2/projects/{project_id}/")
+    assert_rest(mock_request, RequestMethod.DELETE, f"/api/v2/projects/{project_id}/")
     mock_input.assert_not_called()
 
     _, err_output = capsys.readouterr()
@@ -81,12 +80,12 @@ def test_projects_delete_flag(mock_send, mock_load_config, capsys):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_projects_delete_aborted(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_projects_delete_aborted(mock_request, mock_load_config, capsys):
     project_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
         call_command("croud", "projects", "delete", "--project-id", project_id)
-    mock_send.assert_not_called()
+    mock_request.assert_not_called()
     mock_input.assert_called_once_with(
         "Are you sure you want to delete the project? [yN] "
     )
@@ -96,10 +95,10 @@ def test_projects_delete_aborted(mock_send, mock_load_config, capsys):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_projects_list(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_projects_list(mock_request, mock_load_config):
     call_command("croud", "projects", "list")
-    assert_rest(mock_send, RequestMethod.GET, "/api/v2/projects/")
+    assert_rest(mock_request, RequestMethod.GET, "/api/v2/projects/")
 
 
 @pytest.mark.parametrize(
@@ -107,9 +106,9 @@ def test_projects_list(mock_send, mock_load_config):
     [(True, "User added to project."), (False, "Role altered for user.")],
 )
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send")
-def test_projects_users_add(mock_send, mock_load_config, added, message, capsys):
-    mock_send.return_value = ({"added": added}, None)
+@mock.patch.object(Client, "request")
+def test_projects_users_add(mock_request, mock_load_config, added, message, capsys):
+    mock_request.return_value = ({"added": added}, None)
 
     project_id = gen_uuid()
 
@@ -130,7 +129,7 @@ def test_projects_users_add(mock_send, mock_load_config, added, message, capsys)
         role_fqn,
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.POST,
         f"/api/v2/projects/{project_id}/users/",
         body={"user": user, "role_fqn": role_fqn},
@@ -142,17 +141,19 @@ def test_projects_users_add(mock_send, mock_load_config, added, message, capsys)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_projects_users_list(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_projects_users_list(mock_request, mock_load_config):
     project_id = gen_uuid()
 
     call_command("croud", "projects", "users", "list", "--project-id", project_id)
-    assert_rest(mock_send, RequestMethod.GET, f"/api/v2/projects/{project_id}/users/")
+    assert_rest(
+        mock_request, RequestMethod.GET, f"/api/v2/projects/{project_id}/users/"
+    )
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_projects_users_remove(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_projects_users_remove(mock_request, mock_load_config):
     project_id = gen_uuid()
 
     # uid or email would be possible for the backend
@@ -169,7 +170,9 @@ def test_projects_users_remove(mock_send, mock_load_config):
         user,
     )
     assert_rest(
-        mock_send, RequestMethod.DELETE, f"/api/v2/projects/{project_id}/users/{user}/"
+        mock_request,
+        RequestMethod.DELETE,
+        f"/api/v2/projects/{project_id}/users/{user}/",
     )
 
 

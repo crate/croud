@@ -19,10 +19,9 @@
 
 from argparse import Namespace
 
+from croud.api import Client
 from croud.config import get_output_format
 from croud.printer import print_response
-from croud.rest import Client
-from croud.session import RequestMethod
 from croud.util import require_confirmation
 
 
@@ -36,7 +35,7 @@ def clusters_list(args: Namespace) -> None:
         params["project_id"] = args.project_id
 
     client = Client.from_args(args)
-    data, errors = client.send(RequestMethod.GET, "/api/v2/clusters/", params=params)
+    data, errors = client.get("/api/v2/clusters/", params=params)
     print_response(
         data=data,
         errors=errors,
@@ -72,7 +71,7 @@ def clusters_deploy(args: Namespace) -> None:
     if args.unit:
         body["product_unit"] = args.unit
     client = Client.from_args(args)
-    data, errors = client.send(RequestMethod.POST, "/api/v2/clusters/", body=body)
+    data, errors = client.post("/api/v2/clusters/", body=body)
     print_response(
         data=data,
         errors=errors,
@@ -91,9 +90,7 @@ def clusters_scale(args: Namespace) -> None:
 
     body = {"product_unit": args.unit}
     client = Client.from_args(args)
-    data, errors = client.send(
-        RequestMethod.PUT, f"/api/v2/clusters/{args.cluster_id}/scale/", body=body
-    )
+    data, errors = client.put(f"/api/v2/clusters/{args.cluster_id}/scale/", body=body)
     print_response(
         data=data,
         errors=errors,
@@ -112,9 +109,7 @@ def clusters_upgrade(args: Namespace) -> None:
 
     body = {"crate_version": args.version}
     client = Client.from_args(args)
-    data, errors = client.send(
-        RequestMethod.PUT, f"/api/v2/clusters/{args.cluster_id}/upgrade/", body=body
-    )
+    data, errors = client.put(f"/api/v2/clusters/{args.cluster_id}/upgrade/", body=body)
     print_response(
         data=data,
         errors=errors,
@@ -132,9 +127,7 @@ def clusters_upgrade(args: Namespace) -> None:
 )
 def clusters_delete(args: Namespace) -> None:
     client = Client.from_args(args)
-    data, errors = client.send(
-        RequestMethod.DELETE, f"/api/v2/clusters/{args.cluster_id}/"
-    )
+    data, errors = client.delete(f"/api/v2/clusters/{args.cluster_id}/")
     print_response(
         data=data,
         errors=errors,

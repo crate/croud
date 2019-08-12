@@ -19,9 +19,9 @@
 
 from argparse import Namespace
 
+from croud.api import Client
 from croud.config import get_output_format
 from croud.printer import print_response, print_warning
-from croud.rest import Client, RequestMethod
 
 
 def transform_roles_list(key):
@@ -42,7 +42,7 @@ def users_list(args: Namespace) -> None:
         )
 
     no_roles = {"no-roles": "1"} if (args.no_roles or args.no_org) else None
-    data, errors = client.send(RequestMethod.GET, f"/api/v2/users/", params=no_roles)
+    data, errors = client.get("/api/v2/users/", params=no_roles)
     print_response(
         data=data,
         errors=errors,

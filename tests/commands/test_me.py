@@ -19,25 +19,24 @@
 
 from unittest import mock
 
+from croud.api import Client, RequestMethod
 from croud.config import Configuration
-from croud.rest import Client
-from croud.session import RequestMethod
 from tests.util import assert_rest, call_command
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_me(mock_send, mock_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_me(mock_request, mock_config):
     call_command("croud", "me")
-    assert_rest(mock_send, RequestMethod.GET, "/api/v2/users/me/")
+    assert_rest(mock_request, RequestMethod.GET, "/api/v2/users/me/")
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_me_edit_email(mock_send, mock_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_me_edit_email(mock_request, mock_config):
     call_command("croud", "me", "edit", "--email", "user@crate.io")
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.PATCH,
         "/api/v2/users/me/",
         body={"email": "user@crate.io"},

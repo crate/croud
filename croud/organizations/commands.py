@@ -19,10 +19,9 @@
 
 from argparse import Namespace
 
+from croud.api import Client
 from croud.config import Configuration, get_output_format
 from croud.printer import print_error, print_response
-from croud.rest import Client
-from croud.session import RequestMethod
 from croud.util import org_id_config_fallback, require_confirmation
 
 
@@ -37,7 +36,7 @@ def organizations_create(args: Namespace) -> None:
     else:
         body = {"name": args.name}
 
-    data, errors = client.send(RequestMethod.POST, "/api/v2/organizations/", body=body)
+    data, errors = client.post("/api/v2/organizations/", body=body)
     print_response(
         data=data,
         errors=errors,
@@ -63,9 +62,7 @@ def organizations_edit(args: Namespace) -> None:
         print_error("No input arguments found.")
         exit(1)
 
-    data, errors = client.send(
-        RequestMethod.PUT, f"/api/v2/organizations/{args.org_id}/", body=body
-    )
+    data, errors = client.put(f"/api/v2/organizations/{args.org_id}/", body=body)
     print_response(
         data=data,
         errors=errors,
@@ -81,7 +78,7 @@ def organizations_list(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    data, errors = client.send(RequestMethod.GET, "/api/v2/organizations/")
+    data, errors = client.get("/api/v2/organizations/")
     print_response(
         data=data,
         errors=errors,
@@ -101,9 +98,7 @@ def organizations_delete(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    data, errors = client.send(
-        RequestMethod.DELETE, f"/api/v2/organizations/{args.org_id}/"
-    )
+    data, errors = client.delete(f"/api/v2/organizations/{args.org_id}/")
     print_response(
         data=data,
         errors=errors,

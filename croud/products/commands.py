@@ -19,10 +19,9 @@
 
 from argparse import Namespace
 
+from croud.api import Client
 from croud.config import get_output_format
 from croud.printer import print_response
-from croud.rest import Client
-from croud.session import RequestMethod
 
 
 def products_list(args: Namespace) -> None:
@@ -32,10 +31,10 @@ def products_list(args: Namespace) -> None:
 
     client = Client.from_args(args)
     url = "/api/v2/products/"
+    params = {}
     if args.kind:
-        data, errors = client.send(RequestMethod.GET, url, params={"kind": args.kind})
-    else:
-        data, errors = client.send(RequestMethod.GET, url)
+        params["kind"] = args.kind
+    data, errors = client.get(url, params=params)
     print_response(
         data=data,
         errors=errors,

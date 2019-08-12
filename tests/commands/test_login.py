@@ -27,9 +27,8 @@ from croud.server import Server
 from tests.util import MockConfig, call_command
 
 
-@mock.patch.object(Server, "stop")
+@mock.patch.object(Server, "wait")
 @mock.patch.object(Server, "start")
-@mock.patch("croud.login.asyncio.get_event_loop")
 @mock.patch("croud.login.can_launch_browser", return_value=True)
 @mock.patch("croud.login.open_page_in_browser")
 @mock.patch("croud.login.print_info")
@@ -37,9 +36,8 @@ def test_login(
     mock_print_info,
     mock_open_page_in_browser,
     mock_can_launch_browser,
-    mock_loop,
     mock_start,
-    mock_stop,
+    mock_wait,
 ):
     cfg = MockConfig(Configuration.DEFAULT_CONFIG)
 
@@ -58,9 +56,8 @@ def test_login(
     assert config["auth"]["contexts"]["dev"]["organization_id"] == "my-org-id"
 
 
-@mock.patch.object(Server, "stop")
+@mock.patch.object(Server, "wait")
 @mock.patch.object(Server, "start")
-@mock.patch("croud.login.asyncio.get_event_loop")
 @mock.patch("croud.login.can_launch_browser", return_value=True)
 @mock.patch("croud.login.open_page_in_browser")
 @mock.patch("croud.login.print_info")
@@ -68,9 +65,8 @@ def test_login_local(
     mock_print_info,
     mock_open_page_in_browser,
     mock_can_launch_browser,
-    mock_loop,
     mock_start,
-    mock_stop,
+    mock_wait,
 ):
     """
     Test for a bug that caused that upon login to local env the local token
@@ -92,7 +88,7 @@ def test_login_local(
 
     with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
         with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
-            with mock.patch("croud.rest.Client.send", return_value=[None, None]):
+            with mock.patch("croud.api.Client.request", return_value=[None, None]):
                 call_command("croud", "login", "--env", "local")
 
     new_cfg = cfg.read_config()
@@ -143,7 +139,7 @@ def test_get_org_id(org_id_param):
     with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
         with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
             with mock.patch(
-                "croud.rest.Client.send",
+                "croud.api.Client.request",
                 return_value=[{"organization_id": org_id_param}, None],
             ):
                 org_id = get_org_id()

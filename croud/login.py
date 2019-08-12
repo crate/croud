@@ -17,16 +17,14 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import asyncio
 from argparse import Namespace
 from functools import partial
 from typing import Optional
 
+from croud.api import Client, cloud_url
 from croud.config import Configuration
-from croud.printer import print_error, print_info
-from croud.rest import Client, RequestMethod
+from croud.printer import print_error, print_info, print_warning
 from croud.server import Server
-from croud.session import cloud_url
 from croud.util import can_launch_browser, open_page_in_browser
 
 LOGIN_PATH = "/oauth2/login?cli=true"
@@ -36,7 +34,7 @@ def get_org_id() -> Optional[str]:
     client = Client(
         env=Configuration.get_env(), region=Configuration.get_setting("region")
     )
-    data, error = client.send(RequestMethod.GET, "/api/v2/users/me/")
+    data, error = client.get("/api/v2/users/me/")
     if data and not error:
         return data.get("organization_id")
     return None
@@ -47,40 +45,30 @@ def login(args: Namespace) -> None:
     Performs an OAuth2 Login to CrateDB Cloud
     """
 
-    if can_launch_browser():
-        env = args.env or Configuration.get_env()
+    if not can_launch_browser():
+        print_error("Login only works with a valid browser installed.")
+        exit(1)
 
-        loop = asyncio.get_event_loop()
-        server = Server(loop)
-        server.create_web_app(partial(Configuration.set_token, env=env))
-        loop.run_until_complete(server.start())
-
-        open_page_in_browser(_login_url(env))
-        print_info("A browser tab has been launched for you to login.")
-
-        try:
-            loop.run_forever()
-        except KeyboardInterrupt:
-            loop.run_until_complete(server.stop())
-            exit(1)
-        finally:
-            loop.run_until_complete(server.stop())
-
-        Configuration.set_context(env.lower())
-
+    env = args.env or Configuration.get_env()
+    server_thread = Server(partial(Configuration.set_token, env=env))
+    Configuration.set_context(env.lower())
+    server_thread.start()
+    open_page_in_browser(_login_url(env))
+    print_info("A browser tab has been launched for you to login.")
+    try:
+        # Wait for the user to login. They'll be redirected to the `SetTokenHandler`
+        # which will set the token in the configuration.
+        server_thread.wait()
+    except (KeyboardInterrupt, SystemExit):
+        print_warning("Login cancelled.")
+    else:
         organization_id = get_org_id()
         if organization_id:
             Configuration.set_organization_id(organization_id, env)
         else:
             Configuration.set_organization_id("", env)
 
-        loop.close()
-
-    else:
-        print_error("Login only works with a valid browser installed.")
-        exit(1)
-
-    print_info("Login successful.")
+        print_info("Login successful.")
 
 
 def _login_url(env: str) -> str:

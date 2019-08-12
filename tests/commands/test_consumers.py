@@ -19,9 +19,8 @@
 
 from unittest import mock
 
+from croud.api import Client, RequestMethod
 from croud.config import Configuration
-from croud.rest import Client
-from croud.session import RequestMethod
 from tests.util import assert_rest, call_command, gen_uuid
 
 eventhub_dsn = "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=..."  # noqa
@@ -29,8 +28,8 @@ storage_dsn = "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;End
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=["data", "errors"])
-def test_consumers_deploy(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=["data", "errors"])
+def test_consumers_deploy(mock_request, mock_load_config):
     project_id = gen_uuid()
     cluster_id = gen_uuid()
 
@@ -65,7 +64,7 @@ def test_consumers_deploy(mock_send, mock_load_config):
     )
 
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.POST,
         "/api/v2/consumers/",
         body={
@@ -88,15 +87,15 @@ def test_consumers_deploy(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_consumers_list(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_consumers_list(mock_request, mock_load_config):
     call_command("croud", "consumers", "list")
-    assert_rest(mock_send, RequestMethod.GET, "/api/v2/consumers/", params={})
+    assert_rest(mock_request, RequestMethod.GET, "/api/v2/consumers/", params={})
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_consumers_list_with_params(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_consumers_list_with_params(mock_request, mock_load_config):
     project_id = gen_uuid()
     cluster_id = gen_uuid()
     call_command(
@@ -111,7 +110,7 @@ def test_consumers_list_with_params(mock_send, mock_load_config):
         "eventhub-consumer",
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.GET,
         "/api/v2/consumers/",
         params={
@@ -123,8 +122,8 @@ def test_consumers_list_with_params(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_consumers_edit(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_consumers_edit(mock_request, mock_load_config):
     consumer_id = gen_uuid()
     cluster_id = gen_uuid()
 
@@ -151,7 +150,7 @@ def test_consumers_edit(mock_send, mock_load_config):
     )
 
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.PATCH,
         f"/api/v2/consumers/{consumer_id}/",
         body={
@@ -169,12 +168,12 @@ def test_consumers_edit(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_consumers_delete(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_consumers_delete(mock_request, mock_load_config, capsys):
     consumer_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["YES"]) as mock_input:
         call_command("croud", "consumers", "delete", "--consumer-id", consumer_id)
-    assert_rest(mock_send, RequestMethod.DELETE, f"/api/v2/consumers/{consumer_id}/")
+    assert_rest(mock_request, RequestMethod.DELETE, f"/api/v2/consumers/{consumer_id}/")
     mock_input.assert_called_once_with(
         "Are you sure you want to delete the consumer? [yN] "
     )
@@ -185,12 +184,12 @@ def test_consumers_delete(mock_send, mock_load_config, capsys):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_consumers_delete_flag(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_consumers_delete_flag(mock_request, mock_load_config, capsys):
     consumer_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["y"]) as mock_input:
         call_command("croud", "consumers", "delete", "--consumer-id", consumer_id, "-y")
-    assert_rest(mock_send, RequestMethod.DELETE, f"/api/v2/consumers/{consumer_id}/")
+    assert_rest(mock_request, RequestMethod.DELETE, f"/api/v2/consumers/{consumer_id}/")
     mock_input.assert_not_called()
 
     _, err_output = capsys.readouterr()
@@ -199,12 +198,12 @@ def test_consumers_delete_flag(mock_send, mock_load_config, capsys):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_consumers_delete_aborted(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_consumers_delete_aborted(mock_request, mock_load_config, capsys):
     consumer_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
         call_command("croud", "consumers", "delete", "--consumer-id", consumer_id)
-    mock_send.assert_not_called()
+    mock_request.assert_not_called()
     mock_input.assert_called_once_with(
         "Are you sure you want to delete the consumer? [yN] "
     )

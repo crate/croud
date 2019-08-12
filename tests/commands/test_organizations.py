@@ -21,12 +21,11 @@ from unittest import mock
 
 import pytest
 
+from croud.api import Client, RequestMethod
 from croud.config import Configuration
 from croud.organizations.users.commands import (
     role_fqn_transform as organization_role_fqn_transform,
 )
-from croud.rest import Client
-from croud.session import RequestMethod
 from tests.util import assert_rest, call_command, gen_uuid
 
 config_org_id = gen_uuid()
@@ -45,11 +44,11 @@ FALLBACK_ORG_ID_CONFIG: dict = {
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_organizations_create(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_create(mock_request, mock_load_config):
     call_command("croud", "organizations", "create", "--name", "test-org")
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.POST,
         "/api/v2/organizations/",
         body={"name": "test-org"},
@@ -57,13 +56,13 @@ def test_organizations_create(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_organizations_create_plan_type(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_create_plan_type(mock_request, mock_load_config):
     call_command(
         "croud", "organizations", "create", "--name", "test-org", "--plan-type", "3"
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.POST,
         "/api/v2/organizations/",
         body={"name": "test-org", "plan_type": 3},
@@ -71,8 +70,8 @@ def test_organizations_create_plan_type(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_organizations_edit(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_edit(mock_request, mock_load_config):
     org_id = gen_uuid()
     call_command(
         "croud",
@@ -86,7 +85,7 @@ def test_organizations_edit(mock_send, mock_load_config):
         org_id,
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.PUT,
         f"/api/v2/organizations/{org_id}/",
         body={"name": "new-org-name", "plan_type": 3},
@@ -94,14 +93,14 @@ def test_organizations_edit(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_organizations_edit_name(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_edit_name(mock_request, mock_load_config):
     org_id = gen_uuid()
     call_command(
         "croud", "organizations", "edit", "--name", "new-org-name", "--org-id", org_id
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.PUT,
         f"/api/v2/organizations/{org_id}/",
         body={"name": "new-org-name"},
@@ -109,14 +108,14 @@ def test_organizations_edit_name(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_organizations_edit_plan_type(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_edit_plan_type(mock_request, mock_load_config):
     org_id = gen_uuid()
     call_command(
         "croud", "organizations", "edit", "--plan-type", "3", "--org-id", org_id
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.PUT,
         f"/api/v2/organizations/{org_id}/",
         body={"plan_type": 3},
@@ -124,8 +123,8 @@ def test_organizations_edit_plan_type(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_organizations_edit_no_arguments(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_organizations_edit_no_arguments(mock_request, mock_load_config, capsys):
     org_id = gen_uuid()
     with pytest.raises(SystemExit):
         call_command("croud", "organizations", "edit", "--org-id", org_id)
@@ -135,19 +134,19 @@ def test_organizations_edit_no_arguments(mock_send, mock_load_config, capsys):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_organizations_list(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_list(mock_request, mock_load_config):
     call_command("croud", "organizations", "list")
-    assert_rest(mock_send, RequestMethod.GET, "/api/v2/organizations/")
+    assert_rest(mock_request, RequestMethod.GET, "/api/v2/organizations/")
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_organizations_delete(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_organizations_delete(mock_request, mock_load_config, capsys):
     org_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["Y"]) as mock_input:
         call_command("croud", "organizations", "delete", "--org-id", org_id)
-    assert_rest(mock_send, RequestMethod.DELETE, f"/api/v2/organizations/{org_id}/")
+    assert_rest(mock_request, RequestMethod.DELETE, f"/api/v2/organizations/{org_id}/")
     mock_input.assert_called_once_with(
         "Are you sure you want to delete the organization? [yN] "
     )
@@ -158,14 +157,14 @@ def test_organizations_delete(mock_send, mock_load_config, capsys):
 
 @mock.patch("croud.config.Configuration.set_organization_id")
 @mock.patch("croud.config.load_config", return_value=FALLBACK_ORG_ID_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {"errors": "Message"}))
+@mock.patch.object(Client, "request", return_value=(None, {"errors": "Message"}))
 def test_organizations_delete_failure_org_id_not_deleted_from_config(
-    mock_send, mock_load_config, mock_set_config, capsys
+    mock_request, mock_load_config, mock_set_config, capsys
 ):
     with mock.patch("builtins.input", side_effect=["Y"]):
         call_command("croud", "organizations", "delete")
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.DELETE,
         f"/api/v2/organizations/{mock_load_config.return_value['auth']['contexts']['local']['organization_id']}/",  # noqa
     )
@@ -178,14 +177,14 @@ def test_organizations_delete_failure_org_id_not_deleted_from_config(
 
 @mock.patch("croud.config.Configuration.set_organization_id")
 @mock.patch("croud.config.load_config", return_value=FALLBACK_ORG_ID_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
+@mock.patch.object(Client, "request", return_value=({}, None))
 def test_organizations_delete_org_id_from_local_config(
-    mock_send, mock_load_config, mock_set_config, capsys
+    mock_request, mock_load_config, mock_set_config, capsys
 ):
     with mock.patch("builtins.input", side_effect=["Y"]):
         call_command("croud", "organizations", "delete")
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.DELETE,
         f"/api/v2/organizations/{mock_load_config.return_value['auth']['contexts']['local']['organization_id']}/",  # noqa
     )
@@ -196,12 +195,12 @@ def test_organizations_delete_org_id_from_local_config(
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_organizations_delete_flag(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_organizations_delete_flag(mock_request, mock_load_config, capsys):
     org_id = gen_uuid()
     with mock.patch("builtins.input") as mock_input:
         call_command("croud", "organizations", "delete", "--org-id", org_id, "-y")
-    assert_rest(mock_send, RequestMethod.DELETE, f"/api/v2/organizations/{org_id}/")
+    assert_rest(mock_request, RequestMethod.DELETE, f"/api/v2/organizations/{org_id}/")
     mock_input.assert_not_called()
 
     _, err_output = capsys.readouterr()
@@ -210,12 +209,12 @@ def test_organizations_delete_flag(mock_send, mock_load_config, capsys):
 
 @pytest.mark.parametrize("input", ["", "N", "No", "cancel"])
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_organizations_delete_aborted(mock_send, mock_load_config, capsys, input):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_organizations_delete_aborted(mock_request, mock_load_config, capsys, input):
     org_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=[input]) as mock_input:
         call_command("croud", "organizations", "delete", "--org-id", org_id)
-    mock_send.assert_not_called()
+    mock_request.assert_not_called()
     mock_input.assert_called_once_with(
         "Are you sure you want to delete the organization? [yN] "
     )
@@ -225,12 +224,14 @@ def test_organizations_delete_aborted(mock_send, mock_load_config, capsys, input
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_organizations_delete_aborted_with_input(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_organizations_delete_aborted_with_input(
+    mock_request, mock_load_config, capsys
+):
     org_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["N"]) as mock_input:
         call_command("croud", "organizations", "delete", "--org-id", org_id)
-    mock_send.assert_not_called()
+    mock_request.assert_not_called()
     mock_input.assert_called_once_with(
         "Are you sure you want to delete the organization? [yN] "
     )
@@ -240,13 +241,13 @@ def test_organizations_delete_aborted_with_input(mock_send, mock_load_config, ca
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_organizations_auditlogs_list(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_auditlogs_list(mock_request, mock_load_config):
     org_id = gen_uuid()
 
     call_command("croud", "organizations", "auditlogs", "list", "--org-id", org_id)
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.GET,
         f"/api/v2/organizations/{org_id}/auditlogs/",
         params={},
@@ -254,8 +255,8 @@ def test_organizations_auditlogs_list(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_organizations_auditlogs_list_filtered(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_auditlogs_list_filtered(mock_request, mock_load_config):
     org_id = gen_uuid()
 
     call_command(
@@ -273,7 +274,7 @@ def test_organizations_auditlogs_list_filtered(mock_send, mock_load_config):
         "2019-11-12T12:34:56",
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.GET,
         f"/api/v2/organizations/{org_id}/auditlogs/",
         params={
@@ -289,9 +290,11 @@ def test_organizations_auditlogs_list_filtered(mock_send, mock_load_config):
     [(True, "User added to organization."), (False, "Role altered for user.")],
 )
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({"added": True}, None))
-def test_organizations_users_add(mock_send, mock_load_config, added, message, capsys):
-    mock_send.return_value = ({"added": added}, None)
+@mock.patch.object(Client, "request")
+def test_organizations_users_add(
+    mock_request, mock_load_config, added, message, capsys
+):
+    mock_request.return_value = ({"added": added}, None)
 
     org_id = gen_uuid()
     user = "test@crate.io"
@@ -310,7 +313,7 @@ def test_organizations_users_add(mock_send, mock_load_config, added, message, ca
         role_fqn,
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.POST,
         f"/api/v2/organizations/{org_id}/users/",
         body={"user": user, "role_fqn": role_fqn},
@@ -322,17 +325,19 @@ def test_organizations_users_add(mock_send, mock_load_config, added, message, ca
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_organizations_users_list(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_users_list(mock_request, mock_load_config):
     org_id = gen_uuid()
 
     call_command("croud", "organizations", "users", "list", "--org-id", org_id)
-    assert_rest(mock_send, RequestMethod.GET, f"/api/v2/organizations/{org_id}/users/")
+    assert_rest(
+        mock_request, RequestMethod.GET, f"/api/v2/organizations/{org_id}/users/"
+    )
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_organizations_users_remove(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_users_remove(mock_request, mock_load_config):
     org_id = gen_uuid()
     user = "test@crate.io"
 
@@ -340,7 +345,9 @@ def test_organizations_users_remove(mock_send, mock_load_config):
         "croud", "organizations", "users", "remove", "--user", user, "--org-id", org_id
     )
     assert_rest(
-        mock_send, RequestMethod.DELETE, f"/api/v2/organizations/{org_id}/users/{user}/"
+        mock_request,
+        RequestMethod.DELETE,
+        f"/api/v2/organizations/{org_id}/users/{user}/",
     )
 
 

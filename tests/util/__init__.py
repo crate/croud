@@ -26,6 +26,7 @@ from functools import partial
 from typing import Dict
 
 from croud.__main__ import get_parser
+from croud.api import RequestMethod
 
 normalize = partial(re.sub, r"\s+", "")
 
@@ -70,15 +71,17 @@ def call_command(*argv):
         parser.print_help()
 
 
-def assert_rest(mock_send, method, endpoint, *, body=UNDEFINED, params=UNDEFINED):
+def assert_rest(
+    mock_request, method: RequestMethod, endpoint, *, params=None, body=None
+):
     args = [method, endpoint]
     kwargs = {}
-    if body is not UNDEFINED:
+    if method != RequestMethod.GET and body is not UNDEFINED:
         kwargs["body"] = body
     if params is not UNDEFINED:
         kwargs["params"] = params
 
-    mock_send.assert_called_once_with(*args, **kwargs)
+    mock_request.assert_called_once_with(*args, **kwargs)
 
 
 def gen_uuid():

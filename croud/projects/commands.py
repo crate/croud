@@ -19,10 +19,9 @@
 
 from argparse import Namespace
 
+from croud.api import Client
 from croud.config import get_output_format
 from croud.printer import print_response
-from croud.rest import Client
-from croud.session import RequestMethod
 from croud.util import org_id_config_fallback, require_confirmation
 
 
@@ -33,10 +32,8 @@ def project_create(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    data, errors = client.send(
-        RequestMethod.POST,
-        "/api/v2/projects/",
-        body={"name": args.name, "organization_id": args.org_id},
+    data, errors = client.post(
+        "/api/v2/projects/", body={"name": args.name, "organization_id": args.org_id}
     )
     print_response(
         data=data,
@@ -56,9 +53,7 @@ def project_delete(args: Namespace) -> None:
     Deletes a project in the organization the user belongs to.
     """
     client = Client.from_args(args)
-    data, errors = client.send(
-        RequestMethod.DELETE, f"/api/v2/projects/{args.project_id}/"
-    )
+    data, errors = client.delete(f"/api/v2/projects/{args.project_id}/")
     print_response(
         data=data,
         errors=errors,
@@ -73,7 +68,7 @@ def projects_list(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    data, errors = client.send(RequestMethod.GET, "/api/v2/projects/")
+    data, errors = client.get("/api/v2/projects/")
     print_response(
         data=data,
         errors=errors,

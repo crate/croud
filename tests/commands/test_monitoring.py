@@ -19,19 +19,18 @@
 
 from unittest import mock
 
+from croud.api import Client, RequestMethod
 from croud.config import Configuration
-from croud.rest import Client
-from croud.session import RequestMethod
 from tests.util import assert_rest, call_command, gen_uuid
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_monitoring_grafana_enable(mock_send, mock_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_monitoring_grafana_enable(mock_request, mock_config):
     project_id = gen_uuid()
     call_command("croud", "monitoring", "grafana", "enable", "--project-id", project_id)
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.POST,
         "/api/v2/monitoring/grafana/",
         body={"project_id": project_id},
@@ -39,14 +38,14 @@ def test_monitoring_grafana_enable(mock_send, mock_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_monitoring_grafana_disable(mock_send, mock_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_monitoring_grafana_disable(mock_request, mock_config):
     project_id = gen_uuid()
     call_command(
         "croud", "monitoring", "grafana", "disable", "--project-id", project_id
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.DELETE,
         "/api/v2/monitoring/grafana/",
         body={"project_id": project_id},

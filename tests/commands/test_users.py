@@ -19,61 +19,60 @@
 
 from unittest import mock
 
+from croud.api import Client, RequestMethod
 from croud.config import Configuration
-from croud.rest import Client
-from croud.session import RequestMethod
 from croud.users.commands import transform_roles_list
 from tests.util import assert_rest, call_command
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_users_list(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_users_list(mock_request, mock_load_config):
     call_command("croud", "users", "list")
-    assert_rest(mock_send, RequestMethod.GET, "/api/v2/users/", params=None)
+    assert_rest(mock_request, RequestMethod.GET, "/api/v2/users/", params=None)
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_users_list_no_org(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_users_list_no_org(mock_request, mock_load_config, capsys):
     call_command("croud", "users", "list", "--no-org")
     assert_rest(
-        mock_send, RequestMethod.GET, "/api/v2/users/", params={"no-roles": "1"}
+        mock_request, RequestMethod.GET, "/api/v2/users/", params={"no-roles": "1"}
     )
     _, err = capsys.readouterr()
     assert "The --no-org argument is deprecated. Please use --no-roles instead." in err
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_users_list_no_roles(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_users_list_no_roles(mock_request, mock_load_config):
     call_command("croud", "users", "list", "--no-roles")
     assert_rest(
-        mock_send, RequestMethod.GET, "/api/v2/users/", params={"no-roles": "1"}
+        mock_request, RequestMethod.GET, "/api/v2/users/", params={"no-roles": "1"}
     )
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_users_list_no_org_no_roles(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_users_list_no_org_no_roles(mock_request, mock_load_config, capsys):
     call_command("croud", "users", "list", "--no-roles", "--no-org")
     assert_rest(
-        mock_send, RequestMethod.GET, "/api/v2/users/", params={"no-roles": "1"}
+        mock_request, RequestMethod.GET, "/api/v2/users/", params={"no-roles": "1"}
     )
     _, err = capsys.readouterr()
     assert "The --no-org argument is deprecated. Please use --no-roles instead." in err
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_users_roles_list(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_users_roles_list(mock_request, mock_load_config):
     call_command("croud", "users", "roles", "list")
-    assert_rest(mock_send, RequestMethod.GET, "/api/v2/roles/")
+    assert_rest(mock_request, RequestMethod.GET, "/api/v2/roles/")
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_transform_roles_list(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_transform_roles_list(mock_request, mock_load_config):
     user = {
         "organization_roles": [
             {"organization_id": "org-1", "role_fqn": "org_admin"},

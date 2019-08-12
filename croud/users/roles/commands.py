@@ -19,10 +19,9 @@
 
 from argparse import Namespace
 
+from croud.api import Client
 from croud.config import get_output_format
 from croud.printer import print_response
-from croud.rest import Client
-from croud.session import RequestMethod
 
 
 def roles_list(args: Namespace) -> None:
@@ -31,7 +30,7 @@ def roles_list(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    data, errors = client.send(RequestMethod.GET, "/api/v2/roles/")
+    data, errors = client.get("/api/v2/roles/")
     print_response(
         data=data,
         errors=errors,

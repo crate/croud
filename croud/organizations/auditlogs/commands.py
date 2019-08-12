@@ -21,10 +21,9 @@ import re
 from argparse import Namespace
 from typing import Dict, List
 
+from croud.api import Client
 from croud.config import get_output_format
 from croud.printer import print_error, print_response
-from croud.rest import Client
-from croud.session import RequestMethod
 from croud.util import org_id_config_fallback
 
 # Hat tip to Django for ISO8601 deserialization functions
@@ -69,7 +68,7 @@ def auditlogs_list(args: Namespace) -> None:
     while True:
         if cursor:
             params["last"] = cursor
-        page, errors = client.send(RequestMethod.GET, url, params=params)
+        page, errors = client.get(url, params=params)
         if errors or not page:
             break
         else:

@@ -19,26 +19,25 @@
 
 from unittest import mock
 
+from croud.api import Client, RequestMethod
 from croud.config import Configuration
-from croud.rest import Client
-from croud.session import RequestMethod
 from tests.util import assert_rest, call_command, gen_uuid
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_clusers_list(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusers_list(mock_request, mock_load_config):
     call_command("croud", "clusters", "list")
-    assert_rest(mock_send, RequestMethod.GET, "/api/v2/clusters/", params={})
+    assert_rest(mock_request, RequestMethod.GET, "/api/v2/clusters/", params={})
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_clusers_list_with_project_id(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusers_list_with_project_id(mock_request, mock_load_config):
     project_id = gen_uuid()
     call_command("croud", "clusters", "list", "--project-id", project_id)
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.GET,
         "/api/v2/clusters/",
         params={"project_id": project_id},
@@ -46,8 +45,8 @@ def test_clusers_list_with_project_id(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_clusers_deploy(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusers_deploy(mock_request, mock_load_config):
     project_id = gen_uuid()
     call_command(
         "croud",
@@ -71,7 +70,7 @@ def test_clusers_deploy(mock_send, mock_load_config):
         "s3cr3t!",
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.POST,
         "/api/v2/clusters/",
         body={
@@ -89,8 +88,8 @@ def test_clusers_deploy(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_clusers_deploy_no_unit(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusers_deploy_no_unit(mock_request, mock_load_config):
     project_id = gen_uuid()
     call_command(
         "croud",
@@ -112,7 +111,7 @@ def test_clusers_deploy_no_unit(mock_send, mock_load_config):
         "s3cr3t!",
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.POST,
         "/api/v2/clusters/",
         body={
@@ -129,8 +128,8 @@ def test_clusers_deploy_no_unit(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_clusers_deploy_nightly(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusers_deploy_nightly(mock_request, mock_load_config):
     project_id = gen_uuid()
     call_command(
         "croud",
@@ -156,7 +155,7 @@ def test_clusers_deploy_nightly(mock_send, mock_load_config):
         "nightly",
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.POST,
         "/api/v2/clusters/",
         body={
@@ -174,15 +173,15 @@ def test_clusers_deploy_nightly(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_clusers_scale(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusers_scale(mock_request, mock_load_config):
     unit = 1
     cluster_id = gen_uuid()
     call_command(
         "croud", "clusters", "scale", "--cluster-id", cluster_id, "--unit", "1"
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.PUT,
         f"/api/v2/clusters/{cluster_id}/scale/",
         body={"product_unit": unit},
@@ -190,15 +189,15 @@ def test_clusers_scale(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=({}, None))
-def test_clusers_upgrade(mock_send, mock_load_config):
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusers_upgrade(mock_request, mock_load_config):
     version = "3.2.6"
     cluster_id = gen_uuid()
     call_command(
         "croud", "clusters", "upgrade", "--cluster-id", cluster_id, "--version", version
     )
     assert_rest(
-        mock_send,
+        mock_request,
         RequestMethod.PUT,
         f"/api/v2/clusters/{cluster_id}/upgrade/",
         body={"crate_version": version},
@@ -206,12 +205,12 @@ def test_clusers_upgrade(mock_send, mock_load_config):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_clusters_delete(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_clusters_delete(mock_request, mock_load_config, capsys):
     cluster_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["yes"]) as mock_input:
         call_command("croud", "clusters", "delete", "--cluster-id", cluster_id)
-    assert_rest(mock_send, RequestMethod.DELETE, f"/api/v2/clusters/{cluster_id}/")
+    assert_rest(mock_request, RequestMethod.DELETE, f"/api/v2/clusters/{cluster_id}/")
     mock_input.assert_called_once_with(
         "Are you sure you want to delete the cluster? [yN] "
     )
@@ -222,12 +221,12 @@ def test_clusters_delete(mock_send, mock_load_config, capsys):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_clusters_delete_flag(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_clusters_delete_flag(mock_request, mock_load_config, capsys):
     cluster_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["y"]) as mock_input:
         call_command("croud", "clusters", "delete", "--cluster-id", cluster_id, "-y")
-    assert_rest(mock_send, RequestMethod.DELETE, f"/api/v2/clusters/{cluster_id}/")
+    assert_rest(mock_request, RequestMethod.DELETE, f"/api/v2/clusters/{cluster_id}/")
     mock_input.assert_not_called()
 
     _, err_output = capsys.readouterr()
@@ -236,12 +235,12 @@ def test_clusters_delete_flag(mock_send, mock_load_config, capsys):
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-@mock.patch.object(Client, "send", return_value=(None, {}))
-def test_clusters_delete_aborted(mock_send, mock_load_config, capsys):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_clusters_delete_aborted(mock_request, mock_load_config, capsys):
     cluster_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
         call_command("croud", "clusters", "delete", "--cluster-id", cluster_id)
-    mock_send.assert_not_called()
+    mock_request.assert_not_called()
     mock_input.assert_called_once_with(
         "Are you sure you want to delete the cluster? [yN] "
     )

@@ -42,7 +42,7 @@ setup(
     entry_points={"console_scripts": ["croud = croud.__main__:main"]},
     packages=find_packages(),
     install_requires=[
-        "aiohttp==3.4.4",
+        "requests==2.22.0",
         "colorama==0.4.1",
         "appdirs==1.4.3",
         "pyyaml==5.1.2",

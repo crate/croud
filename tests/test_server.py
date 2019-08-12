@@ -18,46 +18,38 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 
-from unittest import mock
-
 import pytest
-from aiohttp.test_utils import TestClient, TestServer
+import requests
 
-from croud.config import Configuration
 from croud.server import Server
 
 
-@pytest.mark.asyncio
-@mock.patch.object(Configuration, "set_token")
-async def test_token_handler_and_login(mock_write_token, event_loop):
-    server = Server(event_loop)
-    app = server.create_web_app(on_token=lambda x: None)
-    client = TestClient(TestServer(app), loop=event_loop)
-    await client.start_server()
+@pytest.mark.parametrize(
+    "qs,status_code,message,token_value",
+    [
+        ("?token=foo", 200, "You have successfully logged into CrateDB Cloud!", "foo"),
+        ("", 400, "Authentication token missing in URL.", None),
+        (
+            "?token=foo&token=bar",
+            400,
+            "ore than one authentication token present in URL.",
+            None,
+        ),
+    ],
+)
+def test_token_handler_and_login(qs, status_code, message, token_value):
+    token_store = {}
 
-    with mock.patch.object(event_loop, "stop"):  # We exit the server after the request
-        resp = await client.get("?token=123")
-        assert resp.status == 200
-        text = await resp.text()
+    def on_token(token):
+        token_store["token"] = token
 
-    assert "You have successfully logged into CrateDB Cloud!" in text
+    server = Server(on_token, random_port=True).start()
 
-    await client.close()
+    response = requests.get(f"http://localhost:{server.port}/{qs}")
 
-
-@pytest.mark.asyncio
-@mock.patch.object(Configuration, "set_token")
-async def test_token_missing_for_login(mock_write_token, event_loop):
-    server = Server(event_loop)
-    app = server.create_web_app(on_token=lambda x: None)
-    client = TestClient(TestServer(app), loop=event_loop)
-    await client.start_server()
-
-    with mock.patch.object(event_loop, "stop"):  # We exit the server after the request
-        resp = await client.get("/")
-        assert resp.status == 500
-        text = await resp.text()
-
-    assert "No query param 'token' in request" in text
-
-    await client.close()
+    if token_value is not None:
+        assert token_store["token"] == token_value
+    else:
+        assert "token" not in token_store
+    assert response.status_code == status_code
+    assert message in response.text
