@@ -118,7 +118,7 @@ def clusters_upgrade(args: Namespace) -> None:
     print_response(
         data=data,
         errors=errors,
-        keys=["id", "name", "num_nodes"],
+        keys=["id", "name", "crate_version"],
         success_message=(
             "Cluster upgraded. It may take a few minutes to complete the changes."
         ),

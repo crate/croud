@@ -19,16 +19,16 @@
 
 import os
 import tempfile
-import unittest
 import uuid
 from unittest import mock
 
+import pytest
 from yaml.constructor import ConstructorError
 
 from croud.config import Configuration, load_config, write_config
 
 
-class TestConfiguration(unittest.TestCase):
+class TestConfiguration:
     @mock.patch.object(Configuration, "validate", return_value={})
     @mock.patch("yaml.safe_load")
     def test_load_config(self, mock_yaml_load, mock_validate):
@@ -60,7 +60,7 @@ class TestConfiguration(unittest.TestCase):
         m = mock.mock_open()
         with mock.patch("croud.config.open", m, create=True):
             Configuration.validate(config)
-            self.assertTrue(mock_remove.called)
+            assert mock_remove.called
 
             mock_write_config.assert_called_once_with(Configuration.DEFAULT_CONFIG)
 
@@ -72,12 +72,12 @@ class TestConfiguration(unittest.TestCase):
                 f"subprocess.run [['touch', '{new_file}']]"
             )
             tmp.flush()
-            self.assertFalse(os.path.exists(new_file))
+            assert not os.path.exists(new_file)
             with mock.patch.object(Configuration, "FILEPATH", tmp.name):
-                with self.assertRaisesRegex(
+                with pytest.raises(
                     ConstructorError,
-                    r"tag:yaml.org,\d+:python/object/apply:subprocess.run",
+                    match=r"tag:yaml.org,\d+:python/object/apply:subprocess.run",
                 ):
                     load_config()
 
-            self.assertFalse(os.path.exists(new_file))
+            assert not os.path.exists(new_file)

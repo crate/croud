@@ -1,3 +1,6 @@
+# Licensed to CRATE Technology GmbH ("Crate") under one or more contributor
+# license agreements.  See the NOTICE file distributed with this work for
+# additional information regarding copyright ownership.  Crate licenses
 # this file to you under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.  You may
 # obtain a copy of the License at
@@ -19,7 +22,6 @@ from argparse import Namespace
 from unittest import mock
 
 import pytest
-from util import assert_ellipsis_match
 
 from croud import __version__
 from croud.__main__ import get_parser
@@ -29,6 +31,7 @@ from croud.parser import (
     CroudCliHelpFormatter,
     create_parser,
 )
+from tests.util import assert_ellipsis_match
 
 
 def noop(args: Namespace):
@@ -85,7 +88,7 @@ Available Commands:
 """,
         )
 
-    def test_parser_argument_groups(self):
+    def test_parser_argument_groups(self, capsys):
         tree = {
             "help": "help text",
             "commands": {
@@ -101,15 +104,13 @@ Available Commands:
         }
         parser = create_parser(tree)
 
-        output = ""
-        with mock.patch("sys.stdout.write") as stdout:
-            with pytest.raises(SystemExit) as ex_info:
-                parser.parse_args(["cmd"])
-            assert ex_info.value.code == 2
-            output = stdout.call_args[0][0]
+        with pytest.raises(SystemExit) as ex_info:
+            parser.parse_args(["cmd"])
+        assert ex_info.value.code == 2
+        out, err = capsys.readouterr()
 
         assert_ellipsis_match(
-            output,
+            out,
             """
 Usage: croud cmd [-h] --arg-a ARG_A [--arg-b ARG_B]
 ...
@@ -122,6 +123,7 @@ Optional Arguments:
 ...
 """,
         )
+        assert "The following arguments are required: --arg-a" in err
 
     def test_parser_version(self):
         tree = {"help": "help text", "commands": {}}
