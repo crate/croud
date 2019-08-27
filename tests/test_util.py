@@ -18,7 +18,6 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import copy
-import unittest
 from argparse import Namespace
 from unittest import mock
 
@@ -27,7 +26,6 @@ import pytest
 from croud.config import Configuration
 from croud.util import (
     can_launch_browser,
-    clean_dict,
     confirm_prompt,
     get_platform_info,
     is_wsl,
@@ -37,82 +35,63 @@ from croud.util import (
 )
 
 
-class TestUtils(unittest.TestCase):
+# This function was copied from the <https://github.com/Azure/azure-cli>
+# project. See `LICENSE` for more information.
+@mock.patch("webbrowser.open", autospec=True)
+@mock.patch("subprocess.call", autospec=True)
+def test_open_page_in_browser(subprocess_call_mock, webbrowser_open_mock):
+    platform_name, release = get_platform_info()
+    open_page_in_browser("http://foo")
+    if is_wsl(platform_name, release):
+        subprocess_call_mock.assert_called_once_with(
+            ["cmd.exe", "/c", "start http://foo"]
+        )
+    else:
+        webbrowser_open_mock.assert_called_once_with("http://foo", 2)
 
-    # This function was copied from the <https://github.com/Azure/azure-cli>
-    # project. See `LICENSE` for more information.
-    @mock.patch("webbrowser.open", autospec=True)
-    @mock.patch("subprocess.call", autospec=True)
-    def test_open_page_in_browser(self, subprocess_call_mock, webbrowser_open_mock):
-        platform_name, release = get_platform_info()
-        open_page_in_browser("http://foo")
-        if is_wsl(platform_name, release):
-            subprocess_call_mock.assert_called_once_with(
-                ["cmd.exe", "/c", "start http://foo"]
-            )
-        else:
-            webbrowser_open_mock.assert_called_once_with("http://foo", 2)
 
-    # This function was copied from the <https://github.com/Azure/azure-cli>
-    # project. See `LICENSE` for more information.
-    @mock.patch("croud.util.get_platform_info", autospec=True)
-    @mock.patch("webbrowser.get", autospec=True)
-    def test_can_launch_browser(self, webbrowser_get_mock, get_platform_mock):
-        # WSL is always fine
-        get_platform_mock.return_value = ("linux", "4.4.0-17134-microsoft")
+# This function was copied from the <https://github.com/Azure/azure-cli>
+# project. See `LICENSE` for more information.
+@mock.patch("croud.util.get_platform_info", autospec=True)
+@mock.patch("webbrowser.get", autospec=True)
+def test_can_launch_browser(webbrowser_get_mock, get_platform_mock):
+    # WSL is always fine
+    get_platform_mock.return_value = ("linux", "4.4.0-17134-microsoft")
+    result = can_launch_browser()
+    assert result
+
+    # windows is always fine
+    get_platform_mock.return_value = ("windows", "10")
+    result = can_launch_browser()
+    assert result
+
+    # osx is always fine
+    get_platform_mock.return_value = ("darwin", "10")
+    result = can_launch_browser()
+    assert result
+
+    # now tests linux
+    with mock.patch("os.environ", autospec=True) as env_mock:
+        # when no GUI, return false
+        get_platform_mock.return_value = ("linux", "4.15.0-1014-azure")
+        env_mock.get.return_value = None
         result = can_launch_browser()
-        self.assertTrue(result)
+        assert not result
 
-        # windows is always fine
-        get_platform_mock.return_value = ("windows", "10")
+        # when there is gui, and browser is a good one, return True
+        browser_mock = mock.MagicMock()
+        browser_mock.name = "goodone"
+        env_mock.get.return_value = "foo"
         result = can_launch_browser()
-        self.assertTrue(result)
+        assert result
 
-        # osx is always fine
-        get_platform_mock.return_value = ("darwin", "10")
+        # when there is gui, but the browser is text mode, return False
+        browser_mock = mock.MagicMock()
+        browser_mock.name = "www-browser"
+        webbrowser_get_mock.return_value = browser_mock
+        env_mock.get.return_value = "foo"
         result = can_launch_browser()
-        self.assertTrue(result)
-
-        # now tests linux
-        with mock.patch("os.environ", autospec=True) as env_mock:
-            # when no GUI, return false
-            get_platform_mock.return_value = ("linux", "4.15.0-1014-azure")
-            env_mock.get.return_value = None
-            result = can_launch_browser()
-            self.assertFalse(result)
-
-            # when there is gui, and browser is a good one, return True
-            browser_mock = mock.MagicMock()
-            browser_mock.name = "goodone"
-            env_mock.get.return_value = "foo"
-            result = can_launch_browser()
-            self.assertTrue(result)
-
-            # when there is gui, but the browser is text mode, return False
-            browser_mock = mock.MagicMock()
-            browser_mock.name = "www-browser"
-            webbrowser_get_mock.return_value = browser_mock
-            env_mock.get.return_value = "foo"
-            result = can_launch_browser()
-            self.assertFalse(result)
-
-
-@pytest.mark.parametrize(
-    ["raw", "cleaned"],
-    [
-        ({}, {}),
-        (
-            {"int": 0, "str": "", "none": None, "list": []},
-            {"int": 0, "str": "", "list": []},
-        ),
-        (
-            {"empty": {}, "nested": {"value": 42, "none": None}},
-            {"empty": {}, "nested": {"value": 42}},
-        ),
-    ],
-)
-def test_clean_dict(raw, cleaned):
-    assert clean_dict(raw) == cleaned
+        assert not result
 
 
 @pytest.mark.parametrize(
