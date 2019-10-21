@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Handle client networking errors correctly by printing a sensible error message
+  instead of a traceback.
+
 0.18.1 - 2019/08/09
 ===================
 
