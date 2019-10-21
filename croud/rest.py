@@ -22,8 +22,8 @@ import uuid
 from argparse import Namespace
 from functools import partial
 
-from aiohttp import ContentTypeError  # type: ignore
-from aiohttp.client_reqrep import ClientResponse
+from aiohttp import ClientResponse, ContentTypeError  # type: ignore
+from aiohttp.client_exceptions import ClientConnectorError
 
 from croud.config import Configuration
 from croud.session import HttpSession, RequestMethod
@@ -52,7 +52,7 @@ class Client:
         endpoint: str,
         *,
         body: dict = None,
-        params: dict = None
+        params: dict = None,
     ):
         return self.loop.run_until_complete(self.fetch(method, endpoint, body, params))
 
@@ -70,8 +70,17 @@ class Client:
             on_new_token=partial(Configuration.set_token, env=self._env),
             headers={"X-Auth-Sudo": str(uuid.uuid4())} if self._sudo is True else {},
         ) as session:
-            resp = await session.fetch(method, endpoint, body, params)
-            return await self._decode_response(resp)
+            try:
+                resp = await session.fetch(method, endpoint, body, params)
+            except ClientConnectorError as e:
+                message = (
+                    f"Failed to perform command on {e.host}. "
+                    f"Original error was: '{e}' "
+                    f"Does the environment exist in the region you specified?"
+                )
+                return None, {"message": message, "success": False}
+            else:
+                return await self._decode_response(resp)
 
     async def _decode_response(self, resp: ClientResponse):
         if resp.status == 204:
