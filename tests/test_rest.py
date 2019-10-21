@@ -121,3 +121,15 @@ def test_client_initialization(mock_cloud_url, mock_token, event_loop):
     assert client._region == "bregenz.a1"
     assert client._sudo is True
     assert isinstance(client.loop, asyncio.AbstractEventLoop)
+
+
+@mock.patch("croud.session.cloud_url", return_value="https://invalid.cratedb.local")
+def test_error_message_on_connection_error(mock_cloud_url, client):
+    expected_message = (
+        "Failed to perform command on invalid.cratedb.local. "
+        "Original error was: 'Cannot connect to host invalid.cratedb.local:443 ssl:None [Name or service not known]' "  # noqa
+        "Does the environment exist in the region you specified?"
+    )
+    resp_data, errors = client.send(RequestMethod.GET, "/me")
+    assert resp_data is None
+    assert errors == {"message": expected_message, "success": False}
