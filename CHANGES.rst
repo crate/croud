@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added new ``croud organizations auditlogs list`` command to show all auditlogs
+  within an organization.
+
 - Handle client networking errors correctly by printing a sensible error message
   instead of a traceback.
 

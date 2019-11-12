@@ -14,8 +14,8 @@ organization resources.
 
 .. note::
 
-   The ``organizations users`` subcommand is only available to organization
-   admins and superusers.
+   The ``organizations auditlogs`` and ``organizations users`` subcommands
+   are only available to organization admins and superusers.
 
 
 ``organizations create``
@@ -104,6 +104,56 @@ Example
        --org-id f6c39580-5719-431d-a508-0cee4f9e8209
    Are you sure you want to delete the consumer? [yN] y
    ==> Success: Organization deleted.
+
+
+``organizations auditlogs``
+===========================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations auditlogs
+   :nosubcommands:
+
+
+``organizations auditlogs list``
+--------------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations auditlogs list
+
+Example
+.......
+
+.. code-block:: console
+
+   sh$ croud organizations auditlogs list \
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209
+   +------------------------+--------------------------------------+----------------------------------+
+   | action                 | actor                                | created                          |
+   |------------------------+--------------------------------------+----------------------------------|
+   | product.create_cluster | e4c6e51f-bd56-4d92-bdf8-9947531c3225 | 2019-11-05T12:35:23.168000+00:00 |
+   | project.add_user       | e4c6e51f-bd56-4d92-bdf8-9947531c3225 | 2019-11-05T12:22:31.796000+00:00 |
+   | project.create         | e4c6e51f-bd56-4d92-bdf8-9947531c3225 | 2019-11-05T12:22:31.196000+00:00 |
+   | organization.add_user  | e4c6e51f-bd56-4d92-bdf8-9947531c3225 | 2019-11-05T12:20:57.610000+00:00 |
+   | organization.create    | e4c6e51f-bd56-4d92-bdf8-9947531c3225 | 2019-11-05T12:20:57.598000+00:00 |
+   +------------------------+--------------------------------------+----------------------------------+
+
+.. note::
+
+   The full context for each auditlog event is available through the JSON
+   output format:
+
+   .. code-block:: console
+
+      sh$ croud organizations auditlogs list \
+          --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
+          --output-fmt json
+
 
 
 ``organizations users``

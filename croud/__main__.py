@@ -41,6 +41,7 @@ from croud.login import login
 from croud.logout import logout
 from croud.me import me
 from croud.monitoring.grafana.commands import set_grafana
+from croud.organizations.auditlogs.commands import auditlogs_list
 from croud.organizations.commands import (
     organizations_create,
     organizations_delete,
@@ -499,6 +500,33 @@ command_tree = {
                     ),
                 ],
                 "resolver": organizations_delete,
+            },
+            "auditlogs": {
+                "help": "Show auditlogs for an organization",
+                "commands": {
+                    "list": {
+                        "help": "List all audit events in the current organization.",
+                        "extra_args": [
+                            Argument(
+                                "--action", type=str, required=False,
+                                help="The audit event action.",
+                            ),
+                            Argument(
+                                "--from", type=str, required=False, dest="from_",
+                                help="Only show events newer than this.",
+                            ),
+                            Argument(
+                                "--to", type=str, required=False,
+                                help="Only show events older than this.",
+                            ),
+                            Argument(
+                                "--org-id", type=str, required=False,
+                                help="The organization ID to use.",
+                            ),
+                        ],
+                        "resolver": auditlogs_list,
+                    },
+                },
             },
             "users": {
                 "help": "Manage users in an organization.",

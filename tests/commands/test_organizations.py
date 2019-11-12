@@ -239,6 +239,51 @@ def test_organizations_delete_aborted_with_input(mock_send, mock_load_config, ca
     assert "Organization deletion cancelled." in err_output
 
 
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Client, "send", return_value=({}, None))
+def test_organizations_auditlogs_list(mock_send, mock_load_config):
+    org_id = gen_uuid()
+
+    call_command("croud", "organizations", "auditlogs", "list", "--org-id", org_id)
+    assert_rest(
+        mock_send,
+        RequestMethod.GET,
+        f"/api/v2/organizations/{org_id}/auditlogs/",
+        params={},
+    )
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Client, "send", return_value=({}, None))
+def test_organizations_auditlogs_list_filtered(mock_send, mock_load_config):
+    org_id = gen_uuid()
+
+    call_command(
+        "croud",
+        "organizations",
+        "auditlogs",
+        "list",
+        "--org-id",
+        org_id,
+        "--action",
+        "organization.create",
+        "--from",
+        "2019-10-11T12:13:14",
+        "--to",
+        "2019-11-12T12:34:56",
+    )
+    assert_rest(
+        mock_send,
+        RequestMethod.GET,
+        f"/api/v2/organizations/{org_id}/auditlogs/",
+        params={
+            "action": "organization.create",
+            "from": "2019-10-11T12:13:14",
+            "to": "2019-11-12T12:34:56",
+        },
+    )
+
+
 @pytest.mark.parametrize(
     "added,message",
     [(True, "User added to organization."), (False, "Role altered for user.")],
