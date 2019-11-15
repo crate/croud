@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.19.0 - 2019/11/15
+===================
+
 - Added new ``croud organizations auditlogs list`` command to show all auditlogs
   within an organization.
 
