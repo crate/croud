@@ -502,7 +502,7 @@ command_tree = {
                 "resolver": organizations_delete,
             },
             "auditlogs": {
-                "help": "Show auditlogs for an organization",
+                "help": "Show audit logs for an organization.",
                 "commands": {
                     "list": {
                         "help": "List all audit events in the current organization.",
@@ -513,7 +513,8 @@ command_tree = {
                             ),
                             Argument(
                                 "--from", type=str, required=False, dest="from_",
-                                help="Only show events newer than this.",
+                                help="Only show events from this point in time.",
+                                metavar="FROM",
                             ),
                             Argument(
                                 "--to", type=str, required=False,
