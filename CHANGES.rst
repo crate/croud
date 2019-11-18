@@ -5,6 +5,12 @@ Changes for croud
 Unreleased
 ==========
 
+0.19.1 - 2019/11/18
+===================
+
+- Fixed some spelling and formatting issues in ``croud organizations auditlogs
+  list`` command.
+
 0.19.0 - 2019/11/15
 ===================
 
