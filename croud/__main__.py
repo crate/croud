@@ -39,7 +39,7 @@ from croud.consumers.commands import (
 )
 from croud.login import login
 from croud.logout import logout
-from croud.me import me
+from croud.me import me, me_edit
 from croud.monitoring.grafana.commands import set_grafana
 from croud.organizations.auditlogs.commands import auditlogs_list
 from croud.organizations.commands import (
@@ -69,6 +69,18 @@ command_tree = {
     "me": {
         "help": "Print information about the current logged in user.",
         "resolver": me,
+        "commands": {
+            "edit": {
+                "help": "Edit your user data.",
+                "extra_args": [
+                    Argument(
+                        "--email", type=str, required=True,
+                        help="The new email address to use."
+                    ),
+                ],
+                "resolver": me_edit,
+            },
+        }
     },
     "login": {"help": "Log in to CrateDB Cloud.", "resolver": login},
     "logout": {"help": "Log out of CrateDB Cloud.", "resolver": logout},

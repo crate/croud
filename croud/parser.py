@@ -171,7 +171,7 @@ def add_subparser(parser, tree, name="__root__"):
         for _cmd, _tree in tree["commands"].items():
             sub = subparsers.add_parser(_cmd, help=_tree.get("help"))
             add_subparser(sub, _tree, sub.prog)
-    else:
+    if "resolver" in tree:
         add_default_args(parser)
         if not tree.get("omit_sudo", False):
             add_default_sudo_arg(parser)
