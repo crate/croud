@@ -30,3 +30,10 @@ from tests.util import assert_rest, call_command
 def test_me(mock_send, mock_config):
     call_command("croud", "me")
     assert_rest(mock_send, RequestMethod.GET, "/api/v2/users/me/")
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Client, "send", return_value=({}, None))
+def test_me_edit_email(mock_send, mock_config):
+    call_command("croud", "me", "edit", "--email", "user@crate.io")
+    assert_rest(mock_send, RequestMethod.PATCH, "/api/v2/users/me/")

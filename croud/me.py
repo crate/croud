@@ -38,3 +38,18 @@ def me(args: Namespace) -> None:
         keys=["email", "username"],
         output_fmt=get_output_format(args),
     )
+
+
+def me_edit(args: Namespace) -> None:
+    """
+    Lets the user edit their data
+    """
+
+    client = Client.from_args(args)
+    data, errors = client.send(RequestMethod.PATCH, "/api/v2/users/me/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["success", "status", "message"],
+        output_fmt=get_output_format(args),
+    )
