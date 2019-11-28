@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.20.0 - 2019/11/28
+===================
+
 - Added new ``croud me edit`` command to change your own email address.
 
 0.19.1 - 2019/11/18
