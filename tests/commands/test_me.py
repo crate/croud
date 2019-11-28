@@ -36,4 +36,9 @@ def test_me(mock_send, mock_config):
 @mock.patch.object(Client, "send", return_value=({}, None))
 def test_me_edit_email(mock_send, mock_config):
     call_command("croud", "me", "edit", "--email", "user@crate.io")
-    assert_rest(mock_send, RequestMethod.PATCH, "/api/v2/users/me/")
+    assert_rest(
+        mock_send,
+        RequestMethod.PATCH,
+        "/api/v2/users/me/",
+        body={"email": "user@crate.io"},
+    )
