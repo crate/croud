@@ -45,8 +45,12 @@ def me_edit(args: Namespace) -> None:
     Lets the user edit their data
     """
 
+    body = {}
+    if args.email:
+        body["email"] = args.email
+
     client = Client.from_args(args)
-    data, errors = client.send(RequestMethod.PATCH, "/api/v2/users/me/")
+    data, errors = client.send(RequestMethod.PATCH, "/api/v2/users/me/", body=body)
     print_response(
         data=data,
         errors=errors,
