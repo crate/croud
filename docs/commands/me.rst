@@ -40,9 +40,9 @@ Example
 .. code-block:: console
 
    sh$ croud me edit --email new@crate.io
-   +---------+---------+--------------------------------------------------------+
-   | success | status  | message                                                |
-   |---------+---------+--------------------------------------------------------|
-   | True    | pending | A confirmation mail was sent to new@crate.io. Please   |
-   |         |         | use the token provided therein to confirm the address. |
-   +---------+---------+--------------------------------------------------------+
+   +---------+---------+-----------------------------------------------------------+
+   | success | status  | message                                                   |
+   |---------+---------+-----------------------------------------------------------|
+   | True    | pending | A confirmation email was sent to new@crate.io. Please     |
+   |         |         | follow its instructions to verify your new email address. |
+   +---------+---------+-----------------------------------------------------------+
