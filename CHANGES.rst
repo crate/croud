@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added support for Python 3.8
+
 0.20.0 - 2019/11/28
 ===================
 
