@@ -29,10 +29,8 @@ from .util.fake_cloud import FakeCrateDBCloud
 
 @pytest.fixture(scope="session")
 def fake_cratedb_cloud():
-    cloud = FakeCrateDBCloud()
-    cloud.start_in_background()
-    yield cloud
-    cloud.wait_for_shutdown()
+    with FakeCrateDBCloud() as cloud:
+        yield cloud
 
 
 @pytest.fixture

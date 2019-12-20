@@ -192,3 +192,9 @@ class FakeCrateDBCloud:
     @property
     def port(self):
         return self._server.socket.getsockname()[1]
+
+    def __enter__(self):
+        return self.start_in_background()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.wait_for_shutdown()
