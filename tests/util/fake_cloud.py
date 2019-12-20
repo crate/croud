@@ -182,9 +182,12 @@ class FakeCrateDBCloud:
         )
         self._thread = Thread(target=self._server.serve_forever, daemon=True)
 
-    def start(self) -> "FakeCrateDBCloud":
+    def start_in_background(self) -> "FakeCrateDBCloud":
         self._thread.start()
         return self
+
+    def wait_for_shutdown(self):
+        self._server.shutdown()
 
     @property
     def port(self):

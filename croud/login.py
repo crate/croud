@@ -50,15 +50,14 @@ def login(args: Namespace) -> None:
         exit(1)
 
     env = args.env or Configuration.get_env()
-    server_thread = Server(partial(Configuration.set_token, env=env))
     Configuration.set_context(env.lower())
-    server_thread.start()
+    server = Server(partial(Configuration.set_token, env=env)).start_in_background()
     open_page_in_browser(_login_url(env))
     print_info("A browser tab has been launched for you to login.")
     try:
         # Wait for the user to login. They'll be redirected to the `SetTokenHandler`
         # which will set the token in the configuration.
-        server_thread.wait()
+        server.wait_for_shutdown()
     except (KeyboardInterrupt, SystemExit):
         print_warning("Login cancelled.")
     else:

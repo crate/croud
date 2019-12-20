@@ -27,8 +27,8 @@ from croud.server import Server
 from tests.util import MockConfig, call_command
 
 
-@mock.patch.object(Server, "wait")
-@mock.patch.object(Server, "start")
+@mock.patch.object(Server, "wait_for_shutdown")
+@mock.patch.object(Server, "start_in_background")
 @mock.patch("croud.login.can_launch_browser", return_value=True)
 @mock.patch("croud.login.open_page_in_browser")
 @mock.patch("croud.login.print_info")
@@ -36,8 +36,8 @@ def test_login(
     mock_print_info,
     mock_open_page_in_browser,
     mock_can_launch_browser,
-    mock_start,
-    mock_wait,
+    mock_start_in_background,
+    mock_wait_for_shutdown,
 ):
     cfg = MockConfig(Configuration.DEFAULT_CONFIG)
 
@@ -56,8 +56,8 @@ def test_login(
     assert config["auth"]["contexts"]["dev"]["organization_id"] == "my-org-id"
 
 
-@mock.patch.object(Server, "wait")
-@mock.patch.object(Server, "start")
+@mock.patch.object(Server, "wait_for_shutdown")
+@mock.patch.object(Server, "start_in_background")
 @mock.patch("croud.login.can_launch_browser", return_value=True)
 @mock.patch("croud.login.open_page_in_browser")
 @mock.patch("croud.login.print_info")
@@ -65,8 +65,8 @@ def test_login_local(
     mock_print_info,
     mock_open_page_in_browser,
     mock_can_launch_browser,
-    mock_start,
-    mock_wait,
+    mock_start_in_background,
+    mock_wait_for_shutdown,
 ):
     """
     Test for a bug that caused that upon login to local env the local token

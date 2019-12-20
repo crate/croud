@@ -82,11 +82,11 @@ class Server:
         self._server = SetTokenHTTPServer(on_token, (HOST, port), SetTokenHandler)
         self._thread = Thread(target=self._server.serve_forever, daemon=True)
 
-    def start(self) -> "Server":
+    def start_in_background(self) -> "Server":
         self._thread.start()
         return self
 
-    def wait(self, timeout=None):
+    def wait_for_shutdown(self, timeout=None):
         self._thread.join(timeout=timeout)
 
     @property

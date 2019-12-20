@@ -43,7 +43,7 @@ def test_token_handler_and_login(qs, status_code, message, token_value):
     def on_token(token):
         token_store["token"] = token
 
-    server = Server(on_token, random_port=True).start()
+    server = Server(on_token, random_port=True).start_in_background()
 
     response = requests.get(f"http://localhost:{server.port}/{qs}")
 
