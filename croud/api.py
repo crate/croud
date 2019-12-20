@@ -48,7 +48,7 @@ class Client:
         self.region = region or Configuration.get_setting("region")
         self.sudo = sudo
 
-        self.base_url = URL(cloud_url(self.env, self.region))
+        self.base_url = URL(construct_api_base_url(self.env, self.region))
 
         self._token = Configuration.get_token(self.env)
         self.session = requests.Session()
@@ -140,7 +140,7 @@ class Client:
             return body, None
 
 
-def cloud_url(env: str, region: str = "bregenz.a1") -> str:
+def construct_api_base_url(env: str, region: str = "bregenz.a1") -> str:
     if env == "local":
         return CLOUD_LOCAL_URL
 

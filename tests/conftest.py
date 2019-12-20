@@ -40,7 +40,7 @@ def client(fake_cratedb_cloud):
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     with mock.patch(
-        "croud.api.cloud_url",
+        "croud.api.construct_api_base_url",
         return_value=f"https://127.0.0.1:{fake_cratedb_cloud.port}",
     ):
         with mock.patch("croud.api.get_verify_ssl", return_value=False):

@@ -23,7 +23,7 @@ from unittest import mock
 
 import pytest
 
-from croud.api import Client, cloud_url
+from croud.api import Client, construct_api_base_url
 
 
 def test_send_success_sets_data_with_key(client: Client):
@@ -102,9 +102,11 @@ def test_client_initialization(client: Client):
 
 @mock.patch("croud.api.Configuration.get_token", return_value="some-token")
 @mock.patch("croud.api.get_verify_ssl", return_value=False)
-@mock.patch("croud.api.cloud_url", return_value="https://invalid.cratedb.local")
+@mock.patch(
+    "croud.api.construct_api_base_url", return_value="https://invalid.cratedb.local"
+)
 def test_error_message_on_connection_error(
-    mock_cloud_url, mock_get_verify_ssl, mock_get_token
+    mock_construct_api_base_url, mock_get_verify_ssl, mock_get_token
 ):
     expected_message_re = re.compile(
         r"^Failed to perform command on https://invalid\.cratedb\.local/me\. "
@@ -127,5 +129,5 @@ def test_error_message_on_connection_error(
         ("prod", "westeurope.azure", "https://westeurope.azure.cratedb.cloud"),
     ],
 )
-def test_cloud_url(env, region, expected):
-    assert cloud_url(env, region) == expected
+def test_construct_api_base_url(env, region, expected):
+    assert construct_api_base_url(env, region) == expected

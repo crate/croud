@@ -19,7 +19,7 @@
 
 from argparse import Namespace
 
-from croud.api import Client, cloud_url
+from croud.api import Client, construct_api_base_url
 from croud.config import Configuration
 from croud.printer import print_info
 
@@ -38,4 +38,4 @@ def logout(args: Namespace) -> None:
 
 
 def _logout_url(env: str) -> str:
-    return cloud_url(env) + LOGOUT_PATH
+    return construct_api_base_url(env) + LOGOUT_PATH

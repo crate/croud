@@ -21,7 +21,7 @@ from argparse import Namespace
 from functools import partial
 from typing import Optional
 
-from croud.api import Client, cloud_url
+from croud.api import Client, construct_api_base_url
 from croud.config import Configuration
 from croud.printer import print_error, print_info, print_warning
 from croud.server import Server
@@ -72,4 +72,4 @@ def login(args: Namespace) -> None:
 
 
 def _login_url(env: str) -> str:
-    return cloud_url(env.lower()) + LOGIN_PATH
+    return construct_api_base_url(env.lower()) + LOGIN_PATH
