@@ -43,7 +43,13 @@ class RequestMethod(enum.Enum):
 
 
 class Client:
-    def __init__(self, *, env: str, region: str, sudo: bool = False):
+    def __init__(
+        self, *, env: str, region: str, sudo: bool = False, _verify_ssl: bool = True
+    ):
+        """
+        :param bool _verify_ssl: A private variable that must only be used during tests!
+        """
+
         self.env = env or Configuration.get_env()
         self.region = region or Configuration.get_setting("region")
         self.sudo = sudo
@@ -52,7 +58,7 @@ class Client:
 
         self._token = Configuration.get_token(self.env)
         self.session = requests.Session()
-        if get_verify_ssl() is False:
+        if _verify_ssl is False:
             self.session.verify = False
         self.session.cookies["session"] = self._token
         if self.sudo:
@@ -146,7 +152,3 @@ def construct_api_base_url(env: str, region: str = "bregenz.a1") -> str:
 
     host = CLOUD_DEV_DOMAIN if env == "dev" else CLOUD_PROD_DOMAIN
     return f"https://{region}.{host}"
-
-
-def get_verify_ssl() -> bool:
-    return True
