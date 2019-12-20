@@ -28,7 +28,7 @@ from tests.util import assert_rest, call_command
 @mock.patch.object(Client, "request", return_value=({}, None))
 def test_products_list(mock_request, mock_load_config):
     call_command("croud", "products", "list")
-    assert_rest(mock_request, RequestMethod.GET, "/api/v2/products/", params={})
+    assert_rest(mock_request, RequestMethod.GET, "/api/v2/products/")
 
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)

@@ -31,10 +31,7 @@ def products_list(args: Namespace) -> None:
 
     client = Client.from_args(args)
     url = "/api/v2/products/"
-    params = {}
-    if args.kind:
-        params["kind"] = args.kind
-    data, errors = client.get(url, params=params)
+    data, errors = client.get(url, params={"kind": args.kind} if args.kind else None)
     print_response(
         data=data,
         errors=errors,
