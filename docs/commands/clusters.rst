@@ -69,6 +69,13 @@ Example
    +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
    ==> Success: Cluster deployed. It may take a few minutes to complete the changes.
 
+.. note::
+
+   This command is only available for superusers.
+
+   To deploy a cluster please use our `CrateDB Cloud on Azure
+   <https://help.crate.io/en/articles/3603380-how-to-deploy-a-cluster-via-the-azure-marketplace>`__
+   offering.
 
 ``clusters scale``
 ==================
