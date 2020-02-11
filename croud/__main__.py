@@ -55,7 +55,7 @@ from croud.organizations.users.commands import (
 )
 from croud.parser import Argument, create_parser
 from croud.products.commands import products_list
-from croud.projects.commands import project_create, project_delete, projects_list
+from croud.projects.commands import project_create, project_edit, project_delete, projects_list
 from croud.projects.users.commands import (
     project_users_add,
     project_users_list,
@@ -289,6 +289,21 @@ command_tree = {
                     Argument("-y", "--yes", action="store_true", default=False),
                 ],
                 "resolver": project_delete,
+            },
+            "edit": {
+                "help": "Edit the specified project name.",
+                "extra_args": [
+                    Argument(
+                        "-p", "--project-id", type=str, required=True,
+                        help="The project ID to use.",
+                    ),
+                    Argument(
+                        "--name", type=str, required=True,
+                        help="The new project name to use.",
+                    ),
+                    Argument("-y", "--yes", action="store_true", default=False),
+                ],
+                "resolver": project_edit,
             },
             "list": {
                 "help": (
