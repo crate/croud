@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added information about how to specify the environment in the ``DEVELOP.rst`` file.
+
 0.21.0 - 2019/12/20
 ===================
 

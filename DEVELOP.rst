@@ -37,6 +37,18 @@ add the executable to your PATH environment variable::
     export PATH=$PATH:$(pwd)/env/bin/croud
 
 
+Specify environment
+-------------------
+
+You can choose whether to use the local, dev or prod environment by running::
+
+    croud config set --env [local|dev|prod]
+
+To display your current environment just use::
+
+    croud config get env
+
+
 Testing
 -------
 
