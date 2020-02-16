@@ -187,3 +187,21 @@ def test_role_fqn_transform(mock_load_config):
     }
     response = project_role_fqn_transform(user["project_roles"])
     assert response == "project_admin"
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_projects_delete(mock_request, mock_load_config, capsys):
+    project_id = gen_uuid()
+    with mock.patch("builtins.input", side_effect=["yes"]) as mock_input:
+        call_command(
+            "croud", "projects", "edit", "-p", project_id, "--name", "new-name", "-y"
+        )
+    assert_rest(
+        mock_request, RequestMethod.PATCH, f"/api/v2/projects/{project_id}/",
+        body={"name": "new-name"}
+    )
+
+    _, err_output = capsys.readouterr()
+    assert "Success" in err_output
+    assert "Project name edited" in err_output
