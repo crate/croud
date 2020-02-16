@@ -191,7 +191,7 @@ def test_role_fqn_transform(mock_load_config):
 
 @mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=(None, {}))
-def test_projects_delete(mock_request, mock_load_config, capsys):
+def test_projects_edit(mock_request, mock_load_config, capsys):
     project_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["yes"]) as mock_input:
         call_command(
