@@ -55,7 +55,12 @@ from croud.organizations.users.commands import (
 )
 from croud.parser import Argument, create_parser
 from croud.products.commands import products_list
-from croud.projects.commands import project_create, project_edit, project_delete, projects_list
+from croud.projects.commands import (
+    project_create,
+    project_delete,
+    project_edit,
+    projects_list,
+)
 from croud.projects.users.commands import (
     project_users_add,
     project_users_list,
@@ -644,7 +649,7 @@ command_tree = {
                 "commands": {
                     "enable": {
                         "help": "Enable Grafana dashboards to visualize metrics for a "
-                        "project.",
+                                "project.",
                         "extra_args": [
                             Argument(
                                 "-p", "--project-id", type=str, required=True,
@@ -668,6 +673,8 @@ command_tree = {
         }
     }
 }
+
+
 # fmt: on
 
 

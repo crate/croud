@@ -193,13 +193,14 @@ def test_role_fqn_transform(mock_load_config):
 @mock.patch.object(Client, "request", return_value=(None, {}))
 def test_projects_edit(mock_request, mock_load_config, capsys):
     project_id = gen_uuid()
-    with mock.patch("builtins.input", side_effect=["yes"]) as mock_input:
-        call_command(
-            "croud", "projects", "edit", "-p", project_id, "--name", "new-name", "-y"
-        )
+    call_command(
+        "croud", "projects", "edit", "-p", project_id, "--name", "new-name", "-y"
+    )
     assert_rest(
-        mock_request, RequestMethod.PATCH, f"/api/v2/projects/{project_id}/",
-        body={"name": "new-name"}
+        mock_request,
+        RequestMethod.PATCH,
+        f"/api/v2/projects/{project_id}/",
+        body={"name": "new-name"},
     )
 
     _, err_output = capsys.readouterr()
