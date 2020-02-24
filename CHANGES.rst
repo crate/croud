@@ -5,7 +5,7 @@ Changes for croud
 Unreleased
 ==========
 
-- Add ``croud projects edit`` command to change a specified project name.
+- Added ``croud projects edit`` command to change a specified project name.
 
 0.21.0 - 2019/12/20
 ===================

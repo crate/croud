@@ -296,17 +296,16 @@ command_tree = {
                 "resolver": project_delete,
             },
             "edit": {
-                "help": "Edit the specified project name.",
+                "help": "Edit the specified project.",
                 "extra_args": [
                     Argument(
                         "-p", "--project-id", type=str, required=True,
                         help="The project ID to use.",
                     ),
                     Argument(
-                        "--name", type=str, required=True,
+                        "--name", type=str, required=False,
                         help="The new project name to use.",
                     ),
-                    Argument("-y", "--yes", action="store_true", default=False),
                 ],
                 "resolver": project_edit,
             },
@@ -649,7 +648,7 @@ command_tree = {
                 "commands": {
                     "enable": {
                         "help": "Enable Grafana dashboards to visualize metrics for a "
-                                "project.",
+                        "project.",
                         "extra_args": [
                             Argument(
                                 "-p", "--project-id", type=str, required=True,
@@ -673,8 +672,6 @@ command_tree = {
         }
     }
 }
-
-
 # fmt: on
 
 

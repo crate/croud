@@ -54,7 +54,7 @@ Example
    ==> Success: Project deleted.
 
 ``projects edit``
-======================
+=================
 
 .. argparse::
    :module: croud.__main__
@@ -73,7 +73,7 @@ Example
    |--------------------------------------+-------------+
    | f6c39580-5719-431d-a508-0cee4f9e8209 | new-name    |
    +--------------------------------------+-------------+
-   ==> Success: Project name edited.
+   ==> Success: Project edited.
 
 ``projects list``
 =================

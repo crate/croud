@@ -62,17 +62,12 @@ def project_delete(args: Namespace) -> None:
     )
 
 
-@require_confirmation(
-    "Are you sure you want to edit the project name?",
-    cancel_msg="Project rename cancelled.",
-)
 def project_edit(args: Namespace) -> None:
-
     """
     Rename a specified project.
     """
+
     client = Client.from_args(args)
-    print(args)
     body = {}
     if args.name:
         body["name"] = args.name
@@ -85,7 +80,7 @@ def project_edit(args: Namespace) -> None:
         data=data,
         errors=errors,
         keys=["id", "name"],
-        success_message="Project name edited.",
+        success_message="Project edited.",
         output_fmt=get_output_format(args),
     )
 
