@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Removed the ``croud monitoring`` command and all its subcommands.
+
 0.21.0 - 2019/12/20
 ===================
 

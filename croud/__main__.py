@@ -40,7 +40,6 @@ from croud.consumers.commands import (
 from croud.login import login
 from croud.logout import logout
 from croud.me import me, me_edit
-from croud.monitoring.grafana.commands import set_grafana
 from croud.organizations.auditlogs.commands import auditlogs_list
 from croud.organizations.commands import (
     organizations_create,
@@ -621,37 +620,6 @@ command_tree = {
             },
         },
     },
-    "monitoring": {
-        "help": "Manage monitoring tools.",
-        "commands": {
-            "grafana": {
-                "help": "Manage access to Grafana dashboards for projects.",
-                "commands": {
-                    "enable": {
-                        "help": "Enable Grafana dashboards to visualize metrics for a "
-                        "project.",
-                        "extra_args": [
-                            Argument(
-                                "-p", "--project-id", type=str, required=True,
-                                help="The project ID to use.",
-                            ),
-                        ],
-                        "resolver": lambda args: set_grafana(True, args),
-                    },
-                    "disable": {
-                        "help": "Disable Grafana dashboards for a project.",
-                        "extra_args": [
-                            Argument(
-                                "-p", "--project-id", type=str, required=True,
-                                help="The project ID to use.",
-                            ),
-                        ],
-                        "resolver": lambda args: set_grafana(False, args),
-                    },
-                },
-            },
-        }
-    }
 }
 # fmt: on
 
