@@ -45,7 +45,6 @@ To get help for a specific command, you can append ``--help``:
    consumers
    authentication
    me
-   monitoring
    organizations
    projects
    products
