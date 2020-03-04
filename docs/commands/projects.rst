@@ -53,6 +53,27 @@ Example
    Are you sure you want to delete the project? [yN] y
    ==> Success: Project deleted.
 
+``projects edit``
+=================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: projects edit
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud projects edit --p f6c39580-5719-431d-a508-0cee4f9e8209  --name new-name
+   +--------------------------------------+-------------+
+   | project_id                           | name        |
+   |--------------------------------------+-------------+
+   | f6c39580-5719-431d-a508-0cee4f9e8209 | new-name    |
+   +--------------------------------------+-------------+
+   ==> Success: Project edited.
 
 ``projects list``
 =================

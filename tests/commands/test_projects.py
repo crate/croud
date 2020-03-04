@@ -187,3 +187,32 @@ def test_role_fqn_transform(mock_load_config):
     }
     response = project_role_fqn_transform(user["project_roles"])
     assert response == "project_admin"
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_projects_edit(mock_request, mock_load_config, capsys):
+    project_id = gen_uuid()
+    call_command("croud", "projects", "edit", "-p", project_id, "--name", "new-name")
+    assert_rest(
+        mock_request,
+        RequestMethod.PATCH,
+        f"/api/v2/projects/{project_id}/",
+        body={"name": "new-name"},
+    )
+
+    _, err_output = capsys.readouterr()
+    assert "Success" in err_output
+    assert "Project edited" in err_output
+
+
+@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_projects_edit_no_argument(mock_request, mock_load_config, capsys):
+    project_id = gen_uuid()
+    with pytest.raises(SystemExit):
+        call_command("croud", "projects", "edit", "-p", project_id)
+
+    _, err_output = capsys.readouterr()
+    assert "Error" in err_output
+    assert "No input arguments found." in err_output

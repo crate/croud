@@ -21,7 +21,7 @@ from argparse import Namespace
 
 from croud.api import Client
 from croud.config import get_output_format
-from croud.printer import print_response
+from croud.printer import print_error, print_response
 from croud.util import org_id_config_fallback, require_confirmation
 
 
@@ -58,6 +58,29 @@ def project_delete(args: Namespace) -> None:
         data=data,
         errors=errors,
         success_message="Project deleted.",
+        output_fmt=get_output_format(args),
+    )
+
+
+def project_edit(args: Namespace) -> None:
+    """
+    Rename a specified project.
+    """
+
+    client = Client.from_args(args)
+    body = {}
+    if args.name:
+        body["name"] = args.name
+    if not body:
+        print_error("No input arguments found.")
+        exit(1)
+
+    data, errors = client.patch(f"/api/v2/projects/{args.project_id}/", body=body)
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name"],
+        success_message="Project edited.",
         output_fmt=get_output_format(args),
     )
 
