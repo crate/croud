@@ -23,8 +23,9 @@ import pytest
 import urllib3
 
 from croud.api import Client
-
-from .util.fake_cloud import FakeCrateDBCloud
+from croud.config import Configuration
+from tests.util import MockConfig
+from tests.util.fake_cloud import FakeCrateDBCloud
 
 
 @pytest.fixture(scope="session")
@@ -34,7 +35,14 @@ def fake_cratedb_cloud():
 
 
 @pytest.fixture
-def client(fake_cratedb_cloud):
+def config():
+    cfg = MockConfig(Configuration.DEFAULT_CONFIG)
+    with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
+        yield cfg
+
+
+@pytest.fixture
+def client(fake_cratedb_cloud, config):
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     with mock.patch(

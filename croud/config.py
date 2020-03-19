@@ -32,10 +32,10 @@ class IncompatibleConfigException(Exception):
 
 
 class Configuration:
-    USER_CONFIG_DIR: str = user_config_dir("Crate")
-    FILENAME: str = "croud.yaml"
-    FILEPATH: str = f"{USER_CONFIG_DIR}/{FILENAME}"
-    DEFAULT_CONFIG: dict = {
+    USER_CONFIG_DIR = user_config_dir("Crate")
+    FILENAME = "croud.yaml"
+    FILEPATH = f"{USER_CONFIG_DIR}/{FILENAME}"
+    DEFAULT_CONFIG = {
         "auth": {
             "current_context": "prod",
             "contexts": {
@@ -47,10 +47,10 @@ class Configuration:
         "region": "bregenz.a1",
         "output_fmt": "table",
     }
-    CONFIG_NAMES: dict = {
+    CONFIG_NAMES = {
         "env": "Environment",
         "output_fmt": "Output format",
-        "region": "Region",
+        "region": "API region",
     }
 
     @staticmethod

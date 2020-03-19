@@ -47,21 +47,29 @@ class Client:
         self, *, env: str, region: str, sudo: bool = False, _verify_ssl: bool = True
     ):
         """
-        :param bool _verify_ssl: A private variable that must only be used during tests!
+        :param str env:
+          CrateDB Cloud environment, either "dev" or "prod"
+        :param str region:
+          Region to get data from or to which to deploy (defines the
+          ``X-Region`` HTTP header value)
+        :param bool sudo:
+          Whether or not to make requests as superuser (defines the
+          ``X-Auth-Sudo`` HTTP header value)
+        :param bool _verify_ssl:
+          A private variable that must only be used during tests!
         """
 
         self.env = env or Configuration.get_env()
-        self.region = region or Configuration.get_setting("region")
-        self.sudo = sudo
-
-        self.base_url = URL(construct_api_base_url(self.env, self.region))
-
+        api_region = Configuration.get_setting("region")
+        self.base_url = URL(construct_api_base_url(self.env, api_region))
         self._token = Configuration.get_token(self.env)
+
         self.session = requests.Session()
         if _verify_ssl is False:
             self.session.verify = False
         self.session.cookies["session"] = self._token
-        if self.sudo:
+        self.session.headers["X-Region"] = region or api_region
+        if sudo:
             self.session.headers["X-Auth-Sudo"] = "1"
 
     @staticmethod

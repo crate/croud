@@ -4,7 +4,7 @@
 
 Croud allows you to configure the following variables:
 
-- The region via ``region``
+- The API region via ``region``
 - The environment via ``env``
 - The output format via ``output-fmt``
 
@@ -50,7 +50,7 @@ Example
 .. code-block:: console
 
    sh$ croud config set --region eastus.azure
-   ==> Info: Region switched to eastus.azure
+   ==> Info: API region switched to eastus.azure
 
 .. note::
 
