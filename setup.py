@@ -51,7 +51,15 @@ setup(
         "tabulate==0.8.6",
         "yarl==1.4.2",
     ],
-    extras_require={"testing": ["tox==3.14.2"], "development": ["black==19.3b0"]},
+    extras_require={
+        "testing": ["tox==3.14.2"],
+        "development": [
+            "black==19.10b0",
+            "flake8==3.7.9",
+            "isort==4.3.21",
+            "mypy==0.720",
+        ],
+    },
     python_requires=">=3.6",
     classifiers=[
         "Development Status :: 4 - Beta",

@@ -14,10 +14,6 @@ Croud
     :target: https://crate.io/docs/cloud/en/latest/
     :alt: Documentation
 
-.. image:: https://coveralls.io/repos/github/crate/croud/badge.svg?branch=master
-    :target: https://coveralls.io/github/crate/croud?branch=master
-    :alt: Coverage
-
 .. image:: https://codecov.io/gh/crate/croud/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/crate/croud
     :alt: Coverage
