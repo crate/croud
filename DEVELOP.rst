@@ -46,8 +46,8 @@ Install the dependencies used for testing::
 
 Tests run with `pytest`_ inside a `tox`_ environment.
 
-To run linting and unit tests across the whole test suite with the supported
-python versions run::
+To run unit tests across the whole test suite with the supported python
+versions run::
 
     tox
 
@@ -64,7 +64,6 @@ When running tests using ``tox`` or ``py.test``, `pytest-random-order`_ will
 emit a seed value at the beginning which can be used to rerun tests with the
 specific order::
 
-
     $ tox -e py37
     ...
     py37 run-test-pre: PYTHONHASHSEED='2789788418'
@@ -75,12 +74,38 @@ specific order::
     Using --random-order-seed=240261
     ...
 
-
 One can rerun a random test setup by passing ``--random-order-seed=<seed>`` to
 py.test::
 
     $ tox -e py37 -- --random-order-seed=240261
 
+
+Code style checks and static analysis
+-------------------------------------
+
+This project uses pre-commit_ to ensure linting, code formatting, and type
+checking. Tools, such as black_, flake8_, isort_, and mypy_ can be run as
+hooks upon committing and/or pushing code.
+When at least one of the hooks fails, committing or pushing changes is aborted
+and manual intervention is necessary.
+
+Install pre-commit_ for your user and verify that the installation worked:
+
+.. code-block:: console
+
+   $ python -m pip install --user pre-commit
+
+After the successful installation, install the hooks for this project:
+
+.. code-block:: console
+
+   $ pre-commit install -t pre-commit -t pre-push --install-hooks
+   pre-commit installed at .git/hooks/pre-commit
+   pre-commit installed at .git/hooks/pre-push
+  ...
+
+From now on, each time you run ``git commit`` or ``git push``, hooks defined in
+the file ``.pre-commit-config.yaml`` will run on staged files.
 
 
 Release
@@ -168,12 +193,17 @@ release version), please contact the `@crate/docs`_ team.
 
 
 .. _@crate/docs: https://github.com/orgs/crate/teams/docs
+.. _black: https://github.com/psf/black
 .. _configured: https://github.com/crate/croud/blob/master/.travis.yml
+.. _flake8: https://gitlab.com/pycqa/flake8
 .. _fswatch: https://github.com/emcrisostomo/fswatch
 .. _Generating distribution archives: https://packaging.python.org/tutorials/packaging-projects/#generating-distribution-archives
+.. _isort: https://github.com/timothycrosley/isort
+.. _mypy: https://github.com/python/mypy
+.. _pre-commit: https://pre-commit.com
 .. _PyPI: https://pypi.org/project/croud/
-.. _pytest: https://docs.pytest.org/en/latest/
 .. _pytest-random-order: https://pypi.org/project/pytest-random-order/
+.. _pytest: https://docs.pytest.org/en/latest/
 .. _Read the Docs: http://readthedocs.org
 .. _ReStructuredText: http://docutils.sourceforge.net/rst.html
 .. _Sphinx: http://sphinx-doc.org/

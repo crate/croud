@@ -1,24 +1,6 @@
 notifications:
   email: false
 
-code: &code
-  stage: "Code"
-  dist: xenial
-  language: python
-  cache: pip
-  sudo:
-    false
-  install:
-    - pip install -e .
-    - pip install -r test-requirements.txt
-    - pip install pytest-cov
-  script:
-    - pytest --cov croud -vvv
-  after_success:
-    - pip install coveralls codecov
-    - coveralls
-    - codecov
-
 docs: &docs
   stage: "Documentation"
   language: generic
@@ -27,17 +9,6 @@ docs: &docs
 
 matrix:
   include:
-
-    - <<: *code
-      name: "Python 3.6"
-      python: 3.6
-    - <<: *code
-      name: "Python 3.7"
-      python: 3.7
-    - <<: *code
-      name: "Python 3.8"
-      python: 3.8
-
     - <<: *docs
       name: "Python 3.7"
       dist: xenial
@@ -52,4 +23,3 @@ matrix:
       name: "Python 3.7"
       os: osx
       osx_image: xcode10.2
-
