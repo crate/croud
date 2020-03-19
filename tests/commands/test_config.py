@@ -143,7 +143,7 @@ def test_config_set_multiple(capsys):
             )
 
     out, err = capsys.readouterr()
-    assert "\x1b[36m==> Info: \x1b[0mRegion switched to eastus.azure\n" in err
+    assert "\x1b[36m==> Info: \x1b[0mAPI region switched to eastus.azure\n" in err
     assert "\x1b[36m==> Info: \x1b[0mOutput format switched to json\n" in err
 
     assert cfg.conf["region"] == "eastus.azure"

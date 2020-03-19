@@ -69,7 +69,7 @@ class FakeCrateDBCloudRequestHandler(BaseHTTPRequestHandler):
             "/empty-response": self.empty_response,
             "/redirect": self.redirect,
             "/new-token": self.new_token,
-            "/test-x-sudo": self.assert_x_sudo,
+            "/client-headers": self.client_headers,
         }
         super().__init__(*args, **kwargs)
 
@@ -157,11 +157,8 @@ class FakeCrateDBCloudRequestHandler(BaseHTTPRequestHandler):
             status=204, headers={"Set-Cookie": "session=new-token; Domain=127.0.0.1"}
         )
 
-    def assert_x_sudo(self) -> Response:
-        if self.headers.get("X-Auth-Sudo") is not None:
-            return Response(json_data={})
-        else:
-            return Response(json_data={"message": "Header not set, as expected."})
+    def client_headers(self) -> Response:
+        return Response(json_data=dict(self.headers.items()))
 
     @property
     def is_authorized(self) -> bool:

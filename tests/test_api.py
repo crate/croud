@@ -70,22 +70,20 @@ def test_send_new_token_response(client: Client):
     set_token_mock.assert_called_once_with("new-token", "local")
 
 
-# If ``sudo=True``, the X-Auth-Sudo header should be set with any value. This
-# test checks that the header is set.
-def test_send_sudo_header_set(client: Client):
-    client = Client(env="dev", region="bregenz.a1", sudo=True, _verify_ssl=False)
-    resp_data, errors = client.get("/test-x-sudo")
-    assert resp_data == {}
-    assert errors is None
+@pytest.mark.parametrize("sudo", [True, False])
+def test_send_sudo_header(sudo, client: Client):
+    client = Client(env="dev", region="bregenz.a1", sudo=sudo, _verify_ssl=False)
+    resp_data, errors = client.get("/client-headers")
+    assert ("X-Auth-Sudo" in resp_data) == sudo  # type: ignore
 
 
-# If ``sudo=False``, no X-Auth-Sudo header should be set. This test checks that
-# the header is not set.
-def test_send_sudo_header_not_set(client: Client):
-    client = Client(env="dev", region="bregenz.a1", sudo=False, _verify_ssl=False)
-    resp_data, errors = client.get("/test-x-sudo")
-    assert resp_data == {"message": "Header not set, as expected."}
-    assert errors is None
+@pytest.mark.parametrize(
+    "argument,header", [(None, "bregenz.a1"), ("westeurope.azure", "westeurope.azure")]
+)
+def test_send_region_header(argument, header, client: Client):
+    client = Client(env="dev", region=argument, _verify_ssl=False)
+    resp_data, errors = client.get("/client-headers")
+    assert resp_data["X-Region"] == header  # type: ignore
 
 
 # This test makes sure that the client is instantiated with the correct arguments,
@@ -96,15 +94,17 @@ def test_client_initialization(client: Client):
     )
     client = Client.from_args(args)
     assert client.env == "dev"
-    assert client.region == "bregenz.a1"
-    assert client.sudo is True
+    assert client.session.headers["X-Region"] == "bregenz.a1"
+    assert client.session.headers["X-Auth-Sudo"] == "1"
+    assert client.session.cookies["session"] == "some-token"
 
 
-@mock.patch("croud.api.Configuration.get_token", return_value="some-token")
 @mock.patch(
     "croud.api.construct_api_base_url", return_value="https://invalid.cratedb.local"
 )
-def test_error_message_on_connection_error(mock_construct_api_base_url, mock_get_token):
+def test_error_message_on_connection_error(mock_construct_api_base_url, config):
+    config.get_token = lambda self: "some-token"
+
     expected_message_re = re.compile(
         r"^Failed to perform command on https://invalid\.cratedb\.local/me\. "
         r"Original error was: 'HTTPSConnectionPool\(.*\)' "
