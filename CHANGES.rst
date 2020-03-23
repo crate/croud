@@ -5,7 +5,11 @@ Changes for croud
 Unreleased
 ==========
 
-- Added ``croud projects edit`` command to change a specified project name. At the moment, only the name of the project may be changed
+0.22.0 - 2020/03/23
+===================
+
+- Added ``croud projects edit`` command to change a specified project.
+  At the moment, only the name of the project may be changed.
 
 - Removed the ``croud monitoring`` command and all its subcommands.
 
