@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Allow ``_any_`` as value for the ``--region`` argument. This will list
+  resources of all available regions.
+
 0.22.0 - 2020/03/23
 ===================
 
