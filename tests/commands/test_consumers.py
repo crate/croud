@@ -19,17 +19,19 @@
 
 from unittest import mock
 
+import pytest
+
 from croud.api import Client, RequestMethod
-from croud.config import Configuration
 from tests.util import assert_rest, call_command, gen_uuid
+
+pytestmark = pytest.mark.usefixtures("config")
 
 eventhub_dsn = "Endpoint=sb://myhub.servicebus.windows.net/;SharedAccessKeyName=...;SharedAccessKey=...;EntityPath=..."  # noqa
 storage_dsn = "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net"  # noqa
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=["data", "errors"])
-def test_consumers_deploy(mock_request, mock_load_config):
+def test_consumers_deploy(mock_request):
     project_id = gen_uuid()
     cluster_id = gen_uuid()
 
@@ -86,16 +88,14 @@ def test_consumers_deploy(mock_request, mock_load_config):
     )
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_consumers_list(mock_request, mock_load_config):
+def test_consumers_list(mock_request):
     call_command("croud", "consumers", "list")
     assert_rest(mock_request, RequestMethod.GET, "/api/v2/consumers/", params={})
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_consumers_list_with_params(mock_request, mock_load_config):
+def test_consumers_list_with_params(mock_request):
     project_id = gen_uuid()
     cluster_id = gen_uuid()
     call_command(
@@ -121,9 +121,8 @@ def test_consumers_list_with_params(mock_request, mock_load_config):
     )
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_consumers_edit(mock_request, mock_load_config):
+def test_consumers_edit(mock_request):
     consumer_id = gen_uuid()
     cluster_id = gen_uuid()
 
@@ -167,9 +166,8 @@ def test_consumers_edit(mock_request, mock_load_config):
     )
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=(None, {}))
-def test_consumers_delete(mock_request, mock_load_config, capsys):
+def test_consumers_delete(mock_request, capsys):
     consumer_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["YES"]) as mock_input:
         call_command("croud", "consumers", "delete", "--consumer-id", consumer_id)
@@ -183,9 +181,8 @@ def test_consumers_delete(mock_request, mock_load_config, capsys):
     assert "Consumer deleted." in err_output
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=(None, {}))
-def test_consumers_delete_flag(mock_request, mock_load_config, capsys):
+def test_consumers_delete_flag(mock_request, capsys):
     consumer_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["y"]) as mock_input:
         call_command("croud", "consumers", "delete", "--consumer-id", consumer_id, "-y")
@@ -197,9 +194,8 @@ def test_consumers_delete_flag(mock_request, mock_load_config, capsys):
     assert "Consumer deleted." in err_output
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=(None, {}))
-def test_consumers_delete_aborted(mock_request, mock_load_config, capsys):
+def test_consumers_delete_aborted(mock_request, capsys):
     consumer_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
         call_command("croud", "consumers", "delete", "--consumer-id", consumer_id)

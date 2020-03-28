@@ -22,8 +22,10 @@ import argparse
 import functools
 import inspect
 import sys
+from typing import Set
 
 from croud import __version__
+from croud.config.schemas import OUTPUT_FORMATS
 
 POSITIONALS_TITLE = "Available Commands"
 REQUIRED_TITLE = "Required Arguments"
@@ -55,6 +57,13 @@ class Argument:
     @property
     def required(self):
         return self.kwargs.get("required", False)
+
+    @property
+    def positional(self):
+        # This check is not very safe, since the argument prefix could be
+        # changed and be something like `+` or any other character.
+        # However, since we use `-` as prefix for arguments, it's OK.
+        return not self.args[0].startswith("-")
 
 
 class CroudCliArgumentParser(argparse.ArgumentParser):
@@ -116,43 +125,37 @@ class CroudCliHelpFormatter(argparse.HelpFormatter):
         )
 
 
-def add_default_args(parser):
-    parser._group_optional.add_argument(
-        "--region",
-        "-r",
-        required=False,
-        choices={
-            "eastus.azure",
-            "eastus2.azure",
-            "westeurope.azure",
-            "bregenz.a1",
-            "_any_",
-        },
-        help="Temporarily use the specified region that command will be run in.",
-    )
-    parser._group_optional.add_argument(
-        "--env",
-        "-e",
-        required=False,
-        choices={"dev", "prod", "local"},
-        help="Switches auth context.",
-    )
-    parser._group_optional.add_argument(
-        "--output-fmt",
-        "-o",
-        required=False,
-        choices={"table", "json", "yaml"},
-        help="Change the formatting of the output",
-    )
-
-
-def add_default_sudo_arg(parser):
-    parser._group_optional.add_argument(
-        "--sudo",
-        required=False,
-        action="store_true",
-        help="Run the given command as superuser.",
-    )
+def add_default_args(parser, omit: Set[str]):
+    if "region" not in omit:
+        parser._group_optional.add_argument(
+            "--region",
+            "-r",
+            required=False,
+            choices={
+                "eastus.azure",
+                "eastus2.azure",
+                "westeurope.azure",
+                "bregenz.a1",
+                "_any_",
+            },
+            help="Temporarily use the specified region that command will be run in.",
+        )
+    if "format" not in omit:
+        parser._group_optional.add_argument(
+            "--output-fmt",
+            "--format",
+            "-o",
+            required=False,
+            choices=OUTPUT_FORMATS,
+            help="Change the formatting of the output",
+        )
+    if "sudo" not in omit:
+        parser._group_optional.add_argument(
+            "--sudo",
+            required=False,
+            action="store_true",
+            help="Run the given command as superuser.",
+        )
 
 
 def help_print_factory(parser: argparse.ArgumentParser):
@@ -165,7 +168,7 @@ def help_print_factory(parser: argparse.ArgumentParser):
 def add_subparser(parser, tree, name="__root__"):
     if "extra_args" in tree:
         for argument in tree["extra_args"]:
-            if argument.required:
+            if argument.required or argument.positional:
                 argument.add_to_parser(parser._group_required)
             else:
                 argument.add_to_parser(parser._group_optional)
@@ -178,9 +181,7 @@ def add_subparser(parser, tree, name="__root__"):
             sub = subparsers.add_parser(_cmd, help=_tree.get("help"))
             add_subparser(sub, _tree, sub.prog)
     if "resolver" in tree:
-        add_default_args(parser)
-        if not tree.get("omit_sudo", False):
-            add_default_sudo_arg(parser)
+        add_default_args(parser, omit=tree.get("omit", set([])))
         resolver = tree["resolver"]
         signature = inspect.signature(resolver)
         if "parser" in signature.parameters:

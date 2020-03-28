@@ -5,6 +5,12 @@ Changes for croud
 Unreleased
 ==========
 
+- Introduced configuration profiles which replace the existing configuration
+  options ``env``, ``region`` and ``output-fmt``.
+  Since the new profiles are incompatible with the existing configuration, you
+  need to delete the existing configuration file.
+  Run ``croud config --help`` for further information.
+
 - Allow ``_any_`` as value for the ``--region`` argument. This will list
   resources of all available regions.
 

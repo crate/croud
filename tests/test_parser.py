@@ -24,7 +24,6 @@ from unittest import mock
 import pytest
 
 from croud import __version__
-from croud.__main__ import get_parser
 from croud.parser import (
     Argument,
     CroudCliArgumentParser,
@@ -159,7 +158,7 @@ Optional Arguments:
         args = parser.parse_args(argv)
         assert args.resolver == noop
         assert args == Namespace(
-            env=None, output_fmt=None, region=None, sudo=False, resolver=noop
+            output_fmt=None, region=None, sudo=False, resolver=noop
         )
 
     def test_commands_with_args(self):
@@ -216,13 +215,10 @@ Optional Arguments:
             "cmd",
             "--region",
             "eastus.azure",
-            "--env",
-            "local",
             "--output-fmt",
             "json",
         ]
         args = parser.parse_args(argv)
-        assert args.env == "local"
         assert args.region == "eastus.azure"
         assert args.output_fmt == "json"
 
@@ -233,25 +229,3 @@ Optional Arguments:
         argv = ["cmd", "--sudo"]
         args = parser.parse_args(argv)
         assert args.sudo is True
-
-    def test_config_set_help_text(self, capsys):
-        parser = get_parser()
-        argv = ["config", "set", "-h"]
-        with pytest.raises(SystemExit):
-            parser.parse_args(argv)
-        out, _ = capsys.readouterr()
-        assert "--sudo" not in out
-        assert "--region" in out
-        assert "--env" in out
-        assert "--output-fmt" in out
-
-    def test_config_get_help_text(self, capsys):
-        parser = get_parser()
-        argv = ["config", "get", "-h"]
-        with pytest.raises(SystemExit):
-            parser.parse_args(argv)
-        out, _ = capsys.readouterr()
-        assert "--sudo" not in out
-        assert "--region" in out
-        assert "--env" in out
-        assert "--output-fmt" in out

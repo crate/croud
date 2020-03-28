@@ -17,15 +17,14 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-from unittest import mock
 
-from tests.util import call_command
+class ConfigurationException(Exception):
+    pass
 
 
-@mock.patch("croud.logout.print_info")
-def test_logout(mock_print_info, config):
-    config.set_auth_token(config.name, "token")
-    call_command("croud", "logout")
+class InvalidConfiguration(ConfigurationException):
+    pass
 
-    assert config.token is None
-    mock_print_info.assert_called_once_with("You have been logged out.")
+
+class InvalidProfile(ConfigurationException):
+    pass

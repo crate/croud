@@ -17,134 +17,151 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import textwrap
 from unittest import mock
 
 import pytest
+import yaml
 
-from croud.config import Configuration
-from tests.util import MockConfig, call_command
+import croud.config
+from croud.config.configuration import Configuration
+from croud.config.util import clean_dict
+from tests.util import call_command
 
 
-def test_config_get_no_args(capsys):
-    cfg = MockConfig(Configuration.DEFAULT_CONFIG)
-    cfg.conf["auth"]["current_context"] = "the environment"
+def test_config_add_profile(config, capsys):
+    call_command(
+        "croud",
+        "config",
+        "profiles",
+        "add",
+        "new-profile",
+        "--endpoint",
+        "http://localhost:8000",
+    )
+    assert "format" not in config.profiles["new-profile"]
 
-    with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
-        with pytest.raises(SystemExit):
-            call_command("croud", "config", "get")
+    _, err = capsys.readouterr()
+    assert "Added profile 'new-profile'" in err
 
+    call_command(
+        "croud",
+        "config",
+        "profiles",
+        "add",
+        "newer-profile",
+        "--endpoint",
+        "http://localhost:8000",
+        "--format",
+        "json",
+    )
+    assert config.profiles["newer-profile"]["format"] == "json"
+
+    _, err = capsys.readouterr()
+    assert "Added profile 'newer-profile'" in err
+
+
+def test_config_add_duplicate_profile(config, capsys):
+    with pytest.raises(SystemExit) as exc_info:
+        call_command(
+            "croud",
+            "config",
+            "profiles",
+            "add",
+            "bregenz.a1",
+            "--endpoint",
+            "http://localhost:8000",
+        )
+    assert exc_info.value.code == 1
+    _, err = capsys.readouterr()
+    assert "Failed to add profile 'bregenz.a1'" in err
+
+
+def test_config_current_profile(config, capsys):
+    call_command("croud", "config", "profiles", "current")
     out, _ = capsys.readouterr()
-    assert "Available Commands:\n  {env,region,output-fmt}" in out
+    assert config.name in out
 
 
-def test_config_get_env(capsys):
-    cfg = MockConfig(Configuration.DEFAULT_CONFIG)
-    cfg.conf["auth"]["current_context"] = "the environment"
+def test_config_remove_profile(config, capsys):
+    call_command("croud", "config", "profiles", "remove", "bregenz.a1")
+    assert "bregenz.a1" not in config.profiles
 
-    with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
-        call_command("croud", "config", "get", "env")
+    _, err = capsys.readouterr()
+    assert "Removed profile 'bregenz.a1'" in err
 
+
+def test_config_remove_current_profile(config, capsys):
+    with pytest.raises(SystemExit) as exc_info:
+        call_command("croud", "config", "profiles", "remove", config.name)
+    assert exc_info.value.code == 1
+    assert config.name in config.profiles
+
+    _, err = capsys.readouterr()
+    assert f"Failed to remove profile '{config.name}'" in err
+
+
+def test_config_set_profile(config, capsys):
+    assert config.name != "bregenz.a1"
+    call_command("croud", "config", "profiles", "use", "bregenz.a1")
+    assert config.name == "bregenz.a1"
+
+    _, err = capsys.readouterr()
+    assert "Switched to profile 'bregenz.a1'" in err
+
+
+def test_config_set_profile_does_not_exist(config, capsys):
+    with pytest.raises(SystemExit) as exc_info:
+        call_command("croud", "config", "profiles", "use", "invalid")
+    assert exc_info.value.code == 1
+
+    _, err = capsys.readouterr()
+    assert "Failed to switch to profile 'invalid'" in err
+    assert "Make sure the profile exists." in err
+
+
+def test_config_show(config, capsys):
+    call_command("croud", "config", "show")
     out, err = capsys.readouterr()
+
+    assert out == yaml.safe_dump(clean_dict(config.config)) + "\n"
+    assert "Configuration file" in err
+
+
+def test_invalid_config(capsys, tmp_path):
+    with open(tmp_path / "invalid.yaml", "w") as fp:
+        # Write a legacy format config
+        fp.write(
+            """\
+auth:
+  contexts:
+    dev:
+      organization_id: ''
+      token: ''
+    local:
+      organization_id: ''
+      token: ''
+    prod:
+      organization_id: ''
+      token: ''
+  current_context: prod
+output_fmt: table
+region: bregenz.a1
+"""
+        )
+
+    invalid_config = Configuration("invalid.yaml", tmp_path)
+
+    with mock.patch.object(croud.config, "_CONFIG", invalid_config):
+        with pytest.raises(SystemExit) as exc_info:
+            call_command("croud", "me")
+    assert exc_info.value.code == 1
+
+    _, err = capsys.readouterr()
     assert (
-        out
-        == textwrap.dedent(
-            """
-            +-----------------+
-            | env             |
-            |-----------------|
-            | the environment |
-            +-----------------+
-            """
-        ).lstrip()
+        "Your configuration file is incompatible with the current version of croud."
+        in err
     )
-
-
-def test_config_get_region(capsys):
-    cfg = MockConfig(Configuration.DEFAULT_CONFIG)
-    cfg.conf["region"] = "some region"
-
-    with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
-        call_command("croud", "config", "get", "region")
-
-    out, err = capsys.readouterr()
     assert (
-        out
-        == textwrap.dedent(
-            """
-            +-------------+
-            | region      |
-            |-------------|
-            | some region |
-            +-------------+
-            """
-        ).lstrip()
+        f"Please delete the file '{invalid_config._file_path}' or update it manually."
+        in err
     )
-
-
-def test_config_get_output_fmt(capsys):
-    cfg = MockConfig(Configuration.DEFAULT_CONFIG)
-    cfg.conf["output_fmt"] = "table"
-
-    with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
-        call_command("croud", "config", "get", "output-fmt")
-
-    out, err = capsys.readouterr()
-    assert (
-        out
-        == textwrap.dedent(
-            """
-            +--------------+
-            | output-fmt   |
-            |--------------|
-            | table        |
-            +--------------+
-            """
-        ).lstrip()
-    )
-
-
-def test_config_set_no_args(capsys):
-    cfg = MockConfig(Configuration.DEFAULT_CONFIG)
-
-    with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
-        with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
-            call_command("croud", "config", "set")
-
-    out, err = capsys.readouterr()
-    assert "Usage: croud config set" in out
-
-
-def test_config_set_env(capsys):
-    cfg = MockConfig(Configuration.DEFAULT_CONFIG)
-
-    with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
-        with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
-            call_command("croud", "config", "set", "--env", "dev")
-
-    out, err = capsys.readouterr()
-    assert err == "\x1b[36m==> Info: \x1b[0mEnvironment switched to dev\n"
-    assert cfg.conf["auth"]["current_context"] == "dev"
-
-
-def test_config_set_multiple(capsys):
-    cfg = MockConfig(Configuration.DEFAULT_CONFIG)
-
-    with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
-        with mock.patch("croud.config.write_config", side_effect=cfg.write_config):
-            call_command(
-                "croud",
-                "config",
-                "set",
-                "--region",
-                "eastus.azure",
-                "--output-fmt",
-                "json",
-            )
-
-    out, err = capsys.readouterr()
-    assert "\x1b[36m==> Info: \x1b[0mAPI region switched to eastus.azure\n" in err
-    assert "\x1b[36m==> Info: \x1b[0mOutput format switched to json\n" in err
-
-    assert cfg.conf["region"] == "eastus.azure"
-    assert cfg.conf["output_fmt"] == "json"

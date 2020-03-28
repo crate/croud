@@ -150,7 +150,7 @@ class FakeCrateDBCloudRequestHandler(BaseHTTPRequestHandler):
         return Response(status=302, headers={"Location": "/"})
 
     def redirect(self) -> Response:
-        return Response(status=301, headers={"Location": "/"})
+        return Response(status=301, headers={"Location": "/?rd=%2Fredirect"})
 
     def new_token(self) -> Response:
         return Response(

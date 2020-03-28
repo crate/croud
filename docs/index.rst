@@ -16,6 +16,7 @@ Cloud`_.
    :maxdepth: 2
 
    getting-started
+   configuration
    commands/index
    user-roles
 

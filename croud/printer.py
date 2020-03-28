@@ -29,8 +29,6 @@ from tabulate import tabulate
 
 from croud.typing import JsonDict
 
-print_stderr = functools.partial(print, file=sys.stderr)
-
 
 def print_format(
     rows: Union[List[JsonDict], JsonDict],
@@ -77,21 +75,19 @@ def print_response(
 
 
 def print_error(text: str):
-    print_stderr(Fore.RED + "==> Error: " + Style.RESET_ALL + text, file=sys.stderr)
+    print(Fore.RED + "==> Error: " + Style.RESET_ALL + text, file=sys.stderr)
 
 
 def print_info(text: str):
-    print_stderr(Fore.CYAN + "==> Info: " + Style.RESET_ALL + text, file=sys.stderr)
+    print(Fore.CYAN + "==> Info: " + Style.RESET_ALL + text, file=sys.stderr)
 
 
 def print_warning(text: str):
-    print_stderr(
-        Fore.YELLOW + "==> Warning: " + Style.RESET_ALL + text, file=sys.stderr
-    )
+    print(Fore.YELLOW + "==> Warning: " + Style.RESET_ALL + text, file=sys.stderr)
 
 
 def print_success(text: str):
-    print_stderr(Fore.GREEN + "==> Success: " + Style.RESET_ALL + text, file=sys.stderr)
+    print(Fore.GREEN + "==> Success: " + Style.RESET_ALL + text, file=sys.stderr)
 
 
 class FormatPrinter(abc.ABC):

@@ -17,15 +17,18 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import secrets
 from unittest import mock
 
 import pytest
 import urllib3
 
+import croud.config
 from croud.api import Client
-from croud.config import Configuration
-from tests.util import MockConfig
+from croud.config.configuration import Configuration
 from tests.util.fake_cloud import FakeCrateDBCloud
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 @pytest.fixture(scope="session")
@@ -35,19 +38,24 @@ def fake_cratedb_cloud():
 
 
 @pytest.fixture
-def config():
-    cfg = MockConfig(Configuration.DEFAULT_CONFIG)
-    with mock.patch("croud.config.load_config", side_effect=cfg.read_config):
-        yield cfg
+def config(fake_cratedb_cloud, tmp_path):
+    profile = secrets.token_urlsafe(16)
+
+    config = Configuration("croud.yaml", tmp_path)
+    config.add_profile(profile, endpoint=f"https://127.0.0.1:{fake_cratedb_cloud.port}")
+    config.set_auth_token(profile, secrets.token_urlsafe(64))
+    config.use_profile(profile)
+
+    with mock.patch.object(croud.config, "_CONFIG", config):
+        yield config
 
 
 @pytest.fixture
 def client(fake_cratedb_cloud, config):
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-    with mock.patch(
-        "croud.api.construct_api_base_url",
-        return_value=f"https://127.0.0.1:{fake_cratedb_cloud.port}",
-    ):
-        with mock.patch("croud.api.Configuration.get_token", return_value="some-token"):
-            yield Client(env="local", region="bregenz.a1", _verify_ssl=False)
+    yield Client(
+        config.endpoint,
+        token=config.token,
+        on_token=config.set_current_auth_token,
+        region="bregenz.a1",
+        _verify_ssl=False,
+    )

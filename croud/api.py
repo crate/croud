@@ -19,19 +19,15 @@
 
 import enum
 from argparse import Namespace
-from typing import Dict, Optional, Tuple
+from typing import Any, Callable, Dict, Optional, Tuple
 
 import requests
 from yarl import URL
 
-from croud.config import Configuration
-from croud.printer import print_error
+from croud.config import CONFIG
+from croud.printer import print_error, print_info
 
 ResponsePair = Tuple[Optional[Dict], Optional[Dict]]
-
-CLOUD_LOCAL_URL = "http://localhost:8000"
-CLOUD_DEV_DOMAIN = "cratedb-dev.cloud"
-CLOUD_PROD_DOMAIN = "cratedb.cloud"
 
 
 class RequestMethod(enum.Enum):
@@ -42,13 +38,32 @@ class RequestMethod(enum.Enum):
     PUT = "put"
 
 
+def noop(*args, **kwargs):
+    pass
+
+
 class Client:
+    """
+    A client for CrateDB Cloud API requests
+    """
+
     def __init__(
-        self, *, env: str, region: str, sudo: bool = False, _verify_ssl: bool = True
+        self,
+        endpoint: str,
+        *,
+        token: str = None,
+        on_token: Callable = None,
+        region: str = None,
+        sudo: bool = False,
+        _verify_ssl: bool = True,
     ):
         """
-        :param str env:
-          CrateDB Cloud environment, either "dev" or "prod"
+        :param str endpoint:
+          CrateDB Cloud API endpoint
+        :param str token:
+          The authentication token used as session cookie
+        :param Callable on_token:
+          A setter method that is called when a new auth token is retrieved
         :param str region:
           Region to get data from or to which to deploy (defines the
           ``X-Region`` HTTP header value)
@@ -59,22 +74,28 @@ class Client:
           A private variable that must only be used during tests!
         """
 
-        self.env = env or Configuration.get_env()
-        api_region = Configuration.get_setting("region")
-        self.base_url = URL(construct_api_base_url(self.env, api_region))
-        self._token = Configuration.get_token(self.env)
+        self.base_url = URL(endpoint)
+        self._token = token
+        self._on_token = on_token or noop
 
         self.session = requests.Session()
+        self.session.cookies["session"] = self._token
         if _verify_ssl is False:
             self.session.verify = False
-        self.session.cookies["session"] = self._token
-        self.session.headers["X-Region"] = region or api_region
+        if region:
+            self.session.headers["X-Region"] = region
         if sudo:
             self.session.headers["X-Auth-Sudo"] = "1"
 
     @staticmethod
     def from_args(args: Namespace) -> "Client":
-        return Client(env=args.env, region=args.region, sudo=args.sudo)
+        return Client(
+            CONFIG.endpoint,
+            token=CONFIG.token,
+            on_token=CONFIG.set_current_auth_token,
+            region=args.region,
+            sudo=args.sudo,
+        )
 
     def request(
         self,
@@ -84,7 +105,12 @@ class Client:
         params: dict = None,
         body: dict = None,
     ):
-        kwargs: dict = {"allow_redirects": False}
+        # When logging out, the Gateway may respond with a redirect in case the
+        # session is still valid and the IDP identifier is present.
+        # We need to follow that redirect in order to fully log out the user!
+        kwargs: Dict[str, Any] = {
+            "allow_redirects": "logout" in endpoint,
+        }
         if params is not None:
             kwargs["params"] = params
         if body is not None:
@@ -96,21 +122,27 @@ class Client:
             )
         except requests.RequestException as e:
             message = (
-                f"Failed to perform command on {e.request.url}. "
-                f"Original error was: '{e}' "
-                f"Does the environment exist in the region you specified?"
+                f"Failed to perform request on '{e.request.url}'. "
+                f"Original error was: '{e}'"
             )
             return None, {"message": message, "success": False}
 
-        if response.is_redirect:  # login redirect
-            print_error("Unauthorized. Use `croud login` to login to CrateDB Cloud.")
+        if response.is_redirect:
+            redirect_url = URL(response.headers["Location"])
+            print_error("Unauthorized.")
+            if redirect_url.query.get("rd", "") == endpoint:  # login redirect
+                # When use is unauthorized, the API request returns a 302
+                # redirect to `/?rd=<api_endpoint>`
+                print_info("Use `croud login` to login to CrateDB Cloud.")
+            else:
+                print_error("Oops. Something unexpected happened.")
             exit(1)
 
         # Refresh a previously provided token because it has timed out
         response_token = response.cookies.get("session")
         if response_token and response_token != self._token:
             self._token = response_token
-            Configuration.set_token(response_token, self.env)
+            self._on_token(response_token)
 
         return self.decode_response(response)
 
@@ -146,17 +178,9 @@ class Client:
             # API always returns JSON, unless there's an unhandled server error
             body = resp.json()
         except ValueError:
-            body = {"message": "Invalid response type.", "success": False}
+            body = {"message": f"{resp.status_code} - {resp.reason}", "success": False}
 
         if resp.status_code >= 400:
             return None, body
         else:
             return body, None
-
-
-def construct_api_base_url(env: str, region: str = "bregenz.a1") -> str:
-    if env == "local":
-        return CLOUD_LOCAL_URL
-
-    host = CLOUD_DEV_DOMAIN if env == "dev" else CLOUD_PROD_DOMAIN
-    return f"https://{region}.{host}"

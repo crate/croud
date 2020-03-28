@@ -18,11 +18,10 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 from argparse import Namespace
-from functools import partial
 from typing import Optional
 
-from croud.api import Client, construct_api_base_url
-from croud.config import Configuration
+from croud.api import Client
+from croud.config import CONFIG
 from croud.printer import print_error, print_info, print_warning
 from croud.server import Server
 from croud.util import can_launch_browser, open_page_in_browser
@@ -31,9 +30,7 @@ LOGIN_PATH = "/oauth2/login?cli=true"
 
 
 def get_org_id() -> Optional[str]:
-    client = Client(
-        env=Configuration.get_env(), region=Configuration.get_setting("region")
-    )
+    client = Client(CONFIG.endpoint, token=CONFIG.token)
     data, error = client.get("/api/v2/users/me/")
     if data and not error:
         return data.get("organization_id")
@@ -49,10 +46,9 @@ def login(args: Namespace) -> None:
         print_error("Login only works with a valid browser installed.")
         exit(1)
 
-    env = args.env or Configuration.get_env()
-    Configuration.set_context(env.lower())
-    server = Server(partial(Configuration.set_token, env=env)).start_in_background()
-    open_page_in_browser(_login_url(env))
+    server = Server(CONFIG.set_current_auth_token).start_in_background()
+
+    open_page_in_browser(CONFIG.endpoint + LOGIN_PATH)
     print_info("A browser tab has been launched for you to login.")
     try:
         # Wait for the user to login. They'll be redirected to the `SetTokenHandler`
@@ -62,13 +58,8 @@ def login(args: Namespace) -> None:
         print_warning("Login cancelled.")
     else:
         organization_id = get_org_id()
-        if organization_id:
-            Configuration.set_organization_id(organization_id, env)
-        else:
-            Configuration.set_organization_id("", env)
-
+        CONFIG.set_organization_id(CONFIG.name, organization_id)
         print_info("Login successful.")
-
-
-def _login_url(env: str) -> str:
-    return construct_api_base_url(env.lower()) + LOGIN_PATH
+        print_info(f"Current profile: {CONFIG.name}")
+        print_info(f"API endpoint   : {CONFIG.endpoint}")
+        print_info(f"Organization ID: {organization_id}")

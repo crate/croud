@@ -30,7 +30,14 @@ from croud.clusters.commands import (
     clusters_scale,
     clusters_upgrade,
 )
-from croud.config import Configuration, config_get, config_set
+from croud.config import CONFIG
+from croud.config.commands import (
+    config_add_profile,
+    config_current_profile,
+    config_remove_profile,
+    config_set_profile,
+    config_show,
+)
 from croud.consumers.commands import (
     consumers_delete,
     consumers_deploy,
@@ -53,6 +60,7 @@ from croud.organizations.users.commands import (
     org_users_remove,
 )
 from croud.parser import Argument, create_parser
+from croud.printer import print_error, print_info
 from croud.products.commands import products_list
 from croud.projects.commands import (
     project_create,
@@ -89,18 +97,63 @@ command_tree = {
     "login": {"help": "Log in to CrateDB Cloud.", "resolver": login},
     "logout": {"help": "Log out of CrateDB Cloud.", "resolver": logout},
     "config": {
-        "help": "Manage croud default configuration values.",
+        "help": "Manage croud configuration.",
         "commands": {
-            "get": {
-                "help": "Get default configuration values.",
-                "resolver": config_get,
-                "noop_arg": {"choices": ["env", "region", "output-fmt"]},
-                "omit_sudo": True,
+            "show": {
+                "help": "Show the full configuration.",
+                "resolver": config_show,
+                "omit": {"sudo", "region", "format"},
             },
-            "set": {
-                "help": "Set default configuration values.",
-                "resolver": config_set,
-                "omit_sudo": True,
+            "profiles": {
+                "help": "Manage configuration profiles.",
+                "commands": {
+                    "current": {
+                        "help": "Print the current profile.",
+                        "resolver": config_current_profile,
+                        "omit": {"sudo", "region"},
+                    },
+                    "use": {
+                        "help": "Set the current profile.",
+                        "resolver": config_set_profile,
+                        "omit": {"sudo", "region"},
+                        "extra_args": [
+                            Argument(
+                                "profile", type=str,
+                                help="The name of the profile that should be used."
+                            ),
+                        ],
+                    },
+                    "add": {
+                        "help": "Add a new profile.",
+                        "resolver": config_add_profile,
+                        "omit": {"sudo", "region", "format"},
+                        "extra_args": [
+                            Argument(
+                                "profile", type=str,
+                                help="The name of the profile that should be added."
+                            ),
+                            Argument(
+                                "--endpoint", type=str, required=True,
+                                help="The API endpoint for the profile."
+                            ),
+                            Argument(
+                                "--format", type=str, required=False,
+                                help="The output format for the profile."
+                            ),
+                        ],
+                    },
+                    "remove": {
+                        "help": "Remove an existing profile.",
+                        "resolver": config_remove_profile,
+                        "omit": {"sudo", "region", "format"},
+                        "extra_args": [
+                            Argument(
+                                "profile", type=str,
+                                help="The name of the profile that should be removed."
+                            ),
+                        ],
+                    },
+                },
             },
         },
     },
@@ -652,7 +705,15 @@ def get_parser():
 
 
 def main():
-    Configuration.create()
+    if not CONFIG.is_valid():
+        print_error(
+            "Your configuration file is incompatible with the current version of croud."
+        )
+        print_info(
+            f"Please delete the file '{CONFIG._file_path}' or update it manually."
+        )
+        sys.exit(1)
+
     colorama.init()
 
     parser = get_parser()

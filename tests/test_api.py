@@ -19,11 +19,10 @@
 
 import argparse
 import re
-from unittest import mock
 
 import pytest
 
-from croud.api import Client, construct_api_base_url
+from croud.api import Client
 
 
 def test_send_success_sets_data_with_key(client: Client):
@@ -46,7 +45,7 @@ def test_send_error_sets_error(client: Client):
 def test_send_text_response(client: Client):
     resp_data, errors = client.get("/text-response")
     assert resp_data is None
-    assert errors == {"message": "Invalid response type.", "success": False}
+    assert errors == {"message": "500 - Internal Server Error", "success": False}
 
 
 def test_send_empty_response(client: Client):
@@ -59,72 +58,56 @@ def test_send_redirect_response(client: Client, capsys):
     with pytest.raises(SystemExit):
         client.get("/redirect")
     _, err = capsys.readouterr()
-    assert "Unauthorized. Use `croud login` to login to CrateDB Cloud." in err
+    assert "Unauthorized." in err
+    assert "Use `croud login` to login to CrateDB Cloud." in err
 
 
-def test_send_new_token_response(client: Client):
-    with mock.patch("croud.api.Configuration.set_token") as set_token_mock:
-        client.get("/new-token")
+def test_send_new_token_response(client: Client, config):
+    client.get("/new-token")
     assert ("session", "new-token") in client.session.cookies.items()
-    assert client._token == "new-token"
-    set_token_mock.assert_called_once_with("new-token", "local")
+    assert config.token == client._token == "new-token"
 
 
 @pytest.mark.parametrize("sudo", [True, False])
-def test_send_sudo_header(sudo, client: Client):
-    client = Client(env="dev", region="bregenz.a1", sudo=sudo, _verify_ssl=False)
+def test_send_sudo_header(sudo, config):
+    client = Client(config.endpoint, region="bregenz.a1", sudo=sudo, _verify_ssl=False)
     resp_data, errors = client.get("/client-headers")
     assert ("X-Auth-Sudo" in resp_data) == sudo  # type: ignore
 
 
 @pytest.mark.parametrize(
-    "argument,header", [(None, "bregenz.a1"), ("westeurope.azure", "westeurope.azure")]
+    "argument,is_header_present", [(None, False), ("westeurope.azure", True)]
 )
-def test_send_region_header(argument, header, client: Client):
-    client = Client(env="dev", region=argument, _verify_ssl=False)
+def test_send_region_header(argument, is_header_present, config):
+    client = Client(config.endpoint, region=argument, _verify_ssl=False)
     resp_data, errors = client.get("/client-headers")
-    assert resp_data["X-Region"] == header  # type: ignore
+    if is_header_present:
+        assert resp_data["X-Region"] == argument  # type: ignore
+    else:
+        assert "X-Region" not in resp_data
 
 
-# This test makes sure that the client is instantiated with the correct arguments,
-# and does not fail if the arguments are in a random positional order.
-def test_client_initialization(client: Client):
-    args = argparse.Namespace(
-        output_fmt="json", sudo=True, region="bregenz.a1", env="dev"
-    )
+def test_client_initialization(config):
+    args = argparse.Namespace(sudo=True, region="bregenz.a1")
     client = Client.from_args(args)
-    assert client.env == "dev"
+    assert str(client.base_url) == config.endpoint
     assert client.session.headers["X-Region"] == "bregenz.a1"
     assert client.session.headers["X-Auth-Sudo"] == "1"
-    assert client.session.cookies["session"] == "some-token"
+    assert client.session.cookies["session"] == config.token
 
 
-@mock.patch(
-    "croud.api.construct_api_base_url", return_value="https://invalid.cratedb.local"
-)
-def test_error_message_on_connection_error(mock_construct_api_base_url, config):
-    config.get_token = lambda self: "some-token"
+def test_error_message_on_connection_error(config):
+    config.add_profile("test", endpoint="https://invalid.cratedb.local")
+    config.set_auth_token("test", "some-token")
+    config.use_profile("test")
 
     expected_message_re = re.compile(
-        r"^Failed to perform command on https://invalid\.cratedb\.local/me\. "
-        r"Original error was: 'HTTPSConnectionPool\(.*\)' "
-        r"Does the environment exist in the region you specified\?$"
+        r"^Failed to perform request on 'https://invalid\.cratedb\.local/me\'. "
+        r"Original error was: '.*'$"
     )
-    client = Client(env="dev", region="bregenz.a1", _verify_ssl=False)
+    client = Client(config.endpoint, _verify_ssl=False)
     resp_data, errors = client.get("/me")
+    print(resp_data, errors)
     assert resp_data is None
     assert expected_message_re.match(errors["message"]) is not None
     assert errors["success"] is False
-
-
-@pytest.mark.parametrize(
-    "env,region,expected",
-    [
-        ("dev", "bregenz.a1", "https://bregenz.a1.cratedb-dev.cloud"),
-        ("dev", "eastus.azure", "https://eastus.azure.cratedb-dev.cloud"),
-        ("prod", "eastus.azure", "https://eastus.azure.cratedb.cloud"),
-        ("prod", "westeurope.azure", "https://westeurope.azure.cratedb.cloud"),
-    ],
-)
-def test_construct_api_base_url(env, region, expected):
-    assert construct_api_base_url(env, region) == expected

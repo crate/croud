@@ -17,15 +17,36 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-from unittest import mock
+import re
+from typing import Any, Dict
 
-from tests.util import call_command
+SENSITIVE_KEYS = re.compile("pass|secret|token", flags=re.IGNORECASE)
 
 
-@mock.patch("croud.logout.print_info")
-def test_logout(mock_print_info, config):
-    config.set_auth_token(config.name, "token")
-    call_command("croud", "logout")
+def clean_dict(data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Clean "secrets" from a dict.
 
-    assert config.token is None
-    mock_print_info.assert_called_once_with("You have been logged out.")
+    This is solely used for masking the "auth-token" value of the configuration
+    dictionary when printing it to the console.
+
+    It can only handle "pure" dicts with strings as keys and dicts, lists and
+    simple types as values.
+    """
+
+    def clean(k, v):
+        if SENSITIVE_KEYS.search(k):
+            return "x" * 10
+        elif isinstance(v, list):
+            cleaned_list = []
+            for item in v:
+                if isinstance(item, dict):
+                    cleaned_list.append(clean_dict(item))
+                else:
+                    cleaned_list.append(item)
+            return cleaned_list
+        elif isinstance(v, dict):
+            return clean_dict(v)
+        return v
+
+    return {k: clean(k, v) for k, v in data.items()}

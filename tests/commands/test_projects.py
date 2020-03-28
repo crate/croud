@@ -22,16 +22,16 @@ from unittest import mock
 import pytest
 
 from croud.api import Client, RequestMethod
-from croud.config import Configuration
 from croud.projects.users.commands import (
     role_fqn_transform as project_role_fqn_transform,
 )
 from tests.util import assert_rest, call_command, gen_uuid
 
+pytestmark = pytest.mark.usefixtures("config")
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_projects_create(mock_request, mock_load_config):
+def test_projects_create(mock_request):
     call_command(
         "croud",
         "projects",
@@ -49,9 +49,8 @@ def test_projects_create(mock_request, mock_load_config):
     )
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=(None, {}))
-def test_projects_delete(mock_request, mock_load_config, capsys):
+def test_projects_delete(mock_request, capsys):
     project_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["yes"]) as mock_input:
         call_command("croud", "projects", "delete", "--project-id", project_id)
@@ -65,9 +64,8 @@ def test_projects_delete(mock_request, mock_load_config, capsys):
     assert "Project deleted." in err_output
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=(None, {}))
-def test_projects_delete_flag(mock_request, mock_load_config, capsys):
+def test_projects_delete_flag(mock_request, capsys):
     project_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["y"]) as mock_input:
         call_command("croud", "projects", "delete", "--project-id", project_id, "-y")
@@ -79,9 +77,8 @@ def test_projects_delete_flag(mock_request, mock_load_config, capsys):
     assert "Project deleted." in err_output
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=(None, {}))
-def test_projects_delete_aborted(mock_request, mock_load_config, capsys):
+def test_projects_delete_aborted(mock_request, capsys):
     project_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
         call_command("croud", "projects", "delete", "--project-id", project_id)
@@ -94,9 +91,8 @@ def test_projects_delete_aborted(mock_request, mock_load_config, capsys):
     assert "Project deletion cancelled." in err_output
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_projects_list(mock_request, mock_load_config):
+def test_projects_list(mock_request):
     call_command("croud", "projects", "list")
     assert_rest(mock_request, RequestMethod.GET, "/api/v2/projects/")
 
@@ -105,9 +101,8 @@ def test_projects_list(mock_request, mock_load_config):
     "added,message",
     [(True, "User added to project."), (False, "Role altered for user.")],
 )
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request")
-def test_projects_users_add(mock_request, mock_load_config, added, message, capsys):
+def test_projects_users_add(mock_request, added, message, capsys):
     mock_request.return_value = ({"added": added}, None)
 
     project_id = gen_uuid()
@@ -140,9 +135,8 @@ def test_projects_users_add(mock_request, mock_load_config, added, message, caps
     assert message in err_output
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_projects_users_list(mock_request, mock_load_config):
+def test_projects_users_list(mock_request):
     project_id = gen_uuid()
 
     call_command("croud", "projects", "users", "list", "--project-id", project_id)
@@ -151,9 +145,8 @@ def test_projects_users_list(mock_request, mock_load_config):
     )
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_projects_users_remove(mock_request, mock_load_config):
+def test_projects_users_remove(mock_request):
     project_id = gen_uuid()
 
     # uid or email would be possible for the backend
@@ -176,8 +169,7 @@ def test_projects_users_remove(mock_request, mock_load_config):
     )
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
-def test_role_fqn_transform(mock_load_config):
+def test_role_fqn_transform():
     user = {
         "project_roles": [
             {"project_id": "project-1", "role_fqn": "project_admin"},
@@ -189,9 +181,8 @@ def test_role_fqn_transform(mock_load_config):
     assert response == "project_admin"
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=(None, {}))
-def test_projects_edit(mock_request, mock_load_config, capsys):
+def test_projects_edit(mock_request, capsys):
     project_id = gen_uuid()
     call_command("croud", "projects", "edit", "-p", project_id, "--name", "new-name")
     assert_rest(
@@ -206,9 +197,8 @@ def test_projects_edit(mock_request, mock_load_config, capsys):
     assert "Project edited" in err_output
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=(None, {}))
-def test_projects_edit_no_argument(mock_request, mock_load_config, capsys):
+def test_projects_edit_no_argument(mock_request, capsys):
     project_id = gen_uuid()
     with pytest.raises(SystemExit):
         call_command("croud", "projects", "edit", "-p", project_id)

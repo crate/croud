@@ -17,15 +17,15 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import copy
 import difflib
 import re
+import sys
 import uuid
 from doctest import _ellipsis_match  # type: ignore
 from functools import partial
-from typing import Dict
+from unittest import mock
 
-from croud.__main__ import get_parser
+from croud.__main__ import main
 from croud.api import RequestMethod
 
 normalize = partial(re.sub, r"\s+", "")
@@ -45,30 +45,9 @@ def assert_ellipsis_match(actual: str, expected: str) -> None:
     assert equality, diff
 
 
-class MockConfig:
-    """
-    A mocked configuration which emulates reading and writing file from/to disk.
-    """
-
-    def __init__(self, config: Dict) -> None:
-        self.conf = copy.deepcopy(config)
-
-    def read_config(self) -> Dict:
-        return self.conf
-
-    def write_config(self, config) -> None:
-        self.conf = config
-
-
 def call_command(*argv):
-    parser = get_parser()
-    args = parser.parse_args(argv[1:])
-    if "resolver" in args:
-        fn = args.resolver
-        del args.resolver
-        fn(args)
-    else:
-        parser.print_help()
+    with mock.patch.object(sys, "argv", argv):
+        main()
 
 
 def assert_rest(
