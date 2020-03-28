@@ -19,21 +19,22 @@
 
 from unittest import mock
 
+import pytest
+
 from croud.api import Client, RequestMethod
-from croud.config import Configuration
 from tests.util import assert_rest, call_command
 
+pytestmark = pytest.mark.usefixtures("config")
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_me(mock_request, mock_config):
+def test_me(mock_request):
     call_command("croud", "me")
     assert_rest(mock_request, RequestMethod.GET, "/api/v2/users/me/")
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_me_edit_email(mock_request, mock_config):
+def test_me_edit_email(mock_request):
     call_command("croud", "me", "edit", "--email", "user@crate.io")
     assert_rest(
         mock_request,

@@ -17,15 +17,7 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-from unittest import mock
+from typing import Dict, Optional, Union
 
-from tests.util import call_command
-
-
-@mock.patch("croud.logout.print_info")
-def test_logout(mock_print_info, config):
-    config.set_auth_token(config.name, "token")
-    call_command("croud", "logout")
-
-    assert config.token is None
-    mock_print_info.assert_called_once_with("You have been logged out.")
+ProfileType = Dict[str, Optional[str]]
+ConfigurationType = Dict[str, Union[str, Dict[str, ProfileType]]]

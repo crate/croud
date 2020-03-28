@@ -17,13 +17,12 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-import copy
+import sys
 from argparse import Namespace
 from unittest import mock
 
 import pytest
 
-from croud.config import Configuration
 from croud.util import (
     can_launch_browser,
     confirm_prompt,
@@ -145,89 +144,40 @@ def test_require_confirmation(
 
 
 @pytest.mark.parametrize(
-    "current_context,prod_org_id,dev_org_id,org_id_arg,env_arg,expected",
-    [
-        ("dev", "", "", "org1", None, "org1"),
-        ("dev", "", "org1", None, None, "org1"),
-        ("dev", "", "org1", "org2", None, "org2"),
-    ],
+    "config_value,arg_value,expected",
+    [(None, "org-1", "org-1"), ("org-1", None, "org-1"), ("org-1", "org-2", "org-2")],
 )
-def test_org_id_config_fallback(
-    current_context, prod_org_id, dev_org_id, org_id_arg, env_arg, expected, capsys
-):
+def test_org_id_config_fallback(config_value, arg_value, expected, config, capsys):
+    config.set_organization_id(config.name, config_value)
+
     @org_id_config_fallback
     def command(args: Namespace):
         print(args.org_id)
 
-    config = copy.deepcopy(Configuration.DEFAULT_CONFIG)
-    config["auth"]["current_context"] = current_context
-    config["auth"]["contexts"]["prod"]["organization_id"] = prod_org_id
-    config["auth"]["contexts"]["dev"]["organization_id"] = dev_org_id
-
-    with mock.patch("croud.config.load_config", return_value=config):
-        args = Namespace(env=env_arg, org_id=org_id_arg, sudo=False)
-
-        command(args)
-        out, _ = capsys.readouterr()
-        assert expected in out
-
-
-def test_org_id_config_fallback_for_sudo(capsys):
-    @org_id_config_fallback
-    def command(args: Namespace):
-        print(args.org_id)
-
-    config = copy.deepcopy(Configuration.DEFAULT_CONFIG)
-    config["auth"]["current_context"] = "dev"
-    config["auth"]["contexts"]["dev"]["organization_id"] = "some-org-id"
-
-    with mock.patch("croud.config.load_config", return_value=config):
-        args = Namespace(env="dev", org_id="some-other-org-id", sudo=True)
-
-        command(args)
-
-        out, _ = capsys.readouterr()
-        assert "some-other-org-id" in out
+    args = Namespace(org_id=arg_value, sudo=False)
+    command(args)
+    out, _ = capsys.readouterr()
+    assert expected in out
 
 
 @pytest.mark.parametrize(
-    "current_context,prod_org_id,dev_org_id,org_id_arg,env_arg",
-    [
-        ("dev", "", "", None, None),
-        ("prod", "", "org1", None, None),
-        ("prod", "", "org1", None, "prod"),
-    ],
+    "config_value,arg_value,expected",
+    [(None, "org-1", "org-1"), ("org-1", None, sys.exit), ("org-1", "org-2", "org-2")],
 )
-def test_org_id_config_fallback_failed(
-    current_context, prod_org_id, dev_org_id, org_id_arg, env_arg, capsys
-):
+def test_org_id_config_fallback_sudo(config_value, arg_value, expected, config, capsys):
+    config.set_organization_id(config.name, config_value)
+
     @org_id_config_fallback
     def command(args: Namespace):
         print(args.org_id)
 
-    config = copy.deepcopy(Configuration.DEFAULT_CONFIG)
-    config["auth"]["current_context"] = current_context
-    config["auth"]["contexts"]["prod"]["organization_id"] = prod_org_id
-    config["auth"]["contexts"]["dev"]["organization_id"] = dev_org_id
+    args = Namespace(org_id=arg_value, sudo=True)
 
-    with mock.patch("croud.config.load_config", return_value=config):
-        args = Namespace(env=env_arg, org_id=org_id_arg, sudo=False)
-
-        with pytest.raises(SystemExit):
+    if expected == sys.exit:
+        with pytest.raises(SystemExit) as exc_info:
             command(args)
-
-
-def test_org_id_config_fallback_failed_for_sudo(capsys):
-    @org_id_config_fallback
-    def command(args: Namespace):
-        print(args.org_id)
-
-    config = copy.deepcopy(Configuration.DEFAULT_CONFIG)
-    config["auth"]["current_context"] = "dev"
-    config["auth"]["contexts"]["dev"]["organization_id"] = "some-org-id"
-
-    with mock.patch("croud.config.load_config", return_value=config):
-        args = Namespace(env="dev", org_id=None, sudo=True)
-
-        with pytest.raises(SystemExit):
-            command(args)
+        exc_info.value.code == 1
+    else:
+        command(args)
+        out, _ = capsys.readouterr()
+        assert expected in out

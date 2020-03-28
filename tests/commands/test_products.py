@@ -19,21 +19,22 @@
 
 from unittest import mock
 
+import pytest
+
 from croud.api import Client, RequestMethod
-from croud.config import Configuration
 from tests.util import assert_rest, call_command
 
+pytestmark = pytest.mark.usefixtures("config")
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
+
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_products_list(mock_request, mock_load_config):
+def test_products_list(mock_request):
     call_command("croud", "products", "list")
     assert_rest(mock_request, RequestMethod.GET, "/api/v2/products/")
 
 
-@mock.patch("croud.config.load_config", return_value=Configuration.DEFAULT_CONFIG)
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_products_list_kind(mock_request, mock_load_config):
+def test_products_list_kind(mock_request):
     call_command("croud", "products", "list", "--kind", "cluster")
     assert_rest(
         mock_request, RequestMethod.GET, "/api/v2/products/", params={"kind": "cluster"}

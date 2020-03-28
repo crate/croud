@@ -2,57 +2,87 @@
 ``config``
 ==========
 
-Croud allows you to configure the following variables:
-
-- The API region via ``region``
-- The environment via ``env``
-- The output format via ``output-fmt``
+The command ``croud config`` offers multiple subcommands to manage its
+configuration.
 
 
-``config get``
-==============
+``config show``
+===============
 
-You can get the values of configuration variables, like so:
+You can show your full configuration, like so:
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
-   :path: config get
+   :path: config show
 
 Example
 -------
 
 .. code-block:: console
 
-   sh$ croud config get env
-   +--------+
-   | env    |
-   |--------|
-   | prod   |
-   +--------+
+   sh$ croud config show
+   ==> Info: Configuration file /home/me/.config/Crate/croud.yaml
+   default-format: table
+   current-profile: bregenz.a1
+   profiles:
+     bregenz.a1:
+       auth-token: xxxxxxxxxx
+       endpoint: https://bregenz.a1.cratedb.cloud
+       format: table
+     eastus2.azure:
+       auth-token: xxxxxxxxxx
+       endpoint: https://eastus2.azure.cratedb.cloud
+       format: table
+     westeurope.azure:
+       auth-token: xxxxxxxxxx
+       endpoint: https://westeurope.azure.cratedb.cloud
+       format: table
+
+Note, that the values of ``auth-token`` are masked.
 
 
-``config set``
-==============
+``config profiles current``
+===========================
 
-You can set the values of configuration variables, like so:
+You can list your current profile, like so:
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
-   :path: config set
+   :path: config profiles current
 
 Example
 -------
 
 .. code-block:: console
 
-   sh$ croud config set --region eastus.azure
-   ==> Info: API region switched to eastus.azure
+   sh$ croud config current-profile
+   +-------------------+
+   | current-profile   |
+   |-------------------|
+   | bregenz.a1        |
+   +-------------------+
 
-.. note::
 
-    If you specify multiple flags, you can set several configuration variables
-    at once.
+``config profiles use``
+=======================
+
+You can switch to a different profile, like so:
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: config profiles use
+
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud config use-profile eastus2.azure
+   ==> Info: Switched to profile 'eastus2.azure'.

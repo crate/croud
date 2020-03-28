@@ -20,7 +20,7 @@
 from argparse import Namespace
 
 from croud.api import Client
-from croud.config import Configuration, get_output_format
+from croud.config import CONFIG, get_output_format
 from croud.printer import print_error, print_response
 from croud.util import org_id_config_fallback, require_confirmation
 
@@ -106,8 +106,5 @@ def organizations_delete(args: Namespace) -> None:
         output_fmt=get_output_format(args),
     )
 
-    if errors is None:
-        env = args.env or Configuration.get_env()
-        config_org_id = Configuration.get_organization_id(env)
-        if args.org_id == config_org_id:
-            Configuration.set_organization_id("", Configuration.get_env())
+    if errors is None and args.org_id == CONFIG.organization:
+        CONFIG.set_organization_id(CONFIG.name, None)

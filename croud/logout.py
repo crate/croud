@@ -19,8 +19,8 @@
 
 from argparse import Namespace
 
-from croud.api import Client, construct_api_base_url
-from croud.config import Configuration
+from croud.api import Client
+from croud.config import CONFIG
 from croud.printer import print_info
 
 LOGOUT_PATH = "/oauth2/logout"
@@ -28,14 +28,7 @@ LOGOUT_PATH = "/oauth2/logout"
 
 def logout(args: Namespace) -> None:
     client = Client.from_args(args)
-    env = client.env
-    client.get(_logout_url(env))
-
-    Configuration.set_token("", env)
-    Configuration.set_organization_id("", env)
-
+    client.get(LOGOUT_PATH)
+    CONFIG.set_current_auth_token(None)
+    CONFIG.set_current_organization_id(None)
     print_info("You have been logged out.")
-
-
-def _logout_url(env: str) -> str:
-    return construct_api_base_url(env) + LOGOUT_PATH
