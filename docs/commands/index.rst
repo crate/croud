@@ -49,3 +49,4 @@ To get help for a specific command, you can append ``--help``:
    projects
    products
    users
+   regions
