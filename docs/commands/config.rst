@@ -60,11 +60,11 @@ Example
 .. code-block:: console
 
    sh$ croud config profiles current
-   +-------------------+
-   | current-profile   |
-   |-------------------|
-   | bregenz.a1        |
-   +-------------------+
+   +------------+----------------------------------+----------+
+   | name       | endpoint                         | format   |
+   |------------+----------------------------------+----------|
+   | bregenz.a1 | https://bregenz.a1.cratedb.cloud | table    |
+   +------------+----------------------------------+----------+
 
 
 ``config profiles use``
