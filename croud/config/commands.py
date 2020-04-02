@@ -40,8 +40,12 @@ def config_add_profile(args: Namespace) -> None:
 
 
 def config_current_profile(args: Namespace) -> None:
-    data = {"current-profile": CONFIG.name}
-    print_format(data, get_output_format(args))
+    result = {
+        "name": CONFIG.name,
+        "endpoint": CONFIG.endpoint,
+        "format": CONFIG.format,
+    }
+    print_format(result, get_output_format(args))
 
 
 def config_remove_profile(args: Namespace) -> None:
