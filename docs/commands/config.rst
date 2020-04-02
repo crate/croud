@@ -59,7 +59,7 @@ Example
 
 .. code-block:: console
 
-   sh$ croud config current-profile
+   sh$ croud config profiles current
    +-------------------+
    | current-profile   |
    |-------------------|
@@ -84,5 +84,5 @@ Example
 
 .. code-block:: console
 
-   sh$ croud config use-profile eastus2.azure
+   sh$ croud config profiles use eastus2.azure
    ==> Info: Switched to profile 'eastus2.azure'.
