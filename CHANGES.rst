@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added ``croud regions list`` command to list available regions to the user.
+
 - Introduced configuration profiles which replace the existing configuration
   options ``env``, ``region`` and ``output-fmt``.
   Since the new profiles are incompatible with the existing configuration, you

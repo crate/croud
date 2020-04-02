@@ -73,6 +73,7 @@ from croud.projects.users.commands import (
     project_users_list,
     project_users_remove,
 )
+from croud.regions import regions_list
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_list
 
@@ -691,6 +692,15 @@ command_tree = {
                 },
             },
         },
+    },
+    "regions": {
+        "help": "Print information about available regions.",
+        "commands": {
+            "list": {
+                "help": "List all available regions",
+                "resolver": regions_list,
+            },
+        }
     },
 }
 # fmt: on
