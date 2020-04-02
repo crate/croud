@@ -11,8 +11,3 @@ pull_request_rules:
       - '#approved-reviews-by>=1'
       - status-success=continuous-integration/travis-ci/pr
       - status-success=ci/jenkins/pr_cloud_croud
-  - name: Delete branch after merge
-    actions:
-      delete_head_branch: {}
-    conditions:
-      - merged
