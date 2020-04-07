@@ -125,15 +125,16 @@ Release
     ./dev/tools/create_tag.sh
 
 
-Upload to `PyPI`_
------------------
+Upload to PyPI
+--------------
 
-See the instructions for `Generating distribution archives`_ for more details.
+Pushing a tag to Github will trigger a Github workflow that builds and uploads
+the ``croud`` package to `PyPI`_ automatically.
 
 .. note::
 
-    It is recommended to upload the package to `Test PyPI`_ first which is intended
-    for experimentation and testing.
+    It is recommended to build a package locally and upload it to `Test PyPI`_
+    first which is intended for experimentation and testing.
 
 
 Documentation
@@ -197,7 +198,6 @@ release version), please contact the `@crate/docs`_ team.
 .. _configured: https://github.com/crate/croud/blob/master/.travis.yml
 .. _flake8: https://gitlab.com/pycqa/flake8
 .. _fswatch: https://github.com/emcrisostomo/fswatch
-.. _Generating distribution archives: https://packaging.python.org/tutorials/packaging-projects/#generating-distribution-archives
 .. _isort: https://github.com/timothycrosley/isort
 .. _mypy: https://github.com/python/mypy
 .. _pre-commit: https://pre-commit.com
