@@ -42,6 +42,7 @@ Example
 
 Note, that the values of ``auth-token`` are masked.
 
+.. _cmd-config-profiles-current:
 
 ``config profiles current``
 ===========================

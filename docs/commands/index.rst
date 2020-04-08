@@ -31,9 +31,14 @@ To get help for a specific command, you can append ``--help``:
 
 .. note::
 
-   All commands support the ``--env`` flag, which can be used to select between
-   the ``prod`` and ``dev`` environments. This is an internal feature used by
-   developers of the Croud CLI tool itself.
+   Most commands support the ``--region`` flag to specify the region from which
+   resources are fetched or to which resources are deployed. If the
+   ``--region`` argument is omitted, the region falls back to the region of the
+   API endpoint as specified in the current profile (see the
+   :ref:`documentation for the command <cmd-config-profiles-current>` ``croud
+   config profiles current``).  The ``_any_`` region is special, in that it
+   permits listing resources regardless of where they're deployed in CrateDB
+   Cloud.
 
 .. rubric:: Available commands
 
