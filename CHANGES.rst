@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.23.0 - 2020/04/10
+===================
+
 - Added ``croud regions list`` command to list available regions to the user.
 
 - Introduced configuration profiles which replace the existing configuration
