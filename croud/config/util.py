@@ -18,12 +18,13 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import re
-from typing import Any, Dict
+from typing import Dict, List, TypeVar
 
 SENSITIVE_KEYS = re.compile("pass|secret|token", flags=re.IGNORECASE)
+V = TypeVar("V")
 
 
-def clean_dict(data: Dict[str, Any]) -> Dict[str, Any]:
+def clean_dict(data: Dict[str, V]) -> Dict[str, V]:
     """
     Clean "secrets" from a dict.
 
@@ -37,15 +38,9 @@ def clean_dict(data: Dict[str, Any]) -> Dict[str, Any]:
     def clean(k, v):
         if SENSITIVE_KEYS.search(k):
             return "x" * 10
-        elif isinstance(v, list):
-            cleaned_list = []
-            for item in v:
-                if isinstance(item, dict):
-                    cleaned_list.append(clean_dict(item))
-                else:
-                    cleaned_list.append(item)
-            return cleaned_list
-        elif isinstance(v, dict):
+        elif isinstance(v, List):
+            return [clean("", item) for item in v]
+        elif isinstance(v, Dict):
             return clean_dict(v)
         return v
 
