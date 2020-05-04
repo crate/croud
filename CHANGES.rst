@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Removed region validation to help support newer regions.
+
 0.23.0 - 2020/04/10
 ===================
 
