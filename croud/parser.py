@@ -131,13 +131,6 @@ def add_default_args(parser, omit: Set[str]):
             "--region",
             "-r",
             required=False,
-            choices={
-                "eastus.azure",
-                "eastus2.azure",
-                "westeurope.azure",
-                "bregenz.a1",
-                "_any_",
-            },
             help="Temporarily use the specified region that command will be run in.",
         )
     if "format" not in omit:
