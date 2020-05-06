@@ -88,7 +88,7 @@ Profile              Endpoint                               Format
 ==================== ====================================== ===========
 bregenz.a1           https://bregenz.a1.cratedb.cloud       table
 eastus2.azure        https://eastus2.azure.cratedb.cloud    table
-westeurope.azure     https://bregenz.a1.cratedb.cloud       table
+westeurope.azure     https://westeurope.azure.cratedb.cloud table
 ==================== ====================================== ===========
 
 
