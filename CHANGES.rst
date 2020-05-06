@@ -78,14 +78,14 @@ Unreleased
 
 - Fix bug where the ``org_id`` was deleted from the local config when deleting a
   organization, even though the organization was not deleted because an error
-  occured.
+  occurred.
 
 0.17.0 - 2019/07/31
 ===================
 
 - Updated ``croud users list`` to include all user roles.
 
-- Depreated ``--no-org`` argument to ``croud users list`` in favor of ``--no-roles``.
+- Deprecated ``--no-org`` argument to ``croud users list`` in favor of ``--no-roles``.
 
 - Added the ``croud projects users list`` command to list all user within a project.
 
@@ -151,7 +151,7 @@ Unreleased
 ===================
 
 - Fixed a bug that caused commands to always use the access token from the
-  ``current_context`` setting to be used, even though a context / environemnt
+  ``current_context`` setting to be used, even though a context / environment
   had been passed via ``--env``.
 
 0.14.0 - 2019/06/06
@@ -316,7 +316,7 @@ Unreleased
 
 - Improved help output.
 
-- refactored `assignRoleToUser` to `addRoleToUser`
+- Refactored `assignRoleToUser` to `addRoleToUser`
 
 0.4.0 - 2019/01/15
 ==================
