@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+- Fixed a bug that prevented the saving of the config when the ``Crate``
+  directory did not exist. The directly will now be created and access is
+  restricted to the user themselves.
+
 - Removed region validation to help support newer regions.
 
 0.23.0 - 2020/04/10
