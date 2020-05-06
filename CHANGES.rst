@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.23.1 - 2020/05/06
+===================
+
 - Fixed a bug that prevented the saving of the config when the ``Crate``
   directory did not exist. The directly will now be created and access is
   restricted to the user themselves.
