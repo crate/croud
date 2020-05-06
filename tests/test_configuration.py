@@ -17,6 +17,7 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import pathlib
 from unittest import mock
 
 import pytest
@@ -93,7 +94,8 @@ def test_default_configuration_instance(tmp_path):
         assert config.organization is None
 
 
-def test_load_dump_configuration(tmp_path):
+def test_load_dump_configuration(tmpdir_factory):
+    tmp_path = pathlib.Path(tmpdir_factory.getbasetemp()) / "foo" / "Crate"
     with mock.patch(
         "croud.config.configuration.user_config_dir", return_value=str(tmp_path)
     ):
@@ -101,6 +103,8 @@ def test_load_dump_configuration(tmp_path):
         # as long as we don't modify or dump the config, it's not written to disk
         assert config._file_path.exists() is False
         config.dump()
+        assert str(config._config_dir) == str(tmp_path)
+        assert tmp_path.stat().st_mode & 0o777 == 0o700  # only user access
         assert config._file_path.exists() is True
         assert config.config == config.load()
 

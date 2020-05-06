@@ -70,8 +70,8 @@ class Configuration:
     """
 
     def __init__(self, name: str, path: Optional[Path] = None):
-        path = path or Path(user_config_dir("Crate"))
-        self._file_path = path / name
+        self._config_dir = path or Path(user_config_dir("Crate"))
+        self._file_path = self._config_dir / name
         self._config: Optional[ConfigurationType] = None
         self._schema = ConfigSchema()
 
@@ -136,6 +136,7 @@ class Configuration:
     def dump(self) -> None:
         # make sure the config is in memory before we open the file for writing
         data = self.config
+        self._config_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
         with open(self._file_path, "w") as fp:
             yaml.safe_dump(data, fp)
 
