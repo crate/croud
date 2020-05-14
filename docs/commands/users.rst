@@ -15,6 +15,13 @@ The ``users`` command allows you to view user resources.
 ``users list``
 ==============
 
+.. warning::
+
+    The commands listed in this section (``users list``) are for internal use
+    by CrateDB and CrateDB Cloud staff only. They are listed here only to
+    clarify their function, since they appear in the full commands list
+    available under ``--help``.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser

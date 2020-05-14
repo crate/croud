@@ -4,11 +4,13 @@
 User Roles
 ==========
 
-This is an overview over the user roles users can have in the `CrateDB Cloud`_.
+This is an overview over the user roles users can have in `CrateDB Cloud`_ for
+the purposes of the Croud CLI.
 
 .. tip::
 
-   The ``users roles list`` command provides a list of fully qualified role names.
+   The ``users roles list`` command provides a list of fully qualified role
+   names.
 
 .. rubric:: Table of Contents
 
@@ -64,6 +66,14 @@ Project member
 
 * Project member has read-only access to the project (settings, products,
   users).
+
+
+.. _roles-superuser:
+
+Superuser
+=========
+
+The superuser role is reserved internally for CrateDB and CrateDB Cloud staff.
 
 
 .. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/

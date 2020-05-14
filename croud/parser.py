@@ -140,7 +140,7 @@ def add_default_args(parser, omit: Set[str]):
             "-o",
             required=False,
             choices=OUTPUT_FORMATS,
-            help="Change the formatting of the output",
+            help="Change the formatting of the output.",
         )
     if "sudo" not in omit:
         parser._group_optional.add_argument(
