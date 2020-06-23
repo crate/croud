@@ -75,4 +75,4 @@ env/
 # Sphinx documentation
 *.lint
 docs/.utils
-
+docs/.clone
