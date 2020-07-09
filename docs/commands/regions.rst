@@ -23,10 +23,11 @@ Example
 .. code-block:: console
 
    sh$ croud regions list
-   +--------------------+-------------------+
-   | name               | description       |
-   |--------------------+-------------------|
-   | bregenz.a1         | Bregenz           |
-   | eastus2.azure      | Azure East-US-2   |
-   | westeurope.azure   | Azure West-Europe |
-   +--------------------+-------------------+
+   +---------------------------+--------------------+
+   | description               | name               |
+   |---------------------------+--------------------|
+   | Bregenz                   | bregenz.a1         |
+   | Azure East-US-2           | eastus2.azure      |
+   | AWS West Europe (Ireland) | eks1.eu-west-1.aws |
+   | Azure West-Europe         | westeurope.azure   |
+   +---------------------------+--------------------+
