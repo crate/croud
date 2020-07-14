@@ -76,3 +76,5 @@ env/
 *.lint
 docs/.utils
 docs/.clone
+docs/.crate-docs-build
+
