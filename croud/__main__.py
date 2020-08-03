@@ -74,6 +74,7 @@ from croud.projects.users.commands import (
     project_users_remove,
 )
 from croud.regions import regions_list
+from croud.subscriptions.commands import subscriptions_list
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_list
 
@@ -701,6 +702,15 @@ command_tree = {
                 "resolver": regions_list,
             },
         }
+    },
+    "subscriptions": {
+        "help": "Manage subscriptions.",
+        "commands": {
+            "list": {
+                "help": "List all subscriptions the current user has access to.",
+                "resolver": subscriptions_list,
+            },
+        },
     },
 }
 # fmt: on
