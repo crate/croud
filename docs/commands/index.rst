@@ -53,5 +53,6 @@ To get help for a specific command, you can append ``--help``:
    organizations
    projects
    products
+   subscriptions
    users
    regions
