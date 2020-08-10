@@ -21,11 +21,16 @@ from argparse import Namespace
 
 from croud.api import Client
 from croud.config import get_output_format
-from croud.printer import print_response
+from croud.printer import print_response, print_warning
 from croud.util import require_confirmation
 
 
 def consumers_deploy(args: Namespace) -> None:
+    """
+    The consumer deploy command is deprecated and will be removed in the future.
+    There is no explicit deprecation warning being raised, as the API endpoint is
+    providing the deprecation message.
+    """
     body = {
         "cluster_id": args.cluster_id,
         "config": {
@@ -66,6 +71,9 @@ def consumers_deploy(args: Namespace) -> None:
 
 
 def consumers_list(args: Namespace) -> None:
+    print_warning(
+        "The consumers list command is deprecated and will be removed in the future."
+    )
     params = {}
     if args.cluster_id:
         params["cluster_id"] = args.cluster_id
@@ -95,6 +103,9 @@ def consumers_list(args: Namespace) -> None:
 
 
 def consumers_edit(args: Namespace) -> None:
+    print_warning(
+        "The consumers edit command is deprecated and will be removed in the future."
+    )
     body = {
         "cluster_id": args.cluster_id,
         "table_name": args.consumer_table,
@@ -124,6 +135,9 @@ def consumers_edit(args: Namespace) -> None:
     cancel_msg="Consumer deletion cancelled.",
 )
 def consumers_delete(args: Namespace) -> None:
+    print_warning(
+        "The consumers delete command is deprecated and will be removed in the future."
+    )
     client = Client.from_args(args)
     data, errors = client.delete(f"/api/v2/consumers/{args.consumer_id}/")
     print_response(

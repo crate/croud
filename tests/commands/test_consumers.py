@@ -89,13 +89,18 @@ def test_consumers_deploy(mock_request):
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_consumers_list(mock_request):
+def test_consumers_list(mock_request, capsys):
     call_command("croud", "consumers", "list")
     assert_rest(mock_request, RequestMethod.GET, "/api/v2/consumers/", params={})
+    _, err = capsys.readouterr()
+    assert (
+        "The consumers list command is deprecated and will be removed in the future."
+        in err
+    )
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_consumers_list_with_params(mock_request):
+def test_consumers_list_with_params(mock_request, capsys):
     project_id = gen_uuid()
     cluster_id = gen_uuid()
     call_command(
@@ -119,10 +124,15 @@ def test_consumers_list_with_params(mock_request):
             "cluster_id": cluster_id,
         },
     )
+    _, err = capsys.readouterr()
+    assert (
+        "The consumers list command is deprecated and will be removed in the future."
+        in err
+    )
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_consumers_edit(mock_request):
+def test_consumers_edit(mock_request, capsys):
     consumer_id = gen_uuid()
     cluster_id = gen_uuid()
 
@@ -164,6 +174,11 @@ def test_consumers_edit(mock_request):
             "table_schema": "doc",
         },
     )
+    _, err = capsys.readouterr()
+    assert (
+        "The consumers edit command is deprecated and will be removed in the future."
+        in err
+    )
 
 
 @mock.patch.object(Client, "request", return_value=(None, {}))
@@ -179,6 +194,10 @@ def test_consumers_delete(mock_request, capsys):
     _, err_output = capsys.readouterr()
     assert "Success" in err_output
     assert "Consumer deleted." in err_output
+    assert (
+        "The consumers delete command is deprecated and will be removed in the future."
+        in err_output
+    )
 
 
 @mock.patch.object(Client, "request", return_value=(None, {}))
@@ -192,6 +211,10 @@ def test_consumers_delete_flag(mock_request, capsys):
     _, err_output = capsys.readouterr()
     assert "Success" in err_output
     assert "Consumer deleted." in err_output
+    assert (
+        "The consumers delete command is deprecated and will be removed in the future."
+        in err_output
+    )
 
 
 @mock.patch.object(Client, "request", return_value=(None, {}))
