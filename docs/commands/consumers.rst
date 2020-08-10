@@ -2,6 +2,11 @@
 ``consumers``
 =============
 
+.. warning::
+
+    These commands are deprecated and will be removed in the future.
+
+
 The ``consumers`` command lets you manage consumer products.
 
 .. tip::
@@ -13,6 +18,10 @@ The ``consumers`` command lets you manage consumer products.
 
 ``consumers deploy``
 ====================
+
+.. warning::
+
+    This command is deprecated and will be removed in the future.
 
 .. argparse::
    :module: croud.__main__
@@ -49,6 +58,10 @@ Example
 ``consumers list``
 ==================
 
+.. warning::
+
+    This command is deprecated and will be removed in the future.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -70,6 +83,10 @@ Example
 
 ``consumers edit``
 ==================
+
+.. warning::
+
+    This command is deprecated and will be removed in the future.
 
 .. argparse::
    :module: croud.__main__
@@ -94,6 +111,10 @@ Example
 
 ``consumers delete``
 ====================
+
+.. warning::
+
+    This command is deprecated and will be removed in the future.
 
 .. argparse::
    :module: croud.__main__

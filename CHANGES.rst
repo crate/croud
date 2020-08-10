@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Deprecated the ``croud consumers`` commands ``deploy``, ``list``,
+  ``edit`` and ``delete``, as they will be removed in the future.
+
 0.23.1 - 2020/05/06
 ===================
 
