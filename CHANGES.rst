@@ -5,6 +5,12 @@ Changes for croud
 Unreleased
 ==========
 
+0.24.0 - 2020/09/08
+===================
+
+- Added the ``croud subscriptions list`` command to list available subscriptions
+  in a user's organization.
+
 - Deprecated the ``croud consumers`` commands ``deploy``, ``list``,
   ``edit`` and ``delete``, as they will be removed in the future.
 
