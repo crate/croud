@@ -96,7 +96,17 @@ command_tree = {
             },
         }
     },
-    "login": {"help": "Log in to CrateDB Cloud.", "resolver": login},
+    "login": {
+        "help": "Log in to CrateDB Cloud.",
+        "resolver": login,
+        "extra_args": [
+            Argument(
+                "--idp", type=str, required=False,
+                choices={"cognito", "azuread"},
+                help="The identity provider (IdP) for the login."
+            ),
+        ],
+    },
     "logout": {"help": "Log out of CrateDB Cloud.", "resolver": logout},
     "config": {
         "help": "Manage croud configuration.",

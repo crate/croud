@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added support for choosing the identity provider for the login via the
+  optional ``--idp`` argument.
+
 0.24.0 - 2020/09/08
 ===================
 

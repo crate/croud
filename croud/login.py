@@ -26,7 +26,10 @@ from croud.printer import print_error, print_info, print_warning
 from croud.server import Server
 from croud.util import can_launch_browser, open_page_in_browser
 
-LOGIN_PATH = "/oauth2/login?cli=true"
+
+def login_path(idp: str = None) -> str:
+    extra_part = f"{idp}/" if idp else ""
+    return f"/oauth2/{extra_part}login?cli=true"
 
 
 def get_org_id() -> Optional[str]:
@@ -48,7 +51,7 @@ def login(args: Namespace) -> None:
 
     server = Server(CONFIG.set_current_auth_token).start_in_background()
 
-    open_page_in_browser(CONFIG.endpoint + LOGIN_PATH)
+    open_page_in_browser(CONFIG.endpoint + login_path(args.idp))
     print_info("A browser tab has been launched for you to login.")
     try:
         # Wait for the user to login. They'll be redirected to the `SetTokenHandler`
