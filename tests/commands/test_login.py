@@ -21,7 +21,7 @@ from unittest import mock
 
 import pytest
 
-from croud.login import get_org_id
+from croud.login import get_org_id, login_path
 from croud.server import Server
 from tests.util import call_command
 
@@ -70,3 +70,11 @@ def test_get_org_id(org_id_param, config):
     ):
         org_id = get_org_id()
     assert org_id == org_id_param
+
+
+@pytest.mark.parametrize(
+    "idp,expected",
+    [(None, "/oauth2/login?cli=true"), ("idp", "/oauth2/idp/login?cli=true")],
+)
+def test_login_path(idp, expected):
+    assert login_path(idp) == expected

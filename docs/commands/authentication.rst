@@ -28,6 +28,10 @@ screen.
    Your access token is cached locally, and all subsequent commands will be
    authenticated until you explicitly log out.
 
+CrateDB Cloud offers two authentication methods: username and password (via
+Amazon Cognito) and Azure AD login. By default username and password
+authentication is used, but the login provider can be changed using the
+``--idp`` (IdentityProvider) argument.
 
 .. _logout:
 
