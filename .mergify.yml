@@ -1,7 +1,6 @@
 ---
 pull_request_rules:
-  - name: default
-    actions:
+  - actions:
       merge:
         method: rebase
         rebase_fallback: null
@@ -9,9 +8,9 @@ pull_request_rules:
     conditions:
       - label=ready-to-merge
       - '#approved-reviews-by>=1'
-      - status-success=continuous-integration/travis-ci/pr
-      - status-success=ci/jenkins/pr_cloud_croud
-      - status-success=Code style checks and static analysis with Python 3.8
-      - status-success=Tests with Python 3.6
-      - status-success=Tests with Python 3.7
-      - status-success=Tests with Python 3.8
+      - status-success~=Code style checks and static analysis with Python
+      - status-success~=Tests with Python
+      - status-success~=ci/jenkins
+      - status-success~=Build docs
+      - status-success~=docs/readthedocs.org
+    name: default
