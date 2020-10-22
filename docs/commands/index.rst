@@ -47,7 +47,6 @@ To get help for a specific command, you can append ``--help``:
 
    clusters
    config
-   consumers
    authentication
    me
    organizations

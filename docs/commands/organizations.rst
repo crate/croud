@@ -102,7 +102,7 @@ Example
 
    sh$ croud organizations delete \
        --org-id f6c39580-5719-431d-a508-0cee4f9e8209
-   Are you sure you want to delete the consumer? [yN] y
+   Are you sure you want to delete the organization? [yN] y
    ==> Success: Organization deleted.
 
 

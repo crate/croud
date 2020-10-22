@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Removed the already deprecated ``croud consumers`` commands.
+
 - Added support for choosing the identity provider for the login via the
   optional ``--idp`` argument.
 
