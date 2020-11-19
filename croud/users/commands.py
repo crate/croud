@@ -48,11 +48,8 @@ def users_list(args: Namespace) -> None:
         errors=errors,
         output_fmt=get_output_format(args),
         keys=["uid", "email", "username", "organization_roles", "project_roles"],
-        transforms=[
-            None,
-            None,
-            None,
-            transform_roles_list("organization_id"),
-            transform_roles_list("project_id"),
-        ],
+        transforms={
+            "organization_roles": transform_roles_list("organization_id"),
+            "project_roles": transform_roles_list("project_id"),
+        },
     )

@@ -36,7 +36,7 @@ iso8601_datetime_re = re.compile(
 )
 
 
-def actor_id_transfor(field):
+def actor_id_transform(field):
     return field["id"] or "SYSTEM"
 
 
@@ -80,5 +80,5 @@ def auditlogs_list(args: Namespace) -> None:
         errors=errors,
         keys=["action", "actor", "created"],
         output_fmt=get_output_format(args),
-        transforms=[None, actor_id_transfor, None],
+        transforms={"actor": actor_id_transform},
     )

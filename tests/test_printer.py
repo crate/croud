@@ -22,6 +22,7 @@ import pytest
 from croud.printer import (
     JsonFormatPrinter,
     TableFormatPrinter,
+    WideTableFormatPrinter,
     YamlFormatPrinter,
     print_response,
 )
@@ -96,9 +97,9 @@ def test_yaml_format(rows, expected):
             ),
         ),
         (
-            {"a": "foo", "b": 1.234, "c": True},
+            {"a": "foo", "b": 1.234, "c": True, "d": "bar"},
             ["a", "b", "c"],
-            [str.upper, int, None],
+            {"a": str.upper, "b": int},
             (
                 "+-----+-----+------+\n"
                 "| a   |   b | c    |\n"
@@ -126,7 +127,7 @@ def test_yaml_format(rows, expected):
         (
             [{"a": {"bar": "X"}, "b": [1, 2, 3]}, {"b": [2, 4, 8], "a": {"foo": "Y"}}],
             ["a", "b"],
-            [lambda field: field.get("bar", "N/A"), sum],
+            {"a": lambda field: field.get("bar", "N/A"), "b": sum},
             (
                 "+-----+-----+\n"
                 "| a   |   b |\n"
@@ -184,6 +185,42 @@ def test_yaml_format(rows, expected):
 )
 def test_tabular_format(rows, keys, transforms, expected):
     out = TableFormatPrinter(keys=keys, transforms=transforms).format_rows(rows)
+    assert out == expected
+
+
+@pytest.mark.parametrize(
+    "rows,keys,transforms,expected",
+    (
+        (None, ["what", "ever"], None, ""),
+        ({}, ["what", "ever"], None, ""),
+        ([], [], None, ""),
+        (
+            [],
+            ["what", "ever"],
+            None,
+            (
+                "+--------+--------+\n"
+                "| what   | ever   |\n"
+                "|--------+--------|\n"
+                "+--------+--------+"
+            ),
+        ),
+        (
+            {"a": "foo", "b": 1.234, "c": True, "d": "bar"},
+            ["a", "b", "c"],
+            {"a": str.upper, "b": int},
+            (
+                "+-----+-----+------+-----+\n"
+                "| a   |   b | c    | d   |\n"
+                "|-----+-----+------+-----|\n"
+                "| FOO |   1 | TRUE | bar |\n"
+                "+-----+-----+------+-----+"
+            ),
+        ),
+    ),
+)
+def test_wide_format(rows, keys, transforms, expected):
+    out = WideTableFormatPrinter(keys=keys, transforms=transforms).format_rows(rows)
     assert out == expected
 
 

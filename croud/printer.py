@@ -34,7 +34,7 @@ def print_format(
     rows: Union[List[JsonDict], JsonDict],
     format: str,
     keys: Optional[List[str]] = None,
-    transforms: List[Optional[Callable[[Any], Any]]] = None,
+    transforms: Optional[Dict[str, Callable[[Any], Any]]] = None,
 ) -> None:
     try:
         Printer = PRINTERS[format]
@@ -51,7 +51,7 @@ def print_response(
     output_fmt,
     success_message: str = None,
     keys: List[str] = None,
-    transforms: List[Optional[Callable[[Any], Any]]] = None,
+    transforms: Dict[str, Callable[[Any], Any]] = None,
 ):
     if errors:
         if "message" in errors:
@@ -94,15 +94,11 @@ class FormatPrinter(abc.ABC):
     def __init__(
         self,
         keys: Optional[List[str]] = None,
-        transforms: List[Optional[Callable[[Any], Any]]] = None,
+        transforms: Optional[Dict[str, Callable[[Any], Any]]] = None,
     ):
-        assert not transforms or transforms and keys and len(keys) == len(transforms), (
-            "When providing transforms the number of transforms must match the number "
-            "of provided keys."
-        )
 
         self.keys = keys
-        self.transforms = transforms
+        self.transforms = transforms or {}
 
     def print_rows(self, rows: Union[List[JsonDict], JsonDict]) -> None:
         print(self.format_rows(rows))
@@ -118,19 +114,8 @@ class JsonFormatPrinter(FormatPrinter):
 
 
 class TableFormatPrinter(FormatPrinter):
-    transform_funcs: Dict[str, Callable[[Any], Any]] = {}
 
-    def __init__(
-        self,
-        keys: Optional[List[str]] = None,
-        transforms: List[Optional[Callable[[Any], Any]]] = None,
-    ):
-        super().__init__(keys=keys, transforms=transforms)
-        if keys and transforms:
-            self.transform_funcs = {
-                key: transform or TableFormatPrinter._identity_transform
-                for key, transform in zip(keys, transforms)
-            }
+    display_all_columns = False
 
     def format_rows(self, rows: Union[List[JsonDict], JsonDict]) -> str:
         if rows is None:
@@ -139,7 +124,7 @@ class TableFormatPrinter(FormatPrinter):
         if not isinstance(rows, list):
             rows = [rows]
 
-        if self.keys:
+        if self.keys and (not self.display_all_columns or len(rows) == 0):
             filter_record = functools.partial(self._filter_record, keys=self.keys)
             rows = list(map(filter_record, rows))
 
@@ -159,11 +144,12 @@ class TableFormatPrinter(FormatPrinter):
         headers = list(map(str, rows[0].keys())) if len(rows) else self.keys
         if headers is None:
             return ""
+
         values = [
             [
-                self.transform_funcs.get(
-                    header, TableFormatPrinter._identity_transform
-                )(row[header])
+                self.transforms.get(header, TableFormatPrinter._identity_transform)(
+                    row[header]
+                )
                 for header in headers
             ]
             for row in rows
@@ -185,6 +171,15 @@ class TableFormatPrinter(FormatPrinter):
             return field
 
 
+class WideTableFormatPrinter(TableFormatPrinter):
+    """
+    Prints data in tabular format without any field restrictions, displaying all the
+    properties of the payload.
+    """
+
+    display_all_columns = True
+
+
 class YamlFormatPrinter(FormatPrinter):
     def format_rows(self, rows: Union[List[JsonDict], JsonDict]) -> str:
         return yaml.dump(rows, default_flow_style=False)
@@ -193,5 +188,6 @@ class YamlFormatPrinter(FormatPrinter):
 PRINTERS: Dict[str, Type[FormatPrinter]] = {
     "json": JsonFormatPrinter,
     "table": TableFormatPrinter,
+    "wide": WideTableFormatPrinter,
     "yaml": YamlFormatPrinter,
 }

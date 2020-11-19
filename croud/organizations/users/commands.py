@@ -67,7 +67,7 @@ def org_users_list(args: Namespace) -> None:
         errors=errors,
         output_fmt=get_output_format(args),
         keys=["uid", "email", "username", "organization_roles"],
-        transforms=[None, None, None, role_fqn_transform],
+        transforms={"organization_roles": role_fqn_transform},
     )
 
 

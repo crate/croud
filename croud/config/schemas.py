@@ -21,7 +21,7 @@ from marshmallow import Schema, fields, post_load
 from marshmallow.exceptions import ValidationError
 from marshmallow.validate import OneOf
 
-OUTPUT_FORMATS = ("table", "json", "yaml")  # we want to keep them sorted!
+OUTPUT_FORMATS = ("table", "wide", "json", "yaml")  # we want to keep them sorted!
 
 
 class ProfileSchema(Schema):

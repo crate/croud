@@ -75,7 +75,7 @@ def test_load_profile_schema_valid(data):
     endpoint: http://localhost:8000
     format: invalid
     """,
-            {"format": ["Must be one of: table, json, yaml."]},
+            {"format": ["Must be one of: table, wide, json, yaml."]},
         ),
     ],
 )
