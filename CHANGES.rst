@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Implemented support for wide tabular output format, where all fields are
+  displayed.
+
 - Removed the already deprecated ``croud consumers`` commands.
 
 - Added support for choosing the identity provider for the login via the

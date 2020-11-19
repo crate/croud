@@ -65,7 +65,7 @@ def project_users_list(args: Namespace) -> None:
         errors=errors,
         output_fmt=get_output_format(args),
         keys=["uid", "email", "username", "project_roles"],
-        transforms=[None, None, None, role_fqn_transform],
+        transforms={"project_roles": role_fqn_transform},
     )
 
 

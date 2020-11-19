@@ -51,8 +51,9 @@ The keys have the following meaning:
 :``default-format``:
 
     The default output format for API requests. This can be either ``table``
-    (default), ``json``, or ``yaml``. This value is only used if the current
-    profile does not specify a ``format``.
+    (default, displays the most important fields), ``wide`` (a table format
+    displaying all fields), ``json``, or ``yaml``. This value is only used if
+    the current profile does not specify a ``format``.
 
 :``profiles``:
 
