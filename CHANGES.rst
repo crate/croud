@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.25.0 - 2020/11/30
+===================
+
 - Implemented support for wide tabular output format, where all fields are
   displayed.
 
