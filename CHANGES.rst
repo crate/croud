@@ -9,6 +9,7 @@ Unreleased
   This makes it explicit which one is being used as the recommended API endpoint
   is always ``https://console.cratedb.cloud``.
 
+
 0.25.0 - 2020/11/30
 ===================
 
@@ -20,6 +21,7 @@ Unreleased
 - Added support for choosing the identity provider for the login via the
   optional ``--idp`` argument.
 
+
 0.24.0 - 2020/09/08
 ===================
 
@@ -29,6 +31,7 @@ Unreleased
 - Deprecated the ``croud consumers`` commands ``deploy``, ``list``,
   ``edit`` and ``delete``, as they will be removed in the future.
 
+
 0.23.1 - 2020/05/06
 ===================
 
@@ -37,6 +40,7 @@ Unreleased
   restricted to the user themselves.
 
 - Removed region validation to help support newer regions.
+
 
 0.23.0 - 2020/04/10
 ===================
@@ -52,6 +56,7 @@ Unreleased
 - Allow ``_any_`` as value for the ``--region`` argument. This will list
   resources of all available regions.
 
+
 0.22.0 - 2020/03/23
 ===================
 
@@ -60,21 +65,25 @@ Unreleased
 
 - Removed the ``croud monitoring`` command and all its subcommands.
 
+
 0.21.0 - 2019/12/20
 ===================
 
 - Added support for Python 3.8
+
 
 0.20.0 - 2019/11/28
 ===================
 
 - Added new ``croud me edit`` command to change your own email address.
 
+
 0.19.1 - 2019/11/18
 ===================
 
 - Fixed some spelling and formatting issues in ``croud organizations auditlogs
   list`` command.
+
 
 0.19.0 - 2019/11/15
 ===================
@@ -85,10 +94,12 @@ Unreleased
 - Handle client networking errors correctly by printing a sensible error message
   instead of a traceback.
 
+
 0.18.1 - 2019/08/09
 ===================
 
 - Fix column selection in table output for ``croud clusters upgrade`` command.
+
 
 0.18.0 - 2019/08/06
 ===================
@@ -100,12 +111,14 @@ Unreleased
 - Removed the previously deprecated ``croud users roles add`` and ``croud users
   roles remove`` commands.
 
+
 0.17.1 - 2019/08/05
 ===================
 
 - Fix bug where the ``org_id`` was deleted from the local config when deleting a
   organization, even though the organization was not deleted because an error
   occurred.
+
 
 0.17.0 - 2019/07/31
 ===================
@@ -130,6 +143,7 @@ Unreleased
 - Added support for YAML output. It can be specified with the ``-o yaml``
   argument.
 
+
 0.16.0 - 2019/07/18
 ===================
 
@@ -141,6 +155,7 @@ Unreleased
 - Show additional information about the scaling capabilities of a product in
   the output of the ``croud products list`` command.
 
+
 0.15.2 - 2019/07/09
 ===================
 
@@ -151,11 +166,13 @@ Unreleased
 - [Reverted] Added support for specifying the user through their email address
   in ``croud users roles add`` and ``croud users roles remove``.
 
+
 0.15.1 - 2019/07/05
 ===================
 
 - Added support for specifying the user through their email address in ``croud
   users roles add`` and ``croud users roles remove``.
+
 
 0.15.0 - 2019/07/04
 ===================
@@ -174,6 +191,7 @@ Unreleased
 - Improved printing of error messages by including the error details returned
   by the server.
 
+
 0.14.1 - 2019/07/04
 ===================
 
@@ -181,11 +199,13 @@ Unreleased
   ``current_context`` setting to be used, even though a context / environment
   had been passed via ``--env``.
 
+
 0.14.0 - 2019/06/06
 ===================
 
 - Added ``clusters upgrade`` command to update an existing cluster to a later
   version.
+
 
 0.13.2 - 2019/06/04
 ===================
@@ -197,10 +217,12 @@ Unreleased
 - Fixed an issue that caused empty query results to print "Success" to
   the console instead of an empty table.
 
+
 0.13.1 - 2019/05/29
 ===================
 
 - Updated ``clusters delete`` documentation.
+
 
 0.13.0 - 2019/05/28
 ===================
@@ -214,10 +236,12 @@ Unreleased
 - Added ``croud products list`` command to list all available products
   in the current region.
 
+
 0.12.3 - 2019/05/28
 ===================
 
 - Fixed region support in ``consumers edit`` command.
+
 
 0.12.2 - 2019/05/24
 ===================
@@ -226,12 +250,14 @@ Unreleased
   configuration. This prevents the server from refreshing the access token sent
   by the client in case it was already expired.
 
+
 0.12.1 - 2019/05/22
 ===================
 
 - Removed the redundant printed error JSON from the error message,
   only the message is provided. When the message is not available,
   the full error JSON is then printed.
+
 
 0.12.0 - 2019/05/21
 ===================
@@ -240,16 +266,19 @@ Unreleased
 
 - Make the ``config get`` commands respect the output format option.
 
+
 0.11.1 - 2019/05/02
 ===================
 
 - Fixed API redirect and error response bug for ``monitoring grafana`` command.
+
 
 0.11.0 - 2019/04/17
 ===================
 
 - Added the commands ``monitoring grafana`` that can enable and
   disable Grafana dashboards for a project.
+
 
 0.10.0 - 2019/04/01
 ===================
@@ -261,6 +290,7 @@ Unreleased
 
 - [Breaking] Removed the commands ``product deploy``, ``consumer-sets list``
   and ``consumer-sets edit``.
+
 
 0.9.0 - 2019/03/20
 ==================
@@ -275,6 +305,7 @@ Unreleased
   ``user`` argument so that users can be removed via their email address
   or user ID.
 
+
 0.8.1 - 2019/02/22
 ==================
 
@@ -282,6 +313,7 @@ Unreleased
 
 - Fixed ``products deploy`` command which led to an exception in the command
   line argument parsing.
+
 
 0.8.0 - 2019/02/20
 ==================
@@ -310,11 +342,13 @@ Unreleased
   an organization ID, and a user email address or ID. Super users can
   add users to any organization.
 
+
 0.7.0 - 2019/02/06
 ==================
 
 - Added ``products deploy`` command that allows super users to deploy new
   CrateDB Cloud for Azure IoT products.
+
 
 0.6.0 - 2019/02/05
 ==================
@@ -333,6 +367,7 @@ Unreleased
 
 - Added eastus2 to available regions.
 
+
 0.5.0 - 2019/01/22
 ==================
 
@@ -344,6 +379,7 @@ Unreleased
 - Improved help output.
 
 - Refactored `assignRoleToUser` to `addRoleToUser`
+
 
 0.4.0 - 2019/01/15
 ==================
@@ -357,6 +393,7 @@ Unreleased
 - Removed region arg from `me` command
 
 - Added `organizations create` sub command that creates an organization (super users only)
+
 
 0.3.0 - 2019/01/09
 ==================
@@ -372,10 +409,12 @@ Unreleased
 
 - Added subcommand `config set` that sets a specified default config setting
 
+
 0.2.1 - 2018/12/12
 ==================
 
 - Fixed `ModuleNotFoundError`.
+
 
 0.2.0 - 2018/12/12
 ==================
@@ -389,6 +428,7 @@ Unreleased
 - Added `env` flag to commands to temporarily override auth context
 
 - Added a subcommand `env` that allows you to switch env (so you can be logged into multiple environments. E.g. ``croud env prod``
+
 
 0.1.0 - 2018/11/28
 ==================
