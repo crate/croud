@@ -15,7 +15,9 @@ Print the available regions to the user:
 
 .. note::
 
-   Listed region names can used in the ``--region`` argument to list/deploy resources in that region.
+   The region is specified for each profile in the :doc:`../configuration` file.
+   The region for specific actions can be overridden using the ``--region`` argument to list/deploy resources in that region.
+
 
 Example
 =======
@@ -23,11 +25,11 @@ Example
 .. code-block:: console
 
    sh$ croud regions list
-   +---------------------------+--------------------+
-   | description               | name               |
-   |---------------------------+--------------------|
-   | Bregenz                   | bregenz.a1         |
-   | Azure East-US-2           | eastus2.azure      |
-   | AWS West Europe (Ireland) | eks1.eu-west-1.aws |
-   | Azure West-Europe         | westeurope.azure   |
-   +---------------------------+--------------------+
+   +--------------------------------+-----------------------+
+   | description                    | name                  |
+   |--------------------------------+-----------------------|
+   | Azure East US 2                | aks1.eastus2.azure    |
+   | Azure West Europe              | aks1.westeurope.azure |
+   | AWS West Europe (Ireland)      | eks1.eu-west-1.aws    |
+   +--------------------------------+-----------------------+
+

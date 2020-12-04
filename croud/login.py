@@ -33,7 +33,7 @@ def login_path(idp: str = None) -> str:
 
 
 def get_org_id() -> Optional[str]:
-    client = Client(CONFIG.endpoint, token=CONFIG.token)
+    client = Client(CONFIG.endpoint, token=CONFIG.token, region=CONFIG.region)
     data, error = client.get("/api/v2/users/me/")
     if data and not error:
         return data.get("organization_id")

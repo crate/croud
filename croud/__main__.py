@@ -146,6 +146,10 @@ command_tree = {
                                 "--format", type=str, required=False,
                                 help="The output format for the profile."
                             ),
+                            Argument(
+                                "--region", type=str, required=False,
+                                help="The region for the profile."
+                            ),
                         ],
                     },
                     "remove": {
