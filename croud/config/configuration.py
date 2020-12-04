@@ -30,20 +30,20 @@ from croud.config.types import ConfigurationType, ProfileType
 
 DEFAULT_CONFIGURATION = """\
 default-format: table
-current-profile: bregenz.a1
+current-profile: aks1.westeurope.azure
 profiles:
-  bregenz.a1:
+  aks1.eastus2.azure:
     auth-token: NULL
-    endpoint: https://bregenz.a1.cratedb.cloud
-    format: table
-  eastus2.azure:
+    endpoint: https://console.cratedb.cloud
+    region: aks1.eastus2.azure
+  aks1.westeurope.azure:
     auth-token: NULL
-    endpoint: https://eastus2.azure.cratedb.cloud
-    format: table
-  westeurope.azure:
+    endpoint: https://console.cratedb.cloud
+    region: aks1.westeurope.azure
+  eks1.eu-west-1.aws:
     auth-token: NULL
-    endpoint: https://westeurope.azure.cratedb.cloud
-    format: table
+    endpoint: https://console.cratedb.cloud
+    region: eks1.eu-west-1.aws
 """
 
 
@@ -96,6 +96,10 @@ class Configuration:
     @property
     def token(self) -> Optional[str]:
         return self.profile["auth-token"]  # type: ignore
+
+    @property
+    def region(self) -> Optional[str]:
+        return self.profile.get("region", None)  # type: ignore
 
     @property
     def organization(self) -> Optional[str]:

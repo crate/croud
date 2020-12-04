@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+- Added the ``region`` parameter to profiles in the config file.
+  This makes it explicit which one is being used as the recommended API endpoint
+  is always ``https://console.cratedb.cloud``.
+
 0.25.0 - 2020/11/30
 ===================
 

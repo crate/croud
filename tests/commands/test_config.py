@@ -37,8 +37,11 @@ def test_config_add_profile(config, capsys):
         "new-profile",
         "--endpoint",
         "http://localhost:8000",
+        "--region",
+        "new-region",
     )
     assert "format" not in config.profiles["new-profile"]
+    assert config.profiles["new-profile"]["region"] == "new-region"
 
     _, err = capsys.readouterr()
     assert "Added profile 'new-profile'" in err
@@ -55,6 +58,7 @@ def test_config_add_profile(config, capsys):
         "json",
     )
     assert config.profiles["newer-profile"]["format"] == "json"
+    assert "region" not in config.profiles["newer-profile"]
 
     _, err = capsys.readouterr()
     assert "Added profile 'newer-profile'" in err
@@ -67,13 +71,13 @@ def test_config_add_duplicate_profile(config, capsys):
             "config",
             "profiles",
             "add",
-            "bregenz.a1",
+            "aks1.westeurope.azure",
             "--endpoint",
             "http://localhost:8000",
         )
     assert exc_info.value.code == 1
     _, err = capsys.readouterr()
-    assert "Failed to add profile 'bregenz.a1'" in err
+    assert "Failed to add profile 'aks1.westeurope.azure'" in err
 
 
 def test_config_current_profile(config, capsys):
@@ -83,11 +87,11 @@ def test_config_current_profile(config, capsys):
 
 
 def test_config_remove_profile(config, capsys):
-    call_command("croud", "config", "profiles", "remove", "bregenz.a1")
-    assert "bregenz.a1" not in config.profiles
+    call_command("croud", "config", "profiles", "remove", "aks1.westeurope.azure")
+    assert "aks1.westeurope.azure" not in config.profiles
 
     _, err = capsys.readouterr()
-    assert "Removed profile 'bregenz.a1'" in err
+    assert "Removed profile 'aks1.westeurope.azure'" in err
 
 
 def test_config_remove_current_profile(config, capsys):
@@ -101,12 +105,12 @@ def test_config_remove_current_profile(config, capsys):
 
 
 def test_config_set_profile(config, capsys):
-    assert config.name != "bregenz.a1"
-    call_command("croud", "config", "profiles", "use", "bregenz.a1")
-    assert config.name == "bregenz.a1"
+    assert config.name != "aks1.westeurope.azure"
+    call_command("croud", "config", "profiles", "use", "aks1.westeurope.azure")
+    assert config.name == "aks1.westeurope.azure"
 
     _, err = capsys.readouterr()
-    assert "Switched to profile 'bregenz.a1'" in err
+    assert "Switched to profile 'aks1.westeurope.azure'" in err
 
 
 def test_config_set_profile_does_not_exist(config, capsys):

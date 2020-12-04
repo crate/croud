@@ -21,21 +21,21 @@ The contents of the configuration file of a fresh ``croud`` installation are
 
 .. code-block:: yaml
 
-   current-profile: dev
+   current-profile: aks1.westeurope.azure
    default-format: table
    profiles:
-     bregenz.a1:
+     aks1.eastus2.azure:
        auth-token: NULL
-       endpoint: https://bregenz.a1.cratedb.cloud
-       format: table
-     eastus2.azure:
-       auth-token: null
-       endpoint: https://eastus2.azure.cratedb.cloud
-       format: table
-     westeurope.azure:
-       auth-token: null
-       endpoint: https://westeurope.azure.cratedb.cloud
-       format: table
+       endpoint: https://console.cratedb.cloud
+       region: aks1.eastus2.azure
+     aks1.westeurope.azure:
+       auth-token: NULL
+       endpoint: https://console.cratedb.cloud
+       region: aks1.westeurope.azure
+     eks1.eu-west-1.aws:
+       auth-token: NULL
+       endpoint: https://console.cratedb.cloud
+       region: eks1.eu-west-1.aws
 
 
 Configuration file keys
@@ -59,11 +59,13 @@ The keys have the following meaning:
 
     A dictionary of available profiles. There are three default profiles available
     (see :ref:`available-profiles`).
-    Each profile consists of ``auth-token``, ``endpoint``, and ``format``.
+    Each profile consists of ``auth-token``, ``endpoint``, ``region``, and ``format``.
 
     ``auth-token`` is populated with the API token upon login.
 
     ``endpoint`` is the full URL of the API endpoint that is used for requests.
+
+    ``region`` is the specific region where CrateDB Cloud resources are accessed in.
 
     ``format`` is the output format for this profile. This key is optional and
     if it is missing, the output format will fall back on ``default-format``.
@@ -84,13 +86,15 @@ details.
 Available profiles
 ==================
 
-==================== ====================================== ===========
-Profile              Endpoint                               Format
-==================== ====================================== ===========
-bregenz.a1           https://bregenz.a1.cratedb.cloud       table
-eastus2.azure        https://eastus2.azure.cratedb.cloud    table
-westeurope.azure     https://westeurope.azure.cratedb.cloud table
-==================== ====================================== ===========
+The API Endpoint for all profiles is ``https://console.cratedb.cloud``
+
+========================== ====================================== ===========
+Profile                    Region                                 Format
+========================== ====================================== ===========
+aks1.eastus2.azure         aks1.eastus2.azure                     table
+aks1.westeurope.azure      aks1.westeurope.azure                  table
+eks1.eu-west-1.aws         eks1.eu-west-1.aws                     table
+========================== ====================================== ===========
 
 
 Incompatible versions

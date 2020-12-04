@@ -37,6 +37,7 @@ class ProfileSchema(Schema):
     organization_id = fields.String(
         attribute="organization-id", data_key="organization-id", allow_none=True
     )
+    region = fields.String(required=False)
 
 
 class ConfigSchema(Schema):

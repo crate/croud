@@ -30,6 +30,8 @@ def config_add_profile(args: Namespace) -> None:
     kwargs = {}
     if args.format:
         kwargs["format"] = args.format
+    if args.region:
+        kwargs["region"] = args.region
     try:
         CONFIG.add_profile(args.profile, endpoint=args.endpoint, **kwargs)
     except InvalidProfile:
