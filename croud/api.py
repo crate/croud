@@ -93,7 +93,7 @@ class Client:
             CONFIG.endpoint,
             token=CONFIG.token,
             on_token=CONFIG.set_current_auth_token,
-            region=args.region if args.region is not None else CONFIG.region,
+            region=args.region or CONFIG.region,
             sudo=args.sudo,
         )
 
