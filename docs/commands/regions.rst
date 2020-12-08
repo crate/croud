@@ -16,7 +16,7 @@ Print the available regions to the user:
 .. note::
 
    The region is specified for each profile in the :doc:`../configuration` file.
-   The region for specific actions can be overridden using the ``--region`` argument to list/deploy resources in that region.
+   The region for specific actions can be overridden using the ``--region`` argument to list or deploy resources in that region.
 
 
 Example

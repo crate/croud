@@ -65,7 +65,7 @@ The keys have the following meaning:
 
     ``endpoint`` is the full URL of the API endpoint that is used for requests.
 
-    ``region`` is the specific region where CrateDB Cloud resources are accessed in.
+    ``region`` is the specific region within which CrateDB Cloud resources are accessed.
 
     ``format`` is the output format for this profile. This key is optional and
     if it is missing, the output format will fall back on ``default-format``.
@@ -86,7 +86,7 @@ details.
 Available profiles
 ==================
 
-The API Endpoint for all profiles is ``https://console.cratedb.cloud``
+The API endpoint for all profiles is ``https://console.cratedb.cloud``.
 
 ========================== ====================================== ===========
 Profile                    Region                                 Format
