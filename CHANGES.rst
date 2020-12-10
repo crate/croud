@@ -9,6 +9,9 @@ Unreleased
   This makes it explicit which one is being used as the recommended API endpoint
   is always ``https://console.cratedb.cloud``.
 
+- Croud will now send a custom User-Agent including the version of ``croud`` itself
+  and the version of the Python interpreter that is running it.
+
 
 0.25.0 - 2020/11/30
 ===================
