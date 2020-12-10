@@ -19,11 +19,13 @@
 
 import enum
 from argparse import Namespace
+from platform import python_version
 from typing import Any, Callable, Dict, Optional, Tuple
 
 import requests
 from yarl import URL
 
+import croud
 from croud.config import CONFIG
 from croud.printer import print_error, print_info
 
@@ -86,6 +88,9 @@ class Client:
             self.session.headers["X-Region"] = region
         if sudo:
             self.session.headers["X-Auth-Sudo"] = "1"
+
+        ua = f"Croud/{croud.__version__} Python/{python_version()}"
+        self.session.headers["User-Agent"] = ua
 
     @staticmethod
     def from_args(args: Namespace) -> "Client":

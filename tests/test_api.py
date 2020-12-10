@@ -19,9 +19,11 @@
 
 import argparse
 import re
+from platform import python_version
 
 import pytest
 
+import croud
 from croud.api import Client
 
 
@@ -73,6 +75,13 @@ def test_send_sudo_header(sudo, config):
     client = Client(config.endpoint, region="bregenz.a1", sudo=sudo, _verify_ssl=False)
     resp_data, errors = client.get("/client-headers")
     assert ("X-Auth-Sudo" in resp_data) == sudo  # type: ignore
+
+
+def test_send_user_agent_header(config):
+    client = Client(config.endpoint, region="bregenz.a1", _verify_ssl=False)
+    resp_data, errors = client.get("/client-headers")
+    expected_ua = f"Croud/{croud.__version__} Python/{python_version()}"
+    assert resp_data["User-Agent"] == expected_ua
 
 
 @pytest.mark.parametrize(
