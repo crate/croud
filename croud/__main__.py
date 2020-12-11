@@ -26,6 +26,7 @@ import colorama
 from croud.clusters.commands import (
     clusters_delete,
     clusters_deploy,
+    clusters_get,
     clusters_list,
     clusters_scale,
     clusters_upgrade,
@@ -46,6 +47,7 @@ from croud.organizations.commands import (
     organizations_create,
     organizations_delete,
     organizations_edit,
+    organizations_get,
     organizations_list,
 )
 from croud.organizations.users.commands import (
@@ -60,6 +62,7 @@ from croud.projects.commands import (
     project_create,
     project_delete,
     project_edit,
+    projects_get,
     projects_list,
 )
 from croud.projects.users.commands import (
@@ -68,7 +71,7 @@ from croud.projects.users.commands import (
     project_users_remove,
 )
 from croud.regions import regions_list
-from croud.subscriptions.commands import subscriptions_list
+from croud.subscriptions.commands import subscriptions_get, subscriptions_list
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_list
 
@@ -209,6 +212,18 @@ command_tree = {
                 ],
                 "resolver": project_edit,
             },
+            "get": {
+                "help": (
+                    "Get a project by its ID."
+                ),
+                "extra_args": [
+                    Argument(
+                        "id", type=str,
+                        help="The ID of the project.",
+                    ),
+                ],
+                "resolver": projects_get,
+            },
             "list": {
                 "help": (
                     "List all projects the current user has access to in "
@@ -271,6 +286,18 @@ command_tree = {
     "clusters": {
         "help": "Manage clusters.",
         "commands": {
+            "get": {
+                "help": (
+                    "Get a cluster by its ID."
+                ),
+                "extra_args": [
+                    Argument(
+                        "id", type=str,
+                        help="The ID of the cluster.",
+                    ),
+                ],
+                "resolver": clusters_get,
+            },
             "list": {
                 "help": "List all clusters the current user has access to.",
                 "extra_args": [
@@ -397,6 +424,18 @@ command_tree = {
                     ),
                 ],
                 "resolver": organizations_create,
+            },
+            "get": {
+                "help": (
+                    "Get an organization by its ID."
+                ),
+                "extra_args": [
+                    Argument(
+                        "id", type=str,
+                        help="The ID of the organization.",
+                    ),
+                ],
+                "resolver": organizations_get,
             },
             "list": {
                 "help": "List all organizations the current user has access to.",
@@ -552,6 +591,18 @@ command_tree = {
     "subscriptions": {
         "help": "Manage subscriptions.",
         "commands": {
+            "get": {
+                "help": (
+                    "Get a subscription by its ID."
+                ),
+                "extra_args": [
+                    Argument(
+                        "id", type=str,
+                        help="The ID of the subscription.",
+                    ),
+                ],
+                "resolver": subscriptions_get,
+            },
             "list": {
                 "help": "List all subscriptions the current user has access to.",
                 "resolver": subscriptions_list,

@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+- Added new subcommand ``get`` for the resources ``clusters``,
+  ``organizations``, ``projects``, ``subscriptions`` that returns a single item
+  of the requested resource by its ID.
+
 - Added the ``region`` parameter to profiles in the config file.
   This makes it explicit which one is being used as the recommended API endpoint
   is always ``https://console.cratedb.cloud``.
