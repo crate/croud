@@ -17,6 +17,7 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import uuid
 from unittest import mock
 
 import pytest
@@ -95,6 +96,13 @@ def test_projects_delete_aborted(mock_request, capsys):
 def test_projects_list(mock_request):
     call_command("croud", "projects", "list")
     assert_rest(mock_request, RequestMethod.GET, "/api/v2/projects/")
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_projects_get(mock_request):
+    id = str(uuid.uuid4())
+    call_command("croud", "projects", "get", id)
+    assert_rest(mock_request, RequestMethod.GET, f"/api/v2/projects/{id}/")
 
 
 @pytest.mark.parametrize(

@@ -85,6 +85,18 @@ def project_edit(args: Namespace) -> None:
     )
 
 
+def projects_get(args: Namespace) -> None:
+    """
+    Get project by ID
+    """
+
+    client = Client.from_args(args)
+    data, errors = client.get(f"/api/v2/projects/{args.id}/")
+    print_response(
+        data=data, errors=errors, output_fmt=get_output_format(args),
+    )
+
+
 def projects_list(args: Namespace) -> None:
     """
     Lists all projects for the current user in the specified region

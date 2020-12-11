@@ -24,6 +24,17 @@ from croud.config import get_output_format
 from croud.printer import print_response
 
 
+def subscriptions_get(args: Namespace) -> None:
+    """
+    Get subscription by ID
+    """
+    client = Client.from_args(args)
+    data, errors = client.get(f"/api/v2/subscriptions/{args.id}/")
+    print_response(
+        data=data, errors=errors, output_fmt=get_output_format(args),
+    )
+
+
 def subscriptions_list(args: Namespace) -> None:
     """
     Lists all subscriptions for the current user in the organization

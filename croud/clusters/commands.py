@@ -25,6 +25,18 @@ from croud.printer import print_response
 from croud.util import require_confirmation
 
 
+def clusters_get(args: Namespace) -> None:
+    """
+    Get cluster by ID
+    """
+
+    client = Client.from_args(args)
+    data, errors = client.get(f"/api/v2/clusters/{args.id}/")
+    print_response(
+        data=data, errors=errors, output_fmt=get_output_format(args),
+    )
+
+
 def clusters_list(args: Namespace) -> None:
     """
     Lists all projects for the current user in the specified region

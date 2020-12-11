@@ -17,6 +17,7 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+import uuid
 from unittest import mock
 
 import pytest
@@ -31,6 +32,13 @@ pytestmark = pytest.mark.usefixtures("config")
 def test_clusers_list(mock_request):
     call_command("croud", "clusters", "list")
     assert_rest(mock_request, RequestMethod.GET, "/api/v2/clusters/", params={})
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusers_get(mock_request):
+    id = str(uuid.uuid4())
+    call_command("croud", "clusters", "get", id)
+    assert_rest(mock_request, RequestMethod.GET, f"/api/v2/clusters/{id}/")
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))

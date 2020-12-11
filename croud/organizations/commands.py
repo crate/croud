@@ -72,6 +72,18 @@ def organizations_edit(args: Namespace) -> None:
     )
 
 
+def organizations_get(args: Namespace) -> None:
+    """
+    Get organization by ID
+    """
+
+    client = Client.from_args(args)
+    data, errors = client.get(f"/api/v2/organizations/{args.id}/")
+    print_response(
+        data=data, errors=errors, output_fmt=get_output_format(args),
+    )
+
+
 def organizations_list(args: Namespace) -> None:
     """
     Lists organizations
