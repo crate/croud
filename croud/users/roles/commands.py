@@ -25,10 +25,6 @@ from croud.printer import print_response
 
 
 def roles_list(args: Namespace) -> None:
-    """
-    Lists all roles a user can be assigned to
-    """
-
     client = Client.from_args(args)
     data, errors = client.get("/api/v2/roles/")
     print_response(

@@ -31,7 +31,6 @@ from croud.util import org_id_config_fallback
 @org_id_config_fallback
 def org_users_add(args: Namespace):
     client = Client.from_args(args)
-
     data, errors = client.post(
         f"/api/v2/organizations/{args.org_id}/users/",
         body={"user": args.user, "role_fqn": args.role},
@@ -56,10 +55,6 @@ def role_fqn_transform(field):
 
 @org_id_config_fallback
 def org_users_list(args: Namespace) -> None:
-    """
-    Lists organization users
-    """
-
     client = Client.from_args(args)
     data, errors = client.get(f"/api/v2/organizations/{args.org_id}/users/")
     print_response(
@@ -74,7 +69,6 @@ def org_users_list(args: Namespace) -> None:
 @org_id_config_fallback
 def org_users_remove(args: Namespace):
     client = Client.from_args(args)
-
     data, errors = client.delete(
         f"/api/v2/organizations/{args.org_id}/users/{args.user}/"
     )

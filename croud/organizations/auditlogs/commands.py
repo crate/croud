@@ -42,10 +42,6 @@ def actor_id_transform(field):
 
 @org_id_config_fallback
 def auditlogs_list(args: Namespace) -> None:
-    """
-    Lists all auditlogs within an organization
-    """
-
     client = Client.from_args(args)
     url = f"/api/v2/organizations/{args.org_id}/auditlogs/"
     data: List[Dict] = []

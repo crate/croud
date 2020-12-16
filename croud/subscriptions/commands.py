@@ -25,9 +25,6 @@ from croud.printer import print_response
 
 
 def subscriptions_get(args: Namespace) -> None:
-    """
-    Get subscription by ID
-    """
     client = Client.from_args(args)
     data, errors = client.get(f"/api/v2/subscriptions/{args.id}/")
     print_response(
@@ -36,9 +33,6 @@ def subscriptions_get(args: Namespace) -> None:
 
 
 def subscriptions_list(args: Namespace) -> None:
-    """
-    Lists all subscriptions for the current user in the organization
-    """
     client = Client.from_args(args)
     data, errors = client.get("/api/v2/subscriptions/")
     print_response(

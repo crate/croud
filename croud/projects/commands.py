@@ -27,10 +27,6 @@ from croud.util import org_id_config_fallback, require_confirmation
 
 @org_id_config_fallback
 def project_create(args: Namespace) -> None:
-    """
-    Creates a project in the organization the user belongs to.
-    """
-
     client = Client.from_args(args)
     data, errors = client.post(
         "/api/v2/projects/", body={"name": args.name, "organization_id": args.org_id}
@@ -49,9 +45,6 @@ def project_create(args: Namespace) -> None:
     cancel_msg="Project deletion cancelled.",
 )
 def project_delete(args: Namespace) -> None:
-    """
-    Deletes a project in the organization the user belongs to.
-    """
     client = Client.from_args(args)
     data, errors = client.delete(f"/api/v2/projects/{args.project_id}/")
     print_response(
@@ -63,10 +56,6 @@ def project_delete(args: Namespace) -> None:
 
 
 def project_edit(args: Namespace) -> None:
-    """
-    Rename a specified project.
-    """
-
     client = Client.from_args(args)
     body = {}
     if args.name:
@@ -86,10 +75,6 @@ def project_edit(args: Namespace) -> None:
 
 
 def projects_get(args: Namespace) -> None:
-    """
-    Get project by ID
-    """
-
     client = Client.from_args(args)
     data, errors = client.get(f"/api/v2/projects/{args.id}/")
     print_response(
@@ -98,10 +83,6 @@ def projects_get(args: Namespace) -> None:
 
 
 def projects_list(args: Namespace) -> None:
-    """
-    Lists all projects for the current user in the specified region
-    """
-
     client = Client.from_args(args)
     data, errors = client.get("/api/v2/projects/")
     print_response(

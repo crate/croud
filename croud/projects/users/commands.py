@@ -25,10 +25,6 @@ from croud.printer import print_response
 
 
 def project_users_add(args: Namespace) -> None:
-    """
-    Adds a user to a project.
-    """
-
     client = Client.from_args(args)
 
     data, errors = client.post(
@@ -54,10 +50,6 @@ def role_fqn_transform(field):
 
 
 def project_users_list(args: Namespace) -> None:
-    """
-    Lists project users
-    """
-
     client = Client.from_args(args)
     data, errors = client.get(f"/api/v2/projects/{args.project_id}/users/")
     print_response(
@@ -70,10 +62,6 @@ def project_users_list(args: Namespace) -> None:
 
 
 def project_users_remove(args: Namespace) -> None:
-    """
-    Removes a user from a project.
-    """
-
     client = Client.from_args(args)
     data, errors = client.delete(
         f"/api/v2/projects/{args.project_id}/users/{args.user}/"
