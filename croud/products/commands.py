@@ -25,10 +25,6 @@ from croud.printer import print_response
 
 
 def products_list(args: Namespace) -> None:
-    """
-    Lists available products
-    """
-
     client = Client.from_args(args)
     url = "/api/v2/products/"
     data, errors = client.get(url, params={"kind": args.kind} if args.kind else None)

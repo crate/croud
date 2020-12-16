@@ -32,9 +32,6 @@ def transform_roles_list(key):
 
 
 def users_list(args: Namespace) -> None:
-    """
-    List all users
-    """
     client = Client.from_args(args)
     if args.no_org:
         print_warning(

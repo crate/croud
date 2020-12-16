@@ -26,10 +26,6 @@ from croud.util import org_id_config_fallback, require_confirmation
 
 
 def organizations_create(args: Namespace) -> None:
-    """
-    Creates an organization
-    """
-
     client = Client.from_args(args)
     if args.plan_type:
         body = {"name": args.name, "plan_type": args.plan_type}
@@ -48,10 +44,6 @@ def organizations_create(args: Namespace) -> None:
 
 @org_id_config_fallback
 def organizations_edit(args: Namespace) -> None:
-    """
-    Edit an organization
-    """
-
     client = Client.from_args(args)
     body = {}
     if args.plan_type:
@@ -73,10 +65,6 @@ def organizations_edit(args: Namespace) -> None:
 
 
 def organizations_get(args: Namespace) -> None:
-    """
-    Get organization by ID
-    """
-
     client = Client.from_args(args)
     data, errors = client.get(f"/api/v2/organizations/{args.id}/")
     print_response(
@@ -85,10 +73,6 @@ def organizations_get(args: Namespace) -> None:
 
 
 def organizations_list(args: Namespace) -> None:
-    """
-    Lists organizations
-    """
-
     client = Client.from_args(args)
     data, errors = client.get("/api/v2/organizations/")
     print_response(
@@ -105,10 +89,6 @@ def organizations_list(args: Namespace) -> None:
     cancel_msg="Organization deletion cancelled.",
 )
 def organizations_delete(args: Namespace) -> None:
-    """
-    Delete an organization
-    """
-
     client = Client.from_args(args)
     data, errors = client.delete(f"/api/v2/organizations/{args.org_id}/")
     print_response(

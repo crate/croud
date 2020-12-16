@@ -26,10 +26,6 @@ from croud.util import require_confirmation
 
 
 def clusters_get(args: Namespace) -> None:
-    """
-    Get cluster by ID
-    """
-
     client = Client.from_args(args)
     data, errors = client.get(f"/api/v2/clusters/{args.id}/")
     print_response(
@@ -38,10 +34,6 @@ def clusters_get(args: Namespace) -> None:
 
 
 def clusters_list(args: Namespace) -> None:
-    """
-    Lists all projects for the current user in the specified region
-    """
-
     params = {}
     if args.project_id:
         params["project_id"] = args.project_id
@@ -66,10 +58,6 @@ def clusters_list(args: Namespace) -> None:
 
 
 def clusters_deploy(args: Namespace) -> None:
-    """
-    Deploys a new CrateDB cluster.
-    """
-
     body = {
         "crate_version": args.version,
         "name": args.cluster_name,
@@ -96,10 +84,6 @@ def clusters_deploy(args: Namespace) -> None:
 
 
 def clusters_scale(args: Namespace) -> None:
-    """
-    Scale an existing CrateDB cluster.
-    """
-
     body = {"product_unit": args.unit}
     client = Client.from_args(args)
     data, errors = client.put(f"/api/v2/clusters/{args.cluster_id}/scale/", body=body)
@@ -115,10 +99,6 @@ def clusters_scale(args: Namespace) -> None:
 
 
 def clusters_upgrade(args: Namespace) -> None:
-    """
-    Upgrade an existing CrateDB Cluster to a later version.
-    """
-
     body = {"crate_version": args.version}
     client = Client.from_args(args)
     data, errors = client.put(f"/api/v2/clusters/{args.cluster_id}/upgrade/", body=body)
