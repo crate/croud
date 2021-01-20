@@ -37,3 +37,31 @@ def regions_list(args: Namespace) -> None:
         keys=["name", "description"],
         output_fmt=get_output_format(args),
     )
+
+
+def regions_create(args: Namespace) -> None:
+    """
+    Creates a new region
+    """
+    client = Client.from_args(args)
+    body = {
+        "aws_bucket": args.aws_bucket,
+        "aws_region": args.aws_region,
+        "description": args.description,
+        "provider": args.provider,
+    }
+
+    # Add optional parameters only when present
+    if args.name:
+        body.setdefault("name", args.name)
+    if args.org_id:
+        body.setdefault("organization_id", args.org_id)
+
+    data, errors = client.post("/api/v2/regions/", body=body)
+
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["name", "description"],
+        output_fmt=get_output_format(args),
+    )

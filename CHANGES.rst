@@ -5,6 +5,7 @@ Changes for croud
 Unreleased
 ==========
 
+- Added the command ``regions create`` that allows superusers to add new cloud and edge regions.
 - Added new subcommand ``get`` for the resources ``clusters``,
   ``organizations``, ``projects``, ``subscriptions`` that returns a single item
   of the requested resource by its ID.
