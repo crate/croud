@@ -19,6 +19,8 @@
 
 from unittest import mock
 
+import pytest
+
 from croud.api import Client, RequestMethod
 from tests.util import assert_rest, call_command
 
@@ -27,3 +29,84 @@ from tests.util import assert_rest, call_command
 def test_regions_list(mock_request):
     call_command("croud", "regions", "list")
     assert_rest(mock_request, RequestMethod.GET, "/api/v2/regions/")
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_regions_create_all_params(mock_request):
+    call_command(
+        "croud",
+        "regions",
+        "create",
+        "--description",
+        "region-description",
+        "--aws-bucket",
+        "backup-bucket",
+        "--aws-region",
+        "backup-region",
+        "--provider",
+        "EDGE",
+        "--org-id",
+        "organization-id",
+        "--name",
+        "region-name",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        "/api/v2/regions/",
+        body={
+            "description": "region-description",
+            "aws_bucket": "backup-bucket",
+            "aws_region": "backup-region",
+            "provider": "EDGE",
+            "name": "region-name",
+            "organization_id": "organization-id",
+        },
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_regions_create_mandatory_params(mock_request):
+    call_command(
+        "croud",
+        "regions",
+        "create",
+        "--description",
+        "region-description",
+        "--aws-bucket",
+        "backup-bucket",
+        "--aws-region",
+        "backup-region",
+        "--provider",
+        "EDGE",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        "/api/v2/regions/",
+        body={
+            "description": "region-description",
+            "aws_bucket": "backup-bucket",
+            "aws_region": "backup-region",
+            "provider": "EDGE",
+        },
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_regions_create_missing_description(mock_request, capsys):
+    with pytest.raises(SystemExit):
+        call_command(
+            "croud",
+            "regions",
+            "create",
+            "--aws-bucket",
+            "backup-bucket",
+            "--aws-region",
+            "backup-region",
+            "--provider",
+            "EDGE",
+        )
+    mock_request.assert_not_called()
+    _, err_output = capsys.readouterr()
+    assert "The following arguments are required: --description" in err_output
