@@ -70,7 +70,7 @@ from croud.projects.users.commands import (
     project_users_list,
     project_users_remove,
 )
-from croud.regions import regions_list
+from croud.regions import regions_create, regions_list
 from croud.subscriptions.commands import subscriptions_get, subscriptions_list
 from croud.tools.spinner import HALO
 from croud.users.commands import users_list
@@ -587,6 +587,38 @@ command_tree = {
                 "help": "List all available regions",
                 "resolver": regions_list,
             },
+            "create": {
+                "help": "Create a new region.",
+                "resolver": regions_create,
+                "extra_args": [
+                    Argument(
+                        "--aws-bucket", type=str, required=True,
+                        help="The AWS S3 bucket where cluster backups will be stored.",
+                    ),
+                    Argument(
+                        "--aws-region", type=str, required=True,
+                        help="The AWS region where the S3 bucket for cluster"
+                             " backups is expected to be.",
+                    ),
+                    Argument(
+                        "--name", type=str, required=False,
+                        help="The domain name prefix that will be used to reach"
+                             " the region. A Crate domain will be added as a suffix.",
+                    ),
+                    Argument(
+                        "--description", type=str, required=True,
+                        help="The description of the new region.",
+                    ),
+                    Argument(
+                        "--provider", type=str, required=True,
+                        help="Either AWS, EKS or EDGE",
+                    ),
+                    Argument(
+                        "--org-id", type=str, required=False,
+                        help="The organization ID to use.",
+                    ),
+                ],
+            }
         }
     },
     "subscriptions": {

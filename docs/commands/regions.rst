@@ -33,3 +33,31 @@ Example
    | AWS West Europe (Ireland)      | eks1.eu-west-1.aws    |
    +--------------------------------+-----------------------+
 
+
+
+``regions create``
+==================
+
+Creates a new Edge or Cloud region:
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: regions create
+
+.. note::
+
+   Only superusers can create regions.
+
+Example
+=======
+
+.. code-block:: console
+
+   sh$ croud regions create --org-id 11111111-1111-1111-1111-111111111111 --description "Edge region" --provider EDGE --aws-bucket backup-bucket --aws-region eu-west-1 --sudo
+   +---------------+---------------------------------------------------+
+   | description   | name                                              |
+   |---------------+---------------------------------------------------|
+   | Edge region   | 2c0d0e22b0e846b2a7acdcbf092e54a3.edge.cratedb.net |
+   +---------------+---------------------------------------------------+

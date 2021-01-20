@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added the command ``regions create`` that allows superusers to add new cloud and edge regions.
+
 - Added a loading indicator for some nicer UX.
 
 - Added new subcommand ``get`` for the resources ``clusters``,
