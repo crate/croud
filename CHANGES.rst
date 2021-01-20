@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added the command ``regions create`` that allows superusers to add new cloud and edge regions.
+
 0.26.0 - 2021/03/12
 ===================
 
