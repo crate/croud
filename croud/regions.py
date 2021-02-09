@@ -53,9 +53,9 @@ def regions_create(args: Namespace) -> None:
 
     # Add optional parameters only when present
     if args.name:
-        body.setdefault("name", args.name)
+        body["name"] = args.name
     if args.org_id:
-        body.setdefault("organization_id", args.org_id)
+        body["organization_id"] = args.org_id
 
     data, errors = client.post("/api/v2/regions/", body=body)
 
