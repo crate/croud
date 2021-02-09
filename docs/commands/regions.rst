@@ -55,7 +55,7 @@ Example
 
 .. code-block:: console
 
-   sh$ croud regions create --org-id 926d4e6b-5967-4ab4-8f46-82a90150ab31 --description "Edge region" --provider EDGE --aws-bucket backup-bucket --aws-region eu-west-1 --sudo
+   sh$ croud regions create --org-id 11111111-1111-1111-1111-111111111111 --description "Edge region" --provider EDGE --aws-bucket backup-bucket --aws-region eu-west-1 --sudo
    +---------------+---------------------------------------------------+
    | description   | name                                              |
    |---------------+---------------------------------------------------|
