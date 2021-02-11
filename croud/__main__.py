@@ -70,7 +70,11 @@ from croud.projects.users.commands import (
     project_users_list,
     project_users_remove,
 )
-from croud.regions import regions_create, regions_list
+from croud.regions.commands import (
+    regions_generate_deployment_manifest,
+    regions_list,
+    regions_create,
+)
 from croud.subscriptions.commands import subscriptions_get, subscriptions_list
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_list
@@ -583,7 +587,7 @@ command_tree = {
         "help": "Print information about available regions.",
         "commands": {
             "list": {
-                "help": "List all available regions",
+                "help": "List all available regions.",
                 "resolver": regions_list,
             },
             "create": {
@@ -617,7 +621,18 @@ command_tree = {
                         help="The organization ID to use.",
                     ),
                 ],
-            }
+            },
+            "generate-deployment-manifest": {
+                "help": "Generate a deployment manifest for an edge region.",
+                "extra_args": [
+                    Argument("--region-name", type=str, help="", required=True),
+                    Argument(
+                        "--file-name", type=str,
+                        help="The name of the created manifest file.",
+                    ),
+                ],
+                "resolver": regions_generate_deployment_manifest,
+            },
         }
     },
     "subscriptions": {

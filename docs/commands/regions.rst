@@ -61,3 +61,23 @@ Example
    |---------------+---------------------------------------------------|
    | Edge region   | 2c0d0e22b0e846b2a7acdcbf092e54a3.edge.cratedb.net |
    +---------------+---------------------------------------------------+
+
+
+``regions generate-deployment-manifest``
+========================================
+
+Generate and fetch a deployment manifest for an edge region:
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: regions generate-deployment-manifest
+
+Example
+=======
+
+.. code-block:: console
+
+   sh$ croud regions generate-deployment-manifest --region-name region-name
+   The .yaml manifest as output.
