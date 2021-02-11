@@ -18,10 +18,11 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 from argparse import Namespace
+from base64 import b64decode
 
 from croud.api import Client
 from croud.config import get_output_format
-from croud.printer import print_response
+from croud.printer import print_error, print_response, print_success
 
 
 def regions_list(args: Namespace) -> None:
@@ -65,3 +66,31 @@ def regions_create(args: Namespace) -> None:
         keys=["name", "description"],
         output_fmt=get_output_format(args),
     )
+
+
+def regions_generate_deployment_manifest(args: Namespace) -> None:
+    """
+    Returns a manifest file that can be used to setup an edge region in
+    a custom kubernetes cluster.
+    """
+
+    client = Client.from_args(args)
+    data, errors = client.get(
+        f"/api/v2/regions/{args.region_name}/deployment-manifest/"
+    )
+    if data:
+        content = b64decode(data["content"]).decode()
+        if args.file_name:
+            try:
+                with open(args.file_name, "x") as file:
+                    file.write(content)
+                    print_success(f"Manifest written to: {args.file_name}")
+            except FileExistsError:
+                print_error(f"The file {args.file_name} exists already.")
+        else:
+            print(content)
+
+    else:
+        print_response(
+            data=data, errors=errors, output_fmt=get_output_format(args),
+        )

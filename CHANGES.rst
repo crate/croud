@@ -5,7 +5,11 @@ Changes for croud
 Unreleased
 ==========
 
+- Added new subcommand ``regions generate-deployment-manifest`` to fetch a deployment
+  manifest for an edge region.
+
 - Added the command ``regions create`` that allows superusers to add new cloud and edge regions.
+
 - Added new subcommand ``get`` for the resources ``clusters``,
   ``organizations``, ``projects``, ``subscriptions`` that returns a single item
   of the requested resource by its ID.
