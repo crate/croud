@@ -110,3 +110,19 @@ def test_regions_create_missing_description(mock_request, capsys):
     mock_request.assert_not_called()
     _, err_output = capsys.readouterr()
     assert "The following arguments are required: --description" in err_output
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_get_region_deployment_manifest(mock_request):
+    call_command(
+        "croud",
+        "regions",
+        "generate-deployment-manifest",
+        "--region-name",
+        "region-name",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        "/api/v2/regions/region-name/deployment-manifest/",
+    )
