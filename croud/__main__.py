@@ -72,6 +72,7 @@ from croud.projects.users.commands import (
 )
 from croud.regions import regions_list
 from croud.subscriptions.commands import subscriptions_get, subscriptions_list
+from croud.tools.spinner import HALO
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_list
 
@@ -638,7 +639,8 @@ def main():
     if "resolver" in params:
         fn = params.resolver
         del params.resolver
-        fn(params)
+        with HALO:
+            fn(params)
     else:
         parser.print_help()
 

@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added a loading indicator for some nicer UX.
+
 - Added new subcommand ``get`` for the resources ``clusters``,
   ``organizations``, ``projects``, ``subscriptions`` that returns a single item
   of the requested resource by its ID.

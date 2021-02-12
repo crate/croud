@@ -27,6 +27,7 @@ import yaml
 from colorama import Fore, Style
 from tabulate import tabulate
 
+from croud.tools.spinner import HALO
 from croud.typing import JsonDict
 
 
@@ -101,6 +102,8 @@ class FormatPrinter(abc.ABC):
         self.transforms = transforms or {}
 
     def print_rows(self, rows: Union[List[JsonDict], JsonDict]) -> None:
+        # Explicitly stop & clear the spinner
+        HALO.stop()
         print(self.format_rows(rows))
 
     @abc.abstractmethod
