@@ -26,6 +26,7 @@ from typing import Set
 
 from croud import __version__
 from croud.config.schemas import OUTPUT_FORMATS
+from croud.tools.spinner import HALO
 
 POSITIONALS_TITLE = "Available Commands"
 REQUIRED_TITLE = "Required Arguments"
@@ -153,6 +154,9 @@ def add_default_args(parser, omit: Set[str]):
 
 def help_print_factory(parser: argparse.ArgumentParser):
     def print_help(*args, **kwargs):
+        # Need to explicitly stop the spinner here as this is not going through
+        # the standard printer
+        HALO.stop()
         parser.print_help()
 
     return print_help

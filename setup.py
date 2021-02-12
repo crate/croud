@@ -50,6 +50,7 @@ setup(
         "requests==2.23.0",
         "tabulate==0.8.6",
         "yarl==1.4.2",
+        "halo==0.0.31",
     ],
     extras_require={
         "testing": ["tox==3.14.2"],
