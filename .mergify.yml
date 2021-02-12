@@ -10,7 +10,6 @@ pull_request_rules:
       - '#approved-reviews-by>=1'
       - status-success~=Code style checks and static analysis with Python
       - status-success~=Tests with Python
-      - status-success~=ci/jenkins
       - status-success~=Build docs on ubuntu-latest
       - status-success~=Build docs on macos-latest
       - status-success~=docs/readthedocs.org
