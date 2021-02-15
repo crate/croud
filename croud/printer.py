@@ -76,18 +76,22 @@ def print_response(
 
 
 def print_error(text: str):
+    HALO.stop()
     print(Fore.RED + "==> Error: " + Style.RESET_ALL + text, file=sys.stderr)
 
 
 def print_info(text: str):
+    HALO.stop()
     print(Fore.CYAN + "==> Info: " + Style.RESET_ALL + text, file=sys.stderr)
 
 
 def print_warning(text: str):
+    HALO.stop()
     print(Fore.YELLOW + "==> Warning: " + Style.RESET_ALL + text, file=sys.stderr)
 
 
 def print_success(text: str):
+    HALO.stop()
     print(Fore.GREEN + "==> Success: " + Style.RESET_ALL + text, file=sys.stderr)
 
 
