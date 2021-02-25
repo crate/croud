@@ -46,8 +46,6 @@ def regions_create(args: Namespace) -> None:
     """
     client = Client.from_args(args)
     body = {
-        "aws_bucket": args.aws_bucket,
-        "aws_region": args.aws_region,
         "description": args.description,
         "provider": args.provider,
     }
@@ -57,6 +55,10 @@ def regions_create(args: Namespace) -> None:
         body["name"] = args.name
     if args.org_id:
         body["organization_id"] = args.org_id
+    if args.aws_bucket:
+        body["aws_bucket"] = args.aws_bucket
+    if args.aws_region:
+        body["aws_region"] = args.aws_region
 
     data, errors = client.post("/api/v2/regions/", body=body)
 
