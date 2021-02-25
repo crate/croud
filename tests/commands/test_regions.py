@@ -73,10 +73,6 @@ def test_regions_create_mandatory_params(mock_request):
         "create",
         "--description",
         "region-description",
-        "--aws-bucket",
-        "backup-bucket",
-        "--aws-region",
-        "backup-region",
         "--provider",
         "EDGE",
     )
@@ -84,12 +80,7 @@ def test_regions_create_mandatory_params(mock_request):
         mock_request,
         RequestMethod.POST,
         "/api/v2/regions/",
-        body={
-            "description": "region-description",
-            "aws_bucket": "backup-bucket",
-            "aws_region": "backup-region",
-            "provider": "EDGE",
-        },
+        body={"description": "region-description", "provider": "EDGE"},
     )
 
 

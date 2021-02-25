@@ -596,11 +596,11 @@ command_tree = {
                 "resolver": regions_create,
                 "extra_args": [
                     Argument(
-                        "--aws-bucket", type=str, required=True,
+                        "--aws-bucket", type=str, required=False,
                         help="The AWS S3 bucket where cluster backups will be stored.",
                     ),
                     Argument(
-                        "--aws-region", type=str, required=True,
+                        "--aws-region", type=str, required=False,
                         help="The AWS region where the S3 bucket for cluster"
                              " backups is expected to be.",
                     ),
