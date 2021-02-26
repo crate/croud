@@ -27,6 +27,7 @@ from typing import Tuple
 
 from croud.config import CONFIG
 from croud.printer import print_error, print_info
+from croud.tools.spinner import HALO
 
 
 # This function was copied from the <https://github.com/Azure/azure-cli>
@@ -97,9 +98,11 @@ def require_confirmation(
         def _wrapper(cmd_args: Namespace):  # decorator logic
             is_confirmed = cmd_args.yes
             if not is_confirmed:
+                HALO.stop()
                 is_confirmed = confirm_prompt(confirm_msg)
             if is_confirmed:
-                cmd(cmd_args)
+                with HALO:
+                    cmd(cmd_args)
             else:
                 print_info(cancel_msg)
 
