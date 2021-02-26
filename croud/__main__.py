@@ -621,6 +621,7 @@ command_tree = {
                         "--org-id", type=str, required=False,
                         help="The organization ID to use.",
                     ),
+                    Argument("-y", "--yes", action="store_true", default=False),
                 ],
             },
             "generate-deployment-manifest": {
@@ -631,6 +632,7 @@ command_tree = {
                         "--file-name", type=str,
                         help="The name of the created manifest file.",
                     ),
+                    Argument("-y", "--yes", action="store_true", default=False),
                 ],
                 "resolver": regions_generate_deployment_manifest,
             },
