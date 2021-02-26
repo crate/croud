@@ -49,6 +49,7 @@ def test_regions_create_all_params(mock_request):
         "organization-id",
         "--name",
         "region-name",
+        "--yes",
     )
     assert_rest(
         mock_request,
@@ -75,6 +76,7 @@ def test_regions_create_mandatory_params(mock_request):
         "region-description",
         "--provider",
         "EDGE",
+        "--yes",
     )
     assert_rest(
         mock_request,
@@ -88,19 +90,32 @@ def test_regions_create_mandatory_params(mock_request):
 def test_regions_create_missing_description(mock_request, capsys):
     with pytest.raises(SystemExit):
         call_command(
-            "croud",
-            "regions",
-            "create",
-            "--aws-bucket",
-            "backup-bucket",
-            "--aws-region",
-            "backup-region",
-            "--provider",
-            "EDGE",
+            "croud", "regions", "create", "--provider", "EDGE", "--yes",
         )
     mock_request.assert_not_called()
     _, err_output = capsys.readouterr()
     assert "The following arguments are required: --description" in err_output
+
+
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_regions_create_aborted(mock_request, capsys):
+    with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
+        call_command(
+            "croud",
+            "regions",
+            "create",
+            "--description",
+            "region-description",
+            "--provider",
+            "EDGE",
+        )
+    mock_request.assert_not_called()
+    mock_input.assert_called_once_with(
+        "The creation of a region is an experimental feature. Do you really want to use it? [yN] "  # noqa
+    )
+
+    _, err_output = capsys.readouterr()
+    assert "Region creation cancelled." in err_output
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
@@ -111,9 +126,29 @@ def test_get_region_deployment_manifest(mock_request):
         "generate-deployment-manifest",
         "--region-name",
         "region-name",
+        "--yes",
     )
     assert_rest(
         mock_request,
         RequestMethod.GET,
         "/api/v2/regions/region-name/deployment-manifest/",
     )
+
+
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_get_region_deployment_manifest_aborted(mock_request, capsys):
+    with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
+        call_command(
+            "croud",
+            "regions",
+            "generate-deployment-manifest",
+            "--region-name",
+            "region-name",
+        )
+    mock_request.assert_not_called()
+    mock_input.assert_called_once_with(
+        "The generation of a deployment manfiest for an edge region is an experimental feature. Do you really want to use it? [yN] "  # noqa
+    )
+
+    _, err_output = capsys.readouterr()
+    assert "Deployment manifest generation cancelled." in err_output

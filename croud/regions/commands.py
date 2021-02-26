@@ -23,6 +23,7 @@ from base64 import b64decode
 from croud.api import Client
 from croud.config import get_output_format
 from croud.printer import print_error, print_response, print_success
+from croud.util import require_confirmation
 
 
 def regions_list(args: Namespace) -> None:
@@ -40,6 +41,10 @@ def regions_list(args: Namespace) -> None:
     )
 
 
+@require_confirmation(
+    "The creation of a region is an experimental feature. Do you really want to use it?",  # noqa
+    cancel_msg="Region creation cancelled.",
+)
 def regions_create(args: Namespace) -> None:
     """
     Creates a new region
@@ -70,6 +75,10 @@ def regions_create(args: Namespace) -> None:
     )
 
 
+@require_confirmation(
+    "The generation of a deployment manfiest for an edge region is an experimental feature. Do you really want to use it?",  # noqa
+    cancel_msg="Deployment manifest generation cancelled.",
+)
 def regions_generate_deployment_manifest(args: Namespace) -> None:
     """
     Returns a manifest file that can be used to setup an edge region in
