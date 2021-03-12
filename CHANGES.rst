@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.26.0 - 2021/03/12
+===================
+
 - Added a loading indicator for some nicer UX.
 
 - Added new subcommand ``get`` for the resources ``clusters``,
