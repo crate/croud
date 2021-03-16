@@ -18,11 +18,10 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 from argparse import Namespace
-from base64 import b64decode
 
 from croud.api import Client
 from croud.config import get_output_format
-from croud.printer import print_error, print_response, print_success
+from croud.printer import print_raw, print_response, print_success
 from croud.util import require_confirmation
 
 
@@ -42,7 +41,7 @@ def regions_list(args: Namespace) -> None:
 
 
 @require_confirmation(
-    "The creation of a region is an experimental feature. Do you really want to use it?",  # noqa
+    "Creating a region is an experimental feature. Are you sure you want to proceed?",  # noqa
     cancel_msg="Region creation cancelled.",
 )
 def regions_create(args: Namespace) -> None:
@@ -65,43 +64,36 @@ def regions_create(args: Namespace) -> None:
     if args.aws_region:
         body["aws_region"] = args.aws_region
 
-    data, errors = client.post("/api/v2/regions/", body=body)
+    region, region_errors = client.post("/api/v2/regions/", body=body)
 
     print_response(
-        data=data,
-        errors=errors,
+        data=region,
+        errors=region_errors,
         keys=["name", "description"],
         output_fmt=get_output_format(args),
     )
 
-
-@require_confirmation(
-    "The generation of a deployment manfiest for an edge region is an experimental feature. Do you really want to use it?",  # noqa
-    cancel_msg="Deployment manifest generation cancelled.",
-)
-def regions_generate_deployment_manifest(args: Namespace) -> None:
-    """
-    Returns a manifest file that can be used to setup an edge region in
-    a custom kubernetes cluster.
-    """
-
-    client = Client.from_args(args)
-    data, errors = client.get(
-        f"/api/v2/regions/{args.region_name}/deployment-manifest/"
-    )
-    if data:
-        content = b64decode(data["content"]).decode()
-        if args.file_name:
-            try:
-                with open(args.file_name, "x") as file:
-                    file.write(content)
-                    print_success(f"Manifest written to: {args.file_name}")
-            except FileExistsError:
-                print_error(f"The file {args.file_name} already exists.")
-        else:
-            print(content)
-
-    else:
-        print_response(
-            data=data, errors=errors, output_fmt=get_output_format(args),
+    if not region_errors and region and "name" in region:
+        install_token, install_token_errors = client.get(
+            f"/api/v2/regions/{region['name']}/install-token/"
         )
+
+        if not install_token_errors and install_token and "token" in install_token:
+            print_success("You have successfully created a region.")
+
+            print_raw(
+                [
+                    "",
+                    "To install the edge region run the following command:",
+                    "",
+                    f"  $ bash <( wget -qO- {client.base_url}/edge/cratedb-cloud-edge.sh) {install_token['token']}",  # noqa
+                    "",
+                ],
+            )
+        else:
+            print_response(
+                data=install_token,
+                errors=install_token_errors,
+                keys=["token"],
+                output_fmt=get_output_format(args),
+            )

@@ -22,6 +22,7 @@ from unittest import mock
 import pytest
 
 from croud.api import Client, RequestMethod
+from croud.printer import print_raw
 from tests.util import assert_rest, call_command
 
 
@@ -31,7 +32,7 @@ def test_regions_list(mock_request):
     assert_rest(mock_request, RequestMethod.GET, "/api/v2/regions/")
 
 
-@mock.patch.object(Client, "request", return_value=({}, None))
+@mock.patch.object(Client, "request", return_value=({"name": "region-name"}, None))
 def test_regions_create_all_params(mock_request):
     call_command(
         "croud",
@@ -51,8 +52,8 @@ def test_regions_create_all_params(mock_request):
         "region-name",
         "--yes",
     )
-    assert_rest(
-        mock_request,
+
+    mock_request.call_args_list[0].assert_called_with(
         RequestMethod.POST,
         "/api/v2/regions/",
         body={
@@ -63,10 +64,14 @@ def test_regions_create_all_params(mock_request):
             "name": "region-name",
             "organization_id": "organization-id",
         },
+        params=None,
+    )
+    mock_request.call_args_list[1].assert_called_with(
+        RequestMethod.GET, "/api/v2/regions/region-name/install-token/", params=None
     )
 
 
-@mock.patch.object(Client, "request", return_value=({}, None))
+@mock.patch.object(Client, "request", return_value=({"name": "region-name"}, None))
 def test_regions_create_mandatory_params(mock_request):
     call_command(
         "croud",
@@ -78,11 +83,50 @@ def test_regions_create_mandatory_params(mock_request):
         "EDGE",
         "--yes",
     )
-    assert_rest(
-        mock_request,
+
+    mock_request.call_args_list[0].assert_called_with(
         RequestMethod.POST,
         "/api/v2/regions/",
         body={"description": "region-description", "provider": "EDGE"},
+        params=None,
+    )
+    mock_request.call_args_list[1].assert_called_with(
+        RequestMethod.GET, "/api/v2/regions/region-name/install-token/", params=None
+    )
+
+
+@mock.patch("croud.regions.commands.print_raw", wraps=print_raw)
+@mock.patch.object(
+    Client,
+    "request",
+    side_effect=[({"name": "region-name"}, None), ({"token": "my-token"}, None)],
+)
+def test_regions_create_install_command(mock_request, mock_raw_printer, client):
+    call_command(
+        "croud",
+        "regions",
+        "create",
+        "--description",
+        "region-description",
+        "--provider",
+        "EDGE",
+        "--yes",
+    )
+
+    mock_request.call_args_list[0].assert_called_with(
+        RequestMethod.POST,
+        "/api/v2/regions/",
+        body={"description": "region-description", "provider": "EDGE"},
+        params=None,
+    )
+    mock_request.call_args_list[1].assert_called_with(
+        RequestMethod.GET, "/api/v2/regions/region-name/install-token/", params=None
+    )
+
+    assert any(
+        f"$ bash <( wget -qO- {client.base_url}/edge/cratedb-cloud-edge.sh) my-token"
+        in item
+        for item in mock_raw_printer.call_args[0][0]
     )
 
 
@@ -111,44 +155,8 @@ def test_regions_create_aborted(mock_request, capsys):
         )
     mock_request.assert_not_called()
     mock_input.assert_called_once_with(
-        "The creation of a region is an experimental feature. Do you really want to use it? [yN] "  # noqa
+        "Creating a region is an experimental feature. Are you sure you want to proceed? [yN] "  # noqa
     )
 
     _, err_output = capsys.readouterr()
     assert "Region creation cancelled." in err_output
-
-
-@mock.patch.object(Client, "request", return_value=({}, None))
-def test_get_region_deployment_manifest(mock_request):
-    call_command(
-        "croud",
-        "regions",
-        "generate-deployment-manifest",
-        "--region-name",
-        "region-name",
-        "--yes",
-    )
-    assert_rest(
-        mock_request,
-        RequestMethod.GET,
-        "/api/v2/regions/region-name/deployment-manifest/",
-    )
-
-
-@mock.patch.object(Client, "request", return_value=(None, {}))
-def test_get_region_deployment_manifest_aborted(mock_request, capsys):
-    with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
-        call_command(
-            "croud",
-            "regions",
-            "generate-deployment-manifest",
-            "--region-name",
-            "region-name",
-        )
-    mock_request.assert_not_called()
-    mock_input.assert_called_once_with(
-        "The generation of a deployment manfiest for an edge region is an experimental feature. Do you really want to use it? [yN] "  # noqa
-    )
-
-    _, err_output = capsys.readouterr()
-    assert "Deployment manifest generation cancelled." in err_output

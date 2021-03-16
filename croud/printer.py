@@ -75,6 +75,13 @@ def print_response(
         print_success(message)
 
 
+def print_raw(text: Union[List[str], str]):
+    HALO.stop()
+    if type(text) is list:
+        text = "\n".join(text)
+    print(text, file=sys.stderr)
+
+
 def print_error(text: str):
     HALO.stop()
     print(Fore.RED + "==> Error: " + Style.RESET_ALL + text, file=sys.stderr)
