@@ -31,7 +31,7 @@ def test_regions_list(mock_request):
     assert_rest(mock_request, RequestMethod.GET, "/api/v2/regions/")
 
 
-@mock.patch.object(Client, "request", return_value=({}, None))
+@mock.patch.object(Client, "request", return_value=({"name": "region-name"}, None))
 def test_regions_create_all_params(mock_request):
     call_command(
         "croud",
@@ -51,8 +51,8 @@ def test_regions_create_all_params(mock_request):
         "region-name",
         "--yes",
     )
-    assert_rest(
-        mock_request,
+
+    mock_request.call_args_list[0].assert_called_with(
         RequestMethod.POST,
         "/api/v2/regions/",
         body={
@@ -63,10 +63,14 @@ def test_regions_create_all_params(mock_request):
             "name": "region-name",
             "organization_id": "organization-id",
         },
+        params=None,
+    )
+    mock_request.call_args_list[1].assert_called_with(
+        RequestMethod.GET, "/api/v2/regions/region-name/install-token/", params=None
     )
 
 
-@mock.patch.object(Client, "request", return_value=({}, None))
+@mock.patch.object(Client, "request", return_value=({"name": "region-name"}, None))
 def test_regions_create_mandatory_params(mock_request):
     call_command(
         "croud",
@@ -78,11 +82,15 @@ def test_regions_create_mandatory_params(mock_request):
         "EDGE",
         "--yes",
     )
-    assert_rest(
-        mock_request,
+
+    mock_request.call_args_list[0].assert_called_with(
         RequestMethod.POST,
         "/api/v2/regions/",
         body={"description": "region-description", "provider": "EDGE"},
+        params=None,
+    )
+    mock_request.call_args_list[1].assert_called_with(
+        RequestMethod.GET, "/api/v2/regions/region-name/install-token/", params=None
     )
 
 

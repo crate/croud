@@ -65,14 +65,35 @@ def regions_create(args: Namespace) -> None:
     if args.aws_region:
         body["aws_region"] = args.aws_region
 
-    data, errors = client.post("/api/v2/regions/", body=body)
+    region, region_errors = client.post("/api/v2/regions/", body=body)
 
     print_response(
-        data=data,
-        errors=errors,
+        data=region,
+        errors=region_errors,
         keys=["name", "description"],
         output_fmt=get_output_format(args),
     )
+
+    if not region_errors and region and "name" in region:
+        install_token, install_token_errors = client.get(
+            f"/api/v2/regions/{region['name']}/install-token/"
+        )
+
+        if not install_token_errors and install_token and "token" in install_token:
+            print_success("You successfully created a region.")
+            print("")
+            print("To install the edge region run the following command:")
+            print("")
+            print(
+                f"  $ bash <( curl –fsSl https://console.crate.cloud/edge/{region['name']}/cratedb-cloud-edge.sh) install {install_token['token']}"  # noqa
+            )
+        else:
+            print_response(
+                data=install_token,
+                errors=install_token_errors,
+                keys=["token"],
+                output_fmt=get_output_format(args),
+            )
 
 
 @require_confirmation(
