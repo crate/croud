@@ -124,39 +124,3 @@ def test_regions_create_aborted(mock_request, capsys):
 
     _, err_output = capsys.readouterr()
     assert "Region creation cancelled." in err_output
-
-
-@mock.patch.object(Client, "request", return_value=({}, None))
-def test_get_region_deployment_manifest(mock_request):
-    call_command(
-        "croud",
-        "regions",
-        "generate-deployment-manifest",
-        "--region-name",
-        "region-name",
-        "--yes",
-    )
-    assert_rest(
-        mock_request,
-        RequestMethod.GET,
-        "/api/v2/regions/region-name/deployment-manifest/",
-    )
-
-
-@mock.patch.object(Client, "request", return_value=(None, {}))
-def test_get_region_deployment_manifest_aborted(mock_request, capsys):
-    with mock.patch("builtins.input", side_effect=["Nooooo"]) as mock_input:
-        call_command(
-            "croud",
-            "regions",
-            "generate-deployment-manifest",
-            "--region-name",
-            "region-name",
-        )
-    mock_request.assert_not_called()
-    mock_input.assert_called_once_with(
-        "The generation of a deployment manfiest for an edge region is an experimental feature. Do you really want to use it? [yN] "  # noqa
-    )
-
-    _, err_output = capsys.readouterr()
-    assert "Deployment manifest generation cancelled." in err_output
