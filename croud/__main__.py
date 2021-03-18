@@ -72,7 +72,6 @@ from croud.projects.users.commands import (
 )
 from croud.regions.commands import (
     regions_create,
-    regions_generate_deployment_manifest,
     regions_list,
 )
 from croud.subscriptions.commands import subscriptions_get, subscriptions_list
@@ -623,18 +622,6 @@ command_tree = {
                     ),
                     Argument("-y", "--yes", action="store_true", default=False),
                 ],
-            },
-            "generate-deployment-manifest": {
-                "help": "Generate a deployment manifest for an edge region.",
-                "extra_args": [
-                    Argument("--region-name", type=str, help="", required=True),
-                    Argument(
-                        "--file-name", type=str,
-                        help="The name of the created manifest file.",
-                    ),
-                    Argument("-y", "--yes", action="store_true", default=False),
-                ],
-                "resolver": regions_generate_deployment_manifest,
             },
         }
     },
