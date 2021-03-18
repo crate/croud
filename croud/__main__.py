@@ -70,7 +70,10 @@ from croud.projects.users.commands import (
     project_users_list,
     project_users_remove,
 )
-from croud.regions.commands import regions_create, regions_list
+from croud.regions.commands import (
+    regions_create,
+    regions_list,
+)
 from croud.subscriptions.commands import subscriptions_get, subscriptions_list
 from croud.tools.spinner import HALO
 from croud.users.commands import users_list
