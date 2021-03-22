@@ -41,7 +41,7 @@ def regions_list(args: Namespace) -> None:
 
 
 @require_confirmation(
-    "The creation of a region is an experimental feature. Do you really want to use it?",  # noqa
+    "Creating a region is an experimental feature. Are you sure you want to proceed?",  # noqa
     cancel_msg="Region creation cancelled.",
 )
 def regions_create(args: Namespace) -> None:
@@ -79,7 +79,7 @@ def regions_create(args: Namespace) -> None:
         )
 
         if not install_token_errors and install_token and "token" in install_token:
-            print_success("You successfully created a region.")
+            print_success("You have successfully created a region.")
             print("")
             print("To install the edge region run the following command:")
             print("")

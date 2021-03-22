@@ -119,7 +119,7 @@ def test_regions_create_aborted(mock_request, capsys):
         )
     mock_request.assert_not_called()
     mock_input.assert_called_once_with(
-        "The creation of a region is an experimental feature. Do you really want to use it? [yN] "  # noqa
+        "Creating a region is an experimental feature. Are you sure you want to proceed? [yN] "  # noqa
     )
 
     _, err_output = capsys.readouterr()
