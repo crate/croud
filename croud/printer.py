@@ -120,6 +120,17 @@ class JsonFormatPrinter(FormatPrinter):
         return json.dumps(rows, sort_keys=False, indent=2)
 
 
+class RawFormatPrinter(FormatPrinter):
+    def format_rows(self, rows: Union[List[JsonDict], JsonDict]) -> str:
+        if not rows:
+            return ""
+        if type(rows) is dict:
+            return json.dumps(rows)
+        if type(rows) is list:
+            return "\n".join(rows)
+        return rows
+
+
 class TableFormatPrinter(FormatPrinter):
 
     display_all_columns = False
@@ -194,6 +205,7 @@ class YamlFormatPrinter(FormatPrinter):
 
 PRINTERS: Dict[str, Type[FormatPrinter]] = {
     "json": JsonFormatPrinter,
+    "raw": RawFormatPrinter,
     "table": TableFormatPrinter,
     "wide": WideTableFormatPrinter,
     "yaml": YamlFormatPrinter,

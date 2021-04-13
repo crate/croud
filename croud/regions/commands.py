@@ -21,7 +21,7 @@ from argparse import Namespace
 
 from croud.api import Client
 from croud.config import get_output_format
-from croud.printer import print_response, print_success
+from croud.printer import print_response, print_success, print_format
 from croud.util import require_confirmation
 
 
@@ -80,11 +80,16 @@ def regions_create(args: Namespace) -> None:
 
         if not install_token_errors and install_token and "token" in install_token:
             print_success("You have successfully created a region.")
-            print("")
-            print("To install the edge region run the following command:")
-            print("")
-            print(
-                f"  $ bash <( curl –fsSl https://console.crate.cloud/edge/{region['name']}/cratedb-cloud-edge.sh) install {install_token['token']}"  # noqa
+
+            print_format(
+                [
+                    "",
+                    "To install the edge region run the following command:",
+                    "",
+                    f"  $ bash <( wget -qO- {client.base_url}/edge/{region['name']}/cratedb-cloud-edge.sh) {install_token['token']}", # noqa
+                    ""
+                ],
+                "raw",
             )
         else:
             print_response(
