@@ -25,6 +25,7 @@ from croud.printer import (
     WideTableFormatPrinter,
     YamlFormatPrinter,
     print_response,
+    RawFormatPrinter,
 )
 
 
@@ -221,6 +222,24 @@ def test_tabular_format(rows, keys, transforms, expected):
 )
 def test_wide_format(rows, keys, transforms, expected):
     out = WideTableFormatPrinter(keys=keys, transforms=transforms).format_rows(rows)
+    assert out == expected
+
+
+@pytest.mark.parametrize(
+    "rows,expected",
+    (
+        ("test", "test"),
+        (["test"], "test"),
+        (["test", ""], "test\n"),
+        (["test", "this"], "test\nthis"),
+        (None, ""),
+        ([], ""),
+        ({}, ""),
+        ({"test": "true", "me": 1}, '{"test": "true", "me": 1}'),
+    ),
+)
+def test_print_raw(rows, expected):
+    out = RawFormatPrinter().format_rows(rows=rows)
     assert out == expected
 
 

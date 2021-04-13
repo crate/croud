@@ -53,7 +53,11 @@ setup(
         "halo==0.0.31",
     ],
     extras_require={
-        "testing": ["tox==3.14.2"],
+        "testing": [
+            "tox==3.14.2",
+            "pytest==6.2.3",
+            "pytest-random-order==1.0.4",
+        ],
         "development": [
             "black==19.10b0",
             "flake8==3.7.9",
