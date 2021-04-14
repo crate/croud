@@ -75,6 +75,13 @@ def print_response(
         print_success(message)
 
 
+def print_raw(text: Union[List[str], str]):
+    HALO.stop()
+    if type(text) is list:
+        text = "\n".join(text)
+    print(text, file=sys.stderr)
+
+
 def print_error(text: str):
     HALO.stop()
     print(Fore.RED + "==> Error: " + Style.RESET_ALL + text, file=sys.stderr)
@@ -118,17 +125,6 @@ class FormatPrinter(abc.ABC):
 class JsonFormatPrinter(FormatPrinter):
     def format_rows(self, rows: Union[List[JsonDict], JsonDict]) -> str:
         return json.dumps(rows, sort_keys=False, indent=2)
-
-
-class RawFormatPrinter(FormatPrinter):
-    def format_rows(self, rows: Union[List[JsonDict], JsonDict]) -> str:
-        if not rows:
-            return ""
-        if type(rows) is dict:
-            return json.dumps(rows)
-        if type(rows) is list:
-            return "\n".join(rows)
-        return rows
 
 
 class TableFormatPrinter(FormatPrinter):
@@ -205,7 +201,6 @@ class YamlFormatPrinter(FormatPrinter):
 
 PRINTERS: Dict[str, Type[FormatPrinter]] = {
     "json": JsonFormatPrinter,
-    "raw": RawFormatPrinter,
     "table": TableFormatPrinter,
     "wide": WideTableFormatPrinter,
     "yaml": YamlFormatPrinter,

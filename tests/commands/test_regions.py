@@ -22,7 +22,7 @@ from unittest import mock
 import pytest
 
 from croud.api import Client, RequestMethod
-from croud.printer import RawFormatPrinter
+from croud.printer import print_raw
 from tests.util import assert_rest, call_command
 
 
@@ -95,7 +95,7 @@ def test_regions_create_mandatory_params(mock_request):
     )
 
 
-@mock.patch.object(RawFormatPrinter, "print_rows")
+@mock.patch("croud.regions.commands.print_raw", wraps=print_raw)
 @mock.patch.object(
     Client,
     "request",
@@ -133,12 +133,7 @@ def test_regions_create_install_command(mock_request, mock_raw_printer):
 def test_regions_create_missing_description(mock_request, capsys):
     with pytest.raises(SystemExit):
         call_command(
-            "croud",
-            "regions",
-            "create",
-            "--provider",
-            "EDGE",
-            "--yes",
+            "croud", "regions", "create", "--provider", "EDGE", "--yes",
         )
     mock_request.assert_not_called()
     _, err_output = capsys.readouterr()
