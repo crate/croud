@@ -5,7 +5,7 @@ Changes for croud
 Unreleased
 ==========
 
-- Added a new type of printer ``raw`` that simply outputs the rows as given.
+- Added a new ``print_raw`` function to simply print the output of croud.
 
 - Added new subcommand ``regions generate-deployment-manifest`` to fetch a deployment
   manifest for an edge region.
