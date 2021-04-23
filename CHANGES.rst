@@ -18,6 +18,9 @@ Unreleased
 - Added the command ``regions delete`` that allows superusers and organization admins
   deleting edge regions.
 
+- CI: Add testing on Python 3.9.
+
+
 0.26.0 - 2021/03/12
 ===================
 
