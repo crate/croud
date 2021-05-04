@@ -46,7 +46,7 @@ setup(
         "certifi",
         "colorama==0.4.3",
         "marshmallow==3.5.1",
-        "pyyaml==5.3.1",
+        "pyyaml==5.4",
         "requests==2.23.0",
         "tabulate==0.8.6",
         "yarl==1.4.2",
