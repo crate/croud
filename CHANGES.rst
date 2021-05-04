@@ -13,6 +13,9 @@ Unreleased
 - Added the command ``regions create`` that allows superusers to add new cloud and edge
   regions.
 
+- Added the command ``regions delete`` that allows superusers and organization admins
+  deleting edge regions.
+
 0.26.0 - 2021/03/12
 ===================
 

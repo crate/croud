@@ -160,3 +160,61 @@ def test_regions_create_aborted(mock_request, capsys):
 
     _, err_output = capsys.readouterr()
     assert "Region creation cancelled." in err_output
+
+
+@mock.patch.object(
+    Client, "request", side_effect=[({}, None)],
+)
+def test_regions_delete(mock_request, capsys):
+    call_command(
+        "croud", "regions", "delete", "-y", "--name", "region-name",
+    )
+    mock_request.assert_called_once_with(
+        RequestMethod.DELETE, "/api/v2/regions/region-name/", params=None, body=None,
+    )
+
+
+@mock.patch.object(
+    Client,
+    "request",
+    side_effect=[
+        (
+            None,
+            {
+                "success": False,
+                "message": "Deletion requires no resources to be related to the target.",  # noqa
+                "related_resources": {
+                    "projects": [
+                        "5d8e1a81-e2fe-48bb-8cc2-fbdbebfe2d8f",
+                        "42023d1f-462e-4130-aa82-6025342b11c5",
+                    ]
+                },
+            },
+        )
+    ],
+)
+def test_regions_delete_with_projects_fails(mock_request, capsys):
+
+    call_command(
+        "croud", "regions", "delete", "-y", "--name", "region-name",
+    )
+    mock_request.assert_called_once_with(
+        RequestMethod.DELETE, "/api/v2/regions/region-name/", params=None, body=None,
+    )
+    data, err_output = capsys.readouterr()
+    assert "Deletion requires no resources to be related to the target." in err_output
+    assert "5d8e1a81-e2fe-48bb-8cc2-fbdbebfe2d8f" in data
+    assert "42023d1f-462e-4130-aa82-6025342b11c5" in data
+
+
+@mock.patch.object(
+    Client, "request", side_effect=[({}, None)],
+)
+def test_regions_delete_missing_name(mock_request, capsys):
+    with pytest.raises(SystemExit):
+        call_command(
+            "croud", "regions", "delete", "-y",
+        )
+    mock_request.assert_not_called()
+    _, err_output = capsys.readouterr()
+    assert "The following arguments are required: --name" in err_output

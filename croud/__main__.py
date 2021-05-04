@@ -70,7 +70,7 @@ from croud.projects.users.commands import (
     project_users_list,
     project_users_remove,
 )
-from croud.regions.commands import regions_create, regions_list
+from croud.regions.commands import regions_create, regions_list, regions_delete
 from croud.subscriptions.commands import subscriptions_get, subscriptions_list
 from croud.tools.spinner import HALO
 from croud.users.commands import users_list
@@ -616,6 +616,17 @@ command_tree = {
                     Argument(
                         "--org-id", type=str, required=False,
                         help="The organization ID to use.",
+                    ),
+                    Argument("-y", "--yes", action="store_true", default=False),
+                ],
+            },
+            "delete": {
+                "help": "Delete an existing edge region.",
+                "resolver": regions_delete,
+                "extra_args": [
+                    Argument(
+                        "--name", type=str, required=True,
+                        help="The name of the region that will be deleted."
                     ),
                     Argument("-y", "--yes", action="store_true", default=False),
                 ],
