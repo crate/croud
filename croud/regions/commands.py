@@ -97,3 +97,34 @@ def regions_create(args: Namespace) -> None:
                 keys=["token"],
                 output_fmt=get_output_format(args),
             )
+
+
+@require_confirmation(
+    "Deleting a region is an experimental feature. Are you sure you want to proceed?",  # noqa
+    cancel_msg="Region deletion cancelled.",
+)
+def regions_delete(args: Namespace) -> None:
+    """
+    Deletes a new region
+    """
+    client = Client.from_args(args)
+    region_name = args.name
+
+    data, region_errors = client.delete(f"/api/v2/regions/{region_name}/")
+
+    if region_errors:
+        print_response(
+            data=data,
+            errors={
+                "message": region_errors.get("message"),
+                "errors": {"related_resources": region_errors.get("related_resources")},
+            },
+            output_fmt=get_output_format(args),
+        )
+    else:
+        print_response(
+            data=data,
+            errors=region_errors,
+            success_message="Region deleted.",
+            output_fmt=get_output_format(args),
+        )
