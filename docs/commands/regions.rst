@@ -66,3 +66,32 @@ Example
    To install the edge region run the following command:
 
      $ bash <( wget -qO- https://console.cratedb-dev.cloud/edge/cratedb-cloud-edge.sh) <install-token>
+
+
+``regions delete``
+==================
+
+Deletes an existing Edge region:
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: regions delete
+
+.. note::
+
+    Only organization admins can delete Edge regions that belong to their organizations.
+    Deleting a region does not imply that all the Kubernetes resources will be automatically deleted.
+    This command only unregisters the region from Crate Cloud, in order to clean the region Kubernetes
+    cluster the following script can be be used:
+
+
+
+Example
+=======
+
+.. code-block:: console
+
+   sh$ croud regions create --name 2c0d0e22b0e846b2a7acdcbf092e54a3.edge.cratedb.net
+   ==> Success: You have successfully deleted a region.

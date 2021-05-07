@@ -125,6 +125,6 @@ def regions_delete(args: Namespace) -> None:
         print_response(
             data=data,
             errors=region_errors,
-            success_message="Region deleted.",
+            success_message="You have successfully deleted a region.",
             output_fmt=get_output_format(args),
         )
