@@ -70,6 +70,7 @@ def clusters_deploy(args: Namespace) -> None:
     }
     if args.unit:
         body["product_unit"] = args.unit
+    _handle_edge_params(body, args)
     client = Client.from_args(args)
     data, errors = client.post("/api/v2/clusters/", body=body)
     print_response(
@@ -126,3 +127,23 @@ def clusters_delete(args: Namespace) -> None:
         success_message="Cluster deleted.",
         output_fmt=get_output_format(args),
     )
+
+
+# We want to map the custom hardware specs to slightly nicer params in croud,
+# hence this mapping here
+def _handle_edge_params(body, args):
+    if args.cpus:
+        body.setdefault("hardware_specs", {})["cpus_per_node"] = args.cpus
+    if args.disks:
+        body.setdefault("hardware_specs", {})["disks_per_node"] = args.disks
+    if args.disk_size_gb:
+        body.setdefault("hardware_specs", {})["disk_size_per_node_bytes"] = (
+            args.disk_size_gb * 1024 * 1024 * 1024
+        )
+    if args.disk_type:
+        body.setdefault("hardware_specs", {})["disk_type"] = args.disk_type
+    if args.memory_size_mb:
+        body.setdefault("hardware_specs", {})["memory_per_node_bytes"] = (
+            args.memory_size_mb * 1024 * 1024
+        )
+    print(body)
