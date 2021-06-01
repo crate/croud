@@ -349,6 +349,27 @@ command_tree = {
                         choices={"stable", "testing", "nightly"},
                         help="The channel of the CrateDB version (superusers only).",
                     ),
+                    Argument(
+                        "--cpus", type=float, required=False,
+                        help="Number of CPU cores to allocate. Can be fractional.",
+                    ),
+                    Argument(
+                        "--disks", type=int, required=False,
+                        help="Number of disks to attach.",
+                    ),
+                    Argument(
+                        "--disk-size-gb", type=int, required=False,
+                        help="Size of disks to attach (in GB)",
+                    ),
+                    Argument(
+                        "--disk-type", type=str, required=False,
+                        choices={"standard", "premium"},
+                        help="Type of disks to use."
+                    ),
+                    Argument(
+                        "--memory-size-mb", type=int, required=False,
+                        help="Amount of memory to allocate (in MB).",
+                    )
                 ],
                 "resolver": clusters_deploy,
             },
