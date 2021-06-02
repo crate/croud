@@ -96,6 +96,65 @@ def test_clusers_deploy(mock_request):
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusers_edge(mock_request):
+    project_id = gen_uuid()
+    call_command(
+        "croud",
+        "clusters",
+        "deploy",
+        "--product-name",
+        "cratedb.az1",
+        "--tier",
+        "xs",
+        "--unit",
+        "1",
+        "--project-id",
+        project_id,
+        "--cluster-name",
+        "crate_cluster",
+        "--version",
+        "3.2.5",
+        "--username",
+        "foobar",
+        "--password",
+        "s3cr3t!",
+        "--cpus",
+        "1",
+        "--disks",
+        "1",
+        "--disk-size-gb",
+        "100",
+        "--disk-type",
+        "premium",
+        "--memory-size-mb",
+        "2048",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        "/api/v2/clusters/",
+        body={
+            "crate_version": "3.2.5",
+            "name": "crate_cluster",
+            "password": "s3cr3t!",
+            "product_name": "cratedb.az1",
+            "product_tier": "xs",
+            "product_unit": 1,
+            "project_id": project_id,
+            "username": "foobar",
+            "channel": "stable",
+            "hardware_specs": {
+                "cpus_per_node": 1.0,
+                "disks_per_node": 1,
+                "disk_size_per_node_bytes": 107_374_182_400,
+                "disk_type": "premium",
+                "memory_per_node_bytes": 2_147_483_648,
+            },
+        },
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
 def test_clusers_deploy_no_unit(mock_request):
     project_id = gen_uuid()
     call_command(

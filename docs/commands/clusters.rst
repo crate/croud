@@ -36,7 +36,7 @@ Example
    +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
    | id                                   | name                   | numNodes | crateVersion | projectId                            | username    | fqdn                                             |
    |--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------|
-   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        1 | 3.2.6        | 952cd102-91c1-4837-962a-12ecb71a6ba8 | default     | my-first-crate-cluster.eastus.azure.cratedb.net. |
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        1 | 4.5.1        | 952cd102-91c1-4837-962a-12ecb71a6ba8 | default     | my-first-crate-cluster.eastus.azure.cratedb.net. |
    +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
 
 
@@ -59,13 +59,13 @@ Example
        --tier xs \
        --cluster-name my-first-crate-cluster \
        --project-id 952cd102-91c1-4837-962a-12ecb71a6ba8 \
-       --version 3.2.6 \
+       --version 4.5.1 \
        --username default \
        --password "s3cr3t!"
    +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
    | id                                   | name                   | numNodes | crateVersion | projectId                            | username    | fqdn                                             |
    |--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------|
-   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        1 | 3.2.6        | 952cd102-91c1-4837-962a-12ecb71a6ba8 | default     | my-first-crate-cluster.eastus.azure.cratedb.net. |
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        1 | 4.5.1        | 952cd102-91c1-4837-962a-12ecb71a6ba8 | default     | my-first-crate-cluster.eastus.azure.cratedb.net. |
    +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
    ==> Success: Cluster deployed. It may take a few minutes to complete the changes.
 
@@ -73,9 +73,7 @@ Example
 
    This command is only available for superusers.
 
-   To deploy a cluster please use our `CrateDB Cloud on Azure
-   <https://help.crate.io/en/articles/3603380-how-to-deploy-a-cluster-via-the-azure-marketplace>`__
-   offering.
+   To deploy a cluster please use the `CrateDB Cloud Console`_.
 
 ``clusters scale``
 ==================
@@ -119,11 +117,11 @@ Example
 
    sh$ croud clusters upgrade \
        --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
-       --version 3.3.3
+       --version 4.5.1
    +--------------------------------------+------------------------+---------------+
    | id                                   | name                   | crate_version |
    |--------------------------------------+------------------------+---------------|
-   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |         3.3.3 |
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |         4.5.1 |
    +--------------------------------------+------------------------+---------------+
    ==> Success: Cluster upgraded. It may take a few minutes to complete the changes.
 
@@ -185,3 +183,4 @@ Example
 .. _CrateDB documentation: https://crate.io/docs/crate/reference/en/latest/admin/snapshots.html
 .. _COPY TO SQL statement: https://crate.io/docs/crate/reference/en/latest/sql/statements/copy-to.html
 .. _string delimitation: https://en.wikipedia.org/wiki/Delimiter
+.. _CrateDB Cloud Console: https://console.cratedb.cloud
