@@ -351,24 +351,29 @@ command_tree = {
                     ),
                     Argument(
                         "--cpus", type=float, required=False,
-                        help="Number of CPU cores to allocate. Can be fractional.",
+                        help="Number of CPU cores to allocate. Can be fractional. "
+                             "CrateDB Cloud Edge regions only.",
                     ),
                     Argument(
                         "--disks", type=int, required=False,
-                        help="Number of disks to attach.",
+                        help="Number of disks to attach. "
+                             "CrateDB Cloud Edge regions only.",
                     ),
                     Argument(
                         "--disk-size-gb", type=int, required=False,
-                        help="Size of disks to attach (in GB)",
+                        help="Size of disks to attach (in GB). "
+                             "CrateDB Cloud Edge regions only.",
                     ),
                     Argument(
                         "--disk-type", type=str, required=False,
                         choices={"standard", "premium"},
-                        help="Type of disks to use."
+                        help="Type of disks to use. "
+                             "CrateDB Cloud Edge regions only.",
                     ),
                     Argument(
                         "--memory-size-mb", type=int, required=False,
-                        help="Amount of memory to allocate (in MB).",
+                        help="Amount of memory to allocate (in MB). "
+                             "CrateDB Cloud Edge regions only.",
                     )
                 ],
                 "resolver": clusters_deploy,

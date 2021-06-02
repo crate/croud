@@ -61,9 +61,6 @@ coverage.xml
 # PyBuilder
 target/
 
-# buildout
-env/
-
 # vscode
 .vscode/
 .vscode/*
