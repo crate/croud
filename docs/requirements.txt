@@ -1,12 +1,3 @@
-# Standard packages needed for the docs
-###############################################################################
-
-crate-docs-theme
-
-
-# Project specific packages
-###############################################################################
-
-# Pip is run from the root directory, so this installs the `croud` package
 .
+crate-docs-theme
 sphinx-argparse==0.2.5

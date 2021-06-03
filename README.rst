@@ -2,21 +2,7 @@
 Croud
 =====
 
-.. image:: https://travis-ci.org/crate/croud.svg?branch=master
-    :target: https://travis-ci.org/crate/croud
-    :alt: Travis CI
-
-.. image:: https://badge.fury.io/py/croud.svg
-    :target: http://badge.fury.io/py/croud
-    :alt: Version
-
-.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
-    :target: https://crate.io/docs/cloud/en/latest/
-    :alt: Documentation
-
-.. image:: https://codecov.io/gh/crate/croud/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/crate/croud
-    :alt: Coverage
+|ci| |coverage| |rtd| |pypi-version|
 
 |
 
@@ -59,3 +45,24 @@ Help
 .. _support channels: https://crate.io/support/
 .. _virtualenv: https://virtualenv.pypa.io/en/latest/
 .. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/
+
+
+.. |ci| image:: https://github.com/crate/croud/actions/workflows/docs.yml/badge.svg
+    :alt: CI status
+    :scale: 100%
+    :target: https://github.com/crate/croud/actions/workflows/docs.yml
+
+.. |coverage| image:: https://codecov.io/gh/crate/croud/branch/master/graph/badge.svg
+    :alt: Code coverage
+    :scale: 100%
+    :target: https://codecov.io/gh/crate/croud
+
+.. |rtd| image:: https://readthedocs.org/projects/croud/badge/?version=latest
+    :alt: Read The Docs status
+    :scale: 100%
+    :target: https://croud.readthedocs.io/en/latest/
+
+.. |pypi-version| image:: https://badge.fury.io/py/croud.svg
+    :alt: Most recent version on PyPI
+    :scale: 100%
+    :target: https://pypi.org/project/croud/
