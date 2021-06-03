@@ -146,4 +146,3 @@ def _handle_edge_params(body, args):
         body.setdefault("hardware_specs", {})["memory_per_node_bytes"] = (
             args.memory_size_mb * 1024 * 1024
         )
-    print(body)
