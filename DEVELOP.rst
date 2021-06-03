@@ -179,9 +179,7 @@ You must install `fswatch`_ to use the ``dev`` target.
 Continuous integration and deployment
 -------------------------------------
 
-|build| |travis| |rtd|
-
-Travis CI is `configured`_ to run ``make check`` from the ``docs`` directory.
+CI is configured to run ``make check`` from the ``docs`` directory.
 Please do not merge pull requests until the tests pass.
 
 `Read the Docs`_ automatically deploys the documentation whenever a configured
@@ -193,7 +191,6 @@ release version), please contact the `@crate/tech-writing`_ team.
 
 .. _@crate/tech-writing: https://github.com/orgs/crate/teams/tech-writing
 .. _black: https://github.com/psf/black
-.. _configured: https://github.com/crate/croud/blob/master/.travis.yml
 .. _flake8: https://gitlab.com/pycqa/flake8
 .. _fswatch: https://github.com/emcrisostomo/fswatch
 .. _isort: https://github.com/timothycrosley/isort
@@ -207,16 +204,3 @@ release version), please contact the `@crate/tech-writing`_ team.
 .. _Sphinx: http://sphinx-doc.org/
 .. _Test PyPI: https://packaging.python.org/guides/using-testpypi/
 .. _tox: https://tox.readthedocs.io
-
-
-.. |build| image:: https://img.shields.io/endpoint.svg?color=blue&url=https%3A%2F%2Fraw.githubusercontent.com%2Fcrate%2Fcroud%2Fmaster%2Fdocs%2Fbuild.json
-    :alt: Build version
-    :target: https://github.com/crate/croud/blob/master/docs/build.json
-
-.. |travis| image:: https://img.shields.io/travis/crate/croud.svg?style=flat
-    :alt: Travis CI status
-    :target: https://travis-ci.org/crate/croud
-
-.. |rtd| image:: https://readthedocs.org/projects/croud/badge/?version=latest
-    :alt: Read The Docs status
-    :target: https://readthedocs.org/projects/croud

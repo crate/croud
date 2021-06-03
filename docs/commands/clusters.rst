@@ -158,18 +158,20 @@ Example
 
    If you want a more recent backup, there are several options:
 
-   - `Create an AWS S3 repository`_ with a ``base_path`` of
-     ``/<project_id>/<cluster_id>/<name>``. ``<project_id>`` and
-     ``<cluster_id>`` refer to the "dashed" form of the corresponding ID
-     (``XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX``). ``<name>`` can be any
-     alphanumeric string. Afterwards, `create a snapshot`_ in your repository.
+   - :ref:`Create an AWS S3 repository <crate-reference:ref-create-repository>`
+     with a ``base_path`` of ``/<project_id>/<cluster_id>/<name>``.
+     ``<project_id>`` and ``<cluster_id>`` refer to the "dashed" form of the
+     corresponding ID (``XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX``). ``<name>``
+     can be any alphanumeric string. Afterwards, :ref:`create a snapshot
+     <crate-reference:sql-create-snapshot>` in your repository.
 
    - Alternatively, you can create a backup as documented in the
-     `CrateDB documentation`_ on repositories and snapshots by e.g. providing your own
-     AWS S3 bucket and credentials.
+     CrateDB documentation about :ref:`snapshots <crate-reference:snapshot-restore>`
+     on repositories and snapshots by e.g. providing your own AWS S3 bucket and
+     credentials.
 
-   - Lastly, the `COPY TO SQL statement`_ can be used to export a table to an
-     AWS S3 bucket as well.
+   - Lastly, the :ref:`COPY TO SQL statement <crate-reference:sql-copy-to>` can
+     be used to export a table to an AWS S3 bucket as well.
 
 .. important::
 
@@ -178,9 +180,5 @@ Example
    data!
 
 .. _support: support@crate.io
-.. _Create an AWS S3 repository: https://crate.io/docs/crate/reference/en/latest/sql/statements/create-repository.html
-.. _create a snapshot: https://crate.io/docs/crate/reference/en/latest/sql/statements/create-snapshot.html
-.. _CrateDB documentation: https://crate.io/docs/crate/reference/en/latest/admin/snapshots.html
-.. _COPY TO SQL statement: https://crate.io/docs/crate/reference/en/latest/sql/statements/copy-to.html
 .. _string delimitation: https://en.wikipedia.org/wiki/Delimiter
 .. _CrateDB Cloud Console: https://console.cratedb.cloud
