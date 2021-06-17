@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.27.0 - 2021/06/17
+===================
+
 - Added support for custom specs for edge clusters.
 
 - Added a new ``print_raw`` function to simply print the output of croud.
