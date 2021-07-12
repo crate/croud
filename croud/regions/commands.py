@@ -21,7 +21,7 @@ from argparse import Namespace
 
 from croud.api import Client
 from croud.config import get_output_format
-from croud.printer import print_raw, print_response, print_success
+from croud.printer import print_error, print_raw, print_response, print_success
 from croud.util import require_confirmation
 
 
@@ -109,6 +109,30 @@ def regions_delete(args: Namespace) -> None:
     """
     client = Client.from_args(args)
     region_name = args.name
+
+    regions, errors = client.get("/api/v2/regions/")
+    region = next((r for r in (regions or []) if r["name"] == region_name), None)
+
+    if not region:
+        print_error(f"The region {region_name} does not exist.")
+        return
+
+    # Check edge region status
+    if region["is_edge_region"] and region["status"] == "UP":
+        print_response(
+            data=region,
+            errors={
+                "message": (
+                    "Your region is still connected to CrateDB Cloud. Please uninstall "
+                    "the CrateDB Edge stack from the region before deleting it by "
+                    "running the script below:\nbash <(wget -qO- "
+                    f"{client.base_url}/edge/uninstall-cratedb-cloud-edge.sh)"
+                ),
+                "errors": {},
+            },
+            output_fmt=get_output_format(args),
+        )
+        return
 
     data, region_errors = client.delete(f"/api/v2/regions/{region_name}/")
 

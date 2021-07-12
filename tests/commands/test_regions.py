@@ -25,6 +25,19 @@ from croud.api import Client, RequestMethod
 from croud.printer import print_raw
 from tests.util import assert_rest, call_command
 
+EDGE_REGION_LIST = [
+    {
+        "dc": None,
+        "deprecated": False,
+        "description": "region-description",
+        "is_edge_region": True,
+        "last_seen": None,
+        "name": "region-name",
+        "organization_id": "organization-id",
+        "status": "DOWN",
+    }
+]
+
 
 @mock.patch.object(Client, "request", return_value=({}, None))
 def test_regions_list(mock_request):
@@ -163,14 +176,22 @@ def test_regions_create_aborted(mock_request, capsys):
 
 
 @mock.patch.object(
-    Client, "request", side_effect=[({}, None)],
+    Client, "request", side_effect=[(EDGE_REGION_LIST, None), ({}, None)],
 )
 def test_regions_delete(mock_request, capsys):
     call_command(
         "croud", "regions", "delete", "-y", "--name", "region-name",
     )
-    mock_request.assert_called_once_with(
-        RequestMethod.DELETE, "/api/v2/regions/region-name/", params=None, body=None,
+    mock_request.assert_has_calls(
+        [
+            mock.call(RequestMethod.GET, "/api/v2/regions/", params=None),
+            mock.call(
+                RequestMethod.DELETE,
+                "/api/v2/regions/region-name/",
+                params=None,
+                body=None,
+            ),
+        ]
     )
 
 
@@ -178,6 +199,7 @@ def test_regions_delete(mock_request, capsys):
     Client,
     "request",
     side_effect=[
+        (EDGE_REGION_LIST, None),
         (
             None,
             {
@@ -190,7 +212,7 @@ def test_regions_delete(mock_request, capsys):
                     ]
                 },
             },
-        )
+        ),
     ],
 )
 def test_regions_delete_with_projects_fails(mock_request, capsys):
@@ -198,8 +220,16 @@ def test_regions_delete_with_projects_fails(mock_request, capsys):
     call_command(
         "croud", "regions", "delete", "-y", "--name", "region-name",
     )
-    mock_request.assert_called_once_with(
-        RequestMethod.DELETE, "/api/v2/regions/region-name/", params=None, body=None,
+    mock_request.assert_has_calls(
+        [
+            mock.call(RequestMethod.GET, "/api/v2/regions/", params=None),
+            mock.call(
+                RequestMethod.DELETE,
+                "/api/v2/regions/region-name/",
+                params=None,
+                body=None,
+            ),
+        ]
     )
     data, err_output = capsys.readouterr()
     assert "Deletion requires no resources to be related to the target." in err_output
@@ -218,3 +248,74 @@ def test_regions_delete_missing_name(mock_request, capsys):
     mock_request.assert_not_called()
     _, err_output = capsys.readouterr()
     assert "The following arguments are required: --name" in err_output
+
+
+@mock.patch.object(
+    Client,
+    "request",
+    side_effect=[
+        (
+            [
+                {
+                    "dc": None,
+                    "deprecated": False,
+                    "description": "region-description",
+                    "is_edge_region": True,
+                    "last_seen": None,
+                    "name": "region-name",
+                    "organization_id": "organization-id",
+                    "status": "UP",
+                }
+            ],
+            None,
+        ),
+    ],
+)
+def test_regions_delete_status_up(mock_request, capsys, client):
+
+    call_command("croud", "regions", "delete", "-y", "--name", "region-name")
+    mock_request.assert_called_once_with(
+        RequestMethod.GET, "/api/v2/regions/", params=None,
+    )
+    data, err_output = capsys.readouterr()
+    msg = (
+        "Your region is still connected to CrateDB Cloud. Please uninstall "
+        "the CrateDB Edge stack from the region before deleting it by "
+        "running the script below:\nbash <(wget -qO- "
+        f"{client.base_url}/edge/uninstall-cratedb-cloud-edge.sh)"
+    )
+    assert msg in err_output
+
+
+@mock.patch.object(
+    Client, "request", side_effect=[(EDGE_REGION_LIST, None), ({}, None)],
+)
+def test_regions_delete_status_down(mock_request, capsys):
+
+    call_command("croud", "regions", "delete", "-y", "--name", "region-name")
+    mock_request.assert_has_calls(
+        [
+            mock.call(RequestMethod.GET, "/api/v2/regions/", params=None),
+            mock.call(
+                RequestMethod.DELETE,
+                "/api/v2/regions/region-name/",
+                params=None,
+                body=None,
+            ),
+        ]
+    )
+
+
+@mock.patch.object(
+    Client, "request", side_effect=[({}, None)],
+)
+def test_regions_delete_bad_name(mock_request, capsys):
+
+    region_name = "region-name"
+
+    call_command("croud", "regions", "delete", "-y", "--name", region_name)
+    mock_request.assert_called_once_with(
+        RequestMethod.GET, "/api/v2/regions/", params=None,
+    )
+    _, err_output = capsys.readouterr()
+    assert f"The region {region_name} does not exist." in err_output
