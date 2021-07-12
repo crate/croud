@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Improved error message when deleting a region that is up or doesn't exist.
+
 0.27.0 - 2021/06/17
 ===================
 
