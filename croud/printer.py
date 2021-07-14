@@ -172,7 +172,12 @@ class TableFormatPrinter(FormatPrinter):
         return tabulate(values, headers=headers, tablefmt="psql", missingval="NULL")
 
     def _filter_record(self, data: dict, keys: List[str]) -> JsonDict:
-        return {key: value for key, value in data.items() if key in keys}
+        # Ensure that we print keys in the order they are defined
+        ret = {}
+        for key in keys:
+            if key in data:
+                ret[key] = data[key]
+        return ret
 
     @staticmethod
     def _identity_transform(field):
