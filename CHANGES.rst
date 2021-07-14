@@ -7,6 +7,8 @@ Unreleased
 
 - Improved error message when deleting a region that is up or doesn't exist.
 
+- Added support for custom backup locations for edge regions.
+
 0.27.0 - 2021/06/17
 ===================
 

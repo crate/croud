@@ -185,6 +185,31 @@ command_tree = {
                         "--org-id", type=str, required=False,
                         help="The organization ID to use.",
                     ),
+                    Argument(
+                        "--backup-location-type",
+                        choices=["s3"],
+                        type=str,
+                        required=False,
+                        help="The type of the custom backup location to use. "
+                             "Only 's3' currently supported. "
+                             "CrateDB Edge regions only."
+                    ),
+                    Argument(
+                        "--backup-location", type=str, required=False,
+                        help="The location of where backups are to be stored, "
+                             "i.e. name of s3 bucket for s3 locations. "
+                             "CrateDB Edge regions only."
+                    ),
+                    Argument(
+                        "--backup-location-access-key-id", type=str, required=False,
+                        help="The AWS access key id for the given s3 bucket. "
+                             "CrateDB Edge regions only."
+                    ),
+                    Argument(
+                        "--backup-location-secret-access-key", type=str, required=False,
+                        help="The AWS secret access key for the given s3 bucket. "
+                             "CrateDB Edge regions only."
+                    ),
                 ],
                 "resolver": project_create,
             },
@@ -352,28 +377,28 @@ command_tree = {
                     Argument(
                         "--cpus", type=float, required=False,
                         help="Number of CPU cores to allocate. Can be fractional. "
-                             "CrateDB Cloud Edge regions only.",
+                             "CrateDB Edge regions only.",
                     ),
                     Argument(
                         "--disks", type=int, required=False,
                         help="Number of disks to attach. "
-                             "CrateDB Cloud Edge regions only.",
+                             "CrateDB Edge regions only.",
                     ),
                     Argument(
                         "--disk-size-gb", type=int, required=False,
                         help="Size of disks to attach (in GB). "
-                             "CrateDB Cloud Edge regions only.",
+                             "CrateDB Edge regions only.",
                     ),
                     Argument(
                         "--disk-type", type=str, required=False,
                         choices={"standard", "premium"},
                         help="Type of disks to use. "
-                             "CrateDB Cloud Edge regions only.",
+                             "CrateDB Edge regions only.",
                     ),
                     Argument(
                         "--memory-size-mb", type=int, required=False,
                         help="Amount of memory to allocate (in MB). "
-                             "CrateDB Cloud Edge regions only.",
+                             "CrateDB Edge regions only.",
                     )
                 ],
                 "resolver": clusters_deploy,

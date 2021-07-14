@@ -50,6 +50,41 @@ def test_projects_create(mock_request):
     )
 
 
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_projects_create_with_custom_backup(mock_request):
+    call_command(
+        "croud",
+        "projects",
+        "create",
+        "--name",
+        "new-project",
+        "--org-id",
+        "organization-id",
+        "--backup-location",
+        "some",
+        "--backup-location-type",
+        "s3",
+        "--backup-location-access-key-id",
+        "123",
+        "--backup-location-secret-access-key",
+        "321",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        "/api/v2/projects/",
+        body={
+            "name": "new-project",
+            "organization_id": "organization-id",
+            "backup_location": {
+                "location_type": "s3",
+                "location": "some",
+                "credentials": {"access_key_id": "123", "secret_access_key": "321"},
+            },
+        },
+    )
+
+
 @mock.patch.object(Client, "request", return_value=(None, {}))
 def test_projects_delete(mock_request, capsys):
     project_id = gen_uuid()
@@ -92,7 +127,29 @@ def test_projects_delete_aborted(mock_request, capsys):
     assert "Project deletion cancelled." in err_output
 
 
-@mock.patch.object(Client, "request", return_value=({}, None))
+@mock.patch.object(
+    Client,
+    "request",
+    return_value=(
+        [
+            {
+                "id": "1",
+                "name": "Test Project",
+                "organization_id": "test.org.id",
+                "region": "aks1.eastus.azure",
+                "backup_location": {"location_type": "s3", "location": "some"},
+            },
+            {
+                "id": "2",
+                "name": "Test Project 2",
+                "organization_id": "test.org.id",
+                "region": "aks1.eastus.azure",
+                "backup_location": None,
+            },
+        ],
+        None,
+    ),
+)
 def test_projects_list(mock_request):
     call_command("croud", "projects", "list")
     assert_rest(mock_request, RequestMethod.GET, "/api/v2/projects/")

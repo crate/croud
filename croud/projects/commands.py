@@ -27,10 +27,10 @@ from croud.util import org_id_config_fallback, require_confirmation
 
 @org_id_config_fallback
 def project_create(args: Namespace) -> None:
+    body = {"name": args.name, "organization_id": args.org_id}
+    _handle_custom_backups(body, args)
     client = Client.from_args(args)
-    data, errors = client.post(
-        "/api/v2/projects/", body={"name": args.name, "organization_id": args.org_id}
-    )
+    data, errors = client.post("/api/v2/projects/", body=body)
     print_response(
         data=data,
         errors=errors,
@@ -78,7 +78,10 @@ def projects_get(args: Namespace) -> None:
     client = Client.from_args(args)
     data, errors = client.get(f"/api/v2/projects/{args.id}/")
     print_response(
-        data=data, errors=errors, output_fmt=get_output_format(args),
+        data=data,
+        errors=errors,
+        output_fmt=get_output_format(args),
+        transforms={"backup_location": _transform_backup_location},
     )
 
 
@@ -88,6 +91,28 @@ def projects_list(args: Namespace) -> None:
     print_response(
         data=data,
         errors=errors,
-        keys=["id", "name", "region", "organization_id"],
+        keys=["id", "name", "region", "organization_id", "backup_location"],
+        transforms={"backup_location": _transform_backup_location},
         output_fmt=get_output_format(args),
     )
+
+
+def _handle_custom_backups(body, args: Namespace) -> None:
+    if args.backup_location_type:
+        body.setdefault("backup_location", {})[
+            "location_type"
+        ] = args.backup_location_type
+    if args.backup_location:
+        body.setdefault("backup_location", {})["location"] = args.backup_location
+    if args.backup_location_access_key_id and args.backup_location_secret_access_key:
+        body.setdefault("backup_location", {})["credentials"] = {
+            "access_key_id": args.backup_location_access_key_id,
+            "secret_access_key": args.backup_location_secret_access_key,
+        }
+
+
+def _transform_backup_location(field):
+    if not field:
+        return "default"
+
+    return f"{field['location_type']}://{field['location']}"
