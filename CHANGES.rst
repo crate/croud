@@ -9,6 +9,9 @@ Unreleased
 
 - Added support for custom backup locations for edge regions.
 
+- Added new subcommand ``clusters restart-node`` that allows superusers to restart
+  a single node in a cluster.
+
 0.27.0 - 2021/06/17
 ===================
 
