@@ -129,6 +129,22 @@ def clusters_delete(args: Namespace) -> None:
     )
 
 
+def clusters_restart_node(args: Namespace) -> None:
+    client = Client.from_args(args)
+    data, errors = client.delete(
+        f"/api/v2/clusters/{args.cluster_id}/nodes/{args.ordinal}"
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["code", "status"],
+        success_message=(
+            "Node restarted. It may take a few minutes to complete the changes."
+        ),
+        output_fmt=get_output_format(args),
+    )
+
+
 # We want to map the custom hardware specs to slightly nicer params in croud,
 # hence this mapping here
 def _handle_edge_params(body, args):

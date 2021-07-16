@@ -307,3 +307,23 @@ def test_clusters_delete_aborted(mock_request, capsys):
 
     _, err_output = capsys.readouterr()
     assert "Cluster deletion cancelled." in err_output
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusters_restart_node(mock_request):
+    ordinal = 1
+    cluster_id = gen_uuid()
+    call_command(
+        "croud",
+        "clusters",
+        "restart-node",
+        "--cluster-id",
+        cluster_id,
+        "--ordinal",
+        str(ordinal),
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.DELETE,
+        f"/api/v2/clusters/{cluster_id}/nodes/{ordinal}",
+    )

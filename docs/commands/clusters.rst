@@ -179,6 +179,36 @@ Example
    is not world readable or writable to prevent unauthorized access to your
    data!
 
+
+``clusters restart-node``
+=========================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters restart-node
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud clusters restart-node \
+       --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
+       --ordinal 1
+       --sudo
+   +--------+----------+
+   |   code | status   |
+   |--------+----------|
+   |    200 | Success  |
+   +--------+----------+
+   ==> Success: Node restarted. It may take a few minutes to complete the changes.
+
+.. note::
+
+   This command is only available for superusers.
+
 .. _support: support@crate.io
 .. _string delimitation: https://en.wikipedia.org/wiki/Delimiter
 .. _CrateDB Cloud Console: https://console.cratedb.cloud

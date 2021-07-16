@@ -28,6 +28,7 @@ from croud.clusters.commands import (
     clusters_deploy,
     clusters_get,
     clusters_list,
+    clusters_restart_node,
     clusters_scale,
     clusters_upgrade,
 )
@@ -441,6 +442,20 @@ command_tree = {
                     Argument("-y", "--yes", action="store_true", default=False)
                 ],
                 "resolver": clusters_delete,
+            },
+            "restart-node": {
+                "help": "Restart a node in a CrateDB cluster.",
+                "extra_args": [
+                    Argument(
+                        "--cluster-id", type=str, required=True,
+                        help="The CrateDB cluster ID to use.",
+                    ),
+                    Argument(
+                        "--ordinal", type=int, required=True,
+                        help="The ordinal index of the node to restart.",
+                    ),
+                ],
+                "resolver": clusters_restart_node,
             },
         },
     },
