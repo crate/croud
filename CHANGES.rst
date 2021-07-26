@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.28.0 - 2021/07/26
+===================
+
 - Improved error message when deleting a region that is up or doesn't exist.
 
 - Added support for custom backup locations for edge regions.
