@@ -109,6 +109,10 @@ def _handle_custom_backups(body, args: Namespace) -> None:
             "access_key_id": args.backup_location_access_key_id,
             "secret_access_key": args.backup_location_secret_access_key,
         }
+    if args.backup_location_endpoint_url:
+        body.setdefault("backup_location", {})["additional_config"] = {
+            "endpoint_url": args.backup_location_endpoint_url,
+        }
 
 
 def _transform_backup_location(field):

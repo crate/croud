@@ -68,6 +68,8 @@ def test_projects_create_with_custom_backup(mock_request):
         "123",
         "--backup-location-secret-access-key",
         "321",
+        "--backup-location-endpoint-url",
+        "https://minio.svc.local",
     )
     assert_rest(
         mock_request,
@@ -80,6 +82,7 @@ def test_projects_create_with_custom_backup(mock_request):
                 "location_type": "s3",
                 "location": "some",
                 "credentials": {"access_key_id": "123", "secret_access_key": "321"},
+                "additional_config": {"endpoint_url": "https://minio.svc.local"},
             },
         },
     )

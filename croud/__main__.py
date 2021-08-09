@@ -209,6 +209,11 @@ command_tree = {
                              "CrateDB Edge regions only."
                     ),
                     Argument(
+                        "--backup-location-endpoint-url", type=str, required=False,
+                        help="The URL to a S3 compatible endpoint. "
+                             "CrateDB Edge regions only."
+                    ),
+                    Argument(
                         "--backup-location-secret-access-key", type=str, required=False,
                         help="The AWS secret access key for the given s3 bucket. "
                              "CrateDB Edge regions only."
