@@ -158,7 +158,7 @@ Example
 
    If you want a more recent backup, there are several options:
 
-   - :ref:`Create an AWS S3 repository <crate-reference:ref-create-repository>`
+   - :ref:`Create an AWS S3 repository <crate-reference:sql-create-repository>`
      with a ``base_path`` of ``/<project_id>/<cluster_id>/<name>``.
      ``<project_id>`` and ``<cluster_id>`` refer to the "dashed" form of the
      corresponding ID (``XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX``). ``<name>``
@@ -208,6 +208,35 @@ Example
 .. note::
 
    This command is only available for superusers.
+
+
+``clusters set-deletion-protection``
+====================================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters set-deletion-protection
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud clusters set-deletion-protection \
+       --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
+       --value true
+   +--------------------------------------+------------------------+----------------------+
+   | id                                   | name                   | deletion_protected   |
+   |--------------------------------------+------------------------+----------------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | TRUE                 |
+   +--------------------------------------+------------------------+----------------------+
+   ==> Success: Cluster deletion protection status successfully updated
+
+.. note::
+
+   This command is only available for superusers and organization admins.
 
 .. _support: support@crate.io
 .. _string delimitation: https://en.wikipedia.org/wiki/Delimiter

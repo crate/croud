@@ -327,3 +327,24 @@ def test_clusters_restart_node(mock_request):
         RequestMethod.DELETE,
         f"/api/v2/clusters/{cluster_id}/nodes/{ordinal}",
     )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusters_set_deletion_protection(mock_request):
+    deletion_protected = True
+    cluster_id = gen_uuid()
+    call_command(
+        "croud",
+        "clusters",
+        "set-deletion-protection",
+        "--cluster-id",
+        cluster_id,
+        "--value",
+        str(deletion_protected).lower(),
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.PUT,
+        f"/api/v2/clusters/{cluster_id}/deletion-protection/",
+        body={"deletion_protected": deletion_protected},
+    )

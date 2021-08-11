@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added new subcommand ``clusters set-deletion-protection`` that allows superusers
+  and organization admins to set the deletion protection status of a cluster.
+
 0.28.0 - 2021/07/26
 ===================
 

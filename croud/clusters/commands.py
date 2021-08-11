@@ -145,6 +145,21 @@ def clusters_restart_node(args: Namespace) -> None:
     )
 
 
+def clusters_set_deletion_protection(args: Namespace) -> None:
+    body = {"deletion_protected": args.value}
+    client = Client.from_args(args)
+    data, errors = client.put(
+        f"/api/v2/clusters/{args.cluster_id}/deletion-protection/", body=body
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "deletion_protected"],
+        success_message=("Cluster deletion protection status successfully updated"),
+        output_fmt=get_output_format(args),
+    )
+
+
 # We want to map the custom hardware specs to slightly nicer params in croud,
 # hence this mapping here
 def _handle_edge_params(body, args):
