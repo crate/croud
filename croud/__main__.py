@@ -20,6 +20,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import sys
+from distutils.util import strtobool
 
 import colorama
 
@@ -30,6 +31,7 @@ from croud.clusters.commands import (
     clusters_list,
     clusters_restart_node,
     clusters_scale,
+    clusters_set_deletion_protection,
     clusters_upgrade,
 )
 from croud.config import CONFIG
@@ -456,6 +458,20 @@ command_tree = {
                     ),
                 ],
                 "resolver": clusters_restart_node,
+            },
+            "set-deletion-protection": {
+                "help": "Set the deletion protection status of a CrateDB cluster.",
+                "extra_args": [
+                    Argument(
+                        "--cluster-id", type=str, required=True,
+                        help="The CrateDB cluster ID to use.",
+                    ),
+                    Argument(
+                        "--value", type=lambda x: bool(strtobool(str(x))),
+                        required=True, help="The deletion protection status",
+                    ),
+                ],
+                "resolver": clusters_set_deletion_protection,
             },
         },
     },
