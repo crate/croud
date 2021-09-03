@@ -394,7 +394,7 @@ command_tree = {
                     ),
                     Argument(
                         "--disk-size-gb", type=int, required=False,
-                        help="Size of disks to attach (in GB). "
+                        help="Size of disks to attach (in GiB). "
                              "CrateDB Edge regions only.",
                     ),
                     Argument(
@@ -405,7 +405,7 @@ command_tree = {
                     ),
                     Argument(
                         "--memory-size-mb", type=int, required=False,
-                        help="Amount of memory to allocate (in MB). "
+                        help="Amount of memory to allocate (in MiB). "
                              "CrateDB Edge regions only.",
                     )
                 ],

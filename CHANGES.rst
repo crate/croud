@@ -10,6 +10,8 @@ Unreleased
 
 - Added ``--backup-location-endpoint-url`` to allow custom S3 backup locations.
 
+- Improved help message for disk size argument in ``clusters deploy``
+
 0.28.0 - 2021/07/26
 ===================
 
