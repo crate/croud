@@ -160,6 +160,27 @@ def clusters_set_deletion_protection(args: Namespace) -> None:
     )
 
 
+def clusters_set_ip_whitelist(args: Namespace) -> None:
+    networks = args.net
+    networks = networks.split(",")
+    cidr = []
+
+    for net in networks:
+        cidr.append({"cidr": net})
+
+    client = Client.from_args(args)
+    data, errors = client.put(
+        f"/api/v2/clusters/{args.cluster_id}/ip-restrictions/", body=cidr
+    )  # type: ignore
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "ip_whitelist"],
+        success_message=("IP Network whitelist successfully updated"),
+        output_fmt=get_output_format(args),
+    )
+
+
 # We want to map the custom hardware specs to slightly nicer params in croud,
 # hence this mapping here
 def _handle_edge_params(body, args):

@@ -15,6 +15,8 @@ Unreleased
 
 - Improved help message for disk size argument in ``clusters deploy``
 
+- Added a ``croud clusters set-ip-whitelist`` command to whitelist IP Networks.
+
 0.28.0 - 2021/07/26
 ===================
 
