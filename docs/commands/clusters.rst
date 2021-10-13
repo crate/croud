@@ -241,3 +241,27 @@ Example
 .. _support: support@crate.io
 .. _string delimitation: https://en.wikipedia.org/wiki/Delimiter
 .. _CrateDB Cloud Console: https://console.cratedb.cloud
+
+
+``clusters set-ip-whitelist``
+====================================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters set-ip-whitelist
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud clusters set-ip-whitelist \
+       --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
+       --net "10.1.2.0/24,192.168.1.0/24"
+   +--------------------------------------+---------------+-------------------------------------------------------------------------------------------------+
+   | id                                   | name          | ip_whitelist                                                                                    |
+   |--------------------------------------+---------------+-------------------------------------------------------------------------------------------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | romanas-nosub | [{"cidr": "10.1.2.0/24", "description": null}, {"cidr": "192.168.1.0/24", "description": null}] |
+   +--------------------------------------+---------------+-------------------------------------------------------------------------------------------------+

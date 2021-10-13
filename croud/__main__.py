@@ -32,6 +32,7 @@ from croud.clusters.commands import (
     clusters_restart_node,
     clusters_scale,
     clusters_set_deletion_protection,
+    clusters_set_ip_whitelist,
     clusters_upgrade,
 )
 from croud.config import CONFIG
@@ -477,6 +478,21 @@ command_tree = {
                     ),
                 ],
                 "resolver": clusters_set_deletion_protection,
+            },
+            "set-ip-whitelist": {
+                "help": "Set IP Network Whitelist in CIDR format (comma-separated).",
+                "extra_args": [
+                    Argument(
+                        "--cluster-id", type=str, required=True,
+                        help="The CrateDB cluster ID to use.",
+                    ),
+                    Argument(
+                        "--net", type=str,
+                        required=True,
+                        help="IP Network list in CIDR format (comma-separated).",
+                    ),
+                ],
+                "resolver": clusters_set_ip_whitelist,
             },
         },
     },

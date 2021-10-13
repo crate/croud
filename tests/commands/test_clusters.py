@@ -348,3 +348,24 @@ def test_clusters_set_deletion_protection(mock_request):
         f"/api/v2/clusters/{cluster_id}/deletion-protection/",
         body={"deletion_protected": deletion_protected},
     )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusters_set_ip_whitelist(mock_request):
+    cidr = "8.8.8.8/32,4.4.4.4/32"
+    cluster_id = gen_uuid()
+    call_command(
+        "croud",
+        "clusters",
+        "set-ip-whitelist",
+        "--cluster-id",
+        cluster_id,
+        "--net",
+        cidr,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.PUT,
+        f"/api/v2/clusters/{cluster_id}/ip-restrictions/",
+        body=[{"cidr": "8.8.8.8/32"}, {"cidr": "4.4.4.4/32"}],
+    )
