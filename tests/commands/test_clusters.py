@@ -367,5 +367,26 @@ def test_clusters_set_ip_whitelist(mock_request):
         mock_request,
         RequestMethod.PUT,
         f"/api/v2/clusters/{cluster_id}/ip-restrictions/",
-        body=[{"cidr": "8.8.8.8/32"}, {"cidr": "4.4.4.4/32"}],
+        body={"ip_whitelist": [{"cidr": "8.8.8.8/32"}, {"cidr": "4.4.4.4/32"}]},
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusters_reset_ip_whitelist(mock_request):
+    cidr = ""
+    cluster_id = gen_uuid()
+    call_command(
+        "croud",
+        "clusters",
+        "set-ip-whitelist",
+        "--cluster-id",
+        cluster_id,
+        "--net",
+        cidr,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.PUT,
+        f"/api/v2/clusters/{cluster_id}/ip-restrictions/",
+        body={"ip_whitelist": []},
     )

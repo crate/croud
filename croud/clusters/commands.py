@@ -166,11 +166,14 @@ def clusters_set_ip_whitelist(args: Namespace) -> None:
     cidr = []
 
     for net in networks:
-        cidr.append({"cidr": net})
+        if len(net) > 0:
+            cidr.append({"cidr": net})
+
+    body = {"ip_whitelist": cidr}
 
     client = Client.from_args(args)
     data, errors = client.put(
-        f"/api/v2/clusters/{args.cluster_id}/ip-restrictions/", body=cidr
+        f"/api/v2/clusters/{args.cluster_id}/ip-restrictions/", body=body
     )  # type: ignore
     print_response(
         data=data,
