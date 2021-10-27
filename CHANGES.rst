@@ -5,6 +5,12 @@ Changes for croud
 Unreleased
 ==========
 
+0.30.0 - 2021/10/27
+===================
+
+- Added new subcommand ``clusters set-ip-whitelist`` that allows restricting access
+  to clusters.
+
 0.29.0 - 2021/09/07
 ===================
 
