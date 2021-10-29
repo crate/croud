@@ -30,20 +30,12 @@ from croud.config.types import ConfigurationType, ProfileType
 
 DEFAULT_CONFIGURATION = """\
 default-format: table
-current-profile: aks1.westeurope.azure
+current-profile: cratedb.cloud
 profiles:
-  aks1.eastus2.azure:
+  cratedb.cloud:
     auth-token: NULL
     endpoint: https://console.cratedb.cloud
-    region: aks1.eastus2.azure
-  aks1.westeurope.azure:
-    auth-token: NULL
-    endpoint: https://console.cratedb.cloud
-    region: aks1.westeurope.azure
-  eks1.eu-west-1.aws:
-    auth-token: NULL
-    endpoint: https://console.cratedb.cloud
-    region: eks1.eu-west-1.aws
+    region: _any_
 """
 
 

@@ -84,13 +84,11 @@ def test_default_configuration_instance(tmp_path):
     ):
         config = Configuration("test.yaml")
         assert config._file_path == tmp_path / "test.yaml"
-        assert "aks1.westeurope.azure" in config.profiles
-        assert "aks1.eastus2.azure" in config.profiles
-        assert "eks1.eu-west-1.aws" in config.profiles
-        assert config.name == "aks1.westeurope.azure"
+        assert "cratedb.cloud" in config.profiles
+        assert config.name == "cratedb.cloud"
         assert config.token is None
         assert config.endpoint == "https://console.cratedb.cloud"
-        assert config.region == "aks1.westeurope.azure"
+        assert config.region == "_any_"
         assert config.format == "table"
         assert config.organization is None
 
@@ -127,8 +125,9 @@ default-format: table
 
 
 def test_use_profile(config):
-    config.use_profile("aks1.westeurope.azure")
-    assert config.name == config.config["current-profile"] == "aks1.westeurope.azure"
+    config.add_profile("new", endpoint="http://localhost:8000")
+    config.use_profile("new")
+    assert config.name == config.config["current-profile"] == "new"
 
 
 def test_add_profile(config):
@@ -143,12 +142,12 @@ def test_add_profile(config):
 
 def test_add_profile_duplicate(config):
     with pytest.raises(InvalidProfile):
-        config.add_profile("aks1.eastus2.azure", endpoint="http://localhost:8000")
+        config.add_profile("cratedb.cloud", endpoint="http://localhost:8000")
 
 
 def test_remove_profile(config):
-    config.remove_profile("aks1.eastus2.azure")
-    assert "aks1.eastus2.azure" not in config.config["profiles"]
+    config.remove_profile("cratedb.cloud")
+    assert "cratedb.cloud" not in config.config["profiles"]
 
 
 def test_remove_profile_does_not_exist(config):
