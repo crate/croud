@@ -25,20 +25,13 @@ Example
    sh$ croud config show
    ==> Info: Configuration file /home/me/.config/Crate/croud.yaml
    default-format: table
-   current-profile: bregenz.a1
+   current-profile: cratedb.cloud
    profiles:
-     bregenz.a1:
+     cratedb.cloud:
        auth-token: xxxxxxxxxx
-       endpoint: https://bregenz.a1.cratedb.cloud
+       endpoint: https://console.cratedb.cloud
        format: table
-     eastus2.azure:
-       auth-token: xxxxxxxxxx
-       endpoint: https://eastus2.azure.cratedb.cloud
-       format: table
-     westeurope.azure:
-       auth-token: xxxxxxxxxx
-       endpoint: https://westeurope.azure.cratedb.cloud
-       format: table
+       region: _any_
 
 Note, that the values of ``auth-token`` are masked.
 
@@ -61,11 +54,11 @@ Example
 .. code-block:: console
 
    sh$ croud config profiles current
-   +------------+----------------------------------+----------+
-   | name       | endpoint                         | format   |
-   |------------+----------------------------------+----------|
-   | bregenz.a1 | https://bregenz.a1.cratedb.cloud | table    |
-   +------------+----------------------------------+----------+
+   +---------------+----------------------------------+----------+
+   | name          | endpoint                         | format   |
+   |---------------+----------------------------------+----------|
+   | cratedb.cloud | https://console.cratedb.cloud    | table    |
+   +---------------+----------------------------------+----------+
 
 
 ``config profiles use``
@@ -85,5 +78,5 @@ Example
 
 .. code-block:: console
 
-   sh$ croud config profiles use eastus2.azure
-   ==> Info: Switched to profile 'eastus2.azure'.
+   sh$ croud config profiles use some.other
+   ==> Info: Switched to profile 'some.other'.

@@ -71,13 +71,13 @@ def test_config_add_duplicate_profile(config, capsys):
             "config",
             "profiles",
             "add",
-            "aks1.westeurope.azure",
+            "cratedb.cloud",
             "--endpoint",
             "http://localhost:8000",
         )
     assert exc_info.value.code == 1
     _, err = capsys.readouterr()
-    assert "Failed to add profile 'aks1.westeurope.azure'" in err
+    assert "Failed to add profile 'cratedb.cloud'" in err
 
 
 def test_config_current_profile(config, capsys):
@@ -87,11 +87,11 @@ def test_config_current_profile(config, capsys):
 
 
 def test_config_remove_profile(config, capsys):
-    call_command("croud", "config", "profiles", "remove", "aks1.westeurope.azure")
-    assert "aks1.westeurope.azure" not in config.profiles
+    call_command("croud", "config", "profiles", "remove", "cratedb.cloud")
+    assert "cratedb.cloud" not in config.profiles
 
     _, err = capsys.readouterr()
-    assert "Removed profile 'aks1.westeurope.azure'" in err
+    assert "Removed profile 'cratedb.cloud'" in err
 
 
 def test_config_remove_current_profile(config, capsys):
@@ -105,12 +105,21 @@ def test_config_remove_current_profile(config, capsys):
 
 
 def test_config_set_profile(config, capsys):
-    assert config.name != "aks1.westeurope.azure"
-    call_command("croud", "config", "profiles", "use", "aks1.westeurope.azure")
-    assert config.name == "aks1.westeurope.azure"
+    call_command(
+        "croud",
+        "config",
+        "profiles",
+        "add",
+        "new-profile",
+        "--endpoint",
+        "http://localhost:8000",
+    )
+    assert config.name != "new-profile"
+    call_command("croud", "config", "profiles", "use", "new-profile")
+    assert config.name == "new-profile"
 
     _, err = capsys.readouterr()
-    assert "Switched to profile 'aks1.westeurope.azure'" in err
+    assert "Switched to profile 'new-profile'" in err
 
 
 def test_config_set_profile_does_not_exist(config, capsys):
