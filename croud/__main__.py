@@ -491,6 +491,7 @@ command_tree = {
                         required=True,
                         help="IP Network list in CIDR format (comma-separated).",
                     ),
+                    Argument("-y", "--yes", action="store_true", default=False)
                 ],
                 "resolver": clusters_set_ip_whitelist,
             },

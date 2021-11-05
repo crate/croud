@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added a confirmation warning to the ``clusters set-ip-whitelist`` command.
+
 - Sanitized the default config to make it region-agnostic.
 
 0.30.0 - 2021/10/27
