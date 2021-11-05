@@ -354,15 +354,20 @@ def test_clusters_set_deletion_protection(mock_request):
 def test_clusters_set_ip_whitelist(mock_request):
     cidr = "8.8.8.8/32,4.4.4.4/32"
     cluster_id = gen_uuid()
-    call_command(
-        "croud",
-        "clusters",
-        "set-ip-whitelist",
-        "--cluster-id",
-        cluster_id,
-        "--net",
-        cidr,
+    with mock.patch("builtins.input", side_effect=["yes"]) as mock_input:
+        call_command(
+            "croud",
+            "clusters",
+            "set-ip-whitelist",
+            "--cluster-id",
+            cluster_id,
+            "--net",
+            cidr,
+        )
+    mock_input.assert_called_once_with(
+        "This will overwrite all existing CIDR restrictions. Continue? [yN] "
     )
+
     assert_rest(
         mock_request,
         RequestMethod.PUT,
@@ -383,6 +388,7 @@ def test_clusters_reset_ip_whitelist(mock_request):
         cluster_id,
         "--net",
         cidr,
+        "-y",
     )
     assert_rest(
         mock_request,

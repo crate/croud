@@ -160,6 +160,7 @@ def clusters_set_deletion_protection(args: Namespace) -> None:
     )
 
 
+@require_confirmation("This will overwrite all existing CIDR restrictions. Continue?")
 def clusters_set_ip_whitelist(args: Namespace) -> None:
     networks = args.net
     networks = networks.split(",")
