@@ -48,7 +48,7 @@ setup(
         "marshmallow==3.5.1",
         "pyyaml==5.4",
         "requests==2.23.0",
-        "tabulate==0.8.6",
+        "tabulate==0.8.9",
         "yarl==1.4.2",
         "halo==0.0.31",
     ],
@@ -73,5 +73,6 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
 )
