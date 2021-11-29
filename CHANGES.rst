@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added support for Python 3.10.
+
 - Added a confirmation warning to the ``clusters set-ip-whitelist`` command.
 
 - Sanitized the default config to make it region-agnostic.
