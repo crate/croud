@@ -66,3 +66,8 @@ Help
     :alt: Most recent version on PyPI
     :scale: 100%
     :target: https://pypi.org/project/croud/
+
+.. |python-versions| image:: https://img.shields.io/pypi/pyversions/croud.svg
+    :alt: Supported Python versions
+    :scale: 100%
+    :target: https://pypi.org/project/croud/
