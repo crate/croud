@@ -252,10 +252,62 @@ def test_clusers_scale(mock_request):
     )
 
 
+times_operations_called = 0
+
+
+@pytest.mark.parametrize("status", ["SUCCEEDED", "FAILED", None])
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_clusers_upgrade(mock_request):
+@mock.patch("time.sleep")
+def test_clusers_upgrade(_mock_sleep, mock_request: mock.Mock, status):
     version = "3.2.6"
     cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.GET and "/operations/" in args[1]:
+            if status is None:
+                return None, None
+            global times_operations_called
+            if times_operations_called == 0:
+                times_operations_called += 1
+                return {"operations": [{"status": "SENT"}]}, None
+            return {"operations": [{"status": status}]}, None
+        return None, None
+
+    mock_request.side_effect = mock_call
+    call_command(
+        "croud", "clusters", "upgrade", "--cluster-id", cluster_id, "--version", version
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.PUT,
+        f"/api/v2/clusters/{cluster_id}/upgrade/",
+        body={"crate_version": version},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "UPGRADE", "limit": 1},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/",
+        any_times=True,
+    )
+
+
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_cluster_upgrade_fails(mock_request, capsys):
+    version = "3.2.6"
+    cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        return None, {"message": "Some Error"}
+
+    mock_request.side_effect = mock_call
     call_command(
         "croud", "clusters", "upgrade", "--cluster-id", cluster_id, "--version", version
     )
@@ -265,6 +317,9 @@ def test_clusers_upgrade(mock_request):
         f"/api/v2/clusters/{cluster_id}/upgrade/",
         body={"crate_version": version},
     )
+
+    _, err_output = capsys.readouterr()
+    assert "Some Error" in err_output
 
 
 @mock.patch.object(Client, "request", return_value=(None, {}))

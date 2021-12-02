@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added checking of upgrade status to the upgrade handler. This now waits until the
+  upgrade is complete (or fails).
+
 - Added support for Python 3.10.
 
 - Added a confirmation warning to the ``clusters set-ip-whitelist`` command.
