@@ -51,7 +51,13 @@ def call_command(*argv):
 
 
 def assert_rest(
-    mock_request, method: RequestMethod, endpoint, *, params=None, body=None
+    mock_request: mock.Mock,
+    method: RequestMethod,
+    endpoint,
+    *,
+    params=None,
+    body=None,
+    any_times=False
 ):
     args = [method, endpoint]
     kwargs = {}
@@ -60,7 +66,10 @@ def assert_rest(
     if params is not UNDEFINED:
         kwargs["params"] = params
 
-    mock_request.assert_called_once_with(*args, **kwargs)
+    if any_times:
+        mock_request.assert_any_call(*args, **kwargs)
+    else:
+        mock_request.assert_called_once_with(*args, **kwargs)
 
 
 def gen_uuid():

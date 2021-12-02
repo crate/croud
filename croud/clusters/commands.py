@@ -16,12 +16,13 @@
 # However, if you have executed another commercial license agreement
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
-
+import time
 from argparse import Namespace
 
 from croud.api import Client
 from croud.config import get_output_format
-from croud.printer import print_response
+from croud.printer import print_error, print_info, print_response
+from croud.tools.spinner import HALO
 from croud.util import require_confirmation
 
 
@@ -108,8 +109,54 @@ def clusters_upgrade(args: Namespace) -> None:
         errors=errors,
         keys=["id", "name", "crate_version"],
         success_message=(
-            "Cluster upgraded. It may take a few minutes to complete the changes."
+            "Cluster upgrade initiated. "
+            "It may take a few minutes to complete the changes."
         ),
+        output_fmt=get_output_format(args),
+    )
+
+    if errors:
+        return
+
+    params = {"type": "UPGRADE", "limit": 1}
+    while True:
+        data, errors = client.get(
+            f"/api/v2/clusters/{args.cluster_id}/operations/", params=params
+        )
+
+        if not data or len(data.get("operations", [])) == 0:
+            print_error("Failed retrieving operation status.")
+            break
+
+        operation = data["operations"][0]
+
+        print_info("Checking upgrade progress...")
+        print_response(
+            data=operation,
+            errors=errors,
+            keys=["type", "status", "feedback_data", "non_sensitive_data"],
+            output_fmt=get_output_format(args),
+        )
+
+        if operation["status"] == "SUCCEEDED":
+            print_info("Cluster successfully upgraded.")
+            break
+        if operation["status"] == "FAILED":
+            print_error(
+                "Your cluster upgrade has failed. "
+                "Our operations team are investigating."
+            )
+            break
+
+        with HALO:
+            time.sleep(10)
+
+    # Re-fetch the cluster's info
+    data, errors = client.get(f"/api/v2/clusters/{args.cluster_id}/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "crate_version"],
         output_fmt=get_output_format(args),
     )
 
