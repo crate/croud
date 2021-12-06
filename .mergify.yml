@@ -1,13 +1,21 @@
 ---
 pull_request_rules:
   - actions:
-      merge:
-        method: rebase
-        rebase_fallback: null
-        strict: true
+      queue:
+        method: merge
+        name: default
     conditions:
       - label=ready-to-merge
       - '#approved-reviews-by>=1'
+      - status-success~=Code style checks and static analysis with Python
+      - status-success~=Tests with Python
+      - status-success~=Build docs on ubuntu-latest
+      - status-success~=Build docs on macos-latest
+      - status-success~=docs/readthedocs.org
+    name: default
+
+queue_rules:
+  - conditions:
       - status-success~=Code style checks and static analysis with Python
       - status-success~=Tests with Python
       - status-success~=Build docs on ubuntu-latest
