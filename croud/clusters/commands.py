@@ -21,7 +21,7 @@ from argparse import Namespace
 
 from croud.api import Client
 from croud.config import get_output_format
-from croud.printer import print_error, print_info, print_response
+from croud.printer import print_error, print_info, print_response, print_success
 from croud.tools.spinner import HALO
 from croud.util import require_confirmation
 
@@ -108,17 +108,20 @@ def clusters_upgrade(args: Namespace) -> None:
         data=data,
         errors=errors,
         keys=["id", "name", "crate_version"],
-        success_message=(
-            "Cluster upgrade initiated. "
-            "It may take a few minutes to complete the changes."
-        ),
         output_fmt=get_output_format(args),
     )
 
     if errors:
         return
 
+    print_info(
+        "Cluster upgrade initiated. "
+        "It may take a few minutes to complete the changes."
+    )
+
     params = {"type": "UPGRADE", "limit": 1}
+    last_status = None
+    last_msg = None
     while True:
         data, errors = client.get(
             f"/api/v2/clusters/{args.cluster_id}/operations/", params=params
@@ -130,23 +133,25 @@ def clusters_upgrade(args: Namespace) -> None:
 
         operation = data["operations"][0]
 
-        print_info("Checking upgrade progress...")
-        print_response(
-            data=operation,
-            errors=errors,
-            keys=["type", "status", "feedback_data", "non_sensitive_data"],
-            output_fmt=get_output_format(args),
-        )
+        status = operation.get("status")
+        feedback_data = operation.get("feedback_data", {})
+        msg = feedback_data.get("message", None)
 
-        if operation["status"] == "SUCCEEDED":
-            print_info("Cluster successfully upgraded.")
+        if status == "SUCCEEDED":
+            print_success("Cluster successfully upgraded.")
             break
-        if operation["status"] == "FAILED":
+        if status == "FAILED":
             print_error(
                 "Your cluster upgrade has failed. "
                 "Our operations team are investigating."
             )
             break
+
+        if last_status != status or msg != last_msg:
+            to_print = f"Status: {status} ({msg})" if msg else f"Status: {status}"
+            print_info(to_print)
+            last_status = status
+            last_msg = msg
 
         with HALO:
             time.sleep(10)

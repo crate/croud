@@ -127,7 +127,7 @@ Example
 
 .. note::
 
-   This command is only available for superusers.
+   This command will wait for the cluster upgrade to finish or fail.
 
 
 ``clusters delete``
