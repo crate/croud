@@ -18,8 +18,10 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 import time
 from argparse import Namespace
+from typing import Dict
 
 from croud.api import Client
+from croud.clusters.exceptions import AsyncOperationNotFound
 from croud.config import get_output_format
 from croud.printer import print_error, print_info, print_response, print_success
 from croud.tools.spinner import HALO
@@ -93,9 +95,54 @@ def clusters_scale(args: Namespace) -> None:
         data=data,
         errors=errors,
         keys=["id", "name", "num_nodes"],
-        success_message=(
-            "Cluster scaled. It may take a few minutes to complete the changes."
-        ),
+        output_fmt=get_output_format(args),
+    )
+
+    if errors:
+        return
+
+    print_info(
+        "Cluster scaling initiated. "
+        "It may take a few minutes to complete the changes."
+    )
+
+    params = {"type": "SCALE", "limit": 1}
+    last_status = None
+    last_msg = None
+    while True:
+        try:
+            status, msg = _get_operation_status(
+                client=client, cluster_id=args.cluster_id, request_params=params
+            )
+        except AsyncOperationNotFound as e:
+            print_error(str(e))
+            break
+
+        if status == "SUCCEEDED":
+            print_success("Cluster successfully scaled.")
+            break
+        if status == "FAILED":
+            print_error(
+                "Your cluster scaling has failed. "
+                "Our operations team are investigating."
+            )
+            break
+
+        if last_status != status or msg != last_msg:
+            to_print = f"Status: {status} ({msg})" if msg else f"Status: {status}"
+            print_info(to_print)
+            last_status = status
+            last_msg = msg
+
+        with HALO:
+            time.sleep(10)
+
+    # Re-fetch the cluster's info
+    data, errors = client.get(f"/api/v2/clusters/{args.cluster_id}/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "num_nodes"],
         output_fmt=get_output_format(args),
     )
 
@@ -123,19 +170,13 @@ def clusters_upgrade(args: Namespace) -> None:
     last_status = None
     last_msg = None
     while True:
-        data, errors = client.get(
-            f"/api/v2/clusters/{args.cluster_id}/operations/", params=params
-        )
-
-        if not data or len(data.get("operations", [])) == 0:
-            print_error("Failed retrieving operation status.")
+        try:
+            status, msg = _get_operation_status(
+                client=client, cluster_id=args.cluster_id, request_params=params
+            )
+        except AsyncOperationNotFound as e:
+            print_error(str(e))
             break
-
-        operation = data["operations"][0]
-
-        status = operation.get("status")
-        feedback_data = operation.get("feedback_data", {})
-        msg = feedback_data.get("message", None)
 
         if status == "SUCCEEDED":
             print_success("Cluster successfully upgraded.")
@@ -254,3 +295,20 @@ def _handle_edge_params(body, args):
         body.setdefault("hardware_specs", {})["memory_per_node_bytes"] = (
             args.memory_size_mb * 1024 * 1024
         )
+
+
+def _get_operation_status(client: Client, cluster_id: str, request_params: Dict):
+    data, errors = client.get(
+        f"/api/v2/clusters/{cluster_id}/operations/", params=request_params
+    )
+
+    if not data or len(data.get("operations", [])) == 0:
+        raise AsyncOperationNotFound("Failed retrieving operation status.")
+
+    operation = data["operations"][0]
+
+    status = operation.get("status")
+    feedback_data = operation.get("feedback_data", {})
+    msg = feedback_data.get("message", None)
+
+    return status, msg
