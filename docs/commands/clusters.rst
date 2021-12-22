@@ -96,9 +96,21 @@ Example
    +--------------------------------------+------------------------+----------+
    | id                                   | name                   | numNodes |
    |--------------------------------------+------------------------+----------|
-   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        5 |
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        2 |
    +--------------------------------------+------------------------+----------+
-   ==> Success: Cluster scaled. It may take a few minutes to complete the changes.
+   ==> Info: Cluster scaling initiated. It may take a few minutes to complete the changes.
+   ==> Info: Status: SENT (Your scaling request was sent to the region.)
+   ==> Info: Status: IN_PROGRESS (Scaling up from 2 to 3 nodes. Waiting for new node(s) to be present.)
+   ==> Success: Cluster successfully scaled.
+   +--------------------------------------+------------------------+----------+
+   | id                                   | name                   | numNodes |
+   |--------------------------------------+------------------------+----------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        3 |
+   +--------------------------------------+------------------------+----------+
+
+.. note::
+
+   This command will wait for the cluster scaling to finish or fail.
 
 
 ``clusters upgrade``
