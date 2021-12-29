@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.31.0 - 2021/12/29
+===================
+
 - Added checking of upgrade status to the upgrade handler. This now waits until the
   upgrade is complete (or fails).
 
