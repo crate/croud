@@ -80,9 +80,26 @@ def clusters_deploy(args: Namespace) -> None:
         data=data,
         errors=errors,
         keys=["id", "name", "fqdn", "url"],
-        success_message=(
-            "Cluster deployed. It may take a few minutes to complete the changes."
-        ),
+        output_fmt=get_output_format(args),
+    )
+
+    if errors or not data:
+        return
+
+    print_info("Cluster creation initiated. It may take a few minutes to complete.")
+
+    _wait_for_completed_operation(
+        client=client,
+        cluster_id=data["id"],
+        request_params={"type": "CREATE", "limit": 1},
+    )
+
+    # Re-fetch the cluster's info
+    data, errors = client.get(f"/api/v2/clusters/{data['id']}/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "fqdn", "url"],
         output_fmt=get_output_format(args),
     )
 
@@ -106,36 +123,11 @@ def clusters_scale(args: Namespace) -> None:
         "It may take a few minutes to complete the changes."
     )
 
-    params = {"type": "SCALE", "limit": 1}
-    last_status = None
-    last_msg = None
-    while True:
-        try:
-            status, msg = _get_operation_status(
-                client=client, cluster_id=args.cluster_id, request_params=params
-            )
-        except AsyncOperationNotFound as e:
-            print_error(str(e))
-            break
-
-        if status == "SUCCEEDED":
-            print_success("Cluster successfully scaled.")
-            break
-        if status == "FAILED":
-            print_error(
-                "Your cluster scaling has failed. "
-                "Our operations team are investigating."
-            )
-            break
-
-        if last_status != status or msg != last_msg:
-            to_print = f"Status: {status} ({msg})" if msg else f"Status: {status}"
-            print_info(to_print)
-            last_status = status
-            last_msg = msg
-
-        with HALO:
-            time.sleep(10)
+    _wait_for_completed_operation(
+        client=client,
+        cluster_id=args.cluster_id,
+        request_params={"type": "SCALE", "limit": 1},
+    )
 
     # Re-fetch the cluster's info
     data, errors = client.get(f"/api/v2/clusters/{args.cluster_id}/")
@@ -166,36 +158,11 @@ def clusters_upgrade(args: Namespace) -> None:
         "It may take a few minutes to complete the changes."
     )
 
-    params = {"type": "UPGRADE", "limit": 1}
-    last_status = None
-    last_msg = None
-    while True:
-        try:
-            status, msg = _get_operation_status(
-                client=client, cluster_id=args.cluster_id, request_params=params
-            )
-        except AsyncOperationNotFound as e:
-            print_error(str(e))
-            break
-
-        if status == "SUCCEEDED":
-            print_success("Cluster successfully upgraded.")
-            break
-        if status == "FAILED":
-            print_error(
-                "Your cluster upgrade has failed. "
-                "Our operations team are investigating."
-            )
-            break
-
-        if last_status != status or msg != last_msg:
-            to_print = f"Status: {status} ({msg})" if msg else f"Status: {status}"
-            print_info(to_print)
-            last_status = status
-            last_msg = msg
-
-        with HALO:
-            time.sleep(10)
+    _wait_for_completed_operation(
+        client=client,
+        cluster_id=args.cluster_id,
+        request_params={"type": "UPGRADE", "limit": 1},
+    )
 
     # Re-fetch the cluster's info
     data, errors = client.get(f"/api/v2/clusters/{args.cluster_id}/")
@@ -273,7 +240,28 @@ def clusters_set_ip_whitelist(args: Namespace) -> None:
         data=data,
         errors=errors,
         keys=["id", "name", "ip_whitelist"],
-        success_message=("IP Network whitelist successfully updated"),
+        output_fmt=get_output_format(args),
+    )
+
+    if errors:
+        return
+    print_info(
+        "Updating the IP Network whitelist initiated. "
+        "It may take a few minutes to complete the changes."
+    )
+
+    _wait_for_completed_operation(
+        client=client,
+        cluster_id=args.cluster_id,
+        request_params={"type": "ALLOWED_CIDR_UPDATE", "limit": 1},
+    )
+
+    # Re-fetch the cluster's info
+    data, errors = client.get(f"/api/v2/clusters/{args.cluster_id}/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "ip_whitelist"],
         output_fmt=get_output_format(args),
     )
 
@@ -312,3 +300,37 @@ def _get_operation_status(client: Client, cluster_id: str, request_params: Dict)
     msg = feedback_data.get("message", None)
 
     return status, msg
+
+
+def _wait_for_completed_operation(
+    *, client: Client, cluster_id: str, request_params: Dict
+):
+    last_status = None
+    last_msg = None
+    while True:
+        try:
+            status, msg = _get_operation_status(
+                client=client, cluster_id=cluster_id, request_params=request_params
+            )
+        except AsyncOperationNotFound as e:
+            print_error(str(e))
+            break
+
+        if status == "SUCCEEDED":
+            print_success("Operation completed.")
+            break
+        if status == "FAILED":
+            print_error(
+                "Your cluster operation has failed. "
+                "Our operations team are investigating."
+            )
+            break
+
+        if last_status != status or msg != last_msg:
+            to_print = f"Status: {status} ({msg})" if msg else f"Status: {status}"
+            print_info(to_print)
+            last_status = status
+            last_msg = msg
+
+        with HALO:
+            time.sleep(10)
