@@ -276,6 +276,22 @@ def test_organizations_auditlogs_list_filtered(mock_request):
     )
 
 
+@mock.patch.object(Client, "request", side_effect=[([{"id": 123}], None), ([], None)])
+def test_organizations_auditlogs_list_pagination(mock_request: mock.Mock):
+    org_id = gen_uuid()
+
+    call_command("croud", "organizations", "auditlogs", "list", "--org-id", org_id)
+
+    mock_request.call_args_list[0].assert_called_with(
+        RequestMethod.GET, f"/api/v2/organizations/{org_id}/auditlogs/", params={},
+    )
+    mock_request.call_args_list[1].assert_called_with(
+        RequestMethod.GET,
+        f"/api/v2/organizations/{org_id}/auditlogs/",
+        params={"last": 123},
+    )
+
+
 @pytest.mark.parametrize(
     "added,message",
     [(True, "User added to organization."), (False, "Role altered for user.")],

@@ -59,15 +59,23 @@ Example
        --tier xs \
        --cluster-name my-first-crate-cluster \
        --project-id 952cd102-91c1-4837-962a-12ecb71a6ba8 \
-       --version 4.5.1 \
+       --version 4.6.6 \
        --username default \
        --password "s3cr3t!"
    +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
    | id                                   | name                   | numNodes | crateVersion | projectId                            | username    | fqdn                                             |
    |--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------|
-   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        1 | 4.5.1        | 952cd102-91c1-4837-962a-12ecb71a6ba8 | default     | my-first-crate-cluster.eastus.azure.cratedb.net. |
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        1 | 4.6.6        | 952cd102-91c1-4837-962a-12ecb71a6ba8 | default     | my-first-crate-cluster.eastus.azure.cratedb.net. |
    +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
-   ==> Success: Cluster deployed. It may take a few minutes to complete the changes.
+   ==> Info: Cluster creation initiated. It may take a few minutes to complete.
+   ==> Info: Status: REGISTERED (Your creation request was received and is pending processing.)
+   ==> Info: Status: IN_PROGRESS (Cluster creation started. Waiting for the node(s) to be created and creating other required resources.)
+   ==> Success: Operation completed.
+   +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
+   | id                                   | name                   | numNodes | crateVersion | projectId                            | username    | fqdn                                             |
+   |--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        1 | 4.6.6        | 952cd102-91c1-4837-962a-12ecb71a6ba8 | default     | my-first-crate-cluster.eastus.azure.cratedb.net. |
+   +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
 
 .. note::
 
@@ -101,7 +109,7 @@ Example
    ==> Info: Cluster scaling initiated. It may take a few minutes to complete the changes.
    ==> Info: Status: SENT (Your scaling request was sent to the region.)
    ==> Info: Status: IN_PROGRESS (Scaling up from 2 to 3 nodes. Waiting for new node(s) to be present.)
-   ==> Success: Cluster successfully scaled.
+   ==> Success: Operation completed.
    +--------------------------------------+------------------------+----------+
    | id                                   | name                   | numNodes |
    |--------------------------------------+------------------------+----------|
@@ -129,13 +137,22 @@ Example
 
    sh$ croud clusters upgrade \
        --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
-       --version 4.5.1
+       --version 4.6.7
    +--------------------------------------+------------------------+---------------+
    | id                                   | name                   | crate_version |
    |--------------------------------------+------------------------+---------------|
-   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |         4.5.1 |
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |         4.6.6 |
    +--------------------------------------+------------------------+---------------+
-   ==> Success: Cluster upgraded. It may take a few minutes to complete the changes.
+   ==> Info: Cluster upgrade initiated. It may take a few minutes to complete the changes.
+   ==> Info: Status: SENT (Your upgrade request was sent to the region.)
+   ==> Info: Status: IN_PROGRESS (Waiting for node 1/1 to be terminated...)
+   ==> Info: Status: IN_PROGRESS (Waiting for node 1/1 to be restarted...)
+   ==> Success: Operation completed.
+   +--------------------------------------+------------------------+---------------+
+   | id                                   | name                   | crate_version |
+   |--------------------------------------+------------------------+---------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |         4.6.7 |
+   +--------------------------------------+------------------------+---------------+
 
 .. note::
 
@@ -273,9 +290,21 @@ Example
        --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
        --net "10.1.2.0/24,192.168.1.0/24"
    This will overwrite all existing CIDR restrictions. Continue? [yN] y
+   +--------------------------------------+---------------+----------------+
+   | id                                   | name          | ip_whitelist   |
+   |--------------------------------------+---------------+----------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | romanas-nosub | NULL           |
+   +--------------------------------------+---------------+----------------+
+   ==> Info: Updating the IP Network whitelist initiated. It may take a few minutes to complete the changes.
+   ==> Info: Status: SENT (Your update request was sent to the region.)
+   ==> Info: Status: IN_PROGRESS (Updating IP Network Whitelist.)
+   ==> Success: Operation completed.
    +--------------------------------------+---------------+-------------------------------------------------------------------------------------------------+
    | id                                   | name          | ip_whitelist                                                                                    |
    |--------------------------------------+---------------+-------------------------------------------------------------------------------------------------|
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | romanas-nosub | [{"cidr": "10.1.2.0/24", "description": null}, {"cidr": "192.168.1.0/24", "description": null}] |
    +--------------------------------------+---------------+-------------------------------------------------------------------------------------------------+
-   ==> Success: IP Network whitelist successfully updated
+
+.. note::
+
+   This command will wait for the operation to finish or fail.

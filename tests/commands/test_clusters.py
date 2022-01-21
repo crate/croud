@@ -53,9 +53,30 @@ def test_clusers_list_with_project_id(mock_request):
     )
 
 
+times_create_operations_called = 0
+
+
+@pytest.mark.parametrize("status", ["SUCCEEDED", "FAILED", None])
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_clusers_deploy(mock_request):
+@mock.patch("time.sleep")
+def test_clusters_deploy(_mock_sleep, mock_request, status):
     project_id = gen_uuid()
+    cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.POST:
+            return {"id": cluster_id}, None
+        if args[0] == RequestMethod.GET and "/operations/" in args[1]:
+            if status is None:
+                return None, None
+            global times_create_operations_called
+            if times_create_operations_called == 0:
+                times_create_operations_called += 1
+                return {"operations": [{"status": "SENT"}]}, None
+            return {"operations": [{"status": status}]}, None
+        return None, None
+
+    mock_request.side_effect = mock_call
     call_command(
         "croud",
         "clusters",
@@ -92,12 +113,85 @@ def test_clusers_deploy(mock_request):
             "username": "foobar",
             "channel": "stable",
         },
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "CREATE", "limit": 1},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/",
+        any_times=True,
     )
 
 
-@mock.patch.object(Client, "request", return_value=({}, None))
-def test_clusers_edge(mock_request):
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_clusters_deploy_fails(mock_request, capsys):
     project_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        return None, {"message": "Some Error"}
+
+    mock_request.side_effect = mock_call
+    call_command(
+        "croud",
+        "clusters",
+        "deploy",
+        "--product-name",
+        "cratedb.az1",
+        "--tier",
+        "xs",
+        "--unit",
+        "1",
+        "--project-id",
+        project_id,
+        "--cluster-name",
+        "crate_cluster",
+        "--version",
+        "3.2.5",
+        "--username",
+        "foobar",
+        "--password",
+        "s3cr3t!",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        "/api/v2/clusters/",
+        body={
+            "crate_version": "3.2.5",
+            "name": "crate_cluster",
+            "password": "s3cr3t!",
+            "product_name": "cratedb.az1",
+            "product_tier": "xs",
+            "product_unit": 1,
+            "project_id": project_id,
+            "username": "foobar",
+            "channel": "stable",
+        },
+        any_times=True,
+    )
+    _, err_output = capsys.readouterr()
+    assert "Some Error" in err_output
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+@mock.patch("time.sleep")
+def test_clusters_edge(_mock_sleep, mock_request):
+    project_id = gen_uuid()
+    cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.POST:
+            return {"id": cluster_id}, None
+        return None, None
+
+    mock_request.side_effect = mock_call
     call_command(
         "croud",
         "clusters",
@@ -151,12 +245,35 @@ def test_clusers_edge(mock_request):
                 "memory_per_node_bytes": 2_147_483_648,
             },
         },
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "CREATE", "limit": 1},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/",
+        any_times=True,
     )
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_clusers_deploy_no_unit(mock_request):
+@mock.patch("time.sleep")
+def test_clusters_deploy_no_unit(_mock_sleep, mock_request):
     project_id = gen_uuid()
+    cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.POST:
+            return {"id": cluster_id}, None
+        return None, None
+
+    mock_request.side_effect = mock_call
     call_command(
         "croud",
         "clusters",
@@ -190,12 +307,35 @@ def test_clusers_deploy_no_unit(mock_request):
             "username": "foobar",
             "channel": "stable",
         },
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "CREATE", "limit": 1},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/",
+        any_times=True,
     )
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_clusers_deploy_nightly(mock_request):
+@mock.patch("time.sleep")
+def test_clusters_deploy_nightly(_mock_sleep, mock_request):
     project_id = gen_uuid()
+    cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.POST:
+            return {"id": cluster_id}, None
+        return None, None
+
+    mock_request.side_effect = mock_call
     call_command(
         "croud",
         "clusters",
@@ -234,16 +374,30 @@ def test_clusers_deploy_nightly(mock_request):
             "channel": "nightly",
             "product_unit": 1,
         },
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "CREATE", "limit": 1},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/",
+        any_times=True,
     )
 
 
-times_operations_called = 0
+times_scale_operations_called = 0
 
 
 @pytest.mark.parametrize("status", ["SUCCEEDED", "FAILED", None])
 @mock.patch.object(Client, "request", return_value=({}, None))
 @mock.patch("time.sleep")
-def test_clusers_scale(_mock_sleep, mock_request: mock.Mock, status):
+def test_clusters_scale(_mock_sleep, mock_request: mock.Mock, status):
     unit = 1
     cluster_id = gen_uuid()
 
@@ -251,9 +405,10 @@ def test_clusers_scale(_mock_sleep, mock_request: mock.Mock, status):
         if args[0] == RequestMethod.GET and "/operations/" in args[1]:
             if status is None:
                 return None, None
-            global times_operations_called
-            if times_operations_called == 0:
-                times_operations_called += 1
+            global times_scale_operations_called
+
+            if times_scale_operations_called == 0:
+                times_scale_operations_called += 1
                 return {"operations": [{"status": "SENT"}]}, None
             return {"operations": [{"status": status}]}, None
         return None, None
@@ -307,13 +462,13 @@ def test_cluster_scale_fails(mock_request, capsys):
     assert "Some Error" in err_output
 
 
-times_operations_called = 0
+times_upgrade_operations_called = 0
 
 
 @pytest.mark.parametrize("status", ["SUCCEEDED", "FAILED", None])
 @mock.patch.object(Client, "request", return_value=({}, None))
 @mock.patch("time.sleep")
-def test_clusers_upgrade(_mock_sleep, mock_request: mock.Mock, status):
+def test_clusters_upgrade(_mock_sleep, mock_request: mock.Mock, status):
     version = "3.2.6"
     cluster_id = gen_uuid()
 
@@ -321,9 +476,9 @@ def test_clusers_upgrade(_mock_sleep, mock_request: mock.Mock, status):
         if args[0] == RequestMethod.GET and "/operations/" in args[1]:
             if status is None:
                 return None, None
-            global times_operations_called
-            if times_operations_called == 0:
-                times_operations_called += 1
+            global times_upgrade_operations_called
+            if times_upgrade_operations_called == 0:
+                times_upgrade_operations_called += 1
                 return {"operations": [{"status": "SENT"}]}, None
             return {"operations": [{"status": status}]}, None
         return None, None
@@ -460,10 +615,29 @@ def test_clusters_set_deletion_protection(mock_request):
     )
 
 
+times_cidr_operations_called = 0
+
+
+@pytest.mark.parametrize("status", ["SUCCEEDED", "FAILED", None])
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_clusters_set_ip_whitelist(mock_request):
+@mock.patch("time.sleep")
+def test_clusters_set_ip_whitelist(_mock_sleep, mock_request, status):
     cidr = "8.8.8.8/32,4.4.4.4/32"
     cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.GET and "/operations/" in args[1]:
+            if status is None:
+                return None, None
+            global times_cidr_operations_called
+            if times_cidr_operations_called == 0:
+                times_cidr_operations_called += 1
+                return {"operations": [{"status": "SENT"}]}, None
+            return {"operations": [{"status": status}]}, None
+        return None, None
+
+    mock_request.side_effect = mock_call
+
     with mock.patch("builtins.input", side_effect=["yes"]) as mock_input:
         call_command(
             "croud",
@@ -483,13 +657,46 @@ def test_clusters_set_ip_whitelist(mock_request):
         RequestMethod.PUT,
         f"/api/v2/clusters/{cluster_id}/ip-restrictions/",
         body={"ip_whitelist": [{"cidr": "8.8.8.8/32"}, {"cidr": "4.4.4.4/32"}]},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "ALLOWED_CIDR_UPDATE", "limit": 1},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/",
+        any_times=True,
     )
 
 
+times_operations_called = 0
+
+
+@pytest.mark.parametrize("status", ["SUCCEEDED", "FAILED", None])
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_clusters_reset_ip_whitelist(mock_request):
+@mock.patch("time.sleep")
+def test_clusters_reset_ip_whitelist(_mock_sleep, mock_request, status):
     cidr = ""
     cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.GET and "/operations/" in args[1]:
+            if status is None:
+                return None, None
+            global times_operations_called
+            if times_operations_called == 0:
+                times_operations_called += 1
+                return {"operations": [{"status": "SENT"}]}, None
+            return {"operations": [{"status": status}]}, None
+        return None, None
+
+    mock_request.side_effect = mock_call
+
     call_command(
         "croud",
         "clusters",
@@ -505,4 +712,48 @@ def test_clusters_reset_ip_whitelist(mock_request):
         RequestMethod.PUT,
         f"/api/v2/clusters/{cluster_id}/ip-restrictions/",
         body={"ip_whitelist": []},
+        any_times=True,
     )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "ALLOWED_CIDR_UPDATE", "limit": 1},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/",
+        any_times=True,
+    )
+
+
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_clusters_reset_ip_whitelist_fails(mock_request, capsys):
+    cidr = "8.8.8.8/32,4.4.4.4/32"
+    cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        return None, {"message": "Some Error"}
+
+    mock_request.side_effect = mock_call
+    call_command(
+        "croud",
+        "clusters",
+        "set-ip-whitelist",
+        "--cluster-id",
+        cluster_id,
+        "--net",
+        cidr,
+        "-y",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.PUT,
+        f"/api/v2/clusters/{cluster_id}/ip-restrictions/",
+        body={"ip_whitelist": [{"cidr": "8.8.8.8/32"}, {"cidr": "4.4.4.4/32"}]},
+    )
+
+    _, err_output = capsys.readouterr()
+    assert "Some Error" in err_output
