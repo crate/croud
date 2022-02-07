@@ -264,6 +264,12 @@ command_tree = {
                     "List all projects the current user has access to in "
                     "the specified region."
                 ),
+                "extra_args": [
+                    Argument(
+                        "--org-id", type=str, required=False,
+                        help="The organization ID to use.",
+                    ),
+                ],
                 "resolver": projects_list,
             },
             "users": {
@@ -339,6 +345,10 @@ command_tree = {
                     Argument(
                         "-p", "--project-id", type=str, required=False,
                         help="The project ID to use.",
+                    ),
+                    Argument(
+                        "--org-id", type=str, required=False,
+                        help="The organization ID to use.",
                     ),
                 ],
                 "resolver": clusters_list,
@@ -689,6 +699,12 @@ command_tree = {
         "commands": {
             "list": {
                 "help": "List all available regions.",
+                "extra_args": [
+                    Argument(
+                        "--org-id", type=str, required=False,
+                        help="The organization ID to use.",
+                    ),
+                ],
                 "resolver": regions_list,
             },
             "create": {
@@ -754,6 +770,12 @@ command_tree = {
             },
             "list": {
                 "help": "List all subscriptions the current user has access to.",
+                "extra_args": [
+                    Argument(
+                        "--org-id", type=str, required=False,
+                        help="The organization ID to use.",
+                    ),
+                ],
                 "resolver": subscriptions_list,
             },
         },

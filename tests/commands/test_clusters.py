@@ -56,6 +56,18 @@ def test_clusers_list_with_project_id(mock_request):
 times_create_operations_called = 0
 
 
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusters_list_with_organization_id(mock_request):
+    org_id = gen_uuid()
+    call_command("croud", "clusters", "list", "--org-id", org_id)
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/organizations/{org_id}/clusters/",
+        params={},
+    )
+
+
 @pytest.mark.parametrize("status", ["SUCCEEDED", "FAILED", None])
 @mock.patch.object(Client, "request", return_value=({}, None))
 @mock.patch("time.sleep")

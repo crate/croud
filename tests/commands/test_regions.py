@@ -23,7 +23,7 @@ import pytest
 
 from croud.api import Client, RequestMethod
 from croud.printer import print_raw
-from tests.util import assert_rest, call_command
+from tests.util import assert_rest, call_command, gen_uuid
 
 EDGE_REGION_LIST = [
     {
@@ -43,6 +43,15 @@ EDGE_REGION_LIST = [
 def test_regions_list(mock_request):
     call_command("croud", "regions", "list")
     assert_rest(mock_request, RequestMethod.GET, "/api/v2/regions/")
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_regions_list_with_organization_id(mock_request):
+    org_id = gen_uuid()
+    call_command("croud", "regions", "list", "--org-id", org_id)
+    assert_rest(
+        mock_request, RequestMethod.GET, f"/api/v2/organizations/{org_id}/regions/"
+    )
 
 
 @mock.patch.object(Client, "request", return_value=({"name": "region-name"}, None))

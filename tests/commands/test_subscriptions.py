@@ -21,13 +21,24 @@ import uuid
 from unittest import mock
 
 from croud.api import Client, RequestMethod
-from tests.util import assert_rest, call_command
+from tests.util import assert_rest, call_command, gen_uuid
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
 def test_subscriptions_list(mock_request):
     call_command("croud", "subscriptions", "list")
     assert_rest(mock_request, RequestMethod.GET, "/api/v2/subscriptions/")
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_subscriptions_list_with_organization_id(mock_request):
+    org_id = gen_uuid()
+    call_command("croud", "subscriptions", "list", "--org-id", org_id)
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/organizations/{org_id}/subscriptions/",
+    )
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))

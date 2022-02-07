@@ -159,6 +159,15 @@ def test_projects_list(mock_request):
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
+def test_projects_list_with_organization_id(mock_request):
+    org_id = gen_uuid()
+    call_command("croud", "projects", "list", "--org-id", org_id)
+    assert_rest(
+        mock_request, RequestMethod.GET, f"/api/v2/organizations/{org_id}/projects/"
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
 def test_projects_get(mock_request):
     id = str(uuid.uuid4())
     call_command("croud", "projects", "get", id)

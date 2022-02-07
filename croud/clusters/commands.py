@@ -37,12 +37,17 @@ def clusters_get(args: Namespace) -> None:
 
 
 def clusters_list(args: Namespace) -> None:
+    if args.org_id:
+        url = f"/api/v2/organizations/{args.org_id}/clusters/"
+    else:
+        url = "/api/v2/clusters/"
+
     params = {}
     if args.project_id:
         params["project_id"] = args.project_id
 
     client = Client.from_args(args)
-    data, errors = client.get("/api/v2/clusters/", params=params)
+    data, errors = client.get(url, params=params)
     print_response(
         data=data,
         errors=errors,

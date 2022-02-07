@@ -8,6 +8,9 @@ Unreleased
 - Added status checks to the scaling handler. This now waits until the scaling
   operation is complete (or fails).
 
+- Added parameter ``org-id`` for ``subscriptions list``, ``projects list``,
+  ``clusters list`` and ``regions list``.
+
 0.31.0 - 2021/12/29
 ===================
 

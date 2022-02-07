@@ -31,7 +31,11 @@ def regions_list(args: Namespace) -> None:
     """
 
     client = Client.from_args(args)
-    data, errors = client.get("/api/v2/regions/")
+    if args.org_id:
+        url = f"/api/v2/organizations/{args.org_id}/regions/"
+    else:
+        url = "/api/v2/regions/"
+    data, errors = client.get(url)
     print_response(
         data=data,
         errors=errors,
