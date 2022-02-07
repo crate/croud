@@ -87,7 +87,11 @@ def projects_get(args: Namespace) -> None:
 
 def projects_list(args: Namespace) -> None:
     client = Client.from_args(args)
-    data, errors = client.get("/api/v2/projects/")
+    if args.org_id:
+        url = f"/api/v2/organizations/{args.org_id}/projects/"
+    else:
+        url = "/api/v2/projects/"
+    data, errors = client.get(url)
     print_response(
         data=data,
         errors=errors,
