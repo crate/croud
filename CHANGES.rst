@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.32.0 - 2022/02/17
+===================
+
 - Added status checks to the scaling handler. This now waits until the scaling
   operation is complete (or fails).
 
