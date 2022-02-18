@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added autocompletions for bash/zsh/tcsh
+
 0.32.0 - 2022/02/17
 ===================
 

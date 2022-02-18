@@ -69,5 +69,16 @@ Croud supports the following command-line options:
 
     Some Croud :ref:`commands <commands>` take additional options.
 
+Shell auto-complete
+===================
+
+Croud supports shell auto-completions for ``bash``, ``zsh`` and ``tcsh``:
+
+.. code-block:: console
+
+    sh$ croud --print-completion {bash,zsh,tcsh}
+
+Refer to the documentation of your specific shell for installation instructions.
+
 .. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/
 .. _pip: https://pypi.org/project/pip/
