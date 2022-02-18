@@ -23,6 +23,7 @@ import sys
 from distutils.util import strtobool
 
 import colorama
+import shtab
 
 from croud.clusters.commands import (
     clusters_delete,
@@ -104,7 +105,7 @@ command_tree = {
         "extra_args": [
             Argument(
                 "--idp", type=str, required=False,
-                choices={"cognito", "azuread"},
+                choices=["cognito", "azuread"],
                 help="The identity provider (IdP) for the login."
             ),
         ],
@@ -390,7 +391,7 @@ command_tree = {
                     ),
                     Argument(
                         "--channel", type=str, default="stable", required=False,
-                        choices={"stable", "testing", "nightly"},
+                        choices=["stable", "testing", "nightly"],
                         help="The channel of the CrateDB version (superusers only).",
                     ),
                     Argument(
@@ -410,7 +411,7 @@ command_tree = {
                     ),
                     Argument(
                         "--disk-type", type=str, required=False,
-                        choices={"standard", "premium"},
+                        choices=["standard", "premium"],
                         help="Type of disks to use. "
                              "CrateDB Edge regions only.",
                     ),
@@ -805,6 +806,7 @@ def main():
     colorama.init()
 
     parser = get_parser()
+    shtab.add_argument_to(parser)  # Tab completion stuff
     params = parser.parse_args(sys.argv[1:])
     if "resolver" in params:
         fn = params.resolver
