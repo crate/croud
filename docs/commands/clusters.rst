@@ -10,6 +10,14 @@ The ``clusters`` command lets you manage cluster products.
    non-alphanumeric characters may be interpreted in an unexpected way by your
    shell. Use `string delimitation`_ and escape characters as needed.
 
+.. WARNING::
+
+    Some ``clusters`` commands are only available for CrateDB Cloud sysadmins
+    (superusers). A warning will indicate at the bottom of the documentation
+    for each command when this is the case. They are listed here solely to
+    clarify their function. You can also get information on any command by
+    appending ``--help``.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser
