@@ -20,6 +20,8 @@ import time
 from argparse import Namespace
 from typing import Dict
 
+import bitmath
+
 from croud.api import Client
 from croud.clusters.exceptions import AsyncOperationNotFound
 from croud.config import get_output_format
@@ -268,6 +270,52 @@ def clusters_set_ip_whitelist(args: Namespace) -> None:
         errors=errors,
         keys=["id", "name", "ip_whitelist"],
         output_fmt=get_output_format(args),
+    )
+
+
+def _disk_size_transform(field):
+    disk_size = str(bitmath.Byte(field["disk_size_per_node_bytes"]).best_prefix())
+    return f"Disk size: {disk_size}"
+
+
+def clusters_expand_storage(args: Namespace) -> None:
+    body = {
+        "disk_size_per_node_bytes": args.disk_size_gb * 1024 * 1024 * 1024,
+    }
+
+    client = Client.from_args(args)
+    data, errors = client.put(
+        f"/api/v2/clusters/{args.cluster_id}/storage/", body=body
+    )  # type: ignore
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "hardware_specs"],
+        output_fmt=get_output_format(args),
+        transforms={"hardware_specs": _disk_size_transform},
+    )
+
+    if errors:
+        return
+    print_info(
+        "Cluster storage expansion initiated. "
+        "It may take a few minutes to complete the changes."
+    )
+
+    _wait_for_completed_operation(
+        client=client,
+        cluster_id=args.cluster_id,
+        request_params={"type": "EXPAND_STORAGE", "limit": 1},
+    )
+
+    # Re-fetch the cluster's info
+    data, errors = client.get(f"/api/v2/clusters/{args.cluster_id}/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "hardware_specs"],
+        output_fmt=get_output_format(args),
+        transforms={"hardware_specs": _disk_size_transform},
     )
 
 

@@ -28,6 +28,7 @@ import shtab
 from croud.clusters.commands import (
     clusters_delete,
     clusters_deploy,
+    clusters_expand_storage,
     clusters_get,
     clusters_list,
     clusters_restart_node,
@@ -505,6 +506,20 @@ command_tree = {
                     Argument("-y", "--yes", action="store_true", default=False)
                 ],
                 "resolver": clusters_set_ip_whitelist,
+            },
+            "expand-storage": {
+                "help": "Expand storage of a CrateDB cluster.",
+                "extra_args": [
+                    Argument(
+                        "--cluster-id", type=str, required=True,
+                        help="The CrateDB cluster ID to use.",
+                    ),
+                    Argument(
+                        "--disk-size-gb", type=int, required=True,
+                        help="New size of attached disks (in GiB).",
+                    )
+                ],
+                "resolver": clusters_expand_storage,
             },
         },
     },

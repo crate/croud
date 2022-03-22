@@ -769,3 +769,87 @@ def test_clusters_reset_ip_whitelist_fails(mock_request, capsys):
 
     _, err_output = capsys.readouterr()
     assert "Some Error" in err_output
+
+
+times_expand_storage_operations_called = 0
+
+
+@pytest.mark.parametrize("status", ["SUCCEEDED", "FAILED", None])
+@mock.patch.object(Client, "request", return_value=({}, None))
+@mock.patch("time.sleep")
+def test_clusters_expand_storage(_mock_sleep, mock_request: mock.Mock, status):
+    disk_size_gb = 256
+    cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.GET and "/operations/" in args[1]:
+            if status is None:
+                return None, None
+            global times_expand_storage_operations_called
+
+            if times_expand_storage_operations_called == 0:
+                times_expand_storage_operations_called += 1
+                return {"operations": [{"status": "SENT"}]}, None
+            return {"operations": [{"status": status}]}, None
+        return None, None
+
+    mock_request.side_effect = mock_call
+    call_command(
+        "croud",
+        "clusters",
+        "expand-storage",
+        "--cluster-id",
+        cluster_id,
+        "--disk-size-gb",
+        str(disk_size_gb),
+    )
+    print("requests ", mock_request.call_args_list)
+    assert_rest(
+        mock_request,
+        RequestMethod.PUT,
+        f"/api/v2/clusters/{cluster_id}/storage/",
+        body={"disk_size_per_node_bytes": disk_size_gb * 1024 * 1024 * 1024},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "EXPAND_STORAGE", "limit": 1},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/",
+        any_times=True,
+    )
+
+
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_cluster_expand_storage_fails(mock_request, capsys):
+    disk_size_gb = 256
+    cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        return None, {"message": "Some Error"}
+
+    mock_request.side_effect = mock_call
+    call_command(
+        "croud",
+        "clusters",
+        "expand-storage",
+        "--cluster-id",
+        cluster_id,
+        "--disk-size-gb",
+        str(disk_size_gb),
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.PUT,
+        f"/api/v2/clusters/{cluster_id}/storage/",
+        body={"disk_size_per_node_bytes": disk_size_gb * 1024 * 1024 * 1024},
+    )
+
+    _, err_output = capsys.readouterr()
+    assert "Some Error" in err_output

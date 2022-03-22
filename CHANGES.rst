@@ -7,6 +7,9 @@ Unreleased
 
 - Added autocompletions for bash/zsh/tcsh
 
+- Added new subcommand ``clusters expand-storage`` that allows superusers and
+  organization admins to expand the disk size of a cluster.
+
 0.32.0 - 2022/02/17
 ===================
 

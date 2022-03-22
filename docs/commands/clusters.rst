@@ -298,21 +298,60 @@ Example
        --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
        --net "10.1.2.0/24,192.168.1.0/24"
    This will overwrite all existing CIDR restrictions. Continue? [yN] y
-   +--------------------------------------+---------------+----------------+
-   | id                                   | name          | ip_whitelist   |
-   |--------------------------------------+---------------+----------------|
-   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | romanas-nosub | NULL           |
-   +--------------------------------------+---------------+----------------+
+   +--------------------------------------+------------------------+----------------+
+   | id                                   | name                   | ip_whitelist   |
+   |--------------------------------------+------------------------+----------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | NULL           |
+   +--------------------------------------+------------------------+----------------+
    ==> Info: Updating the IP Network whitelist initiated. It may take a few minutes to complete the changes.
    ==> Info: Status: SENT (Your update request was sent to the region.)
    ==> Info: Status: IN_PROGRESS (Updating IP Network Whitelist.)
    ==> Success: Operation completed.
-   +--------------------------------------+---------------+-------------------------------------------------------------------------------------------------+
-   | id                                   | name          | ip_whitelist                                                                                    |
-   |--------------------------------------+---------------+-------------------------------------------------------------------------------------------------|
-   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | romanas-nosub | [{"cidr": "10.1.2.0/24", "description": null}, {"cidr": "192.168.1.0/24", "description": null}] |
-   +--------------------------------------+---------------+-------------------------------------------------------------------------------------------------+
+   +--------------------------------------+------------------------+-------------------------------------------------------------------------------------------------+
+   | id                                   | name                   | ip_whitelist                                                                                    |
+   |--------------------------------------+------------------------+-------------------------------------------------------------------------------------------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | [{"cidr": "10.1.2.0/24", "description": null}, {"cidr": "192.168.1.0/24", "description": null}] |
+   +--------------------------------------+------------------------+-------------------------------------------------------------------------------------------------+
 
 .. note::
 
    This command will wait for the operation to finish or fail.
+
+
+``clusters expand-storage``
+===========================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters expand-storage
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud clusters expand-storage \
+       --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
+       --disk-size-gb 512
+   +--------------------------------------+------------------------+------------------------------------+
+   | id                                   | name                   | hardware_specs                     |
+   |--------------------------------------+------------------------+------------------------------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | Disk size: 256.0 GiB               |
+   +--------------------------------------+------------------------+------------------------------------+
+   ==> Info: Cluster storage expansion initiated. It may take a few minutes to complete the changes.
+   ==> Info: Status: REGISTERED (Your storage expansion request was received and is pending processing.)
+   ==> Info: Status: SENT (Your storage expansion request was sent to the region.)
+   ==> Info: Status: IN_PROGRESS (Suspending cluster and waiting for Persistent Volume Claim(s) to be resized.)
+   ==> Info: Status: IN_PROGRESS (Starting cluster. Scaling back up to 3 nodes. Waiting for node(s) to be present.)
+   ==> Success: Operation completed.
+   +--------------------------------------+------------------------+------------------------------------+
+   | id                                   | name                   | hardware_specs                     |
+   |--------------------------------------+------------------------+------------------------------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | Disk size: 512.0 GiB               |
+   +--------------------------------------+------------------------+------------------------------------+
+
+.. note::
+
+   This command will wait for the operation to finish or fail. It is only available for superusers and organization admins.

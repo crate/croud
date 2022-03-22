@@ -43,6 +43,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "appdirs==1.4.3",
+        "bitmath==1.3.3.1",
         "certifi",
         "colorama==0.4.3",
         "marshmallow==3.5.1",
