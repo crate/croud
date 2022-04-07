@@ -106,7 +106,7 @@ command_tree = {
         "extra_args": [
             Argument(
                 "--idp", type=str, required=False,
-                choices=["cognito", "azuread"],
+                choices=["cognito", "azuread", "github", "google"],
                 help="The identity provider (IdP) for the login."
             ),
         ],
