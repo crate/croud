@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.33.0 - 2022/04/07
+===================
+
 - Added autocompletions for bash/zsh/tcsh
 
 - Added new subcommand ``clusters expand-storage`` that allows superusers and
