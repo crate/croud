@@ -21,6 +21,7 @@ from unittest import mock
 
 import pytest
 
+from croud.config import CONFIG
 from croud.login import get_org_id, login_path
 from croud.server import Server
 from tests.util import call_command
@@ -78,3 +79,38 @@ def test_get_org_id(org_id_param, config):
 )
 def test_login_path(idp, expected):
     assert login_path(idp) == expected
+
+
+@pytest.mark.parametrize(
+    "idp,expected",
+    [
+        ("azuread", "/oauth2/azuread/login?cli=true"),
+        ("cognito", "/oauth2/cognito/login?cli=true"),
+        ("github", "/oauth2/github/login?cli=true"),
+        ("google", "/oauth2/google/login?cli=true"),
+        ("twitter", None),
+    ],
+)
+@mock.patch("croud.login.get_org_id", return_value="my-org-id")
+@mock.patch("croud.login.print_info")
+@mock.patch.object(Server, "wait_for_shutdown")
+@mock.patch.object(Server, "start_in_background")
+@mock.patch("croud.login.can_launch_browser", return_value=True)
+def test_login_idp(
+    mock_can_launch_browser,
+    mock_start_in_background,
+    mock_wait_for_shutdown,
+    mock_print_info,
+    mock_get_org_id,
+    idp,
+    expected,
+):
+    with mock.patch("croud.login.open_page_in_browser") as open_page:
+        if expected:
+            call_command("croud", "login", "--idp", idp)
+            open_page.assert_called_once_with(CONFIG.endpoint + expected)
+        else:
+            with pytest.raises(SystemExit) as e_info:
+                call_command("croud", "login", "--idp", idp)
+                open_page.assert_not_called()
+                assert e_info.value.code == 1

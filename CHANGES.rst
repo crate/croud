@@ -13,6 +13,8 @@ Unreleased
 - Added new subcommand ``clusters expand-storage`` that allows superusers and
   organization admins to expand the disk size of a cluster.
 
+- Add GitHub and Google to the idp list
+
 0.32.0 - 2022/02/17
 ===================
 
