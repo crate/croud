@@ -167,7 +167,9 @@ def test_organizations_delete_failure_org_id_not_deleted_from_config(
         call_command("croud", "organizations", "delete")
 
     assert_rest(
-        mock_request, RequestMethod.DELETE, f"/api/v2/organizations/{org_id}/",
+        mock_request,
+        RequestMethod.DELETE,
+        f"/api/v2/organizations/{org_id}/",
     )
 
     _, err = capsys.readouterr()
@@ -177,7 +179,9 @@ def test_organizations_delete_failure_org_id_not_deleted_from_config(
 
 @mock.patch.object(Client, "request", return_value=({}, None))
 def test_organizations_delete_org_id_from_local_config(
-    mock_request, capsys, config,
+    mock_request,
+    capsys,
+    config,
 ):
     org_id = gen_uuid()
     config.set_organization_id(config.name, org_id)
@@ -186,7 +190,9 @@ def test_organizations_delete_org_id_from_local_config(
         call_command("croud", "organizations", "delete")
 
     assert_rest(
-        mock_request, RequestMethod.DELETE, f"/api/v2/organizations/{org_id}/",
+        mock_request,
+        RequestMethod.DELETE,
+        f"/api/v2/organizations/{org_id}/",
     )
 
     assert config.organization is None
@@ -283,7 +289,9 @@ def test_organizations_auditlogs_list_pagination(mock_request: mock.Mock):
     call_command("croud", "organizations", "auditlogs", "list", "--org-id", org_id)
 
     mock_request.call_args_list[0].assert_called_with(
-        RequestMethod.GET, f"/api/v2/organizations/{org_id}/auditlogs/", params={},
+        RequestMethod.GET,
+        f"/api/v2/organizations/{org_id}/auditlogs/",
+        params={},
     )
     mock_request.call_args_list[1].assert_called_with(
         RequestMethod.GET,
