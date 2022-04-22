@@ -352,6 +352,9 @@ Example
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | Disk size: 512.0 GiB               |
    +--------------------------------------+------------------------+------------------------------------+
 
-.. note::
+.. NOTE::
 
-   This command will wait for the operation to finish or fail. It is only available for superusers and organization admins.
+    This command will wait for the operation to finish or fail. It is only
+    available for superusers and organization admins. Note that for Azure
+    users, any storage increase exceeding a given increment (32, 64, etc.) will
+    be priced at the level of the next increment.
