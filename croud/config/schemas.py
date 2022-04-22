@@ -52,7 +52,9 @@ class ConfigSchema(Schema):
         attribute="current-profile", data_key="current-profile", required=True
     )
     profiles = fields.Dict(
-        keys=fields.String(), values=fields.Nested(ProfileSchema()), required=True,
+        keys=fields.String(),
+        values=fields.Nested(ProfileSchema()),
+        required=True,
     )
 
     @post_load

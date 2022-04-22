@@ -28,7 +28,9 @@ def subscriptions_get(args: Namespace) -> None:
     client = Client.from_args(args)
     data, errors = client.get(f"/api/v2/subscriptions/{args.id}/")
     print_response(
-        data=data, errors=errors, output_fmt=get_output_format(args),
+        data=data,
+        errors=errors,
+        output_fmt=get_output_format(args),
     )
 
 
