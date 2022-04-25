@@ -156,7 +156,12 @@ def test_regions_create_install_command(mock_request, mock_raw_printer, client):
 def test_regions_create_missing_description(mock_request, capsys):
     with pytest.raises(SystemExit):
         call_command(
-            "croud", "regions", "create", "--provider", "EDGE", "--yes",
+            "croud",
+            "regions",
+            "create",
+            "--provider",
+            "EDGE",
+            "--yes",
         )
     mock_request.assert_not_called()
     _, err_output = capsys.readouterr()
@@ -185,11 +190,18 @@ def test_regions_create_aborted(mock_request, capsys):
 
 
 @mock.patch.object(
-    Client, "request", side_effect=[(EDGE_REGION_LIST, None), ({}, None)],
+    Client,
+    "request",
+    side_effect=[(EDGE_REGION_LIST, None), ({}, None)],
 )
 def test_regions_delete(mock_request, capsys):
     call_command(
-        "croud", "regions", "delete", "-y", "--name", "region-name",
+        "croud",
+        "regions",
+        "delete",
+        "-y",
+        "--name",
+        "region-name",
     )
     mock_request.assert_has_calls(
         [
@@ -227,7 +239,12 @@ def test_regions_delete(mock_request, capsys):
 def test_regions_delete_with_projects_fails(mock_request, capsys):
 
     call_command(
-        "croud", "regions", "delete", "-y", "--name", "region-name",
+        "croud",
+        "regions",
+        "delete",
+        "-y",
+        "--name",
+        "region-name",
     )
     mock_request.assert_has_calls(
         [
@@ -247,12 +264,17 @@ def test_regions_delete_with_projects_fails(mock_request, capsys):
 
 
 @mock.patch.object(
-    Client, "request", side_effect=[({}, None)],
+    Client,
+    "request",
+    side_effect=[({}, None)],
 )
 def test_regions_delete_missing_name(mock_request, capsys):
     with pytest.raises(SystemExit):
         call_command(
-            "croud", "regions", "delete", "-y",
+            "croud",
+            "regions",
+            "delete",
+            "-y",
         )
     mock_request.assert_not_called()
     _, err_output = capsys.readouterr()
@@ -284,7 +306,9 @@ def test_regions_delete_status_up(mock_request, capsys, client):
 
     call_command("croud", "regions", "delete", "-y", "--name", "region-name")
     mock_request.assert_called_once_with(
-        RequestMethod.GET, "/api/v2/regions/", params=None,
+        RequestMethod.GET,
+        "/api/v2/regions/",
+        params=None,
     )
     data, err_output = capsys.readouterr()
     msg = (
@@ -297,7 +321,9 @@ def test_regions_delete_status_up(mock_request, capsys, client):
 
 
 @mock.patch.object(
-    Client, "request", side_effect=[(EDGE_REGION_LIST, None), ({}, None)],
+    Client,
+    "request",
+    side_effect=[(EDGE_REGION_LIST, None), ({}, None)],
 )
 def test_regions_delete_status_down(mock_request, capsys):
 
@@ -316,7 +342,9 @@ def test_regions_delete_status_down(mock_request, capsys):
 
 
 @mock.patch.object(
-    Client, "request", side_effect=[({}, None)],
+    Client,
+    "request",
+    side_effect=[({}, None)],
 )
 def test_regions_delete_bad_name(mock_request, capsys):
 
@@ -324,7 +352,9 @@ def test_regions_delete_bad_name(mock_request, capsys):
 
     call_command("croud", "regions", "delete", "-y", "--name", region_name)
     mock_request.assert_called_once_with(
-        RequestMethod.GET, "/api/v2/regions/", params=None,
+        RequestMethod.GET,
+        "/api/v2/regions/",
+        params=None,
     )
     _, err_output = capsys.readouterr()
     assert f"The region {region_name} does not exist." in err_output
