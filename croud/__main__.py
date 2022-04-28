@@ -419,7 +419,13 @@ command_tree = {
                         "--memory-size-mb", type=int, required=False,
                         help="Amount of memory to allocate (in MiB). "
                              "CrateDB Edge regions only.",
-                    )
+                    ),
+                    Argument(
+                        "--subscription-id", type=str,
+                        help="The subscription to use for billing of this cluster. "
+                             "Can be omitted by superusers to create clusters w/o "
+                             "billing.",
+                    ),
                 ],
                 "resolver": clusters_deploy,
             },

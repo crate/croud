@@ -18,7 +18,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 import time
 from argparse import Namespace
-from typing import Dict
+from typing import Dict, Optional
 
 import bitmath
 
@@ -71,20 +71,30 @@ def clusters_list(args: Namespace) -> None:
 
 def clusters_deploy(args: Namespace) -> None:
     body = {
-        "crate_version": args.version,
-        "name": args.cluster_name,
-        "password": args.password,
-        "product_name": args.product_name,
-        "product_tier": args.tier,
+        "cluster": {
+            "crate_version": args.version,
+            "name": args.cluster_name,
+            "password": args.password,
+            "product_name": args.product_name,
+            "product_tier": args.tier,
+            "username": args.username,
+            "channel": args.channel,
+        },
         "project_id": args.project_id,
-        "username": args.username,
-        "channel": args.channel,
     }
     if args.unit:
-        body["product_unit"] = args.unit
-    _handle_edge_params(body, args)
+        body["cluster"]["product_unit"] = args.unit
+    if args.subscription_id:
+        body["subscription_id"] = args.subscription_id
+    _handle_edge_params(body["cluster"], args)
+
     client = Client.from_args(args)
-    data, errors = client.post("/api/v2/clusters/", body=body)
+
+    org_id = _lookup_organization_id_for_project(client, args, args.project_id)
+    if not org_id:
+        return
+
+    data, errors = client.post(f"/api/v2/organizations/{org_id}/clusters/", body=body)
     print_response(
         data=data,
         errors=errors,
@@ -389,3 +399,17 @@ def _wait_for_completed_operation(
 
         with HALO:
             time.sleep(10)
+
+
+def _lookup_organization_id_for_project(
+    client: Client, args: Namespace, project_id: str
+) -> Optional[str]:
+    data, errors = client.get(f"/api/v2/projects/{project_id}/")
+    if not data or errors:
+        print_response(
+            data=data,
+            errors=errors,
+            output_fmt=get_output_format(args),
+        )
+        return None
+    return data.get("organization_id")
