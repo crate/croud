@@ -78,6 +78,8 @@ def test_clusters_deploy(_mock_sleep, mock_request, status):
     def mock_call(*args, **kwargs):
         if args[0] == RequestMethod.POST:
             return {"id": cluster_id}, None
+        if args[0] == RequestMethod.GET and "/projects/" in args[1]:
+            return {"organization_id": "123"}, None
         if args[0] == RequestMethod.GET and "/operations/" in args[1]:
             if status is None:
                 return None, None
@@ -113,17 +115,19 @@ def test_clusters_deploy(_mock_sleep, mock_request, status):
     assert_rest(
         mock_request,
         RequestMethod.POST,
-        "/api/v2/clusters/",
+        "/api/v2/organizations/123/clusters/",
         body={
-            "crate_version": "3.2.5",
-            "name": "crate_cluster",
-            "password": "s3cr3t!",
-            "product_name": "cratedb.az1",
-            "product_tier": "xs",
-            "product_unit": 1,
+            "cluster": {
+                "crate_version": "3.2.5",
+                "name": "crate_cluster",
+                "password": "s3cr3t!",
+                "product_name": "cratedb.az1",
+                "product_tier": "xs",
+                "product_unit": 1,
+                "username": "foobar",
+                "channel": "stable",
+            },
             "project_id": project_id,
-            "username": "foobar",
-            "channel": "stable",
         },
         any_times=True,
     )
@@ -147,6 +151,8 @@ def test_clusters_deploy_fails(mock_request, capsys):
     project_id = gen_uuid()
 
     def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.GET and "/projects/" in args[1]:
+            return {"organization_id": "123"}, None
         return None, {"message": "Some Error"}
 
     mock_request.side_effect = mock_call
@@ -174,17 +180,19 @@ def test_clusters_deploy_fails(mock_request, capsys):
     assert_rest(
         mock_request,
         RequestMethod.POST,
-        "/api/v2/clusters/",
+        "/api/v2/organizations/123/clusters/",
         body={
-            "crate_version": "3.2.5",
-            "name": "crate_cluster",
-            "password": "s3cr3t!",
-            "product_name": "cratedb.az1",
-            "product_tier": "xs",
-            "product_unit": 1,
+            "cluster": {
+                "crate_version": "3.2.5",
+                "name": "crate_cluster",
+                "password": "s3cr3t!",
+                "product_name": "cratedb.az1",
+                "product_tier": "xs",
+                "product_unit": 1,
+                "username": "foobar",
+                "channel": "stable",
+            },
             "project_id": project_id,
-            "username": "foobar",
-            "channel": "stable",
         },
         any_times=True,
     )
@@ -201,6 +209,8 @@ def test_clusters_edge(_mock_sleep, mock_request):
     def mock_call(*args, **kwargs):
         if args[0] == RequestMethod.POST:
             return {"id": cluster_id}, None
+        if args[0] == RequestMethod.GET and "/projects/" in args[1]:
+            return {"organization_id": "123"}, None
         return None, None
 
     mock_request.side_effect = mock_call
@@ -234,28 +244,39 @@ def test_clusters_edge(_mock_sleep, mock_request):
         "premium",
         "--memory-size-mb",
         "2048",
+        "--subscription-id",
+        "123",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/projects/{project_id}/",
+        any_times=True,
     )
     assert_rest(
         mock_request,
         RequestMethod.POST,
-        "/api/v2/clusters/",
+        "/api/v2/organizations/123/clusters/",
         body={
-            "crate_version": "3.2.5",
-            "name": "crate_cluster",
-            "password": "s3cr3t!",
-            "product_name": "cratedb.az1",
-            "product_tier": "xs",
-            "product_unit": 1,
-            "project_id": project_id,
-            "username": "foobar",
-            "channel": "stable",
-            "hardware_specs": {
-                "cpus_per_node": 1.0,
-                "disks_per_node": 1,
-                "disk_size_per_node_bytes": 107_374_182_400,
-                "disk_type": "premium",
-                "memory_per_node_bytes": 2_147_483_648,
+            "cluster": {
+                "crate_version": "3.2.5",
+                "name": "crate_cluster",
+                "password": "s3cr3t!",
+                "product_name": "cratedb.az1",
+                "product_tier": "xs",
+                "product_unit": 1,
+                "username": "foobar",
+                "channel": "stable",
+                "hardware_specs": {
+                    "cpus_per_node": 1.0,
+                    "disks_per_node": 1,
+                    "disk_size_per_node_bytes": 107_374_182_400,
+                    "disk_type": "premium",
+                    "memory_per_node_bytes": 2_147_483_648,
+                },
             },
+            "project_id": project_id,
+            "subscription_id": "123",
         },
         any_times=True,
     )
@@ -283,6 +304,8 @@ def test_clusters_deploy_no_unit(_mock_sleep, mock_request):
     def mock_call(*args, **kwargs):
         if args[0] == RequestMethod.POST:
             return {"id": cluster_id}, None
+        if args[0] == RequestMethod.GET and "/projects/" in args[1]:
+            return {"organization_id": "123"}, None
         return None, None
 
     mock_request.side_effect = mock_call
@@ -304,20 +327,31 @@ def test_clusters_deploy_no_unit(_mock_sleep, mock_request):
         "foobar",
         "--password",
         "s3cr3t!",
+        "--subscription-id",
+        "123",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/projects/{project_id}/",
+        any_times=True,
     )
     assert_rest(
         mock_request,
         RequestMethod.POST,
-        "/api/v2/clusters/",
+        "/api/v2/organizations/123/clusters/",
         body={
-            "crate_version": "3.2.5",
-            "name": "crate_cluster",
-            "password": "s3cr3t!",
-            "product_name": "cratedb.az1",
-            "product_tier": "xs",
+            "cluster": {
+                "crate_version": "3.2.5",
+                "name": "crate_cluster",
+                "password": "s3cr3t!",
+                "product_name": "cratedb.az1",
+                "product_tier": "xs",
+                "username": "foobar",
+                "channel": "stable",
+            },
             "project_id": project_id,
-            "username": "foobar",
-            "channel": "stable",
+            "subscription_id": "123",
         },
         any_times=True,
     )
@@ -345,6 +379,8 @@ def test_clusters_deploy_nightly(_mock_sleep, mock_request):
     def mock_call(*args, **kwargs):
         if args[0] == RequestMethod.POST:
             return {"id": cluster_id}, None
+        if args[0] == RequestMethod.GET and "/projects/" in args[1]:
+            return {"organization_id": "123"}, None
         return None, None
 
     mock_request.side_effect = mock_call
@@ -374,17 +410,19 @@ def test_clusters_deploy_nightly(_mock_sleep, mock_request):
     assert_rest(
         mock_request,
         RequestMethod.POST,
-        "/api/v2/clusters/",
+        "/api/v2/organizations/123/clusters/",
         body={
-            "crate_version": "nightly-4.1.0-20190712",
-            "name": "crate_cluster",
-            "password": "s3cr3t!",
-            "product_name": "cratedb.az1",
-            "product_tier": "xs",
+            "cluster": {
+                "crate_version": "nightly-4.1.0-20190712",
+                "name": "crate_cluster",
+                "password": "s3cr3t!",
+                "product_name": "cratedb.az1",
+                "product_tier": "xs",
+                "username": "foobar",
+                "channel": "nightly",
+                "product_unit": 1,
+            },
             "project_id": project_id,
-            "username": "foobar",
-            "channel": "nightly",
-            "product_unit": 1,
         },
         any_times=True,
     )

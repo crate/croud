@@ -7,6 +7,9 @@ Unreleased
 
 - Fix help message for disk size argument in ``clusters deploy``
 
+- Updated ``clusters deploy`` to use the new cluster provisioning API. This brings
+  back the ability for regular users to create clusters via croud.
+
 0.33.0 - 2022/04/07
 ===================
 
