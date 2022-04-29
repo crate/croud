@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Fix help message for disk size argument in ``clusters deploy``
+
 0.33.0 - 2022/04/07
 ===================
 

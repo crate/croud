@@ -407,8 +407,7 @@ command_tree = {
                     ),
                     Argument(
                         "--disk-size-gb", type=int, required=False,
-                        help="Size of disks to attach (in GiB). "
-                             "CrateDB Edge regions only.",
+                        help="Size of disks to attach (in GiB).",
                     ),
                     Argument(
                         "--disk-type", type=str, required=False,
