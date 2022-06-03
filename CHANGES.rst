@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added new subcommand ``clusters set-suspended-state`` that allows superusers,
+  organization admins and project admins to suspend or resume a cluster.
+
 0.34.0 - 2022/05/10
 ===================
 

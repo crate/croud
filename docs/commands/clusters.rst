@@ -353,3 +353,40 @@ Example
     available for superusers and organization admins. Note that for Azure
     users, any storage increase exceeding a given increment (32, 64, etc.) will
     be priced at the level of the next increment.
+
+
+``clusters set-suspended-state``
+====================================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters set-suspended-state
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud clusters set-suspended-state \
+       --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
+       --value true
+   +--------------------------------------+------------------------+----------------+
+   | id                                   | name                   | suspended      |
+   |--------------------------------------+------------------------+----------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | FALSE          |
+   +--------------------------------------+------------------------+----------------+
+   ==> Info: Updating the cluster status initiated. It may take a few minutes to complete the changes.
+   ==> Info: Status: SENT (Your update request was sent to the region.)
+   ==> Info: Status: IN_PROGRESS (Suspending cluster.)
+   ==> Success: Operation completed.
+   +--------------------------------------+------------------------+----------------+
+   | id                                   | name                   | suspended      |
+   |--------------------------------------+------------------------+----------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | TRUE           |
+   +--------------------------------------+------------------------+----------------+
+
+.. note::
+
+   This command will wait for the operation to finish or fail.
