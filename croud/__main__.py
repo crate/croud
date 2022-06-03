@@ -35,6 +35,7 @@ from croud.clusters.commands import (
     clusters_scale,
     clusters_set_deletion_protection,
     clusters_set_ip_whitelist,
+    clusters_set_suspended,
     clusters_upgrade,
 )
 from croud.config import CONFIG
@@ -525,6 +526,20 @@ command_tree = {
                     )
                 ],
                 "resolver": clusters_expand_storage,
+            },
+            "set-suspended-state": {
+                "help": "Suspend or resume a CrateDB cluster.",
+                "extra_args": [
+                    Argument(
+                        "--cluster-id", type=str, required=True,
+                        help="The CrateDB cluster ID to use.",
+                    ),
+                    Argument(
+                        "--value", type=lambda x: bool(strtobool(str(x))),
+                        required=True, help="The suspended status.",
+                    ),
+                ],
+                "resolver": clusters_set_suspended,
             },
         },
     },

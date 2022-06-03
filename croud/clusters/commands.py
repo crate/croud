@@ -239,6 +239,40 @@ def clusters_set_deletion_protection(args: Namespace) -> None:
     )
 
 
+def clusters_set_suspended(args: Namespace) -> None:
+    body = {"suspended": args.value}
+    client = Client.from_args(args)
+    data, errors = client.put(f"/api/v2/clusters/{args.cluster_id}/suspend/", body=body)
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "suspended"],
+        output_fmt=get_output_format(args),
+    )
+
+    if errors:
+        return
+    print_info(
+        "Updating the cluster status initiated. "
+        "It may take a few minutes to complete the changes."
+    )
+
+    _wait_for_completed_operation(
+        client=client,
+        cluster_id=args.cluster_id,
+        request_params={"type": "SUSPEND", "limit": 1},
+    )
+
+    # Re-fetch the cluster's info
+    data, errors = client.get(f"/api/v2/clusters/{args.cluster_id}/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "suspended"],
+        output_fmt=get_output_format(args),
+    )
+
+
 @require_confirmation("This will overwrite all existing CIDR restrictions. Continue?")
 def clusters_set_ip_whitelist(args: Namespace) -> None:
     networks = args.net
