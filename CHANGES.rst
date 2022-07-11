@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Changed the products CLI to filter out duplicates, deprecated products and products
+  without prices.
+
 0.35.0 - 2022/06/22
 ===================
 

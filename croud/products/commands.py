@@ -28,8 +28,18 @@ def products_list(args: Namespace) -> None:
     client = Client.from_args(args)
     url = "/api/v2/products/"
     data, errors = client.get(url, params={"kind": args.kind} if args.kind else None)
+    filtered = {}
+    for product in data:  # type: ignore
+        # Ignore deprecated products and products that have no price associated.
+        if product.get("deprecated", False):
+            continue
+        if not product.get("price_per_dtu_minute"):
+            continue
+        # group by kind/name/tier tuples to remove duplicates for providers and regions
+        key = f"{product['kind']}{product['name']}{product['tier']}"
+        filtered[key] = product
     print_response(
-        data=data,
+        data=list(filtered.values()),
         errors=errors,
         keys=["kind", "name", "tier", "description", "scale_summary"],
         output_fmt=get_output_format(args),
