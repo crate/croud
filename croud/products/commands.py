@@ -19,6 +19,8 @@
 
 from argparse import Namespace
 
+import bitmath
+
 from croud.api import Client
 from croud.config import get_output_format
 from croud.printer import print_response
@@ -37,10 +39,35 @@ def products_list(args: Namespace) -> None:
             continue
         # group by kind/name/tier tuples to remove duplicates for providers and regions
         key = f"{product['kind']}{product['name']}{product['tier']}"
+        product["vcpu_cores"] = product.get("specs", {}).get("cpu_cores")
+        product["ram"] = product.get("specs", {}).get("ram_bytes", 0)
+        product["min_storage"] = product.get("specs", {}).get("storage_minimum_bytes")
+        product["max_storage"] = product.get("specs", {}).get("storage_maximum_bytes")
         filtered[key] = product
     print_response(
         data=list(filtered.values()),
         errors=errors,
-        keys=["kind", "name", "tier", "description", "scale_summary"],
+        keys=[
+            "kind",
+            "name",
+            "tier",
+            "description",
+            "scale_summary",
+            "vcpu_cores",
+            "ram",
+            "min_storage",
+            "max_storage",
+        ],
         output_fmt=get_output_format(args),
+        transforms={
+            "ram": bytes_to_gib,
+            "min_storage": bytes_to_gib,
+            "max_storage": bytes_to_gib,
+        },
     )
+
+
+def bytes_to_gib(size_bytes):
+    if not size_bytes:
+        return None
+    return str(bitmath.Byte(size_bytes).to_GiB())
