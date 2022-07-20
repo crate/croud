@@ -53,16 +53,9 @@ def regions_create(args: Namespace) -> None:
     Creates a new region
     """
     client = Client.from_args(args)
-    body = {
-        "description": args.description,
-        "provider": args.provider,
-    }
+    body = {"description": args.description, "organization_id": args.org_id}
 
     # Add optional parameters only when present
-    if args.name:
-        body["name"] = args.name
-    if args.org_id:
-        body["organization_id"] = args.org_id
     if args.aws_bucket:
         body["aws_bucket"] = args.aws_bucket
     if args.aws_region:
