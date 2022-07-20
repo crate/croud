@@ -757,20 +757,11 @@ command_tree = {
                              " backups is expected to be.",
                     ),
                     Argument(
-                        "--name", type=str, required=False,
-                        help="The domain name prefix that will be used to reach"
-                             " the region. A Crate domain will be added as a suffix.",
-                    ),
-                    Argument(
                         "--description", type=str, required=True,
                         help="The description of the new region.",
                     ),
                     Argument(
-                        "--provider", type=str, required=True,
-                        help="Either AWS, EKS or EDGE",
-                    ),
-                    Argument(
-                        "--org-id", type=str, required=False,
+                        "--org-id", type=str, required=True,
                         help="The organization ID to use.",
                     ),
                     Argument("-y", "--yes", action="store_true", default=False),

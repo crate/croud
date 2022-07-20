@@ -38,7 +38,7 @@ Example
 ``regions create``
 ==================
 
-Creates a new Edge or Cloud region:
+Creates a new Edge region:
 
 .. argparse::
    :module: croud.__main__
@@ -48,14 +48,14 @@ Creates a new Edge or Cloud region:
 
 .. note::
 
-   Only superusers can create Cloud regions. Organization admins can create Edge regions that belong to an organization.
+   Organization admins can create Edge regions that belong to an organization.
 
 Example
 =======
 
 .. code-block:: console
 
-   sh$ croud regions create --org-id 11111111-1111-1111-1111-111111111111 --description "Edge region" --provider EDGE
+   sh$ croud regions create --org-id 11111111-1111-1111-1111-111111111111 --description "Edge region"
    +---------------+---------------------------------------------------+
    | description   | name                                              |
    |---------------+---------------------------------------------------|

@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Updated ``regions create`` to require the org-id and removed unnecessary arguments.
+
 - Changed the products CLI to filter out duplicates, deprecated products and products
   without prices.
 

@@ -66,12 +66,8 @@ def test_regions_create_all_params(mock_request):
         "backup-bucket",
         "--aws-region",
         "backup-region",
-        "--provider",
-        "EDGE",
         "--org-id",
         "organization-id",
-        "--name",
-        "region-name",
         "--yes",
     )
 
@@ -82,8 +78,6 @@ def test_regions_create_all_params(mock_request):
             "description": "region-description",
             "aws_bucket": "backup-bucket",
             "aws_region": "backup-region",
-            "provider": "EDGE",
-            "name": "region-name",
             "organization_id": "organization-id",
         },
         params=None,
@@ -101,15 +95,18 @@ def test_regions_create_mandatory_params(mock_request):
         "create",
         "--description",
         "region-description",
-        "--provider",
-        "EDGE",
+        "--org-id",
+        "organization-id",
         "--yes",
     )
 
     mock_request.call_args_list[0].assert_called_with(
         RequestMethod.POST,
         "/api/v2/regions/",
-        body={"description": "region-description", "provider": "EDGE"},
+        body={
+            "description": "region-description",
+            "organization_id": "organization-id",
+        },
         params=None,
     )
     mock_request.call_args_list[1].assert_called_with(
@@ -130,15 +127,18 @@ def test_regions_create_install_command(mock_request, mock_raw_printer, client):
         "create",
         "--description",
         "region-description",
-        "--provider",
-        "EDGE",
+        "--org-id",
+        "organization-id",
         "--yes",
     )
 
     mock_request.call_args_list[0].assert_called_with(
         RequestMethod.POST,
         "/api/v2/regions/",
-        body={"description": "region-description", "provider": "EDGE"},
+        body={
+            "description": "region-description",
+            "organization_id": "organization-id",
+        },
         params=None,
     )
     mock_request.call_args_list[1].assert_called_with(
@@ -159,8 +159,8 @@ def test_regions_create_missing_description(mock_request, capsys):
             "croud",
             "regions",
             "create",
-            "--provider",
-            "EDGE",
+            "--org-id",
+            "organization-id",
             "--yes",
         )
     mock_request.assert_not_called()
@@ -177,8 +177,8 @@ def test_regions_create_aborted(mock_request, capsys):
             "create",
             "--description",
             "region-description",
-            "--provider",
-            "EDGE",
+            "--org-id",
+            "organization-id",
         )
     mock_request.assert_not_called()
     mock_input.assert_called_once_with(
