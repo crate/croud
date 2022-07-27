@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.36.0 - 2022/07/27
+===================
+
 - Updated ``regions create`` to require the org-id and removed unnecessary arguments.
 
 - Changed the products CLI to filter out duplicates, deprecated products and products
