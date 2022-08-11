@@ -389,7 +389,7 @@ command_tree = {
                     ),
                     Argument(
                         "--password", type=str, required=True,
-                        help="The CrateDB password to use.",
+                        help="The CrateDB password to use. Minimum 24 characters.",
                     ),
                     Argument(
                         "--channel", type=str, default="stable", required=False,

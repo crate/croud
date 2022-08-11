@@ -6,6 +6,8 @@ The ``clusters`` command lets you manage cluster products.
 
 .. tip::
 
+   The minimum accepted length of password is 24 characters.
+
    Be careful when specifying passwords on the command line. Some
    non-alphanumeric characters may be interpreted in an unexpected way by your
    shell. Use `string delimitation`_ and escape characters as needed.
@@ -69,7 +71,7 @@ Example
        --project-id 952cd102-91c1-4837-962a-12ecb71a6ba8 \
        --version 4.8.0 \
        --username admin \
-       --password "s3cr3t!" \
+       --password "8Hed#kd$8^9i4Q#65fT4GKQI" \
        --subscription-id 782dfc00-7b25-4f48-8381-b1b096dd1619
    +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
    | id                                   | name                   | numNodes | crateVersion | projectId                            | username    | fqdn                                             |
