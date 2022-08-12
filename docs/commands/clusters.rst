@@ -129,10 +129,10 @@ Example
    it does not mean that one additional node will be added to the cluster.
    Instead, your cluster will be scaled down to two nodes.
 
-   | ``--unit 0`` means one node
-   | ``--unit 1`` means two nodes
+   | ``--unit 0`` means one node,
+   | ``--unit 1`` means two nodes,
    | ``--unit 2`` means three nodes, etc.
-   
+
    This command will wait for the cluster scaling to finish or fail.
 
 
