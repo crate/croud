@@ -103,25 +103,35 @@ Example
 .. code-block:: console
 
    sh$ croud clusters scale \
-       --project-id 952cd102-91c1-4837-962a-12ecb71a6ba8 \
-       --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
+       --cluster-id 34813eb4-0a91-443e-af77-33fb91a0b04c \
        --unit 1
    +--------------------------------------+------------------------+----------+
    | id                                   | name                   | numNodes |
    |--------------------------------------+------------------------+----------|
-   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        2 |
+   | 34813eb4-0a91-443e-af77-33fb91a0b04c | emerald-taun-we        |        1 |
    +--------------------------------------+------------------------+----------+
-   ==> Info: Cluster scaling initiated. It may take a few minutes to complete the changes.
+   ==> Info: Cluster scaling initiated. It may take a few minutes to complete
+   the changes.
    ==> Info: Status: SENT (Your scaling request was sent to the region.)
-   ==> Info: Status: IN_PROGRESS (Scaling up from 2 to 3 nodes. Waiting for new node(s) to be present.)
+   ==> Info: Status: IN_PROGRESS (Scaling up from 1 to 2 nodes. Waiting for new node(s) to be present.)
    ==> Success: Operation completed.
    +--------------------------------------+------------------------+----------+
    | id                                   | name                   | numNodes |
    |--------------------------------------+------------------------+----------|
-   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        3 |
+   | 34813eb4-0a91-443e-af77-33fb91a0b04c | emerald-taun-we        |        2 |
    +--------------------------------------+------------------------+----------+
 
 .. note::
+
+   The ``unit`` argument designates the predefined number of nodes, it does
+   not work in an additive manner. E.g., if you have a cluster with two nodes
+   and use the ``croud clusters scale`` command with the ``--unit 1`` argument,
+   it does not mean that one additional node will be added to the cluster.
+   Instead, your cluster will be scaled down to two nodes.
+
+   | ``--unit 0`` means one node,
+   | ``--unit 1`` means two nodes,
+   | ``--unit 2`` means three nodes, etc.
 
    This command will wait for the cluster scaling to finish or fail.
 
