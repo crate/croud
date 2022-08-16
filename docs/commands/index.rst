@@ -40,14 +40,6 @@ To get help for a specific command, you can append ``--help``:
    permits listing resources regardless of where they're deployed in CrateDB
    Cloud.
 
-.. WARNING::
-
-    Although the Croud CLI is intended to be available to CrateDB Cloud users
-    for cluster operations and other functions, some command arguments (i.e.,
-    in ``clusters`` and ``users``) are only available to CrateDB Cloud sysops
-    (superusers). Whenever this is the case, there is a warning in the
-    corresponding Croud command documentation to indicate this.
-
 .. rubric:: Available commands
 
 .. toctree::
