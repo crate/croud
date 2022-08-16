@@ -17,7 +17,6 @@ It allows to interact with these CrateDB Cloud features:
 It also allows to view available regions, active subscriptions, and
 available CrateDB Cloud products.
 
-
 .. rubric:: Table of Contents
 
 .. contents::
