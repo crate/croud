@@ -12,6 +12,10 @@ would be the following path::
 To determine the location of the config files ``croud`` uses the `appdirs`_
 package. Please refer to package documentation for further details.
 
+.. rubric:: Table of Contents
+
+.. contents::
+   :local:
 
 Configuration file formatting
 =============================
