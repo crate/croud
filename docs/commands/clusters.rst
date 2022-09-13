@@ -402,3 +402,43 @@ Example
 .. note::
 
    This command will wait for the operation to finish or fail.
+
+
+``clusters change-product``
+===========================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters change-product
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud clusters change-product \
+       --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
+       --product-name cr2
+   +--------------------------------------+------------------------+----------------+
+   | id                                   | name                   | product_name   |
+   |--------------------------------------+------------------------+----------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | cr1            |
+   +--------------------------------------+------------------------+----------------+
+   ==> Info: Changing the cluster product initiated. It may take a few minutes to complete the changes.
+   ==> Info: Status: REGISTERED (Your change compute cluster request was received and is pending processing.)
+   ==> Info: Status: SENT (Your change compute request was sent to the region.)
+   ==> Info: Status: IN_PROGRESS (Waiting for node 1/1 to be terminated...)
+   ==> Info: Status: IN_PROGRESS (Waiting for node 1/1 to be restarted...)
+   ==> Success: Operation completed.
+   +--------------------------------------+------------------------+----------------+
+   | id                                   | name                   | product_name   |
+   |--------------------------------------+------------------------+----------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | cr2            |
+   +--------------------------------------+------------------------+----------------+
+
+.. NOTE::
+
+    This command will wait for the operation to finish or fail. It is only available
+    to organization and project admins.
