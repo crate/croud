@@ -365,6 +365,45 @@ def clusters_expand_storage(args: Namespace) -> None:
     )
 
 
+def clusters_change_product(args: Namespace) -> None:
+    body = {
+        "product_name": args.product_name,
+    }
+
+    client = Client.from_args(args)
+    data, errors = client.put(
+        f"/api/v2/clusters/{args.cluster_id}/product/", body=body
+    )  # type: ignore
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "product_name"],
+        output_fmt=get_output_format(args),
+    )
+
+    if errors:
+        return
+    print_info(
+        "Changing the cluster product initiated. "
+        "It may take a few minutes to complete the changes."
+    )
+
+    _wait_for_completed_operation(
+        client=client,
+        cluster_id=args.cluster_id,
+        request_params={"type": "CHANGE_COMPUTE", "limit": 1},
+    )
+
+    # Re-fetch the cluster's info
+    data, errors = client.get(f"/api/v2/clusters/{args.cluster_id}/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "product_name"],
+        output_fmt=get_output_format(args),
+    )
+
+
 # We want to map the custom hardware specs to slightly nicer params in croud,
 # hence this mapping here
 def _handle_edge_params(body, args):

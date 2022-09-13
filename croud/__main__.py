@@ -26,6 +26,7 @@ import colorama
 import shtab
 
 from croud.clusters.commands import (
+    clusters_change_product,
     clusters_delete,
     clusters_deploy,
     clusters_expand_storage,
@@ -540,6 +541,20 @@ command_tree = {
                     ),
                 ],
                 "resolver": clusters_set_suspended,
+            },
+            "change-product": {
+                "help": "Change the cluster product.",
+                "extra_args": [
+                    Argument(
+                        "--cluster-id", type=str, required=True,
+                        help="The CrateDB cluster ID to use.",
+                    ),
+                    Argument(
+                        "--product-name", type=str, required=True,
+                        help="The new product name to use."
+                    )
+                ],
+                "resolver": clusters_change_product,
             },
         },
     },
