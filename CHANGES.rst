@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.37.0 - 2022/08/19
+====================
+
 - Added new subcommand ``clusters change-product`` that allows organizations and
   project admins to change the cluster product.
 
