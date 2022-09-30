@@ -46,3 +46,22 @@ def test_subscriptions_get(mock_request):
     id = str(uuid.uuid4())
     call_command("croud", "subscriptions", "get", id)
     assert_rest(mock_request, RequestMethod.GET, f"/api/v2/subscriptions/{id}/")
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_subscriptions_create(mock_request):
+    call_command(
+        "croud",
+        "subscriptions",
+        "create",
+        "--type",
+        "contract",
+        "--org-id",
+        "organization-id",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        "/api/v2/subscriptions/",
+        body={"type": "contract", "organization_id": "organization-id"},
+    )

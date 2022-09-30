@@ -2,6 +2,32 @@
 ``subscriptions``
 =================
 
+``subscriptions create``
+========================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: subscriptions create
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud subscriptions create --type contract --org-id a0df2925-cc73-4365-8a10-7ef847632b81 --sudo
+   +--------------------------------------+-------------------+---------+------------+
+   | id                                   | name              | state   | provider   |
+   |--------------------------------------+-------------------+---------+------------|
+   | 4841eb8a-257d-460d-9dcf-c6a7f0dcc09d | contract-YeBfJLWA | active  | cloud      |
+   +--------------------------------------+-------------------+---------+------------+
+   ==> Success: Subscription created.
+
+.. note::
+
+   This command is only available for superusers.
+
 ``subscriptions list``
 ======================
 

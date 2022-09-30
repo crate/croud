@@ -24,6 +24,19 @@ from croud.config import get_output_format
 from croud.printer import print_response
 
 
+def subscriptions_create(args: Namespace) -> None:
+    body = {"type": args.type, "organization_id": args.org_id}
+    client = Client.from_args(args)
+    data, errors = client.post(f"/api/v2/subscriptions/", body=body)
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "state", "provider"],
+        success_message="Subscription created.",
+        output_fmt=get_output_format(args),
+    )
+
+
 def subscriptions_get(args: Namespace) -> None:
     client = Client.from_args(args)
     data, errors = client.get(f"/api/v2/subscriptions/{args.id}/")

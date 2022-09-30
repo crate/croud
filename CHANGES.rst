@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added new subcommand ``subscriptions create`` that allows superusers to
+  create custom subscriptions.
+
 0.37.0 - 2022/08/19
 ====================
 

@@ -79,7 +79,11 @@ from croud.projects.users.commands import (
     project_users_remove,
 )
 from croud.regions.commands import regions_create, regions_delete, regions_list
-from croud.subscriptions.commands import subscriptions_get, subscriptions_list
+from croud.subscriptions.commands import (
+    subscriptions_create,
+    subscriptions_get,
+    subscriptions_list,
+)
 from croud.tools.spinner import HALO
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_list
@@ -798,6 +802,22 @@ command_tree = {
     "subscriptions": {
         "help": "Manage subscriptions.",
         "commands": {
+            "create": {
+                "help": ("Create a subscription in the specified organization. Command "
+                         "is for superusers only."),
+                "extra_args": [
+                    Argument(
+                        "--type", type=str, required=True,
+                        choices=['contract'],
+                        help="The subscription type to use.",
+                    ),
+                    Argument(
+                        "--org-id", type=str, required=True,
+                        help="The organization ID to use.",
+                    ),
+                ],
+                "resolver": subscriptions_create,
+            },
             "get": {
                 "help": (
                     "Get a subscription by its ID."
