@@ -81,11 +81,10 @@ def clusters_deploy(args: Namespace) -> None:
             "channel": args.channel,
         },
         "project_id": args.project_id,
+        "subscription_id": args.subscription_id,
     }
     if args.unit:
         body["cluster"]["product_unit"] = args.unit
-    if args.subscription_id:
-        body["subscription_id"] = args.subscription_id
     _handle_edge_params(body["cluster"], args)
 
     client = Client.from_args(args)

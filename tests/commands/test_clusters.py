@@ -74,6 +74,7 @@ def test_clusters_list_with_organization_id(mock_request):
 def test_clusters_deploy(_mock_sleep, mock_request, status):
     project_id = gen_uuid()
     cluster_id = gen_uuid()
+    subscription_id = gen_uuid()
 
     def mock_call(*args, **kwargs):
         if args[0] == RequestMethod.POST:
@@ -111,6 +112,8 @@ def test_clusters_deploy(_mock_sleep, mock_request, status):
         "foobar",
         "--password",
         "s3cr3t!",
+        "--subscription-id",
+        subscription_id,
     )
     assert_rest(
         mock_request,
@@ -128,6 +131,7 @@ def test_clusters_deploy(_mock_sleep, mock_request, status):
                 "channel": "stable",
             },
             "project_id": project_id,
+            "subscription_id": subscription_id,
         },
         any_times=True,
     )
@@ -149,6 +153,7 @@ def test_clusters_deploy(_mock_sleep, mock_request, status):
 @mock.patch.object(Client, "request", return_value=(None, {}))
 def test_clusters_deploy_fails(mock_request, capsys):
     project_id = gen_uuid()
+    subscription_id = gen_uuid()
 
     def mock_call(*args, **kwargs):
         if args[0] == RequestMethod.GET and "/projects/" in args[1]:
@@ -176,6 +181,8 @@ def test_clusters_deploy_fails(mock_request, capsys):
         "foobar",
         "--password",
         "s3cr3t!",
+        "--subscription-id",
+        subscription_id,
     )
     assert_rest(
         mock_request,
@@ -193,6 +200,7 @@ def test_clusters_deploy_fails(mock_request, capsys):
                 "channel": "stable",
             },
             "project_id": project_id,
+            "subscription_id": subscription_id,
         },
         any_times=True,
     )
@@ -375,6 +383,7 @@ def test_clusters_deploy_no_unit(_mock_sleep, mock_request):
 def test_clusters_deploy_nightly(_mock_sleep, mock_request):
     project_id = gen_uuid()
     cluster_id = gen_uuid()
+    subscription_id = gen_uuid()
 
     def mock_call(*args, **kwargs):
         if args[0] == RequestMethod.POST:
@@ -406,6 +415,8 @@ def test_clusters_deploy_nightly(_mock_sleep, mock_request):
         "s3cr3t!",
         "--channel",
         "nightly",
+        "--subscription-id",
+        subscription_id,
     )
     assert_rest(
         mock_request,
@@ -423,6 +434,7 @@ def test_clusters_deploy_nightly(_mock_sleep, mock_request):
                 "product_unit": 1,
             },
             "project_id": project_id,
+            "subscription_id": subscription_id,
         },
         any_times=True,
     )

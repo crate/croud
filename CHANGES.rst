@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Improved help message and required arguments for cluster deployment.
+
 0.38.0 - 2022/10/24
 ===================
 
