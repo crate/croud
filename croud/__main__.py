@@ -397,6 +397,10 @@ command_tree = {
                         help="The CrateDB password to use. Minimum 24 characters.",
                     ),
                     Argument(
+                        "--subscription-id", type=str, required=True,
+                        help="The subscription to use for billing of this cluster.",
+                    ),
+                    Argument(
                         "--channel", type=str, default="stable", required=False,
                         choices=["stable", "testing", "nightly"],
                         help="The channel of the CrateDB version (superusers only).",
@@ -425,12 +429,6 @@ command_tree = {
                         "--memory-size-mb", type=int, required=False,
                         help="Amount of memory to allocate (in MiB). "
                              "CrateDB Edge regions only.",
-                    ),
-                    Argument(
-                        "--subscription-id", type=str,
-                        help="The subscription to use for billing of this cluster. "
-                             "Can be omitted by superusers to create clusters w/o "
-                             "billing.",
                     ),
                 ],
                 "resolver": clusters_deploy,
