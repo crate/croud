@@ -989,6 +989,74 @@ def test_clusters_change_product_fails(mock_request, capsys):
     assert "Some Error" in err_output
 
 
+times_change_backup_schedule_called = 0
+
+
+@pytest.mark.parametrize("backup_hours", ["12", "4,5,6"])
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusters_change_backup_schedule(mock_request: mock.Mock, backup_hours):
+    cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.PUT and "/operations/" in args[1]:
+            global times_change_backup_schedule_called
+
+            if times_change_backup_schedule_called == 0:
+                times_change_backup_schedule_called += 1
+                return {"operations": [{"status": "SENT"}]}, None
+            return {"operations": [{"status": "SENT"}]}, None
+        return None, None
+
+    mock_request.side_effect = mock_call
+    call_command(
+        "croud",
+        "clusters",
+        "change-backup-schedule",
+        "--cluster-id",
+        cluster_id,
+        "--backup-hours",
+        backup_hours,
+    )
+    print("requests ", mock_request.call_args_list)
+    assert_rest(
+        mock_request,
+        RequestMethod.PUT,
+        f"/api/v2/clusters/{cluster_id}/backup-schedule/",
+        body={"backup_hours": backup_hours},
+        any_times=True,
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusters_change_backup_schedule_fails(mock_request: mock.Mock, capsys):
+    cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        return None, {"message": "Some Error"}
+
+    mock_request.side_effect = mock_call
+    call_command(
+        "croud",
+        "clusters",
+        "change-backup-schedule",
+        "--cluster-id",
+        cluster_id,
+        "--backup-hours",
+        "1,2,3,4",
+    )
+    print("requests ", mock_request.call_args_list)
+    assert_rest(
+        mock_request,
+        RequestMethod.PUT,
+        f"/api/v2/clusters/{cluster_id}/backup-schedule/",
+        body={"backup_hours": "1,2,3,4"},
+        any_times=True,
+    )
+
+    _, err_output = capsys.readouterr()
+    assert "Some Error" in err_output
+
+
 times_suspend_operations_called = 0
 
 

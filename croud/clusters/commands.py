@@ -403,6 +403,23 @@ def clusters_change_product(args: Namespace) -> None:
     )
 
 
+def clusters_change_backup_schedule(args: Namespace) -> None:
+    body = {
+        "backup_hours": args.backup_hours,
+    }
+
+    client = Client.from_args(args)
+    data, errors = client.put(
+        f"/api/v2/clusters/{args.cluster_id}/backup-schedule/", body=body
+    )  # type: ignore
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "backup_schedule"],
+        output_fmt=get_output_format(args),
+    )
+
+
 # We want to map the custom hardware specs to slightly nicer params in croud,
 # hence this mapping here
 def _handle_edge_params(body, args):

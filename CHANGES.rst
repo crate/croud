@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Add support to changes the backup schedule of clusters.
+
 0.40.0 - 2022/11/18
 ===================
 
