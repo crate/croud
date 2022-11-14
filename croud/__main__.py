@@ -26,6 +26,7 @@ import colorama
 import shtab
 
 from croud.clusters.commands import (
+    clusters_change_backup_schedule,
     clusters_change_product,
     clusters_delete,
     clusters_deploy,
@@ -558,6 +559,22 @@ command_tree = {
                     )
                 ],
                 "resolver": clusters_change_product,
+            },
+            "change-backup-schedule": {
+                "help": "Change the cluster backup schedule.",
+                "extra_args": [
+                    Argument(
+                        "--cluster-id", type=str, required=True,
+                        help="The CrateDB cluster ID to use.",
+                    ),
+                    Argument(
+                        "--backup-hours", type=str, required=True,
+                        help="A list of hours in UTC time that represent when backups "
+                             "will take place along the day. The list must contain at "
+                             "least one value and can have up 23, comma-separated."
+                    )
+                ],
+                "resolver": clusters_change_backup_schedule,
             },
         },
     },
