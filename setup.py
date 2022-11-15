@@ -48,11 +48,11 @@ setup(
         "colorama==0.4.3",
         "marshmallow==3.5.1",
         "pyyaml==5.4",
-        "requests==2.23.0",
+        "requests==2.28.1",
         "tabulate==0.8.9",
-        "yarl==1.4.2",
+        "yarl==1.8.1",
         "halo==0.0.31",
-        "shtab==1.5.3",
+        "shtab==1.5.7",
     ],
     extras_require={
         "testing": ["tox==3.14.2"],
@@ -75,5 +75,6 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
 )
