@@ -7,6 +7,8 @@ Unreleased
 
 - Improved help message and required arguments for cluster deployment.
 
+- Dropped support for Python3.6.
+
 0.38.0 - 2022/10/24
 ===================
 
