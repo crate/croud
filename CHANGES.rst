@@ -7,6 +7,8 @@ Unreleased
 
 - Add support to changes the backup schedule of clusters.
 
+- Added support for Python 3.11.
+
 0.40.0 - 2022/11/18
 ===================
 

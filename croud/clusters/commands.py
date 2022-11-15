@@ -419,6 +419,28 @@ def clusters_change_backup_schedule(args: Namespace) -> None:
         output_fmt=get_output_format(args),
     )
 
+    if errors:
+        return
+    print_info(
+        "Changing the cluster backup schedule. "
+        "It may take a few minutes to complete the changes."
+    )
+
+    _wait_for_completed_operation(
+        client=client,
+        cluster_id=args.cluster_id,
+        request_params={"type": "BACKUP_SCHEDULE_UPDATE", "limit": 1},
+    )
+
+    # Re-fetch the cluster's info
+    data, errors = client.get(f"/api/v2/clusters/{args.cluster_id}/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "backup_schedule"],
+        output_fmt=get_output_format(args),
+    )
+
 
 # We want to map the custom hardware specs to slightly nicer params in croud,
 # hence this mapping here

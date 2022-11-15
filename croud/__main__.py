@@ -571,7 +571,7 @@ command_tree = {
                         "--backup-hours", type=str, required=True,
                         help="A list of hours in UTC time that represent when backups "
                              "will take place along the day. The list must contain at "
-                             "least one value and can have up 23, comma-separated."
+                             "least one value and can have up to 24, comma-separated."
                     )
                 ],
                 "resolver": clusters_change_backup_schedule,

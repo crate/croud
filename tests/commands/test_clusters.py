@@ -992,19 +992,20 @@ def test_clusters_change_product_fails(mock_request, capsys):
 times_change_backup_schedule_called = 0
 
 
-@pytest.mark.parametrize("backup_hours", ["12", "4,5,6"])
+@pytest.mark.parametrize("status", ["SUCCEEDED"])
+@pytest.mark.parametrize("backup_hours", ["12", "4,5,6", "4-8"])
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_clusters_change_backup_schedule(mock_request: mock.Mock, backup_hours):
+def test_clusters_change_backup_schedule(mock_request: mock.Mock, backup_hours, status):
     cluster_id = gen_uuid()
 
     def mock_call(*args, **kwargs):
-        if args[0] == RequestMethod.PUT and "/operations/" in args[1]:
+        if args[0] == RequestMethod.GET and "/operations/" in args[1]:
             global times_change_backup_schedule_called
 
             if times_change_backup_schedule_called == 0:
                 times_change_backup_schedule_called += 1
                 return {"operations": [{"status": "SENT"}]}, None
-            return {"operations": [{"status": "SENT"}]}, None
+            return {"operations": [{"status": status}]}, None
         return None, None
 
     mock_request.side_effect = mock_call
@@ -1023,6 +1024,19 @@ def test_clusters_change_backup_schedule(mock_request: mock.Mock, backup_hours):
         RequestMethod.PUT,
         f"/api/v2/clusters/{cluster_id}/backup-schedule/",
         body={"backup_hours": backup_hours},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "BACKUP_SCHEDULE_UPDATE", "limit": 1},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/",
         any_times=True,
     )
 
