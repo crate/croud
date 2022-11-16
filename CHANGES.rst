@@ -9,6 +9,9 @@ Unreleased
 
 - Dropped support for Python3.6.
 
+- Added the ``LOG_API`` environment variable, which allows debugging what
+  API calls Croud is making.
+
 0.38.0 - 2022/10/24
 ===================
 

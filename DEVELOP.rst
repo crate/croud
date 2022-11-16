@@ -80,6 +80,20 @@ py.test::
     $ tox -e py37 -- --random-order-seed=240261
 
 
+Debugging API calls
+-------------------
+
+When developing, it's often useful to see what API calls Croud is making. To do that,
+simply set the ``LOG_API`` environment variable to ``true``::
+
+    $ LOG_API=true croud clusters list
+    ==> Debug: GET https://console.cratedb.cloud/api/v2/clusters/
+    +-----------+--------+-------------+-----------------+-------------+------------+----------+-----------+
+    | id        | name   |   num_nodes | crate_version   | project_id  | username   | fqdn     | channel   |
+    |-----------+--------+-------------+-----------------+-------------+------------+----------+-----------|
+    +-----------+--------+-------------+-----------------+-------------+------------+----------+-----------+
+
+
 Code style checks and static analysis
 -------------------------------------
 

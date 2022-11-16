@@ -97,6 +97,11 @@ def print_warning(text: str):
     print(Fore.YELLOW + "==> Warning: " + Style.RESET_ALL + text, file=sys.stderr)
 
 
+def print_debug(text: str):
+    HALO.stop()
+    print(Fore.WHITE + "==> Debug: " + Style.RESET_ALL + text, file=sys.stderr)
+
+
 def print_success(text: str):
     HALO.stop()
     print(Fore.GREEN + "==> Success: " + Style.RESET_ALL + text, file=sys.stderr)
