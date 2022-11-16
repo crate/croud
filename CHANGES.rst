@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.39.0 - 2022/11/16
+===================
+
 - Improved help message and required arguments for cluster deployment.
 
 - Dropped support for Python3.6.
