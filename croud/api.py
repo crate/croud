@@ -18,6 +18,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import enum
+import os
 from argparse import Namespace
 from platform import python_version
 from typing import Any, Callable, Dict, Optional, Tuple
@@ -27,7 +28,7 @@ from yarl import URL
 
 import croud
 from croud.config import CONFIG
-from croud.printer import print_error, print_info
+from croud.printer import print_debug, print_error, print_info
 
 ResponsePair = Tuple[Optional[Dict], Optional[Dict]]
 
@@ -42,6 +43,16 @@ class RequestMethod(enum.Enum):
 
 def noop(*args, **kwargs):
     pass
+
+
+def debug(method, endpoint, params, body):
+    if bool(os.getenv("LOG_API", "false")):
+        msg = f"{method.upper()} {endpoint}"
+        if params:
+            msg += f" QS={params}"
+        if body:
+            msg += f" -> {body}"
+        print_debug(msg)
 
 
 class Client:
@@ -122,9 +133,9 @@ class Client:
             kwargs["json"] = body
 
         try:
-            response = self.session.request(
-                method.value, str(self.base_url.with_path(endpoint)), **kwargs
-            )
+            url = str(self.base_url.with_path(endpoint))
+            debug(method.value, url, params, body)
+            response = self.session.request(method.value, url, **kwargs)
         except requests.RequestException as e:
             message = (
                 f"Failed to perform request on '{e.request.url}'. "
