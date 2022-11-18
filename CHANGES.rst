@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+0.40.0 - 2022/11/18
+===================
+
 - Include the organization id when listing subscriptions.
 
 - Fixed the ``LOG_API`` param to correctly use booleans in Python :/
