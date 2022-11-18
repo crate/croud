@@ -9,6 +9,8 @@ Unreleased
 
 - Added support for Python 3.11.
 
+- Added support for Dependabot.
+
 0.40.0 - 2022/11/18
 ===================
 
