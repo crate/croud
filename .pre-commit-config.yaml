@@ -15,13 +15,13 @@ repos:
     hooks:
       - id: flake8
   - repo: https://github.com/timothycrosley/isort
-    rev: "4.3.21-2"
+    rev: "5.6.4"
     hooks:
       - id: isort
         language: python
         types:
           - python
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v0.720"
+    rev: "v0.812"
     hooks:
       - id: mypy
