@@ -65,3 +65,34 @@ def test_subscriptions_create(mock_request):
         "/api/v2/subscriptions/",
         body={"type": "contract", "organization_id": "organization-id"},
     )
+
+
+@mock.patch.object(
+    Client,
+    "request",
+    return_value=(
+        {
+            "id": "123",
+            "name": "test",
+            "organization_id": "test",
+            "state": "TERMINATING",
+            "provider": "stripe",
+        },
+        None,
+    ),
+)
+def test_subscriptions_delete(mock_request, capsys):
+    sub_id = gen_uuid()
+    with mock.patch("builtins.input", side_effect=["yes"]) as mock_input:
+        call_command("croud", "subscriptions", "delete", "--subscription-id", sub_id)
+    assert_rest(
+        mock_request, RequestMethod.DELETE, f"/api/v2/stripe/subscriptions/{sub_id}/"
+    )
+    mock_input.assert_called_once_with(
+        "Are you sure you want to cancel this subscription? "
+        "This will delete any clusters running in this subscription. [yN] "
+    )
+
+    _, err_output = capsys.readouterr()
+    assert "Success" in err_output
+    assert "Subscription cancelled." in err_output

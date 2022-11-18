@@ -80,6 +80,7 @@ from croud.projects.users.commands import (
 )
 from croud.regions.commands import regions_create, regions_delete, regions_list
 from croud.subscriptions.commands import (
+    subscription_delete,
     subscriptions_create,
     subscriptions_get,
     subscriptions_list,
@@ -827,6 +828,19 @@ command_tree = {
                     ),
                 ],
                 "resolver": subscriptions_get,
+            },
+            "delete": {
+                "help": "For Stripe only. Cancels the specified subscription. "
+                        "CAVEAT EMPTOR! "
+                        "This will delete any clusters running in this subscription.",
+                "extra_args": [
+                    Argument(
+                        "--subscription-id", type=str, required=True,
+                        help="The ID of the subscription.",
+                    ),
+                    Argument("-y", "--yes", action="store_true", default=False),
+                ],
+                "resolver": subscription_delete,
             },
             "list": {
                 "help": "List all subscriptions the current user has access to.",

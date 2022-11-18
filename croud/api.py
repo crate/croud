@@ -46,7 +46,7 @@ def noop(*args, **kwargs):
 
 
 def debug(method, endpoint, params, body):
-    if bool(os.getenv("LOG_API", "false")):
+    if os.getenv("LOG_API", "false").lower() == "true":
         msg = f"{method.upper()} {endpoint}"
         if params:
             msg += f" QS={params}"
