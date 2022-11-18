@@ -51,3 +51,24 @@ Example
    | 56149db0-ea40-4616-88d1-885f6a491989 | my-azure-subscription                 | active | azure    |
    | b01b93e0-fd18-4896-ba88-288efe759bf0 | x43z8qxk9nh7l7mq7nxd3907z-zWG1GEiPuM4 | active | aws      |
    +--------------------------------------+---------------------------------------+--------+----------+
+
+``subscriptions delete``
+========================
+
+Cancel a Stripe subscription in a user's organisation. Please note that this will delete
+any clusters running in this subscription, so use carefully:
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: subscriptions delete
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud subscriptions delete --subscription-id 035f1161-402e-44b4-9073-0749586091e0
+   Are you sure you want to cancel this subscription? This will delete any clusters running in this subscription. [yN] y
+   ==> Success: Subscription cancelled.

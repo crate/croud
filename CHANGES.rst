@@ -5,6 +5,12 @@ Changes for croud
 Unreleased
 ==========
 
+- Include the organization id when listing subscriptions.
+
+- Fixed the ``LOG_API`` param to correctly use booleans in Python :/
+
+- Added a new command allowing cancelling Stripe subscriptions.
+
 0.39.0 - 2022/11/16
 ===================
 
