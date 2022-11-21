@@ -45,7 +45,7 @@ setup(
         "appdirs==1.4.3",
         "bitmath==1.3.3.1",
         "certifi",
-        "colorama==0.4.3",
+        "colorama==0.4.6",
         "marshmallow==3.5.1",
         "pyyaml==5.4",
         "requests==2.28.1",
