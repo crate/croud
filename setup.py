@@ -55,6 +55,7 @@ setup(
         "shtab==1.5.8",
     ],
     extras_require={
+        "testing": ["tox==3.14.2"],
         "development": [
             "black==22.10.0",
             "flake8==3.7.9",
