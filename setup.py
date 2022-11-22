@@ -52,7 +52,7 @@ setup(
         "tabulate==0.8.9",
         "yarl==1.8.1",
         "halo==0.0.31",
-        "shtab==1.5.7",
+        "shtab==1.5.8",
     ],
     extras_require={
         "testing": ["tox==3.14.2"],
