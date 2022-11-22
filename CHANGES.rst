@@ -11,8 +11,6 @@ Unreleased
 
 - Added support for Dependabot.
 
-- Removed tox - no longer used.
-
 0.40.0 - 2022/11/18
 ===================
 
