@@ -931,7 +931,7 @@ def test_clusters_change_product(_mock_sleep, mock_request: mock.Mock, status):
     call_command(
         "croud",
         "clusters",
-        "change-product",
+        "set-product",
         "--cluster-id",
         cluster_id,
         "--product-name",
@@ -972,7 +972,7 @@ def test_clusters_change_product_fails(mock_request, capsys):
     call_command(
         "croud",
         "clusters",
-        "change-product",
+        "set-product",
         "--cluster-id",
         cluster_id,
         "--product-name",
@@ -995,7 +995,10 @@ times_change_backup_schedule_called = 0
 @pytest.mark.parametrize("status", ["SUCCEEDED"])
 @pytest.mark.parametrize("backup_hours", ["12", "4,5,6", "4-8"])
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_clusters_change_backup_schedule(mock_request: mock.Mock, backup_hours, status):
+@mock.patch("time.sleep")
+def test_clusters_change_backup_schedule(
+    _mock_time, mock_request: mock.Mock, backup_hours, status
+):
     cluster_id = gen_uuid()
 
     def mock_call(*args, **kwargs):
@@ -1012,7 +1015,7 @@ def test_clusters_change_backup_schedule(mock_request: mock.Mock, backup_hours, 
     call_command(
         "croud",
         "clusters",
-        "change-backup-schedule",
+        "set-backup-schedule",
         "--cluster-id",
         cluster_id,
         "--backup-hours",
@@ -1052,7 +1055,7 @@ def test_clusters_change_backup_schedule_fails(mock_request: mock.Mock, capsys):
     call_command(
         "croud",
         "clusters",
-        "change-backup-schedule",
+        "set-backup-schedule",
         "--cluster-id",
         cluster_id,
         "--backup-hours",

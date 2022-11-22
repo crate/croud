@@ -364,7 +364,7 @@ def clusters_expand_storage(args: Namespace) -> None:
     )
 
 
-def clusters_change_product(args: Namespace) -> None:
+def clusters_set_product(args: Namespace) -> None:
     body = {
         "product_name": args.product_name,
     }
@@ -403,7 +403,7 @@ def clusters_change_product(args: Namespace) -> None:
     )
 
 
-def clusters_change_backup_schedule(args: Namespace) -> None:
+def clusters_set_backup_schedule(args: Namespace) -> None:
     body = {
         "backup_hours": args.backup_hours,
     }
