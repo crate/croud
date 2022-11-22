@@ -404,21 +404,21 @@ Example
    This command will wait for the operation to finish or fail.
 
 
-``clusters change-product``
-===========================
+``clusters set-product``
+========================
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
-   :path: clusters change-product
+   :path: clusters set-product
 
 Example
 -------
 
 .. code-block:: console
 
-   sh$ croud clusters change-product \
+   sh$ croud clusters set-product \
        --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
        --product-name cr2
    +--------------------------------------+------------------------+----------------+
@@ -437,6 +437,41 @@ Example
    |--------------------------------------+------------------------+----------------|
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | cr2            |
    +--------------------------------------+------------------------+----------------+
+
+.. NOTE::
+
+    This command will wait for the operation to finish or fail. It is only available
+    to organization and project admins.
+
+
+``clusters set-backup-schedule``
+================================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters set-backup-schedule
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ ❯ croud clusters set-backup-schedule --cluster-id 705a7012-3f89-441d-a10e-b3749d05e993 --backup-hours 2,4,6
+   +--------------------------------------+------------------------+-------------------+
+   | id                                   | name                   | backup_schedule   |
+   |--------------------------------------+------------------------+-------------------|
+   | 705a7012-3f89-441d-a10e-b3749d05e993 | my-cratedb-cluster     | 55 6 * * *        |
+   +--------------------------------------+------------------------+-------------------+
+   ==> Info: Changing the cluster backup schedule. It may take a few minutes to complete the changes.
+   ==> Info: Status: REGISTERED (Your update backup schedule request was received and is pending processing.)
+   ==> Success: Operation completed.
+   +--------------------------------------+------------------------+-------------------+
+   | id                                   | name                   | backup_schedule   |
+   |--------------------------------------+------------------------+-------------------|
+   | 705a7012-3f89-441d-a10e-b3749d05e993 | my-cratedb-cluster     | 55 2,4,6 * * *    |
+   +--------------------------------------+------------------------+-------------------+
 
 .. NOTE::
 

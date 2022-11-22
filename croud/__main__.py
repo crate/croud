@@ -26,8 +26,6 @@ import colorama
 import shtab
 
 from croud.clusters.commands import (
-    clusters_change_backup_schedule,
-    clusters_change_product,
     clusters_delete,
     clusters_deploy,
     clusters_expand_storage,
@@ -35,8 +33,10 @@ from croud.clusters.commands import (
     clusters_list,
     clusters_restart_node,
     clusters_scale,
+    clusters_set_backup_schedule,
     clusters_set_deletion_protection,
     clusters_set_ip_whitelist,
+    clusters_set_product,
     clusters_set_suspended,
     clusters_upgrade,
 )
@@ -546,8 +546,8 @@ command_tree = {
                 ],
                 "resolver": clusters_set_suspended,
             },
-            "change-product": {
-                "help": "Change the cluster product.",
+            "set-product": {
+                "help": "Change the cluster's product.",
                 "extra_args": [
                     Argument(
                         "--cluster-id", type=str, required=True,
@@ -558,10 +558,10 @@ command_tree = {
                         help="The new product name to use."
                     )
                 ],
-                "resolver": clusters_change_product,
+                "resolver": clusters_set_product,
             },
-            "change-backup-schedule": {
-                "help": "Change the cluster backup schedule.",
+            "set-backup-schedule": {
+                "help": "Change the cluster's backup schedule.",
                 "extra_args": [
                     Argument(
                         "--cluster-id", type=str, required=True,
@@ -574,7 +574,7 @@ command_tree = {
                              "least one value and can have up to 24, comma-separated."
                     )
                 ],
-                "resolver": clusters_change_backup_schedule,
+                "resolver": clusters_set_backup_schedule,
             },
         },
     },

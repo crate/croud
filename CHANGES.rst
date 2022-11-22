@@ -11,6 +11,10 @@ Unreleased
 
 - Added support for Dependabot.
 
+- BREAKING CHANGE! Changed ``clusters change-product`` to ``clusters set-product`` and
+  ``clusters change-backup-schedule`` to ``clusters set-backup-schedule``. This unifies
+  all the clusters commands to use the same wording.
+
 0.40.0 - 2022/11/18
 ===================
 
