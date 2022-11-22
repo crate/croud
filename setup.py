@@ -57,7 +57,7 @@ setup(
     extras_require={
         "testing": ["tox==3.14.2"],
         "development": [
-            "black==22.3.0",
+            "black==22.10.0",
             "flake8==3.7.9",
             "isort==5.6.4",
             "mypy==0.812",
