@@ -18,6 +18,11 @@ Unreleased
   ``clusters change-backup-schedule`` to ``clusters set-backup-schedule``. This unifies
   all the clusters commands to use the same wording.
 
+- Added support for API keys.
+
+- Made the IDP a required parameter in ``croud login``. It would default to ``cognito``,
+  which is unexpected for a lot of users, and not obvious how to change it.
+
 0.40.0 - 2022/11/18
 ===================
 

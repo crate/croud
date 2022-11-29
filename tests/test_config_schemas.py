@@ -65,7 +65,6 @@ def test_load_profile_schema_valid(data):
     organization-id: 804f1f14-0a5e-46b4-ab37-6d046b1fa07b
     """,
             {
-                "auth-token": ["Missing data for required field."],
                 "endpoint": ["Missing data for required field."],
             },
         ),

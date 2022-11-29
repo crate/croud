@@ -41,7 +41,7 @@ def test_login(
     config,
 ):
     with mock.patch("croud.login.get_org_id", return_value="my-org-id"):
-        call_command("croud", "login")
+        call_command("croud", "login", "--idp", "cognito")
 
     calls = [
         mock.call("A browser tab has been launched for you to login."),
@@ -55,12 +55,23 @@ def test_login(
 @mock.patch("croud.login.print_error")
 def test_login_no_valid_browser(mock_print_error, mock_can_launch_browser, config):
     with pytest.raises(SystemExit) as e_info:
-        call_command("croud", "login")
+        call_command("croud", "login", "--idp", "cognito")
 
     mock_print_error.assert_called_once_with(
         "Login only works with a valid browser installed."
     )
     assert e_info.value.code == 1
+
+
+@mock.patch("croud.login.can_launch_browser", return_value=True)
+@mock.patch("croud.login.print_error")
+def test_login_no_idp(_mock_print_error, _mock_can_launch_browser, config, capsys):
+    with pytest.raises(SystemExit) as e_info:
+        call_command("croud", "login")
+
+    assert e_info.value.code == 2
+    _, err_output = capsys.readouterr()
+    assert "The following arguments are required: --idp" in err_output
 
 
 @pytest.mark.parametrize("org_id_param", [None, "some-id"])
@@ -97,11 +108,11 @@ def test_login_path(idp, expected):
 @mock.patch.object(Server, "start_in_background")
 @mock.patch("croud.login.can_launch_browser", return_value=True)
 def test_login_idp(
-    mock_can_launch_browser,
-    mock_start_in_background,
-    mock_wait_for_shutdown,
-    mock_print_info,
-    mock_get_org_id,
+    _mock_can_launch_browser,
+    _mock_start_in_background,
+    _mock_wait_for_shutdown,
+    _mock_print_info,
+    _mock_get_org_id,
     idp,
     expected,
 ):

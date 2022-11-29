@@ -28,18 +28,12 @@ The contents of the configuration file of a fresh ``croud`` installation are
    current-profile: aks1.westeurope.azure
    default-format: table
    profiles:
-     aks1.eastus2.azure:
+     cratedb.cloud:
        auth-token: NULL
+       key: NULL
+       secret: NULL
        endpoint: https://console.cratedb.cloud
-       region: aks1.eastus2.azure
-     aks1.westeurope.azure:
-       auth-token: NULL
-       endpoint: https://console.cratedb.cloud
-       region: aks1.westeurope.azure
-     eks1.eu-west-1.aws:
-       auth-token: NULL
-       endpoint: https://console.cratedb.cloud
-       region: eks1.eu-west-1.aws
+       region: _any_
 
 
 Configuration file keys
@@ -61,11 +55,18 @@ The keys have the following meaning:
 
 :``profiles``:
 
-    A dictionary of available profiles. There are three default profiles available
-    (see :ref:`available-profiles`).
-    Each profile consists of ``auth-token``, ``endpoint``, ``region``, and ``format``.
+    A dictionary of available profiles. There is just one profile configured in the
+    default configuration file. You would only need different profiles if you want to
+    authenticate as different users or use different default organizations.
+
+    Each profile consists of an ``auth-token``, ``key``, ``secret``, ``endpoint``,
+    ``region``, and ``format``.
 
     ``auth-token`` is populated with the API token upon login.
+
+    ``key`` is optional and can be used when authenticating to the API using an API key.
+
+    ``secret`` is the secret that goes with the API key above.
 
     ``endpoint`` is the full URL of the API endpoint that is used for requests.
 
@@ -73,6 +74,10 @@ The keys have the following meaning:
 
     ``format`` is the output format for this profile. This key is optional and
     if it is missing, the output format will fall back on ``default-format``.
+
+    If both ``auth-token`` and ``key/secret`` are specified, the ``auth-token`` will
+    take precedence. Keep this in mind if you get unexpected authorization errors -
+    you might need to explicitly set the ``auth-token`` to NULL.
 
 
 Manage configuration via CLI
@@ -83,22 +88,6 @@ the ``croud config {show | profiles}`` commands.
 
 Please refer to the :doc:`commands/config` command reference for further
 details.
-
-
-.. _available-profiles:
-
-Available profiles
-==================
-
-The API endpoint for all profiles is ``https://console.cratedb.cloud``.
-
-========================== ====================================== ===========
-Profile                    Region                                 Format
-========================== ====================================== ===========
-aks1.eastus2.azure         aks1.eastus2.azure                     table
-aks1.westeurope.azure      aks1.westeurope.azure                  table
-eks1.eu-west-1.aws         eks1.eu-west-1.aws                     table
-========================== ====================================== ===========
 
 
 Incompatible versions
