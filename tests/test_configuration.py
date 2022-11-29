@@ -124,6 +124,36 @@ default-format: table
             _ = config.config
 
 
+def test_load_with_api_keys(tmp_path):
+    with mock.patch(
+        "croud.config.configuration.user_config_dir", return_value=str(tmp_path)
+    ):
+        with open(tmp_path / "test.yaml", "w") as fp:
+            fp.write(
+                """
+default-format: table
+current-profile: cratedb.cloud
+profiles:
+  cratedb.cloud:
+    auth-token: NULL
+    key: my-key
+    secret: my-secret
+    endpoint: https://console.cratedb.cloud
+    region: _any_
+"""
+            )
+        config = Configuration("test.yaml")
+        assert config.key == "my-key"
+        assert config.secret == "my-secret"
+        assert config.profile == {
+            "auth-token": None,
+            "endpoint": "https://console.cratedb.cloud",
+            "key": "my-key",
+            "region": "_any_",
+            "secret": "my-secret",
+        }
+
+
 def test_use_profile(config):
     config.add_profile("new", endpoint="http://localhost:8000")
     config.use_profile("new")

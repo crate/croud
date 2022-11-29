@@ -49,6 +49,12 @@ def login(args: Namespace) -> None:
         print_error("Login only works with a valid browser installed.")
         exit(1)
 
+    if CONFIG.key and CONFIG.secret:
+        print_warning(
+            "Looks like you have an API key and secret set in this profile. "
+            "They will be ignored if you log in successfully."
+        )
+
     server = Server(CONFIG.set_current_auth_token).start_in_background()
 
     open_page_in_browser(CONFIG.endpoint + login_path(args.idp))

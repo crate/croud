@@ -28,7 +28,7 @@ from yarl import URL
 
 import croud
 from croud.config import CONFIG
-from croud.printer import print_debug, print_error, print_info
+from croud.printer import print_debug, print_error, print_info, print_warning
 
 ResponsePair = Tuple[Optional[Dict], Optional[Dict]]
 
@@ -66,6 +66,8 @@ class Client:
         *,
         token: str = None,
         on_token: Callable = None,
+        key: str = None,
+        secret: str = None,
         region: str = None,
         sudo: bool = False,
         _verify_ssl: bool = True,
@@ -77,6 +79,11 @@ class Client:
           The authentication token used as session cookie
         :param Callable on_token:
           A setter method that is called when a new auth token is retrieved
+        :param str key:
+          The API key used for HTTP basic auth. Note that if both token and key/secret
+          are passed, the token takes priority (unless it is None).
+        :param str secret:
+          The API secret used for HTTP basic auth.
         :param str region:
           Region to get data from or to which to deploy (defines the
           ``X-Region`` HTTP header value)
@@ -92,6 +99,15 @@ class Client:
         self._on_token = on_token or noop
 
         self.session = requests.Session()
+        if not token and (key and secret):
+            self.session.auth = (key, secret)
+
+        if token and key and secret:
+            print_warning(
+                "You have both a token and a key/secret set in your profile. "
+                "Only the token will be used."
+            )
+
         self.session.cookies["session"] = self._token
         if _verify_ssl is False:
             self.session.verify = False
@@ -109,6 +125,8 @@ class Client:
             CONFIG.endpoint,
             token=CONFIG.token,
             on_token=CONFIG.set_current_auth_token,
+            key=CONFIG.key,
+            secret=CONFIG.secret,
             region=args.region or CONFIG.region,
             sudo=args.sudo,
         )

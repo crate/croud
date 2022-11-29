@@ -30,7 +30,13 @@ class ProfileSchema(Schema):
     """
 
     auth_token = fields.String(
-        attribute="auth-token", data_key="auth-token", required=True, allow_none=True
+        attribute="auth-token", data_key="auth-token", required=False, allow_none=True
+    )
+    key = fields.String(
+        attribute="key", data_key="key", required=False, allow_none=True
+    )
+    secret = fields.String(
+        attribute="secret", data_key="secret", required=False, allow_none=True
     )
     endpoint = fields.String(required=True)
     format = fields.String(validate=OneOf(choices=OUTPUT_FORMATS))

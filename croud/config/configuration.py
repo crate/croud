@@ -34,6 +34,8 @@ current-profile: cratedb.cloud
 profiles:
   cratedb.cloud:
     auth-token: NULL
+    key: NULL
+    secret: NULL
     endpoint: https://console.cratedb.cloud
     region: _any_
 """
@@ -87,7 +89,15 @@ class Configuration:
 
     @property
     def token(self) -> Optional[str]:
-        return self.profile["auth-token"]  # type: ignore
+        return self.profile.get("auth-token")
+
+    @property
+    def key(self) -> Optional[str]:
+        return self.profile.get("key")
+
+    @property
+    def secret(self) -> Optional[str]:
+        return self.profile.get("secret")
 
     @property
     def region(self) -> Optional[str]:

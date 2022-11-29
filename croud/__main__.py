@@ -113,7 +113,7 @@ command_tree = {
         "resolver": login,
         "extra_args": [
             Argument(
-                "--idp", type=str, required=False,
+                "--idp", type=str, required=True,
                 choices=["cognito", "azuread", "github", "google"],
                 help="The identity provider (IdP) for the login."
             ),

@@ -120,3 +120,11 @@ def test_error_message_on_connection_error(config):
     assert resp_data is None
     assert expected_message_re.match(errors["message"]) is not None
     assert errors["success"] is False
+
+
+def test_auth_with_key_and_secret(config):
+    client = Client(
+        config.endpoint, key="some-key", secret="some-secret", _verify_ssl=False
+    )
+    resp_data, errors = client.get("/client-headers")
+    assert resp_data["Authorization"] == "Basic c29tZS1rZXk6c29tZS1zZWNyZXQ="
