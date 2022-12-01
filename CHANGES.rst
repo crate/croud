@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+1.0.0 - 2022/12/01
+==================
+
 - Add support to changes the backup schedule of clusters.
 
 - Added support for Python 3.11.
