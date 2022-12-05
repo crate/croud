@@ -25,6 +25,7 @@ from distutils.util import strtobool
 import colorama
 import shtab
 
+from croud.apikeys.commands import api_keys_create, api_keys_list, api_keys_delete, api_keys_edit
 from croud.clusters.commands import (
     clusters_delete,
     clusters_deploy,
@@ -762,6 +763,43 @@ command_tree = {
                         "resolver": roles_list,
                     },
                 },
+            },
+        },
+    },
+    "api-keys": {
+        "help": "Manage your own API keys.",
+        "commands": {
+            "list": {
+                "help": "List all the API keys that belong to you.",
+                "resolver": api_keys_list,
+            },
+            "create": {
+                "help": "Create a new API key for your user. It will have the same permissions as your user.",
+                "resolver": api_keys_create,
+            },
+            "delete": {
+                "help": "Deletes the API key specified that belongs to your user.",
+                "resolver": api_keys_delete,
+                "extra_args": [
+                    Argument(
+                        "--api-key", type=str, required=True,
+                        help="The key that identifies an API key that belongs to your user.",
+                    ),
+                ]
+            },
+            "edit": {
+                "help": "Edit the API key specified that belongs to your user, allowing you to activate or deactivate it.",
+                "resolver": api_keys_edit,
+                "extra_args": [
+                    Argument(
+                        "--api-key", type=str, required=True,
+                        help="The key that identifies an API key that belongs to your user.",
+                    ),
+                    Argument(
+                        "--active", type=bool, required=True,
+                        help="Either true or false. Determines whether the API key can be used or not.",
+                    ),
+                ]
             },
         },
     },
