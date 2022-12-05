@@ -25,7 +25,12 @@ from distutils.util import strtobool
 import colorama
 import shtab
 
-from croud.apikeys.commands import api_keys_create, api_keys_list, api_keys_delete, api_keys_edit
+from croud.apikeys.commands import (
+    api_keys_create,
+    api_keys_delete,
+    api_keys_edit,
+    api_keys_list,
+)
 from croud.clusters.commands import (
     clusters_delete,
     clusters_deploy,

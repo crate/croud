@@ -1,7 +1,9 @@
 from unittest import mock
+
 import pytest
+
 from croud.api import Client, RequestMethod
-from tests.util import call_command, assert_rest
+from tests.util import assert_rest, call_command
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
@@ -49,7 +51,15 @@ def test_api_keys_edit(mock_request, target_status):
     else:
         target_status_str = "false"
 
-    call_command("croud", "api-keys", "edit", "--api-key", "target-key", "--active", target_status_str)
+    call_command(
+        "croud",
+        "api-keys",
+        "edit",
+        "--api-key",
+        "target-key",
+        "--active",
+        target_status_str,
+    )
     assert_rest(
         mock_request,
         RequestMethod.PATCH,
