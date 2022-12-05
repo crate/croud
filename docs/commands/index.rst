@@ -43,6 +43,7 @@ To get help for a specific command, you can append ``--help``:
    products
    subscriptions
    users
+   api-keys
    regions
 
 .. note::

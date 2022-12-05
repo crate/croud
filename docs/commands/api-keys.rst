@@ -1,6 +1,6 @@
-=========
+============
 ``API keys``
-=========
+============
 
 The ``api-keys`` command allows you to view, edit and delete user API keys.
 API keys allow easy programmatic access to the CrateDB Cloud API and have the same
@@ -15,7 +15,7 @@ permissions than the user they belong to.
 
 
 ``api-keys list``
-==============
+=================
 
     Lists the API keys that belong to the currently logged in user.
 
@@ -40,7 +40,7 @@ Example
 
 
 ``api-keys create``
-===============
+===================
 
     Creates a new API key for the current user. It displays its secret.
 
@@ -63,7 +63,7 @@ Example
 
 
 ``api-keys delete``
-===============
+===================
 
     Deletes the API key specified that belongs to the current user.
 
@@ -81,7 +81,7 @@ Example
 
 
 ``api-keys edit``
-===============
+=================
 
     Allows activating or deactivating an existing API key.
 
