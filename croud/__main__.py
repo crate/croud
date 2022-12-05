@@ -779,7 +779,8 @@ command_tree = {
                 "resolver": api_keys_list,
             },
             "create": {
-                "help": "Create a new API key for your user. It will have the same permissions as your user.",
+                "help": "Create a new API key for your user. It will have the same "
+                        "permissions as your user.",
                 "resolver": api_keys_create,
             },
             "delete": {
@@ -788,21 +789,25 @@ command_tree = {
                 "extra_args": [
                     Argument(
                         "--api-key", type=str, required=True,
-                        help="The key that identifies an API key that belongs to your user.",
+                        help="The key that identifies an API key that belongs to your "
+                             "user.",
                     ),
                 ]
             },
             "edit": {
-                "help": "Edit the API key specified that belongs to your user, allowing you to activate or deactivate it.",
+                "help": "Edit the API key specified that belongs to your user, "
+                        "allowing you to activate or deactivate it.",
                 "resolver": api_keys_edit,
                 "extra_args": [
                     Argument(
                         "--api-key", type=str, required=True,
-                        help="The key that identifies an API key that belongs to your user.",
+                        help="The key that identifies an API key that belongs to your "
+                             "user.",
                     ),
                     Argument(
                         "--active", type=bool, required=True,
-                        help="Either true or false. Determines whether the API key can be used or not.",
+                        help="Either true or false. Determines whether the API key can "
+                             "be used or not.",
                     ),
                 ]
             },
