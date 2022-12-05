@@ -31,7 +31,7 @@ def api_keys_list(args: Namespace) -> None:
         data=data,
         errors=errors,
         output_fmt=get_output_format(args),
-        keys=["user_id", "key", "active", "last_used", "dc"],
+        keys=["user_id", "key", "active", "last_used"],
     )
 
 
@@ -43,7 +43,7 @@ def api_keys_create(args: Namespace) -> None:
         data=data,
         errors=errors,
         output_fmt=get_output_format(args),
-        keys=["user_id", "key", "active", "last_used", "dc", "secret"],
+        keys=["user_id", "key", "active", "secret"],
     )
 
 
