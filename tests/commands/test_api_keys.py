@@ -46,8 +46,6 @@ def test_api_keys_delete(mock_request):
 @pytest.mark.parametrize("target_status", [True, False])
 def test_api_keys_edit(mock_request, target_status):
 
-    target_status_str = str(target_status).lower()
-
     call_command(
         "croud",
         "api-keys",
@@ -55,7 +53,7 @@ def test_api_keys_edit(mock_request, target_status):
         "--api-key",
         "target-key",
         "--active",
-        target_status_str,
+        str(target_status).lower(),
     )
     assert_rest(
         mock_request,
