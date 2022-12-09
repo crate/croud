@@ -20,7 +20,7 @@ from argparse import Namespace
 
 from croud.api import Client
 from croud.config import get_output_format
-from croud.printer import print_info, print_response
+from croud.printer import print_response
 
 
 def api_keys_list(args: Namespace) -> None:
@@ -60,8 +60,7 @@ def api_keys_delete(args: Namespace) -> None:
 
 
 def api_keys_edit(args: Namespace) -> None:
-    body = {"active": args.active}
-    print_info(f"args.active is: {args.active}")
+    body = {"active": args.active == "true"}
     client = Client.from_args(args)
     data, errors = client.patch(f"/api/v2/users/me/api-keys/{args.api_key}/", body=body)
 

@@ -45,11 +45,8 @@ def test_api_keys_delete(mock_request):
 @mock.patch.object(Client, "request", return_value=({}, None))
 @pytest.mark.parametrize("target_status", [True, False])
 def test_api_keys_edit(mock_request, target_status):
-    target_status = True
-    if target_status:
-        target_status_str = "true"
-    else:
-        target_status_str = "false"
+
+    target_status_str = str(target_status).lower()
 
     call_command(
         "croud",

@@ -805,7 +805,8 @@ command_tree = {
                              "user.",
                     ),
                     Argument(
-                        "--active", type=bool, required=True,
+                        "--active", type=str, required=True,
+                        choices=["true", "false"],
                         help="Either true or false. Determines whether the API key can "
                              "be used or not.",
                     ),
