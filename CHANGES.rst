@@ -10,6 +10,8 @@ Unreleased
 
 - Added support for creating, deleting, activating and deactivating user API keys.
 
+- Added support to list and restore cluster snapshots.
+
 1.0.0 - 2022/12/01
 ==================
 

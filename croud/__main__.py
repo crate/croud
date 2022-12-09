@@ -44,6 +44,8 @@ from croud.clusters.commands import (
     clusters_set_ip_whitelist,
     clusters_set_product,
     clusters_set_suspended,
+    clusters_snapshots_list,
+    clusters_snapshots_restore,
     clusters_upgrade,
 )
 from croud.config import CONFIG
@@ -581,6 +583,53 @@ command_tree = {
                     )
                 ],
                 "resolver": clusters_set_backup_schedule,
+            },
+            "snapshots": {
+                "help": "View and restore snapshots",
+                "commands": {
+                    "list": {
+                        "help": "List the cluster snapshots available.",
+                        "extra_args": [
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The CrateDB cluster ID to use.",
+                            ),
+                        ],
+                        "resolver": clusters_snapshots_list,
+                    },
+                    "restore": {
+                        "help": "Restore the specified snapshot.",
+                        "extra_args": [
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The CrateDB cluster ID to use.",
+                            ),
+                            Argument(
+                                "--snapshot", type=str, required=True,
+                                help="The snapshot to be restored.",
+                            ),
+                            Argument(
+                                "--repository", type=str, required=True,
+                                help="The repository that contains the snapshot to be "
+                                     "restored.",
+                            ),
+                            Argument(
+                                "--source-cluster-id", type=str, required=False,
+                                help="The CrateDB cluster ID of the snapshot to be "
+                                     "used belongs to. Must belong to the same "
+                                     "organization than the target cluster."
+                                     "If not specified the ``--cluster-id`` CrateDB"
+                                     " cluster will be used as the target.",
+                            ),
+                            Argument(
+                                "--tables", type=str, required=False,
+                                help="The list of tables to restore, comma separated. "
+                                     "If not specified all tables will be restored.",
+                            ),
+                        ],
+                        "resolver": clusters_snapshots_restore,
+                    },
+                },
             },
         },
     },
