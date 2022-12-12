@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+1.1.0 - 2022/12/12
+==================
+
 - Added support for creating, deleting, activating and deactivating user API keys.
 
 1.0.0 - 2022/12/01
