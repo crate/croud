@@ -480,7 +480,7 @@ def clusters_snapshots_restore(args: Namespace) -> None:
     if errors:
         return
     print_info(
-        "Restoring the snapshot. It may take a few minutes to complete the changes."
+        "Restoring the snapshot. Depending on the amount of data you have, this might take a very long time."
     )
 
     _wait_for_completed_operation(
