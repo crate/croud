@@ -1197,9 +1197,24 @@ def test_cluster_snapshots_restore_missing_repository(capsys):
         assert e_info.value.code == 1
 
 
-@mock.patch.object(Client, "request", return_value=(None, {}))
+times_restore_operations_called = 0
+
+
+@mock.patch.object(Client, "request")
 def test_cluster_snapshots_restore(mock_request):
     cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.GET and "/operations/" in args[1]:
+            global times_restore_operations_called
+
+            if times_restore_operations_called == 0:
+                times_restore_operations_called += 1
+                return {"operations": [{"status": "SENT"}]}, None
+            return {"operations": [{"status": "SUCCEEDED"}]}, None
+        return None, {}
+
+    mock_request.side_effect = mock_call
 
     body = {
         "snapshot": "the-snapshot-name",
@@ -1223,12 +1238,37 @@ def test_cluster_snapshots_restore(mock_request):
         RequestMethod.POST,
         f"/api/v2/clusters/{cluster_id}/snapshots/restore/",
         body=body,
+        any_times=True,
     )
 
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "RESTORE_SNAPSHOT", "limit": 1},
+        any_times=True,
+    )
+    assert mock_request.call_count == 3
 
-@mock.patch.object(Client, "request", return_value=(None, {}))
+
+times_opt_restore_operations_called = 0
+
+
+@mock.patch.object(Client, "request")
 def test_cluster_snapshots_restore_with_optional_params(mock_request):
     cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.GET and "/operations/" in args[1]:
+            global times_opt_restore_operations_called
+
+            if times_opt_restore_operations_called == 0:
+                times_opt_restore_operations_called += 1
+                return {"operations": [{"status": "SENT"}]}, None
+            return {"operations": [{"status": "SUCCEEDED"}]}, None
+        return None, {}
+
+    mock_request.side_effect = mock_call
 
     body = {
         "snapshot": "the-snapshot-name",
@@ -1258,4 +1298,15 @@ def test_cluster_snapshots_restore_with_optional_params(mock_request):
         RequestMethod.POST,
         f"/api/v2/clusters/{cluster_id}/snapshots/restore/",
         body=body,
+        any_times=True,
     )
+
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "RESTORE_SNAPSHOT", "limit": 1},
+        any_times=True,
+    )
+
+    assert mock_request.call_count == 3
