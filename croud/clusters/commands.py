@@ -476,6 +476,19 @@ def clusters_snapshots_restore(args: Namespace) -> None:
 
     client = Client.from_args(args)
     data, errors = client.post(url, body=body)
+
+    if errors:
+        return
+    print_info(
+        "Restoring the snapshot. It may take a few minutes to complete the changes."
+    )
+
+    _wait_for_completed_operation(
+        client=client,
+        cluster_id=args.cluster_id,
+        request_params={"type": "RESTORE_SNAPSHOT", "limit": 1},
+    )
+
     print_response(
         data=data,
         errors=errors,

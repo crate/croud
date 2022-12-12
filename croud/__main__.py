@@ -602,7 +602,8 @@ command_tree = {
                         "extra_args": [
                             Argument(
                                 "--cluster-id", type=str, required=True,
-                                help="The CrateDB cluster ID to use.",
+                                help="The CrateDB cluster to restore "
+                                     "the snapshot into.",
                             ),
                             Argument(
                                 "--snapshot", type=str, required=True,
@@ -619,7 +620,7 @@ command_tree = {
                                      "used belongs to. Must belong to the same "
                                      "organization than the target cluster."
                                      "If not specified the ``--cluster-id`` CrateDB"
-                                     " cluster will be used as the target.",
+                                     " cluster will be used as the source.",
                             ),
                             Argument(
                                 "--tables", type=str, required=False,
