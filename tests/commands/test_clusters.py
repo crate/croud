@@ -1156,3 +1156,157 @@ def test_cluster_suspended_fails(mock_request, capsys):
 
     _, err_output = capsys.readouterr()
     assert "Some Error" in err_output
+
+
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_cluster_snapshots_list(mock_request):
+    cluster_id = gen_uuid()
+
+    call_command(
+        "croud",
+        "clusters",
+        "snapshots",
+        "list",
+        "--cluster-id",
+        cluster_id,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/snapshots/",
+    )
+
+
+def test_cluster_snapshots_restore_missing_repository(capsys):
+    cluster_id = gen_uuid()
+
+    with pytest.raises(SystemExit) as e_info:
+        call_command(
+            "croud",
+            "clusters",
+            "snapshots",
+            "restore",
+            "--cluster-id",
+            cluster_id,
+            "--snapshot",
+            "the-snapshot",
+        )
+
+        output, err_output = capsys.readouterr()
+        assert "The following arguments are required: --repository" in err_output
+        assert e_info.value.code == 1
+
+
+times_restore_operations_called = 0
+
+
+@mock.patch.object(Client, "request")
+def test_cluster_snapshots_restore(mock_request):
+    cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.GET and "/operations/" in args[1]:
+            global times_restore_operations_called
+
+            if times_restore_operations_called == 0:
+                times_restore_operations_called += 1
+                return {"operations": [{"status": "SENT"}]}, None
+            return {"operations": [{"status": "SUCCEEDED"}]}, None
+        return None, {}
+
+    mock_request.side_effect = mock_call
+
+    body = {
+        "snapshot": "the-snapshot-name",
+        "repository": "a-repository",
+    }
+
+    call_command(
+        "croud",
+        "clusters",
+        "snapshots",
+        "restore",
+        "--cluster-id",
+        cluster_id,
+        "--repository",
+        body["repository"],
+        "--snapshot",
+        body["snapshot"],
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        f"/api/v2/clusters/{cluster_id}/snapshots/restore/",
+        body=body,
+        any_times=True,
+    )
+
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "RESTORE_SNAPSHOT", "limit": 1},
+        any_times=True,
+    )
+    assert mock_request.call_count == 3
+
+
+times_opt_restore_operations_called = 0
+
+
+@mock.patch.object(Client, "request")
+def test_cluster_snapshots_restore_with_optional_params(mock_request):
+    cluster_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.GET and "/operations/" in args[1]:
+            global times_opt_restore_operations_called
+
+            if times_opt_restore_operations_called == 0:
+                times_opt_restore_operations_called += 1
+                return {"operations": [{"status": "SENT"}]}, None
+            return {"operations": [{"status": "SUCCEEDED"}]}, None
+        return None, {}
+
+    mock_request.side_effect = mock_call
+
+    body = {
+        "snapshot": "the-snapshot-name",
+        "repository": "a-repository",
+        "source_cluster_id": "another-cluster-id",
+        "tables": ["table1", "table2"],
+    }
+
+    call_command(
+        "croud",
+        "clusters",
+        "snapshots",
+        "restore",
+        "--cluster-id",
+        cluster_id,
+        "--repository",
+        body["repository"],
+        "--snapshot",
+        body["snapshot"],
+        "--source-cluster-id",
+        body["source_cluster_id"],
+        "--tables",
+        " table1 , table2 ",  # Ensure the parameter is properly trimmed
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        f"/api/v2/clusters/{cluster_id}/snapshots/restore/",
+        body=body,
+        any_times=True,
+    )
+
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "RESTORE_SNAPSHOT", "limit": 1},
+        any_times=True,
+    )
+
+    assert mock_request.call_count == 3

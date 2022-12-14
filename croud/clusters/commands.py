@@ -442,6 +442,63 @@ def clusters_set_backup_schedule(args: Namespace) -> None:
     )
 
 
+def clusters_snapshots_list(args: Namespace) -> None:
+    url = f"/api/v2/clusters/{args.cluster_id}/snapshots/"
+
+    client = Client.from_args(args)
+    data, errors = client.get(url)
+    print_response(
+        data=data,
+        errors=errors,
+        keys=[
+            "created",
+            "repository",
+            "snapshot",
+        ],
+        output_fmt=get_output_format(args),
+    )
+
+
+def clusters_snapshots_restore(args: Namespace) -> None:
+    url = f"/api/v2/clusters/{args.cluster_id}/snapshots/restore/"
+
+    body = {
+        "repository": args.repository,
+        "snapshot": args.snapshot,
+    }
+    if args.source_cluster_id:
+        body["source_cluster_id"] = args.source_cluster_id
+    if args.tables:
+        tables = args.tables.strip().split(",")
+        body["tables"] = [x.strip() for x in tables]
+
+    client = Client.from_args(args)
+    data, errors = client.post(url, body=body)
+
+    if not errors:
+        print_info(
+            "Restoring the snapshot. Depending on the amount of data you have, this"
+            " might take a very long time."
+        )
+
+        _wait_for_completed_operation(
+            client=client,
+            cluster_id=args.cluster_id,
+            request_params={"type": "RESTORE_SNAPSHOT", "limit": 1},
+        )
+
+    print_response(
+        data=data,
+        errors=errors,
+        keys=[
+            "created",
+            "repository",
+            "snapshot",
+        ],
+        output_fmt=get_output_format(args),
+    )
+
+
 # We want to map the custom hardware specs to slightly nicer params in croud,
 # hence this mapping here
 def _handle_edge_params(body, args):
