@@ -477,3 +477,68 @@ Example
 
     This command will wait for the operation to finish or fail. It is only available
     to organization and project admins.
+
+
+``clusters snapshots``
+======================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters snapshots
+   :nosubcommands:
+
+
+``clusters snapshots list``
+===========================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters snapshots list
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ ❯ croud clusters snapshots list --cluster-id 705a7012-3f89-441d-a10e-b3749d05e993
+   +------------------------+-------------------------------+-------------------+
+   | created                | repository                    | snapshot          |
+   |------------------------+-------------------------------+-------------------|
+   | 2022-12-10 12:34:56    | system_backup_20221002123456  | 20221210123456    |
+   | 2022-12-10 11:34:54    | system_backup_20221002123456  | 20221210113454    |
+   +------------------------+-------------------------------+-------------------+
+
+
+``clusters snapshots restore``
+==============================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters snapshots restore
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ ❯ croud clusters snapshots restore --cluster-id 705a7012-3f89-441d-a10e-b3749d05e993 \
+         --repository system_backup_20221002123456 --snapshot 20221210123456
+   ==> Info: Restoring the snapshot. Depending on the amount of data you have, this might take a very long time.
+   ==> Success: Operation completed.
+   +------------------------+-------------------------------+-------------------+
+   | created                | repository                    | snapshot          |
+   |------------------------+-------------------------------+-------------------|
+   | 2022-12-10 12:34:56    | system_backup_20221002123456  | 20221210123456    |
+   +------------------------+-------------------------------+-------------------+
+
+.. NOTE::
+
+    This command will wait for the operation to finish or fail. It is only available
+    to organization and project admins.
+
