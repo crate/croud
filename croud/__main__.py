@@ -618,7 +618,7 @@ command_tree = {
                                 "--source-cluster-id", type=str, required=False,
                                 help="The CrateDB cluster ID of the snapshot to be "
                                      "used belongs to. Must belong to the same "
-                                     "organization than the target cluster."
+                                     "organization as the target cluster."
                                      "If not specified the ``--cluster-id`` CrateDB"
                                      " cluster will be used as the source.",
                             ),
