@@ -5,6 +5,11 @@ Changes for croud
 Unreleased
 ==========
 
+1.2.0 - 2022/12/21
+==================
+
+- Added support for listing and restoring snapshots, including cloning clusters.
+
 1.1.0 - 2022/12/12
 ==================
 
