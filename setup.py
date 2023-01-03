@@ -49,7 +49,7 @@ setup(
         "marshmallow==3.19.0",
         "pyyaml==6.0",
         "requests==2.28.1",
-        "tabulate==0.9.0",
+        "tabulate>=0.8,<1.0",
         "yarl==1.8.2",
         "halo==0.0.31",
         "shtab==1.5.8",
