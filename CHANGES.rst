@@ -8,6 +8,10 @@ Unreleased
 - Unfix the version of ``tabulate`` to maintain compatibility with crash. Currently
   not possible to install both crash and croud in the same python environment.
 
+- Added an ability to specify the ``--days-ago`` argument to ``snapshots list``.
+  This fixes an issue where no snapshots could be listed if the cluster was suspended
+  for longer than 2 days.
+
 1.2.0 - 2022/12/21
 ==================
 

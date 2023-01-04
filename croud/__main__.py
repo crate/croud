@@ -594,6 +594,10 @@ command_tree = {
                                 "--cluster-id", type=str, required=True,
                                 help="The CrateDB cluster ID to use.",
                             ),
+                            Argument(
+                                "--days-ago", type=int, required=False, default=2,
+                                help="Number of days to look back.",
+                            ),
                         ],
                         "resolver": clusters_snapshots_list,
                     },
