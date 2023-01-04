@@ -1159,7 +1159,7 @@ def test_cluster_suspended_fails(mock_request, capsys):
     assert "Some Error" in err_output
 
 
-@pytest.mark.freeze_time("2023-01-02 00:00:00")
+@pytest.mark.freeze_time("2023-01-02 00:00:00.00+00:00")
 @mock.patch.object(
     Client,
     "request",
@@ -1205,7 +1205,7 @@ def test_cluster_snapshots_list(mock_request, capsys):
     assert "20230101083912" in stdout
 
 
-@pytest.mark.freeze_time("2023-01-02 00:00:00")
+@pytest.mark.freeze_time("2023-01-02 00:00:00.00+00:00")
 @pytest.mark.parametrize("days", [None, 1, 14, 365])
 @mock.patch.object(Client, "request", return_value=([], {}))
 def test_cluster_snapshots_list_no_backups(mock_request, days, capsys):
