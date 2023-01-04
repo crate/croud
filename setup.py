@@ -55,7 +55,10 @@ setup(
         "shtab==1.5.8",
     ],
     extras_require={
-        "testing": ["tox==3.14.2"],
+        "testing": [
+            "tox==3.14.2",
+            "pytest-freezegun==0.4.2",
+        ],
         "development": [
             "black==22.12.0",
             "flake8==3.8.4",

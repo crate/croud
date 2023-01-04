@@ -18,6 +18,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 import time
 from argparse import Namespace
+from datetime import datetime, timedelta, timezone
 from typing import Dict, Optional
 
 import bitmath
@@ -443,10 +444,19 @@ def clusters_set_backup_schedule(args: Namespace) -> None:
 
 
 def clusters_snapshots_list(args: Namespace) -> None:
+    days = args.days_ago
+    start = datetime.now(tz=timezone.utc) - timedelta(days=days)
     url = f"/api/v2/clusters/{args.cluster_id}/snapshots/"
 
     client = Client.from_args(args)
-    data, errors = client.get(url)
+    data, errors = client.get(url, params={"start": start.isoformat()})
+    if data is not None and len(data) == 0:
+        print_info(
+            f"Looks like there are no snapshots for the last {days} days. "
+            "Use --days-ago to broaden your search."
+        )
+        return
+
     print_response(
         data=data,
         errors=errors,

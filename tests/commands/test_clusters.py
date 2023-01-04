@@ -18,6 +18,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import uuid
+from datetime import datetime, timedelta, timezone
 from unittest import mock
 
 import pytest
@@ -1158,8 +1159,30 @@ def test_cluster_suspended_fails(mock_request, capsys):
     assert "Some Error" in err_output
 
 
-@mock.patch.object(Client, "request", return_value=(None, {}))
-def test_cluster_snapshots_list(mock_request):
+@pytest.mark.freeze_time("2023-01-02 00:00:00")
+@mock.patch.object(
+    Client,
+    "request",
+    return_value=(
+        [
+            {
+                "cluster_id": "some",
+                "concrete_indices": ["nyc_taxi"],
+                "created": "2023-01-01T08:39:13.451000+00:00",
+                "dc": {
+                    "created": "2023-01-01T08:39:22.508000+00:00",
+                    "modified": "2023-01-01T08:39:22.508000+00:00",
+                },
+                "project_id": "other",
+                "repository": "system_backup_20220804103901",
+                "snapshot": "20230101083912",
+                "tables": ["doc.nyc_taxi"],
+            }
+        ],
+        {},
+    ),
+)
+def test_cluster_snapshots_list(mock_request, capsys):
     cluster_id = gen_uuid()
 
     call_command(
@@ -1174,6 +1197,36 @@ def test_cluster_snapshots_list(mock_request):
         mock_request,
         RequestMethod.GET,
         f"/api/v2/clusters/{cluster_id}/snapshots/",
+        params={"start": "2022-12-31T00:00:00+00:00"},
+    )
+    stdout, _ = capsys.readouterr()
+    assert "2023-01-01T08:39:13.451000+00:00" in stdout
+    assert "system_backup_20220804103901" in stdout
+    assert "20230101083912" in stdout
+
+
+@pytest.mark.freeze_time("2023-01-02 00:00:00")
+@pytest.mark.parametrize("days", [None, 1, 14, 365])
+@mock.patch.object(Client, "request", return_value=([], {}))
+def test_cluster_snapshots_list_no_backups(mock_request, days, capsys):
+    cluster_id = gen_uuid()
+    args = ["croud", "clusters", "snapshots", "list", "--cluster-id", cluster_id]
+    if days:
+        args.append("--days-ago")
+        args.append(f"{days}")
+
+    call_command(*args)
+    expected_days = 2 if not days else days
+    start = datetime.now(tz=timezone.utc) - timedelta(days=expected_days)
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/snapshots/",
+        params={"start": start.isoformat()},
+    )
+    _, stderr = capsys.readouterr()
+    assert (
+        f"Looks like there are no snapshots for the last {expected_days} days" in stderr
     )
 
 
