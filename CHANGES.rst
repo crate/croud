@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+1.2.1 - 2023/01/05
+==================
+
 - Unfix the version of ``tabulate`` to maintain compatibility with crash. Currently
   not possible to install both crash and croud in the same python environment.
 
