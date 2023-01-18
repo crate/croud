@@ -413,7 +413,7 @@ command_tree = {
                     Argument(
                         "--channel", type=str, default="stable", required=False,
                         choices=["stable", "testing", "nightly"],
-                        help="The channel of the CrateDB version (superusers only).",
+                        help="The channel of the CrateDB version.",
                     ),
                     Argument(
                         "--cpus", type=float, required=False,
