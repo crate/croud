@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Add organization_id field to regions list.
+
 1.2.1 - 2023/01/05
 ==================
 
