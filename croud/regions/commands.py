@@ -151,5 +151,6 @@ def regions_delete(args: Namespace) -> None:
             output_fmt=get_output_format(args),
         )
 
+
 def _organization_id_transform(field):
     return field if field else ""

@@ -25,13 +25,14 @@ Example
 .. code-block:: console
 
    sh$ croud regions list
-   +--------------------------------+-----------------------+
-   | description                    | name                  |
-   |--------------------------------+-----------------------|
-   | Azure East US 2                | aks1.eastus2.azure    |
-   | Azure West Europe              | aks1.westeurope.azure |
-   | AWS West Europe (Ireland)      | eks1.eu-west-1.aws    |
-   +--------------------------------+-----------------------+
+   +---------------------------------------+-----------------------+--------------------------------------+
+   | description                           | name                  | organization_id                      |
+   |---------------------------------------+-----------------------|--------------------------------------|
+   | Azure East US 2                       | aks1.eastus2.azure    |                                      |
+   | Azure West Europe                     | aks1.westeurope.azure |                                      |
+   | AWS West Europe (Ireland)             | eks1.eu-west-1.aws    |                                      |
+   | 055be5e4a8f744b9bfac25f507496d16.edge | my-edge-region        | 70b56aab-2ba1-4378-88b9-5b6123513e47 |
+   +---------------------------------------+-----------------------+--------------------------------------+
 
 
 
