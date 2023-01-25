@@ -39,8 +39,9 @@ def regions_list(args: Namespace) -> None:
     print_response(
         data=data,
         errors=errors,
-        keys=["name", "description"],
+        keys=["name", "description", "organization_id"],
         output_fmt=get_output_format(args),
+        transforms={"organization_id": _organization_id_transform},
     )
 
 
@@ -149,3 +150,7 @@ def regions_delete(args: Namespace) -> None:
             success_message="You have successfully deleted a region.",
             output_fmt=get_output_format(args),
         )
+
+
+def _organization_id_transform(field):
+    return field if field else ""
