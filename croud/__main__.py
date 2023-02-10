@@ -47,6 +47,8 @@ from croud.clusters.commands import (
     clusters_snapshots_list,
     clusters_snapshots_restore,
     clusters_upgrade,
+    import_jobs_cancel,
+    import_jobs_create,
 )
 from croud.config import CONFIG
 from croud.config.commands import (
@@ -633,6 +635,66 @@ command_tree = {
                             ),
                         ],
                         "resolver": clusters_snapshots_restore,
+                    },
+                },
+            },
+            "import-jobs": {
+                "hep": "Manage data import jobs.",
+                "commands": {
+                    "cancel": {
+                        "help": "Cancels an already running data import job that has "
+                                "not finished yet.",
+                        "extra_args": [
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The cluster the import job belongs to."
+                            ),
+                            Argument(
+                                "--import-job-id", type=str,
+                                required=True,
+                                help="The ID of the Import Job."
+                            ),
+                        ],
+                        "resolver": import_jobs_cancel,
+                    },
+                    "create": {
+                        "help": "Create a data import job for the specified cluster.",
+                        "extra_args": [
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The cluster the data will be imported into."
+                            ),
+                            Argument(
+                                "--type", type=str, required=True, choices=["url"],
+                                help="The type of import job that will be created."
+                            ),
+                            Argument(
+                                "--url", type=str, required=True,
+                                help="When type is URL, the URL the import file will "
+                                     "be read from."
+                            ),
+                            Argument(
+                                "--file-format", type=str, required=True,
+                                choices=["csv", "json"],
+                                help="The format of the structured data in the file."
+                            ),
+                            Argument(
+                                "--compression", type=str, required=False,
+                                choices=["gzip"],
+                                help="The compression method the file uses."
+                            ),
+                            Argument(
+                                "--table", type=str, required=True,
+                                help="The table the data will be imported into."
+                            ),
+                            Argument(
+                                "--create-table", type=lambda x: bool(strtobool(str(x))),  # noqa
+                                required=False,
+                                help="Whether the table should be created automatically"
+                                     " if it does not exist."
+                            )
+                        ],
+                        "resolver": import_jobs_create,
                     },
                 },
             },

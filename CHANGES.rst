@@ -7,6 +7,8 @@ Unreleased
 
 - Add organization_id field to regions list.
 
+- Added support for data import jobs on clusters.
+
 1.2.1 - 2023/01/05
 ==================
 
