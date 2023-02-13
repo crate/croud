@@ -62,7 +62,7 @@ setup(
         "development": [
             "black==22.12.0",
             "flake8==3.8.4",
-            "isort==5.6.4",
+            "isort==5.12.0",
             "mypy==0.812",
         ],
     },
