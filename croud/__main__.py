@@ -639,7 +639,7 @@ command_tree = {
                 },
             },
             "import-jobs": {
-                "hep": "Manage data import jobs.",
+                "help": "Manage data import jobs.",
                 "commands": {
                     "cancel": {
                         "help": "Cancels an already running data import job that has "
