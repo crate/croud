@@ -158,6 +158,49 @@ def clusters_scale(args: Namespace) -> None:
     )
 
 
+def import_jobs_create(args: Namespace) -> None:
+    body = {
+        "type": args.type,
+        "url": {
+            "url": args.url,
+        },
+        "format": args.file_format,
+        "destination": {
+            "table": args.table,
+        },
+    }
+
+    if args.compression:
+        body["compression"] = args.compression
+
+    if args.create_table is not None:
+        body["destination"]["create_table"] = args.create_table
+
+    client = Client.from_args(args)
+    data, errors = client.post(
+        f"/api/v2/clusters/{args.cluster_id}/import-jobs/", body=body
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "cluster_id", "status"],
+        output_fmt=get_output_format(args),
+    )
+
+
+def import_jobs_cancel(args: Namespace) -> None:
+    client = Client.from_args(args)
+    data, errors = client.delete(
+        f"/api/v2/clusters/{args.cluster_id}/import-jobs/{args.import_job_id}/"
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "cluster_id", "status"],
+        output_fmt=get_output_format(args),
+    )
+
+
 def clusters_upgrade(args: Namespace) -> None:
     body = {"crate_version": args.version}
     client = Client.from_args(args)

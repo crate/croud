@@ -1363,3 +1363,64 @@ def test_cluster_snapshots_restore_with_optional_params(mock_request):
     )
 
     assert mock_request.call_count == 3
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_import_job_delete(mock_request):
+    cluster_id = gen_uuid()
+    import_job_id = gen_uuid()
+    call_command(
+        "croud",
+        "clusters",
+        "import-jobs",
+        "cancel",
+        "--import-job-id",
+        import_job_id,
+        "--cluster-id",
+        cluster_id,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.DELETE,
+        f"/api/v2/clusters/{cluster_id}/import-jobs/{import_job_id}/",
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_import_job_create(mock_request):
+    cluster_id = gen_uuid()
+    call_command(
+        "croud",
+        "clusters",
+        "import-jobs",
+        "create",
+        "--cluster-id",
+        cluster_id,
+        "--type",
+        "url",
+        "--url",
+        "http://download-url.com/csv-file.csv.gz",
+        "--file-format",
+        "csv",
+        "--compression",
+        "gzip",
+        "--table",
+        "my-table",
+        "--create-table",
+        "false",
+    )
+    body = {
+        "type": "url",
+        "url": {
+            "url": "http://download-url.com/csv-file.csv.gz",
+        },
+        "format": "csv",
+        "destination": {"table": "my-table", "create_table": False},
+        "compression": "gzip",
+    }
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        f"/api/v2/clusters/{cluster_id}/import-jobs/",
+        body=body,
+    )
