@@ -237,7 +237,6 @@ def test_regions_delete(mock_request, capsys):
     ],
 )
 def test_regions_delete_with_projects_fails(mock_request, capsys):
-
     call_command(
         "croud",
         "regions",
@@ -303,7 +302,6 @@ def test_regions_delete_missing_name(mock_request, capsys):
     ],
 )
 def test_regions_delete_status_up(mock_request, capsys, client):
-
     call_command("croud", "regions", "delete", "-y", "--name", "region-name")
     mock_request.assert_called_once_with(
         RequestMethod.GET,
@@ -326,7 +324,6 @@ def test_regions_delete_status_up(mock_request, capsys, client):
     side_effect=[(EDGE_REGION_LIST, None), ({}, None)],
 )
 def test_regions_delete_status_down(mock_request, capsys):
-
     call_command("croud", "regions", "delete", "-y", "--name", "region-name")
     mock_request.assert_has_calls(
         [
@@ -347,7 +344,6 @@ def test_regions_delete_status_down(mock_request, capsys):
     side_effect=[({}, None)],
 )
 def test_regions_delete_bad_name(mock_request, capsys):
-
     region_name = "region-name"
 
     call_command("croud", "regions", "delete", "-y", "--name", region_name)

@@ -113,7 +113,6 @@ class FormatPrinter(abc.ABC):
         keys: Optional[List[str]] = None,
         transforms: Optional[Dict[str, Callable[[Any], Any]]] = None,
     ):
-
         self.keys = keys
         self.transforms = transforms or {}
 
@@ -133,7 +132,6 @@ class JsonFormatPrinter(FormatPrinter):
 
 
 class TableFormatPrinter(FormatPrinter):
-
     display_all_columns = False
 
     def format_rows(self, rows: Union[List[JsonDict], JsonDict]) -> str:
