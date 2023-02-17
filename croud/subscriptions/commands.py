@@ -70,9 +70,7 @@ def subscriptions_list(args: Namespace) -> None:
 )
 def subscription_delete(args: Namespace) -> None:
     client = Client.from_args(args)
-    data, errors = client.delete(
-        f"/api/v2/stripe/subscriptions/{args.subscription_id}/"
-    )
+    data, errors = client.delete(f"/api/v2/subscriptions/{args.subscription_id}/")
     print_response(
         data=data,
         errors=errors,

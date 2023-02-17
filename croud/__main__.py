@@ -1012,7 +1012,8 @@ command_tree = {
                 "resolver": subscriptions_get,
             },
             "delete": {
-                "help": "For Stripe only. Cancels the specified subscription. "
+                "help": "For Stripe or contract subscriptions only. Cancels the "
+                        "specified subscription. "
                         "CAVEAT EMPTOR! "
                         "This will delete any clusters running in this subscription.",
                 "extra_args": [

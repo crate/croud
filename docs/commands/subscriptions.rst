@@ -55,7 +55,7 @@ Example
 ``subscriptions delete``
 ========================
 
-Cancel a Stripe subscription in a user's organisation. Please note that this will delete
+Cancel a Stripe or contract subscription in a user's organisation. Please note that this will delete
 any clusters running in this subscription, so use carefully:
 
 .. argparse::
