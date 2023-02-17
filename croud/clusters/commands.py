@@ -201,6 +201,17 @@ def import_jobs_cancel(args: Namespace) -> None:
     )
 
 
+def import_jobs_list(args: Namespace) -> None:
+    client = Client.from_args(args)
+    data, errors = client.get(f"/api/v2/clusters/{args.cluster_id}/import-jobs/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "cluster_id", "status", "type", "destination"],
+        output_fmt=get_output_format(args),
+    )
+
+
 def clusters_upgrade(args: Namespace) -> None:
     body = {"crate_version": args.version}
     client = Client.from_args(args)
