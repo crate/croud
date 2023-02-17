@@ -85,9 +85,7 @@ def test_subscriptions_delete(mock_request, capsys):
     sub_id = gen_uuid()
     with mock.patch("builtins.input", side_effect=["yes"]) as mock_input:
         call_command("croud", "subscriptions", "delete", "--subscription-id", sub_id)
-    assert_rest(
-        mock_request, RequestMethod.DELETE, f"/api/v2/stripe/subscriptions/{sub_id}/"
-    )
+    assert_rest(mock_request, RequestMethod.DELETE, f"/api/v2/subscriptions/{sub_id}/")
     mock_input.assert_called_once_with(
         "Are you sure you want to cancel this subscription? "
         "This will delete any clusters running in this subscription. [yN] "
