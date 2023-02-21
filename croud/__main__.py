@@ -49,6 +49,7 @@ from croud.clusters.commands import (
     clusters_upgrade,
     import_jobs_cancel,
     import_jobs_create,
+    import_jobs_list,
 )
 from croud.config import CONFIG
 from croud.config.commands import (
@@ -656,6 +657,17 @@ command_tree = {
                             ),
                         ],
                         "resolver": import_jobs_cancel,
+                    },
+                    "list": {
+                        "help": "Lists data import jobs that belong to a specific "
+                                "cluster.",
+                        "extra_args": [
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The cluster the import jobs belong to."
+                            ),
+                        ],
+                        "resolver": import_jobs_list,
                     },
                     "create": {
                         "help": "Create a data import job for the specified cluster.",
