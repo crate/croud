@@ -675,7 +675,7 @@ command_tree = {
                             ),
                             Argument(
                                 "--file-format", type=str, required=True,
-                                choices=["csv", "json"],
+                                choices=["csv", "json", "parquet"],
                                 help="The format of the structured data in the file."
                             ),
                             Argument(
