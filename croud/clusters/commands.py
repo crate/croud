@@ -187,8 +187,26 @@ def import_jobs_create(args: Namespace) -> None:
         output_fmt=get_output_format(args),
     )
 
+    def import_job_feedback_func(feedback):
+        num_records = feedback.get("progress", {}).get("records")
+        num_bytes = feedback.get("progress", {}).get("bytes")
 
-def import_jobs_cancel(args: Namespace) -> None:
+        size = bitmath.Byte(num_bytes).best_prefix().format("{value:.2f} {unit}")
+        print_info(f"Importing... {num_records} records and {size} imported so far.")
+
+    if data:
+        import_job_id = data["id"]
+
+        _wait_for_completed_operation(
+            client=client,
+            cluster_id=args.cluster_id,
+            request_params={"import_job_id": import_job_id},
+            feedback_func=import_job_feedback_func,
+            operation_status_func=_get_import_job_operation_status,
+        )
+
+
+def import_jobs_delete(args: Namespace) -> None:
     client = Client.from_args(args)
     data, errors = client.delete(
         f"/api/v2/clusters/{args.cluster_id}/import-jobs/{args.import_job_id}/"
@@ -596,17 +614,40 @@ def _get_operation_status(client: Client, cluster_id: str, request_params: Dict)
     feedback_data = operation.get("feedback_data", {})
     msg = feedback_data.get("message", None)
 
-    return status, msg
+    return status, msg, feedback_data
+
+
+def _get_import_job_operation_status(
+    client: Client, cluster_id: str, request_params: Dict
+):
+    import_job_id = request_params["import_job_id"]
+    data, errors = client.get(
+        f"/api/v2/clusters/{cluster_id}/import-jobs/{import_job_id}/"
+    )
+
+    if not data or not data.get("progress"):
+        raise AsyncOperationNotFound("Failed retrieving operation status.")
+
+    status = data["status"]
+    feedback_data = {"progress": data["progress"]}
+    msg = data["progress"]["message"]
+
+    return status, msg, feedback_data
 
 
 def _wait_for_completed_operation(
-    *, client: Client, cluster_id: str, request_params: Dict
+    *,
+    client: Client,
+    cluster_id: str,
+    request_params: Dict,
+    feedback_func=None,
+    operation_status_func=_get_operation_status,
 ):
     last_status = None
     last_msg = None
     while True:
         try:
-            status, msg = _get_operation_status(
+            status, msg, feedback = operation_status_func(
                 client=client, cluster_id=cluster_id, request_params=request_params
             )
         except AsyncOperationNotFound as e:
@@ -622,6 +663,8 @@ def _wait_for_completed_operation(
                 "Our operations team are investigating."
             )
             break
+        if status == "IN_PROGRESS" and feedback_func:
+            feedback_func(feedback)
 
         if last_status != status or msg != last_msg:
             to_print = f"Status: {status} ({msg})" if msg else f"Status: {status}"

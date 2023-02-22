@@ -9,6 +9,8 @@ Unreleased
 
 - Added support for data import jobs on clusters.
 
+- Creating an import job now displays its progress.
+
 - Added support for cancelling contract subscriptions.
 
 1.2.1 - 2023/01/05

@@ -47,8 +47,8 @@ from croud.clusters.commands import (
     clusters_snapshots_list,
     clusters_snapshots_restore,
     clusters_upgrade,
-    import_jobs_cancel,
     import_jobs_create,
+    import_jobs_delete,
     import_jobs_list,
 )
 from croud.config import CONFIG
@@ -642,9 +642,11 @@ command_tree = {
             "import-jobs": {
                 "help": "Manage data import jobs.",
                 "commands": {
-                    "cancel": {
+                    "delete": {
                         "help": "Cancels an already running data import job that has "
-                                "not finished yet.",
+                                "not finished yet. "
+                                "If the job has already finished it deletes it from "
+                                "the job history.",
                         "extra_args": [
                             Argument(
                                 "--cluster-id", type=str, required=True,
@@ -656,7 +658,7 @@ command_tree = {
                                 help="The ID of the Import Job."
                             ),
                         ],
-                        "resolver": import_jobs_cancel,
+                        "resolver": import_jobs_delete,
                     },
                     "list": {
                         "help": "Lists data import jobs that belong to a specific "

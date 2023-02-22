@@ -1373,7 +1373,7 @@ def test_import_job_delete(mock_request):
         "croud",
         "clusters",
         "import-jobs",
-        "cancel",
+        "delete",
         "--import-job-id",
         import_job_id,
         "--cluster-id",
@@ -1386,7 +1386,9 @@ def test_import_job_delete(mock_request):
     )
 
 
-@mock.patch.object(Client, "request", return_value=({}, None))
+@mock.patch.object(
+    Client, "request", return_value=({"id": "1", "status": "SUCCEEDED"}, None)
+)
 def test_import_job_create(mock_request):
     cluster_id = gen_uuid()
     call_command(
@@ -1423,4 +1425,5 @@ def test_import_job_create(mock_request):
         RequestMethod.POST,
         f"/api/v2/clusters/{cluster_id}/import-jobs/",
         body=body,
+        any_times=True,
     )
