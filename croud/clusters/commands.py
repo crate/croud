@@ -187,7 +187,7 @@ def import_jobs_create(args: Namespace) -> None:
         output_fmt=get_output_format(args),
     )
 
-    def import_job_feedback_func(feedback):
+    def import_job_feedback_func(feedback: dict):
         num_records = feedback.get("progress", {}).get("records")
         num_bytes = feedback.get("progress", {}).get("bytes")
 
@@ -667,23 +667,29 @@ def _wait_for_completed_operation(
             print_error(str(e))
             break
 
+        # Inform about a change in status if the status is not final.
+        if status not in ["FAILED", "SUCCEEDED"] and (
+            last_status != status or msg != last_msg
+        ):
+            to_print = f"Status: {status} ({msg})" if msg else f"Status: {status}"
+            print_info(to_print)
+            last_status = status
+            last_msg = msg
+
+        # Call for custom feedback if function available and there is status to report.
         if status in ["IN_PROGRESS", "SUCCEEDED"] and feedback_func:
             feedback_func(feedback)
+
+        # Final statuses
         if status == "SUCCEEDED":
             print_success("Operation completed.")
             break
         if status == "FAILED":
             print_error(
                 "Your cluster operation has failed. "
-                "Our operations team are investigating."
+                "Our operations team is investigating the issue."
             )
             break
-
-        if last_status != status or msg != last_msg:
-            to_print = f"Status: {status} ({msg})" if msg else f"Status: {status}"
-            print_info(to_print)
-            last_status = status
-            last_msg = msg
 
         with HALO:
             time.sleep(10)
