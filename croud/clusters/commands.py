@@ -191,8 +191,21 @@ def import_jobs_create(args: Namespace) -> None:
         num_records = feedback.get("progress", {}).get("records")
         num_bytes = feedback.get("progress", {}).get("bytes")
 
+        records_unit = ""
+        records_normalized = num_records
+
+        if num_records > 1_000_000:
+            records_normalized /= 1_000_000
+            records_unit = "M"
+        elif num_records > 1_000:
+            records_normalized /= 1_000
+            records_unit = "K"
+
         size = bitmath.Byte(num_bytes).best_prefix().format("{value:.2f} {unit}")
-        print_info(f"Importing... {num_records} records and {size} imported so far.")
+        print_info(
+            f"Importing... {records_normalized} {records_unit} records and {size} "
+            f"imported so far."
+        )
 
     if data:
         import_job_id = data["id"]
@@ -201,8 +214,8 @@ def import_jobs_create(args: Namespace) -> None:
             client=client,
             cluster_id=args.cluster_id,
             request_params={"import_job_id": import_job_id},
-            feedback_func=import_job_feedback_func,
             operation_status_func=_get_import_job_operation_status,
+            feedback_func=import_job_feedback_func,
         )
 
 
@@ -640,8 +653,8 @@ def _wait_for_completed_operation(
     client: Client,
     cluster_id: str,
     request_params: Dict,
-    feedback_func=None,
     operation_status_func=_get_operation_status,
+    feedback_func=None,
 ):
     last_status = None
     last_msg = None
@@ -654,6 +667,8 @@ def _wait_for_completed_operation(
             print_error(str(e))
             break
 
+        if status in ["IN_PROGRESS", "SUCCEEDED"] and feedback_func:
+            feedback_func(feedback)
         if status == "SUCCEEDED":
             print_success("Operation completed.")
             break
@@ -663,8 +678,6 @@ def _wait_for_completed_operation(
                 "Our operations team are investigating."
             )
             break
-        if status == "IN_PROGRESS" and feedback_func:
-            feedback_func(feedback)
 
         if last_status != status or msg != last_msg:
             to_print = f"Status: {status} ({msg})" if msg else f"Status: {status}"
