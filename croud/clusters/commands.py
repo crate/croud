@@ -187,25 +187,24 @@ def import_jobs_create(args: Namespace) -> None:
         output_fmt=get_output_format(args),
     )
 
-    def import_job_feedback_func(feedback: dict):
+    def import_job_feedback_func(status: str, feedback: dict):
         num_records = feedback.get("progress", {}).get("records")
         num_bytes = feedback.get("progress", {}).get("bytes")
 
-        records_unit = ""
         records_normalized = num_records
 
         if num_records > 1_000_000:
-            records_normalized /= 1_000_000
-            records_unit = "M"
+            records_normalized = f"{records_normalized / 1_000_000:.2f} M"
         elif num_records > 1_000:
-            records_normalized /= 1_000
-            records_unit = "K"
+            records_normalized = f"{records_normalized / 1_000:.2f} K"
 
         size = bitmath.Byte(num_bytes).best_prefix().format("{value:.2f} {unit}")
-        print_info(
-            f"Importing... {records_normalized} {records_unit} records and {size} "
-            f"imported so far."
-        )
+        if status == "SUCCEEDED":
+            print_info(f"Done importing {records_normalized} records and {size}.")
+        else:
+            print_info(
+                f"Importing... {records_normalized} records and {size} imported so far."
+            )
 
     if data:
         import_job_id = data["id"]
@@ -678,7 +677,7 @@ def _wait_for_completed_operation(
 
         # Call for custom feedback if function available and there is status to report.
         if status in ["IN_PROGRESS", "SUCCEEDED"] and feedback_func:
-            feedback_func(feedback)
+            feedback_func(status, feedback)
 
         # Final statuses
         if status == "SUCCEEDED":
