@@ -187,8 +187,38 @@ def import_jobs_create(args: Namespace) -> None:
         output_fmt=get_output_format(args),
     )
 
+    def import_job_feedback_func(status: str, feedback: dict):
+        num_records = feedback.get("progress", {}).get("records")
+        num_bytes = feedback.get("progress", {}).get("bytes")
 
-def import_jobs_cancel(args: Namespace) -> None:
+        records_normalized = num_records
+
+        if num_records > 1_000_000:
+            records_normalized = f"{records_normalized / 1_000_000:.2f} M"
+        elif num_records > 1_000:
+            records_normalized = f"{records_normalized / 1_000:.2f} K"
+
+        size = bitmath.Byte(num_bytes).best_prefix().format("{value:.2f} {unit}")
+        if status == "SUCCEEDED":
+            print_info(f"Done importing {records_normalized} records and {size}.")
+        else:
+            print_info(
+                f"Importing... {records_normalized} records and {size} imported so far."
+            )
+
+    if data:
+        import_job_id = data["id"]
+
+        _wait_for_completed_operation(
+            client=client,
+            cluster_id=args.cluster_id,
+            request_params={"import_job_id": import_job_id},
+            operation_status_func=_get_import_job_operation_status,
+            feedback_func=import_job_feedback_func,
+        )
+
+
+def import_jobs_delete(args: Namespace) -> None:
     client = Client.from_args(args)
     data, errors = client.delete(
         f"/api/v2/clusters/{args.cluster_id}/import-jobs/{args.import_job_id}/"
@@ -596,38 +626,69 @@ def _get_operation_status(client: Client, cluster_id: str, request_params: Dict)
     feedback_data = operation.get("feedback_data", {})
     msg = feedback_data.get("message", None)
 
-    return status, msg
+    return status, msg, feedback_data
+
+
+def _get_import_job_operation_status(
+    client: Client, cluster_id: str, request_params: Dict
+):
+    import_job_id = request_params["import_job_id"]
+    data, errors = client.get(
+        f"/api/v2/clusters/{cluster_id}/import-jobs/{import_job_id}/"
+    )
+
+    if not data or not data.get("progress"):
+        raise AsyncOperationNotFound("Failed retrieving operation status.")
+
+    status = data["status"]
+    feedback_data = {"progress": data["progress"]}
+    msg = data["progress"]["message"]
+
+    return status, msg, feedback_data
 
 
 def _wait_for_completed_operation(
-    *, client: Client, cluster_id: str, request_params: Dict
+    *,
+    client: Client,
+    cluster_id: str,
+    request_params: Dict,
+    operation_status_func=_get_operation_status,
+    feedback_func=None,
 ):
     last_status = None
     last_msg = None
     while True:
         try:
-            status, msg = _get_operation_status(
+            status, msg, feedback = operation_status_func(
                 client=client, cluster_id=cluster_id, request_params=request_params
             )
         except AsyncOperationNotFound as e:
             print_error(str(e))
             break
 
+        # Inform about a change in status if the status is not final.
+        if status not in ["FAILED", "SUCCEEDED"] and (
+            last_status != status or msg != last_msg
+        ):
+            to_print = f"Status: {status} ({msg})" if msg else f"Status: {status}"
+            print_info(to_print)
+            last_status = status
+            last_msg = msg
+
+        # Call for custom feedback if function available and there is status to report.
+        if status in ["IN_PROGRESS", "SUCCEEDED"] and feedback_func:
+            feedback_func(status, feedback)
+
+        # Final statuses
         if status == "SUCCEEDED":
             print_success("Operation completed.")
             break
         if status == "FAILED":
             print_error(
                 "Your cluster operation has failed. "
-                "Our operations team are investigating."
+                "Our operations team is investigating the issue."
             )
             break
-
-        if last_status != status or msg != last_msg:
-            to_print = f"Status: {status} ({msg})" if msg else f"Status: {status}"
-            print_info(to_print)
-            last_status = status
-            last_msg = msg
 
         with HALO:
             time.sleep(10)
