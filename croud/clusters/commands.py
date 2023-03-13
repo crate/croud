@@ -63,6 +63,7 @@ def clusters_list(args: Namespace) -> None:
             "crate_version",
             "project_id",
             "username",
+            "suspended",
             "fqdn",
             "channel",
         ],
