@@ -13,6 +13,8 @@ Unreleased
 
 - Added support for cancelling contract subscriptions.
 
+- Added the ``suspended`` state to croud cluster responses.
+
 1.2.1 - 2023/01/05
 ==================
 
