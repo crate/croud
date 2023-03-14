@@ -1427,3 +1427,41 @@ def test_import_job_create(mock_request):
         body=body,
         any_times=True,
     )
+
+
+@mock.patch.object(
+    Client,
+    "request",
+    return_value=(
+        [
+            {
+                "cluster_id": "123",
+                "compression": "gzip",
+                "dc": {
+                    "created": "2023-03-14T10:12:29.763000+00:00",
+                    "modified": "2023-03-14T10:12:29.763000+00:00",
+                },
+                "destination": {"create_table": True, "table": "croud-csv-import-two"},
+                "format": "csv",
+                "id": "a95e5a20-61f7-415f-b128-1e21ddf17513",
+                "progress": {
+                    "bytes": 0,
+                    "message": "Failed",
+                    "records": 0,
+                },
+                "status": "FAILED",
+                "type": "url",
+                "url": {"url": "https://some"},
+            }
+        ],
+        None,
+    ),
+)
+def test_import_job_list(mock_request):
+    call_command("croud", "clusters", "import-jobs", "list", "--cluster-id", "123")
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        "/api/v2/clusters/123/import-jobs/",
+        params=None,
+    )

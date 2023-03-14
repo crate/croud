@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+- Changed import jobs status to show the error message if an import fails.
+
+- Added the URL to the import jobs list output.
+
 1.3.0 - 2023/03/14
 ==================
 
