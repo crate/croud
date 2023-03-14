@@ -238,8 +238,12 @@ def import_jobs_list(args: Namespace) -> None:
     print_response(
         data=data,
         errors=errors,
-        keys=["id", "cluster_id", "status", "type", "destination"],
+        keys=["id", "cluster_id", "status", "type", "url", "destination"],
         output_fmt=get_output_format(args),
+        transforms={
+            "url": lambda field: field.get("url"),
+            "destination": lambda field: field.get("table"),
+        },
     )
 
 
@@ -685,10 +689,13 @@ def _wait_for_completed_operation(
             print_success("Operation completed.")
             break
         if status == "FAILED":
-            print_error(
-                "Your cluster operation has failed. "
-                "Our operations team is investigating the issue."
-            )
+            if msg:
+                print_error(msg)
+            else:
+                print_error(
+                    "Your cluster operation has failed. "
+                    "Our operations team is investigating the issue."
+                )
             break
 
         with HALO:
