@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+1.3.0 - 2023/03/14
+==================
+
 - Add organization_id field to regions list.
 
 - Added support for data import jobs on clusters.
