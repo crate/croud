@@ -19,7 +19,7 @@
 import time
 from argparse import Namespace
 from datetime import datetime, timedelta, timezone
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 import bitmath
 
@@ -159,12 +159,35 @@ def clusters_scale(args: Namespace) -> None:
     )
 
 
-def import_jobs_create(args: Namespace) -> None:
-    body = {
-        "type": args.type,
+def import_jobs_create_from_url(args: Namespace) -> None:
+    extra_body = {
         "url": {
             "url": args.url,
-        },
+        }
+    }
+    args.type = "url"
+    import_jobs_create(args, extra_payload=extra_body)
+
+
+def import_jobs_create_from_file(args: Namespace) -> None:
+    file_id = args.file_id
+
+    if args.file_path:
+        #  TODO: Upload file
+        file_id = "TODO"
+
+    extra_body = {
+        "file": {
+            "id": file_id,
+        }
+    }
+    args.type = "file"
+    import_jobs_create(args, extra_payload=extra_body)
+
+
+def import_jobs_create(args: Namespace, extra_payload: Dict[str, Any]) -> None:
+    body = {
+        "type": args.type,
         "format": args.file_format,
         "destination": {
             "table": args.table,
@@ -176,6 +199,9 @@ def import_jobs_create(args: Namespace) -> None:
 
     if args.create_table is not None:
         body["destination"]["create_table"] = args.create_table
+
+    if extra_payload:
+        body.update(extra_payload)
 
     client = Client.from_args(args)
     data, errors = client.post(

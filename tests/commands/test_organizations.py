@@ -371,3 +371,35 @@ def test_role_fqn_transform():
     }
     response = organization_role_fqn_transform(user["organization_roles"])
     assert response == "organization_admin"
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_file_uploads_list(mock_request):
+    org_id = gen_uuid()
+
+    call_command("croud", "organizations", "file-uploads", "list", "--org-id", org_id)
+    assert_rest(
+        mock_request, RequestMethod.GET, f"/api/v2/organizations/{org_id}/file-uploads/"
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_file_uploads_delete(mock_request):
+    org_id = gen_uuid()
+    file_id = gen_uuid()
+
+    call_command(
+        "croud",
+        "organizations",
+        "file-uploads",
+        "delete",
+        "--org-id",
+        org_id,
+        "--file-id",
+        file_id,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.DELETE,
+        f"/api/v2/organizations/{org_id}/file-uploads/{file_id}",
+    )

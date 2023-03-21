@@ -9,6 +9,10 @@ Unreleased
 
 - Added the URL to the import jobs list output.
 
+- Added support for organization file-uploads.
+
+- Added support for cluster import jobs of type `file`.
+
 1.3.0 - 2023/03/14
 ==================
 
