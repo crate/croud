@@ -379,7 +379,7 @@ def test_organizations_file_uploads_list(mock_request):
 
     call_command("croud", "organizations", "file-uploads", "list", "--org-id", org_id)
     assert_rest(
-        mock_request, RequestMethod.GET, f"/api/v2/organizations/{org_id}/file-uploads/"
+        mock_request, RequestMethod.GET, f"/api/v2/organizations/{org_id}/files/"
     )
 
 
@@ -401,5 +401,5 @@ def test_organizations_file_uploads_delete(mock_request):
     assert_rest(
         mock_request,
         RequestMethod.DELETE,
-        f"/api/v2/organizations/{org_id}/file-uploads/{file_id}",
+        f"/api/v2/organizations/{org_id}/files/{file_id}/",
     )

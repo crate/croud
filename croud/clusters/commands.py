@@ -26,6 +26,7 @@ import bitmath
 from croud.api import Client
 from croud.clusters.exceptions import AsyncOperationNotFound
 from croud.config import get_output_format
+from croud.organizations.commands import op_upload_file_to_org
 from croud.printer import print_error, print_info, print_response, print_success
 from croud.tools.spinner import HALO
 from croud.util import require_confirmation
@@ -169,19 +170,42 @@ def import_jobs_create_from_url(args: Namespace) -> None:
     import_jobs_create(args, extra_payload=extra_body)
 
 
+def _get_org_id_from_cluster_id(client, cluster_id: str) -> Optional[str]:
+    data, errors = client.get(f"/api/v2/clusters/{cluster_id}/")
+    if errors or not data:
+        return None
+
+    project_id = data["project_id"]
+
+    data, errors = client.get(f"/api/v2/projects/{project_id}/")
+    if errors or not data:
+        return None
+
+    return data["organization_id"]
+
+
 def import_jobs_create_from_file(args: Namespace) -> None:
     file_id = args.file_id
 
     if args.file_path:
-        #  TODO: Upload file
-        file_id = "TODO"
+        client = Client.from_args(args)
+        org_id = _get_org_id_from_cluster_id(client, args.cluster_id)
+        if not org_id:
+            print_error("Could not find the organization related to the cluster.")
+            return
+
+        data, errors = op_upload_file_to_org(client, org_id, args.file_path)
+        if errors or not data:
+            print_error("Aborted import job creation.")
+            return
+        file_id = data["id"]
 
     extra_body = {
-        "file": {
+        "uploaded_file": {
             "id": file_id,
         }
     }
-    args.type = "file"
+    args.type = "uploaded_file"
     import_jobs_create(args, extra_payload=extra_body)
 
 

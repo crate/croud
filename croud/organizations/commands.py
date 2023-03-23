@@ -16,12 +16,18 @@
 # However, if you have executed another commercial license agreement
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
-
+import os
 from argparse import Namespace
+from typing import Any, Tuple
+
+import requests
+from tqdm import tqdm
+from tqdm.utils import CallbackIOWrapper
 
 from croud.api import Client
 from croud.config import CONFIG, get_output_format
-from croud.printer import print_error, print_response
+from croud.printer import print_error, print_info, print_response
+from croud.tools.spinner import HALO
 from croud.util import org_id_config_fallback, require_confirmation
 
 
@@ -106,25 +112,57 @@ def organizations_delete(args: Namespace) -> None:
 
 def org_file_uploads_list(args: Namespace) -> None:
     client = Client.from_args(args)
-    data, errors = client.get(f"/api/v2/organizations/{args.org_id}/file-uploads/")
+    data, errors = client.get(f"/api/v2/organizations/{args.org_id}/files/")
     print_response(
         data=data,
         errors=errors,
-        keys=["id", "name", "upload_url"],
+        keys=["id", "name", "status"],
         output_fmt=get_output_format(args),
     )
 
 
+def op_upload_file_to_org(
+    client, org_id: str, file_path: str, file_name: str = None
+) -> Tuple[Any, Any]:
+    # Name the file in Cloud. If no name is provided the file path will be used.
+    payload = {"name": file_name or file_path}
+    print_info("Creating a new file upload...")
+    data, errors = client.post(f"/api/v2/organizations/{org_id}/files/", body=payload)
+
+    # HALO spinner needs to be stopped to display the progress bar
+    HALO.stop()
+    if not errors and data and data.get("upload_url"):
+        # Progress bar works by wrapping the file and monitoring its read ops
+        with tqdm(
+            total=os.path.getsize(file_path),
+            unit="B",
+            unit_scale=True,
+            unit_divisor=1024,
+        ) as t:
+            with open(file_path, "rb") as file_upload:
+                print_info("Uploading the file...")
+                wrapped_file = CallbackIOWrapper(t.update, file_upload, "read")
+                resp = requests.put(data["upload_url"], data=wrapped_file)
+                if resp.status_code < 200 or resp.status_code >= 300:
+                    errors = {
+                        "code": resp.status_code,
+                        "message": "There was an error while trying to upload the file",
+                        "upload_url": data["upload_url"],
+                    }
+
+    return data, errors
+
+
 def org_file_uploads_create(args: Namespace) -> None:
     client = Client.from_args(args)
-    data, errors = client.post(f"/api/v2/organizations/{args.org_id}/file-uploads/")
-    # TODO: Handle file upload
+
+    data, errors = op_upload_file_to_org(client, args.org_id, args.file_path, args.name)
+
     print_response(
         data=data,
         errors=errors,
-        success_message="File upload created. Please use the URL provided to upload "
-        "your file.",
-        keys=["id", "name", "upload_url"],
+        success_message="File upload completed!",
+        keys=["id", "name", "status"],
         output_fmt=get_output_format(args),
     )
 
@@ -132,7 +170,7 @@ def org_file_uploads_create(args: Namespace) -> None:
 def org_file_uploads_delete(args: Namespace) -> None:
     client = Client.from_args(args)
     data, errors = client.delete(
-        f"/api/v2/organizations/{args.org_id}/file-uploads/{args.file_id}"
+        f"/api/v2/organizations/{args.org_id}/files/{args.file_id}/"
     )
     print_response(
         data=data,
