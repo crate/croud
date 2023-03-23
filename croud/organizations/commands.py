@@ -110,7 +110,7 @@ def organizations_delete(args: Namespace) -> None:
         CONFIG.set_organization_id(CONFIG.name, None)
 
 
-def org_file_uploads_list(args: Namespace) -> None:
+def org_files_list(args: Namespace) -> None:
     client = Client.from_args(args)
     data, errors = client.get(f"/api/v2/organizations/{args.org_id}/files/")
     print_response(
@@ -153,7 +153,7 @@ def op_upload_file_to_org(
     return data, errors
 
 
-def org_file_uploads_create(args: Namespace) -> None:
+def org_files_create(args: Namespace) -> None:
     client = Client.from_args(args)
 
     data, errors = op_upload_file_to_org(client, args.org_id, args.file_path, args.name)
@@ -167,7 +167,7 @@ def org_file_uploads_create(args: Namespace) -> None:
     )
 
 
-def org_file_uploads_delete(args: Namespace) -> None:
+def org_files_delete(args: Namespace) -> None:
     client = Client.from_args(args)
     data, errors = client.delete(
         f"/api/v2/organizations/{args.org_id}/files/{args.file_id}/"

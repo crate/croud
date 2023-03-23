@@ -65,9 +65,9 @@ from croud.logout import logout
 from croud.me import me, me_edit
 from croud.organizations.auditlogs.commands import auditlogs_list
 from croud.organizations.commands import (
-    org_file_uploads_create,
-    org_file_uploads_delete,
-    org_file_uploads_list,
+    org_files_create,
+    org_files_delete,
+    org_files_list,
     organizations_create,
     organizations_delete,
     organizations_edit,
@@ -914,18 +914,18 @@ command_tree = {
                     },
                 },
             },
-            "file-uploads": {
-                "help": "Manage file uploads.",
+            "files": {
+                "help": "Manage organization's files.",
                 "commands": {
                     "list": {
-                        "help": "List all files uploaded to this organization.",
+                        "help": "List all files to this organization.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
                                 help="The organization ID to use.",
                             ),
                         ],
-                        "resolver": org_file_uploads_list,
+                        "resolver": org_files_list,
                     },
                     "create": {
                         "help": "Uploads a new file to the organization.",
@@ -945,7 +945,7 @@ command_tree = {
                                      "used.",
                             ),
                         ],
-                        "resolver": org_file_uploads_create,
+                        "resolver": org_files_create,
                     },
                     "delete": {
                         "help": "Deletes a previously uploaded file.",
@@ -956,10 +956,10 @@ command_tree = {
                             ),
                             Argument(
                                 "--file-id", type=str, required=True,
-                                help="The ID of the uploaded file.",
+                                help="The ID of the file.",
                             ),
                         ],
-                        "resolver": org_file_uploads_delete,
+                        "resolver": org_files_delete,
                     },
                 }
             }

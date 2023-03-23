@@ -374,24 +374,24 @@ def test_role_fqn_transform():
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_organizations_file_uploads_list(mock_request):
+def test_organizations_files_list(mock_request):
     org_id = gen_uuid()
 
-    call_command("croud", "organizations", "file-uploads", "list", "--org-id", org_id)
+    call_command("croud", "organizations", "files", "list", "--org-id", org_id)
     assert_rest(
         mock_request, RequestMethod.GET, f"/api/v2/organizations/{org_id}/files/"
     )
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_organizations_file_uploads_delete(mock_request):
+def test_organizations_files_delete(mock_request):
     org_id = gen_uuid()
     file_id = gen_uuid()
 
     call_command(
         "croud",
         "organizations",
-        "file-uploads",
+        "files",
         "delete",
         "--org-id",
         org_id,
@@ -402,4 +402,29 @@ def test_organizations_file_uploads_delete(mock_request):
         mock_request,
         RequestMethod.DELETE,
         f"/api/v2/organizations/{org_id}/files/{file_id}/",
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_files_create(mock_request):
+    org_id = gen_uuid()
+    file_path = "/path/to/file.json.gz"
+    file_name = "my-file"
+    call_command(
+        "croud",
+        "organizations",
+        "files",
+        "create",
+        "--org-id",
+        org_id,
+        "--file-path",
+        file_path,
+        "--name",
+        file_name,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        f"/api/v2/organizations/{org_id}/files/",
+        body={"name": file_name},
     )
