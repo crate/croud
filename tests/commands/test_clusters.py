@@ -1454,8 +1454,8 @@ def test_import_job_create_from_file(mock_request):
         "false",
     )
     body = {
-        "type": "uploaded_file",
-        "uploaded_file": {
+        "type": "file",
+        "file": {
             "id": file_uuid,
         },
         "format": "csv",

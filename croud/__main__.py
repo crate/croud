@@ -666,7 +666,7 @@ command_tree = {
                                 "--source-cluster-id", type=str, required=False,
                                 help="The CrateDB cluster ID of the snapshot to be "
                                      "used belongs to. Must belong to the same "
-                                     "organization as the target cluster."
+                                     "organization as the target cluster. "
                                      "If not specified the ``--cluster-id`` CrateDB"
                                      " cluster will be used as the source.",
                             ),
@@ -717,36 +717,37 @@ command_tree = {
                         "commands" : {
                             "from-url": {
                                 "help": "Create a data import job on the specified "
-                                        "cluster from a url .",
+                                        "cluster from a url.",
                                 "extra_args": [
                                     # Type URL params
                                     Argument(
                                         "--url", type=str, required=True,
-                                        help="When type is URL, the URL the import "
-                                             "file will be read from."
+                                        help="The URL the import file will be read "
+                                             "from."
                                     ),
                                 ] + import_job_create_common_args,
                                 "resolver": import_jobs_create_from_url,
                             },
                             "from-file": {
                                 "help": "Create a data import job on the specified "
-                                        "cluster from a url .",
+                                        "cluster from a file.",
                                 "extra_args": [
                                     # Type file params
                                     Argument(
                                         "--file-id", type=str, required=False,
-                                        help="When type is FILE, the file ID that will "
-                                             "be used for the import."
+                                        help="The file ID that will be used for the "
+                                             "import. If not specified then --file-path"
+                                             " must be specified. "
                                              "Please refer to `croud organizations "
-                                             "file-uploads` for more info."
+                                             "files` for more info."
                                     ),
                                     Argument(
                                         "--file-path", type=str, required=False,
-                                        help="When type is FILE, the file in your "
-                                             "local filesystem that will be used."
+                                        help="The file in your local filesystem that "
+                                             "will be used. If not specified then "
+                                             "--file-id must be specified. "
                                              "Please note the file will become visible "
-                                             "under `croud organizations file-uploads "
-                                             "list`."
+                                             "under `croud organizations files list`."
                                     ),
                                 ] + import_job_create_common_args,
                                 "resolver": import_jobs_create_from_file,
@@ -918,7 +919,7 @@ command_tree = {
                 "help": "Manage organization's files.",
                 "commands": {
                     "list": {
-                        "help": "List all files to this organization.",
+                        "help": "List all files uploaded to this organization.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,

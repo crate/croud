@@ -187,6 +187,10 @@ def _get_org_id_from_cluster_id(client, cluster_id: str) -> Optional[str]:
 def import_jobs_create_from_file(args: Namespace) -> None:
     file_id = args.file_id
 
+    if not args.file_path and not args.file_id:
+        print_error("Please specify either --file-id or --file-path")
+        return
+
     if args.file_path:
         client = Client.from_args(args)
         org_id = _get_org_id_from_cluster_id(client, args.cluster_id)
@@ -201,11 +205,11 @@ def import_jobs_create_from_file(args: Namespace) -> None:
         file_id = data["id"]
 
     extra_body = {
-        "uploaded_file": {
+        "file": {
             "id": file_id,
         }
     }
-    args.type = "uploaded_file"
+    args.type = "file"
     import_jobs_create(args, extra_payload=extra_body)
 
 

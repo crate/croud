@@ -157,14 +157,26 @@ def org_files_create(args: Namespace) -> None:
     client = Client.from_args(args)
 
     data, errors = op_upload_file_to_org(client, args.org_id, args.file_path, args.name)
-
-    print_response(
-        data=data,
-        errors=errors,
-        success_message="File upload completed!",
-        keys=["id", "name", "status"],
-        output_fmt=get_output_format(args),
-    )
+    if errors or not data:
+        print_response(
+            data=data,
+            errors=errors,
+            success_message="There was a problem uploading the file.",
+            keys=["id", "name", "status"],
+            output_fmt=get_output_format(args),
+        )
+    else:
+        # Refresh the data from the file resource to get the latest status.
+        data_refresh, errors = client.get(f"/api/v2/organizations/{args.org_id}/files/")
+        if data_refresh:
+            file = [x for x in data_refresh if x["id"] == data["id"]]
+        print_response(
+            data=file,
+            errors=errors,
+            success_message="File upload completed!",
+            keys=["id", "name", "status"],
+            output_fmt=get_output_format(args),
+        )
 
 
 def org_files_delete(args: Namespace) -> None:
