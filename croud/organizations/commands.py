@@ -124,6 +124,9 @@ def org_files_list(args: Namespace) -> None:
 def op_upload_file_to_org(
     client, org_id: str, file_path: str, file_name: str = None
 ) -> Tuple[Any, Any]:
+    if not os.path.isfile(file_path):
+        return None, {"message": "The file path does not exist."}
+
     # Name the file in Cloud. If no name is provided the file path will be used.
     payload = {"name": file_name or file_path}
     print_info("Creating a new file upload...")
