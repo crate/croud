@@ -405,8 +405,9 @@ def test_organizations_files_delete(mock_request):
     )
 
 
+@mock.patch("croud.organizations.commands.os.path.isfile", return_value=True)
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_organizations_files_create(mock_request):
+def test_organizations_files_create(mock_request, mock_isfile):
     org_id = gen_uuid()
     file_path = "/path/to/file.json.gz"
     file_name = "my-file"
