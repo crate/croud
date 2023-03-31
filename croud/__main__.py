@@ -47,7 +47,8 @@ from croud.clusters.commands import (
     clusters_snapshots_list,
     clusters_snapshots_restore,
     clusters_upgrade,
-    import_jobs_create,
+    import_jobs_create_from_file,
+    import_jobs_create_from_url,
     import_jobs_delete,
     import_jobs_list,
 )
@@ -64,6 +65,9 @@ from croud.logout import logout
 from croud.me import me, me_edit
 from croud.organizations.auditlogs.commands import auditlogs_list
 from croud.organizations.commands import (
+    org_files_create,
+    org_files_delete,
+    org_files_list,
     organizations_create,
     organizations_delete,
     organizations_edit,
@@ -100,6 +104,43 @@ from croud.subscriptions.commands import (
 from croud.tools.spinner import HALO
 from croud.users.commands import users_list
 from croud.users.roles.commands import roles_list
+
+# Arguments common to all import-job create commands
+import_job_create_common_args = [
+    Argument(
+        "--cluster-id",
+        type=str,
+        required=True,
+        help="The cluster the data will be imported into.",
+    ),
+    Argument(
+        "--file-format",
+        type=str,
+        required=True,
+        choices=["csv", "json", "parquet"],
+        help="The format of the structured data in the file.",
+    ),
+    Argument(
+        "--compression",
+        type=str,
+        required=False,
+        choices=["gzip"],
+        help="The compression method the file uses.",
+    ),
+    Argument(
+        "--table",
+        type=str,
+        required=True,
+        help="The table the data will be imported into.",
+    ),
+    Argument(
+        "--create-table",
+        type=lambda x: bool(strtobool(str(x))),  # noqa
+        required=False,
+        help="Whether the table should be created automatically"
+        " if it does not exist.",
+    ),
+]
 
 # fmt: off
 command_tree = {
@@ -625,7 +666,7 @@ command_tree = {
                                 "--source-cluster-id", type=str, required=False,
                                 help="The CrateDB cluster ID of the snapshot to be "
                                      "used belongs to. Must belong to the same "
-                                     "organization as the target cluster."
+                                     "organization as the target cluster. "
                                      "If not specified the ``--cluster-id`` CrateDB"
                                      " cluster will be used as the source.",
                             ),
@@ -673,42 +714,45 @@ command_tree = {
                     },
                     "create": {
                         "help": "Create a data import job for the specified cluster.",
-                        "extra_args": [
-                            Argument(
-                                "--cluster-id", type=str, required=True,
-                                help="The cluster the data will be imported into."
-                            ),
-                            Argument(
-                                "--type", type=str, required=True, choices=["url"],
-                                help="The type of import job that will be created."
-                            ),
-                            Argument(
-                                "--url", type=str, required=True,
-                                help="When type is URL, the URL the import file will "
-                                     "be read from."
-                            ),
-                            Argument(
-                                "--file-format", type=str, required=True,
-                                choices=["csv", "json", "parquet"],
-                                help="The format of the structured data in the file."
-                            ),
-                            Argument(
-                                "--compression", type=str, required=False,
-                                choices=["gzip"],
-                                help="The compression method the file uses."
-                            ),
-                            Argument(
-                                "--table", type=str, required=True,
-                                help="The table the data will be imported into."
-                            ),
-                            Argument(
-                                "--create-table", type=lambda x: bool(strtobool(str(x))),  # noqa
-                                required=False,
-                                help="Whether the table should be created automatically"
-                                     " if it does not exist."
-                            )
-                        ],
-                        "resolver": import_jobs_create,
+                        "commands" : {
+                            "from-url": {
+                                "help": "Create a data import job on the specified "
+                                        "cluster from a url.",
+                                "extra_args": [
+                                    # Type URL params
+                                    Argument(
+                                        "--url", type=str, required=True,
+                                        help="The URL the import file will be read "
+                                             "from."
+                                    ),
+                                ] + import_job_create_common_args,
+                                "resolver": import_jobs_create_from_url,
+                            },
+                            "from-file": {
+                                "help": "Create a data import job on the specified "
+                                        "cluster from a file.",
+                                "extra_args": [
+                                    # Type file params
+                                    Argument(
+                                        "--file-id", type=str, required=False,
+                                        help="The file ID that will be used for the "
+                                             "import. If not specified then --file-path"
+                                             " must be specified. "
+                                             "Please refer to `croud organizations "
+                                             "files` for more info."
+                                    ),
+                                    Argument(
+                                        "--file-path", type=str, required=False,
+                                        help="The file in your local filesystem that "
+                                             "will be used. If not specified then "
+                                             "--file-id must be specified. "
+                                             "Please note the file will become visible "
+                                             "under `croud organizations files list`."
+                                    ),
+                                ] + import_job_create_common_args,
+                                "resolver": import_jobs_create_from_file,
+                            },
+                        },
                     },
                 },
             },
@@ -871,6 +915,55 @@ command_tree = {
                     },
                 },
             },
+            "files": {
+                "help": "Manage organization's files.",
+                "commands": {
+                    "list": {
+                        "help": "List all files uploaded to this organization.",
+                        "extra_args": [
+                            Argument(
+                                "--org-id", type=str, required=True,
+                                help="The organization ID to use.",
+                            ),
+                        ],
+                        "resolver": org_files_list,
+                    },
+                    "create": {
+                        "help": "Uploads a new file to the organization.",
+                        "extra_args": [
+                            Argument(
+                                "--org-id", type=str, required=True,
+                                help="The organization ID to use.",
+                            ),
+                            Argument(
+                                "--file-path", type=str, required=True,
+                                help="The local file to be uploaded.",
+                            ),
+                            Argument(
+                                "--name", type=str, required=False,
+                                help="The name that will be displayed when listing the "
+                                     "file. If not provided, the file name will be "
+                                     "used.",
+                            ),
+                        ],
+                        "resolver": org_files_create,
+                    },
+                    "delete": {
+                        "help": "Deletes a previously uploaded file.",
+                        "extra_args": [
+                            Argument(
+                                "--org-id", type=str, required=True,
+                                help="The organization ID to use.",
+                            ),
+                            Argument(
+                                "--file-id", type=str, required=True,
+                                help="The ID of the file.",
+                            ),
+                        ],
+                        "resolver": org_files_delete,
+                    },
+                }
+            }
         },
     },
     "users": {

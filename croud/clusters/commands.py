@@ -19,13 +19,14 @@
 import time
 from argparse import Namespace
 from datetime import datetime, timedelta, timezone
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 import bitmath
 
 from croud.api import Client
 from croud.clusters.exceptions import AsyncOperationNotFound
 from croud.config import get_output_format
+from croud.organizations.commands import op_upload_file_to_org
 from croud.printer import print_error, print_info, print_response, print_success
 from croud.tools.spinner import HALO
 from croud.util import require_confirmation
@@ -159,12 +160,62 @@ def clusters_scale(args: Namespace) -> None:
     )
 
 
-def import_jobs_create(args: Namespace) -> None:
-    body = {
-        "type": args.type,
+def import_jobs_create_from_url(args: Namespace) -> None:
+    extra_body = {
         "url": {
             "url": args.url,
-        },
+        }
+    }
+    args.type = "url"
+    import_jobs_create(args, extra_payload=extra_body)
+
+
+def _get_org_id_from_cluster_id(client, cluster_id: str) -> Optional[str]:
+    data, errors = client.get(f"/api/v2/clusters/{cluster_id}/")
+    if errors or not data:
+        return None
+
+    project_id = data["project_id"]
+
+    data, errors = client.get(f"/api/v2/projects/{project_id}/")
+    if errors or not data:
+        return None
+
+    return data["organization_id"]
+
+
+def import_jobs_create_from_file(args: Namespace) -> None:
+    file_id = args.file_id
+
+    if not args.file_path and not args.file_id:
+        print_error("Please specify either --file-id or --file-path")
+        return
+
+    if args.file_path:
+        client = Client.from_args(args)
+        org_id = _get_org_id_from_cluster_id(client, args.cluster_id)
+        if not org_id:
+            print_error("Could not find the organization related to the cluster.")
+            return
+
+        data, errors = op_upload_file_to_org(client, org_id, args.file_path)
+        if errors or not data:
+            print_error("Aborted import job creation.")
+            return
+        file_id = data["id"]
+
+    extra_body = {
+        "file": {
+            "id": file_id,
+        }
+    }
+    args.type = "file"
+    import_jobs_create(args, extra_payload=extra_body)
+
+
+def import_jobs_create(args: Namespace, extra_payload: Dict[str, Any]) -> None:
+    body = {
+        "type": args.type,
         "format": args.file_format,
         "destination": {
             "table": args.table,
@@ -176,6 +227,9 @@ def import_jobs_create(args: Namespace) -> None:
 
     if args.create_table is not None:
         body["destination"]["create_table"] = args.create_table
+
+    if extra_payload:
+        body.update(extra_payload)
 
     client = Client.from_args(args)
     data, errors = client.post(

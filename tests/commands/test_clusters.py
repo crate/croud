@@ -1389,17 +1389,16 @@ def test_import_job_delete(mock_request):
 @mock.patch.object(
     Client, "request", return_value=({"id": "1", "status": "SUCCEEDED"}, None)
 )
-def test_import_job_create(mock_request):
+def test_import_job_create_from_url(mock_request):
     cluster_id = gen_uuid()
     call_command(
         "croud",
         "clusters",
         "import-jobs",
         "create",
+        "from-url",
         "--cluster-id",
         cluster_id,
-        "--type",
-        "url",
         "--url",
         "http://download-url.com/csv-file.csv.gz",
         "--file-format",
@@ -1415,6 +1414,49 @@ def test_import_job_create(mock_request):
         "type": "url",
         "url": {
             "url": "http://download-url.com/csv-file.csv.gz",
+        },
+        "format": "csv",
+        "destination": {"table": "my-table", "create_table": False},
+        "compression": "gzip",
+    }
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        f"/api/v2/clusters/{cluster_id}/import-jobs/",
+        body=body,
+        any_times=True,
+    )
+
+
+@mock.patch.object(
+    Client, "request", return_value=({"id": "1", "status": "SUCCEEDED"}, None)
+)
+def test_import_job_create_from_file(mock_request):
+    cluster_id = gen_uuid()
+    file_uuid = gen_uuid()
+    call_command(
+        "croud",
+        "clusters",
+        "import-jobs",
+        "create",
+        "from-file",
+        "--cluster-id",
+        cluster_id,
+        "--file-id",
+        file_uuid,
+        "--file-format",
+        "csv",
+        "--compression",
+        "gzip",
+        "--table",
+        "my-table",
+        "--create-table",
+        "false",
+    )
+    body = {
+        "type": "file",
+        "file": {
+            "id": file_uuid,
         },
         "format": "csv",
         "destination": {"table": "my-table", "create_table": False},
