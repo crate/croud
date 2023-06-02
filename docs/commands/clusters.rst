@@ -94,10 +94,10 @@ Deployment of testing/nightly versions
 For the users that want to get their hands on new features early, it's
 possible to deploy versions from our ``testing`` and ``nightly`` channels.
 
-``Testing`` - These are versions that are being evaluated for promotion
+``testing`` - These are versions that are being evaluated for promotion
 to a stable release.
 
-``Nightly`` - These are built every night with the latest changes. They
+``nightly`` - These are built every night with the latest changes. They
 will possibly contain newer features, but they also have potential to be less
 stable than ``testing`` channel.
 
