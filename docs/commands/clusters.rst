@@ -91,7 +91,7 @@ Example
 Deployment of testing/nightly versions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For the users that want to get their hands on new features early, it's
+For the users that want to get their hands on new features early, it is
 possible to deploy versions from our ``testing`` and ``nightly`` channels.
 
 ``testing`` - These are versions that are being evaluated for promotion
@@ -110,7 +110,7 @@ We want to emphasize the following about ``testing`` and ``nightly`` channels:
 * They are not suitable for production deployments.
 
 * It is not possible to switch channels, e.g from ``testing`` to ``nightly``,
-  or from ``testing`` to stable.
+  or from ``testing`` to ``stable``.
 
 Example
 ^^^^^^^
