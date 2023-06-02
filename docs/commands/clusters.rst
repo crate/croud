@@ -88,6 +88,46 @@ Example
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        1 | 4.8.0        | 952cd102-91c1-4837-962a-12ecb71a6ba8 | admin       | my-first-crate-cluster.eastus.azure.cratedb.net. |
    +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
 
+Deployment of testing/nightly versions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For the users that want to get their hands on new features early, it's 
+possible to deploy versions from our ``testing`` and ``nightly`` channels.
+
+* ``Testing`` - These are versions that are being evaluated for promotion
+to a stable release.
+
+* ``Nightly`` - These are built every night with the latest changes. They
+will possibly contain newer features, but they also have potential to be less
+stable than ``testing`` channel.
+
+Both ``testing`` and ``nightly`` channel releases are available here.
+
+We want to emphasize the following about ``testing`` and ``nightly`` channels:
+
+1. They are for advanced users only.
+2. They are not suitable for production deployments.
+3. It is not possible to switch channels, e.g from ``testing`` to ``nightly``,
+  or from ``testing`` to stable.
+
+Example
+^^^^^^^
+
+.. code-block:: console
+
+   sh$ croud clusters deploy 
+       --product-name cr1 
+       --tier default 
+       --cluster-name test-deployment 
+       --project-id bdf523d0-ebc8-4f67-8e15-67d4225a20f9 
+       --version nightly-5.4.0-20230531 
+       --username "admin" 
+       --password "vogRjkY3TR$$P@UvogRjkY3TR$$P@U7vogRjkY3TR$$P@U7" 
+       --subscription-id 7598dc2b-a12e-123b-b776-a5123d4a123d 
+       --channel nightly 
+       --unit 0
+
+
 ``clusters scale``
 ==================
 
