@@ -34,7 +34,7 @@ def me(args: Namespace) -> None:
     print_response(
         data=data,
         errors=errors,
-        keys=["email", "username"],
+        keys=["email", "username", "idp"],
         output_fmt=get_output_format(args),
     )
 
