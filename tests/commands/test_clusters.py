@@ -151,6 +151,84 @@ def test_clusters_deploy(_mock_sleep, mock_request, status):
     )
 
 
+@mock.patch.object(Client, "request", return_value=({}, None))
+@mock.patch("time.sleep")
+def test_clusters_deploy_no_project(_mock_sleep, mock_request):
+    cluster_id = gen_uuid()
+    subscription_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.POST:
+            return {"id": cluster_id}, None
+        if args[0] == RequestMethod.GET and "/operations/" in args[1]:
+            global times_create_operations_called
+            if times_create_operations_called == 0:
+                times_create_operations_called += 1
+                return {"operations": [{"status": "SENT"}]}, None
+            return {"operations": [{"status": "SUCCEEDED"}]}, None
+        return None, None
+
+    mock_request.side_effect = mock_call
+    call_command(
+        "croud",
+        "clusters",
+        "deploy",
+        "--product-name",
+        "cratedb.az1",
+        "--tier",
+        "xs",
+        "--unit",
+        "1",
+        "--cluster-name",
+        "crate_cluster",
+        "--version",
+        "3.2.5",
+        "--username",
+        "foobar",
+        "--password",
+        "s3cr3t!",
+        "--subscription-id",
+        subscription_id,
+        "--org-id",
+        "123",
+        "--region",
+        "some.region",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        "/api/v2/organizations/123/clusters/",
+        body={
+            "cluster": {
+                "crate_version": "3.2.5",
+                "name": "crate_cluster",
+                "password": "s3cr3t!",
+                "product_name": "cratedb.az1",
+                "product_tier": "xs",
+                "product_unit": 1,
+                "username": "foobar",
+                "channel": "stable",
+            },
+            "project": {"name": "crate_cluster", "region": "some.region"},
+            "subscription_id": subscription_id,
+        },
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/operations/",
+        params={"type": "CREATE", "limit": 1},
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/",
+        any_times=True,
+    )
+
+
 @mock.patch.object(Client, "request", return_value=(None, {}))
 def test_clusters_deploy_fails(mock_request, capsys):
     project_id = gen_uuid()
@@ -207,6 +285,38 @@ def test_clusters_deploy_fails(mock_request, capsys):
     )
     _, err_output = capsys.readouterr()
     assert "Some Error" in err_output
+
+
+@pytest.mark.parametrize(
+    "additional_args", [[], ["--org-id", "123"], ["--region", "region"]]
+)
+def test_clusters_deploy_missing_args(additional_args, capsys):
+    args = [
+        "croud",
+        "clusters",
+        "deploy",
+        "--product-name",
+        "cratedb.az1",
+        "--tier",
+        "xs",
+        "--unit",
+        "1",
+        "--cluster-name",
+        "crate_cluster",
+        "--version",
+        "3.2.5",
+        "--username",
+        "foobar",
+        "--password",
+        "s3cr3t!",
+        "--subscription-id",
+        "123",
+    ]
+    call_command(*(args + additional_args))
+    _, err_output = capsys.readouterr()
+    assert (
+        "Either a project id or organization id and region are required." in err_output
+    )
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
@@ -1254,7 +1364,8 @@ times_restore_operations_called = 0
 
 
 @mock.patch.object(Client, "request")
-def test_cluster_snapshots_restore(mock_request):
+@mock.patch("time.sleep")
+def test_cluster_snapshots_restore(_mock_sleep, mock_request):
     cluster_id = gen_uuid()
 
     def mock_call(*args, **kwargs):
@@ -1308,7 +1419,8 @@ times_opt_restore_operations_called = 0
 
 
 @mock.patch.object(Client, "request")
-def test_cluster_snapshots_restore_with_optional_params(mock_request):
+@mock.patch("time.sleep")
+def test_cluster_snapshots_restore_with_optional_params(_mock_sleep, mock_request):
     cluster_id = gen_uuid()
 
     def mock_call(*args, **kwargs):

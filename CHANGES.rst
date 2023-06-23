@@ -5,6 +5,10 @@ Changes for croud
 Unreleased
 ==========
 
+- Added option to deploy clusters without first having to create a project.
+  This is done by specifying a ``--org-id`` and ``--region``, at which point
+  the project will be created on-the-fly.
+
 1.4.0 - 2023/06/22
 ==================
 
