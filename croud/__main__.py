@@ -431,8 +431,14 @@ command_tree = {
                         help="The product scale unit to use.",
                     ),
                     Argument(
-                        "-p", "--project-id", type=str, required=True,
+                        "-p", "--project-id", type=str,
+                        required=False,
                         help="The project ID to use.",
+                    ),
+                    Argument(
+                        "--org-id", type=str,
+                        required=False,
+                        help="The organization ID to use.",
                     ),
                     Argument(
                         "--cluster-name", type=str, required=True,

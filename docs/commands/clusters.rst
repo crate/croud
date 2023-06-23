@@ -68,15 +68,16 @@ Example
        --product-name cr1 \
        --tier default \
        --cluster-name my-first-crate-cluster \
-       --project-id 952cd102-91c1-4837-962a-12ecb71a6ba8 \
-       --version 4.8.0 \
+       --org-id 952cd102-91c1-4837-962a-12ecb71a6ba8 \
+       --region aks1.westeurope.azure \
+       --version 5.3.2 \
        --username admin \
        --password "8Hed#kd$8^9i4Q#65fT4GKQI" \
        --subscription-id 782dfc00-7b25-4f48-8381-b1b096dd1619
    +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
    | id                                   | name                   | numNodes | crateVersion | projectId                            | username    | fqdn                                             |
    |--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------|
-   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        1 | 4.8.0        | 952cd102-91c1-4837-962a-12ecb71a6ba8 | admin       | my-first-crate-cluster.eastus.azure.cratedb.net. |
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        1 | 5.3.2        | 952cd102-91c1-4837-962a-12ecb71a6ba8 | admin       | my-first-crate-cluster.eastus.azure.cratedb.net. |
    +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
    ==> Info: Cluster creation initiated. It may take a few minutes to complete.
    ==> Info: Status: REGISTERED (Your creation request was received and is pending processing.)

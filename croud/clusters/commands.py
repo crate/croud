@@ -73,6 +73,11 @@ def clusters_list(args: Namespace) -> None:
 
 
 def clusters_deploy(args: Namespace) -> None:
+    if not args.project_id and not (args.org_id and args.region):
+        # We cannot have dynamically required params in croud, so have to verify here.
+        print_error("Either a project id or organization id and region are required.")
+        return
+
     body = {
         "cluster": {
             "crate_version": args.version,
@@ -83,16 +88,22 @@ def clusters_deploy(args: Namespace) -> None:
             "username": args.username,
             "channel": args.channel,
         },
-        "project_id": args.project_id,
         "subscription_id": args.subscription_id,
     }
+    if args.project_id:
+        body["project_id"] = args.project_id
+    else:
+        body["project"] = {"name": args.cluster_name, "region": args.region}
+
     if args.unit:
         body["cluster"]["product_unit"] = args.unit
     _handle_edge_params(body["cluster"], args)
 
     client = Client.from_args(args)
 
-    org_id = _lookup_organization_id_for_project(client, args, args.project_id)
+    org_id = args.org_id or _lookup_organization_id_for_project(
+        client, args, args.project_id
+    )
     if not org_id:
         return
 
