@@ -9,6 +9,12 @@ Unreleased
   This is done by specifying a ``--org-id`` and ``--region``, at which point
   the project will be created on-the-fly.
 
+- Added new resource ``clusters export-jobs`` and subcommands that allow
+  organization admins to manage export jobs.
+
+- Added new subcommand ``get`` for the resource ``organizations files`` that
+  returns a single file by its ID.
+
 1.4.0 - 2023/06/22
 ==================
 
