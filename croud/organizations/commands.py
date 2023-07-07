@@ -20,6 +20,7 @@ import os
 from argparse import Namespace
 from typing import Any, Tuple
 
+import bitmath
 import requests
 from tqdm import tqdm
 from tqdm.utils import CallbackIOWrapper
@@ -193,3 +194,25 @@ def org_files_delete(args: Namespace) -> None:
         success_message="File upload deleted.",
         output_fmt=get_output_format(args),
     )
+
+
+def org_files_get(args: Namespace) -> None:
+    client = Client.from_args(args)
+    data, errors = client.get(
+        f"/api/v2/organizations/{args.org_id}/files/{args.file_id}/"
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "status", "file_size", "download_url"],
+        output_fmt=get_output_format(args),
+        transforms={
+            "file_size": _transform_file_size,
+        },
+    )
+
+
+def _transform_file_size(size_bytes):
+    if not size_bytes:
+        return None
+    return bitmath.Byte(size_bytes).best_prefix().format("{value:.2f} {unit}")

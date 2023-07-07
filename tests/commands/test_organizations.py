@@ -374,6 +374,27 @@ def test_role_fqn_transform():
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_files_get(mock_request):
+    org_id = gen_uuid()
+    file_id = gen_uuid()
+    call_command(
+        "croud",
+        "organizations",
+        "files",
+        "get",
+        "--org-id",
+        org_id,
+        "--file-id",
+        file_id,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/organizations/{org_id}/files/{file_id}/",
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
 def test_organizations_files_list(mock_request):
     org_id = gen_uuid()
 

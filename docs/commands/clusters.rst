@@ -585,4 +585,95 @@ Example
     This command will wait for the operation to finish or fail. It is only available
     to organization and project admins.
 
+
+``clusters export-jobs``
+========================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters export-jobs
+   :nosubcommands:
+
+
+``clusters export-jobs create``
+===============================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters export-jobs create
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ ❯ croud clusters export-jobs create --cluster-id f6c39580-5719-431d-a508-0cee4f9e8209 \
+         --table nyc_taxi --file-format csv
+   +--------------------------------------+--------------------------------------+------------+
+   | id                                   | cluster_id                           | status     |
+   |--------------------------------------+--------------------------------------+------------|
+   | 85dc0024-b049-4b9d-b100-4bf850881692 | f6c39580-5719-431d-a508-0cee4f9e8209 | REGISTERED |
+   +--------------------------------------+--------------------------------------+------------+
+   ==> Info: Status: SENT (Your creation request was sent to the region.)
+   ==> Info: Status: IN_PROGRESS (Export in progress)
+   ==> Info: Exporting... 2.00 K records and 19.53 KiB exported so far.
+   ==> Info: Exporting... 4.00 K records and 39.06 KiB exported so far.
+   ==> Info: Done exporting 6.00 K records and 58.59 KiB.
+   ==> Success: Download URL: https://cratedb-file-uploads.s3.amazonaws.com/some/download
+   ==> Success: Operation completed.
+
+
+.. NOTE::
+
+    This command will wait for the operation to finish or fail. It is only available
+    to organization admins.
+
+
+``clusters export-jobs list``
+=============================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters export-jobs list
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ ❯ croud clusters export-jobs list \
+         --cluster-id f6c39580-5719-431d-a508-0cee4f9e8209
+   +--------------------------------------+--------------------------------------+-----------+---------------------+-----------------------------------------------+
+   | id                                   | cluster_id                           | status    | source              | destination                                   |
+   |--------------------------------------+--------------------------------------+-----------+---------------------+-----------------------------------------------|
+   | b311ba9d-9cb4-404a-b58d-c442ae251dbf | f6c39580-5719-431d-a508-0cee4f9e8209 | SUCCEEDED | nyc_taxi            | Format: csv                                   |
+   |                                      |                                      |           |                     | File ID: 327ad0e6-607f-4f99-a4cc-c1e98bf28e4d |
+   +--------------------------------------+--------------------------------------+-----------+---------------------+-----------------------------------------------+
+
+
+``clusters export-jobs delete``
+===============================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters export-jobs delete
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ ❯ croud clusters export-jobs delete \
+         --cluster-id f6c39580-5719-431d-a508-0cee4f9e8209 \
+         --export-job-id 3b311ba9d-9cb4-404a-b58d-c442ae251dbf
+   ==> Success: Success.
+
 .. _here: https://hub.docker.com/r/crate/crate/tags

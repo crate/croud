@@ -16,12 +16,17 @@
 # However, if you have executed another commercial license agreement
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
+import functools
+import pathlib
 import time
 from argparse import Namespace
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Optional
+from shutil import copyfileobj
+from typing import Any, Dict, Optional, cast
 
 import bitmath
+import requests
+from tqdm.auto import tqdm
 
 from croud.api import Client
 from croud.clusters.exceptions import AsyncOperationNotFound
@@ -253,25 +258,6 @@ def import_jobs_create(args: Namespace, extra_payload: Dict[str, Any]) -> None:
         output_fmt=get_output_format(args),
     )
 
-    def import_job_feedback_func(status: str, feedback: dict):
-        num_records = feedback.get("progress", {}).get("records")
-        num_bytes = feedback.get("progress", {}).get("bytes")
-
-        records_normalized = num_records
-
-        if num_records > 1_000_000:
-            records_normalized = f"{records_normalized / 1_000_000:.2f} M"
-        elif num_records > 1_000:
-            records_normalized = f"{records_normalized / 1_000:.2f} K"
-
-        size = bitmath.Byte(num_bytes).best_prefix().format("{value:.2f} {unit}")
-        if status == "SUCCEEDED":
-            print_info(f"Done importing {records_normalized} records and {size}.")
-        else:
-            print_info(
-                f"Importing... {records_normalized} records and {size} imported so far."
-            )
-
     if data:
         import_job_id = data["id"]
 
@@ -280,7 +266,10 @@ def import_jobs_create(args: Namespace, extra_payload: Dict[str, Any]) -> None:
             cluster_id=args.cluster_id,
             request_params={"import_job_id": import_job_id},
             operation_status_func=_get_import_job_operation_status,
-            feedback_func=import_job_feedback_func,
+            feedback_func=(
+                _data_job_feedback_func,
+                ("import",),
+            ),
         )
 
 
@@ -663,6 +652,83 @@ def clusters_snapshots_restore(args: Namespace) -> None:
     )
 
 
+def export_jobs_create(args: Namespace) -> None:
+    body = {
+        "source": {
+            "table": args.table,
+        },
+        "destination": {"format": args.file_format},
+    }
+
+    if args.compression:
+        body["compression"] = args.compression
+
+    client = Client.from_args(args)
+    data, errors = client.post(
+        f"/api/v2/clusters/{args.cluster_id}/export-jobs/", body=body
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "cluster_id", "status"],
+        output_fmt=get_output_format(args),
+    )
+
+    if data:
+        export_job_id = data["id"]
+
+        _wait_for_completed_operation(
+            client=client,
+            cluster_id=args.cluster_id,
+            request_params={"export_job_id": export_job_id},
+            operation_status_func=_get_export_job_operation_status,
+            feedback_func=(
+                _data_job_feedback_func,
+                ("export",),
+            ),
+            post_success_func=(
+                _download_exported_file,
+                (client, args.cluster_id, args.save_as, export_job_id),
+            ),
+        )
+
+
+def export_jobs_delete(args: Namespace) -> None:
+    client = Client.from_args(args)
+    data, errors = client.delete(
+        f"/api/v2/clusters/{args.cluster_id}/export-jobs/{args.export_job_id}/"
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "cluster_id", "status"],
+        output_fmt=get_output_format(args),
+    )
+
+
+def export_jobs_list(args: Namespace) -> None:
+    client = Client.from_args(args)
+    data, errors = client.get(f"/api/v2/clusters/{args.cluster_id}/export-jobs/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "cluster_id", "status", "source", "destination"],
+        output_fmt=get_output_format(args),
+        transforms={
+            "source": _transform_export_job_source,
+            "destination": _transform_export_job_destination,
+        },
+    )
+
+
+def _transform_export_job_source(field):
+    return field["table"]
+
+
+def _transform_export_job_destination(field):
+    return f"Format: {field['format']}\nFile ID: {field.get('file', {}).get('id')}"
+
+
 # We want to map the custom hardware specs to slightly nicer params in croud,
 # hence this mapping here
 def _handle_edge_params(body, args):
@@ -717,6 +783,105 @@ def _get_import_job_operation_status(
     return status, msg, feedback_data
 
 
+def _get_formatted_size(feedback: dict) -> str:
+    num_bytes = feedback.get("progress", {}).get("bytes")
+    return bitmath.Byte(num_bytes).best_prefix().format("{value:.2f} {unit}")
+
+
+def _get_formatted_records_normalized(feedback: dict) -> str:
+    num_records = feedback.get("progress", {}).get("records")
+
+    records_normalized = num_records
+
+    if num_records > 1_000_000:
+        records_normalized = f"{records_normalized / 1_000_000:.2f} M"
+    elif num_records > 1_000:
+        records_normalized = f"{records_normalized / 1_000:.2f} K"
+
+    return records_normalized
+
+
+def _data_job_feedback_func(status: str, feedback: dict, job_type: str):
+    records_normalized = _get_formatted_records_normalized(feedback)
+    size = _get_formatted_size(feedback)
+
+    if status == "SUCCEEDED":
+        print_info(f"Done {job_type}ing {records_normalized} records and {size}.")
+    else:
+        print_info(
+            f"{job_type}ing... {records_normalized} records and {size} {job_type}ed "
+            "so far."
+        )
+
+
+def _download_exported_file(
+    client: Client, cluster_id: str, save_as: str, export_job_id: str
+):
+    data, errors = client.get(
+        f"/api/v2/clusters/{cluster_id}/export-jobs/{export_job_id}/"
+    )
+
+    if not data or not data.get("progress"):
+        raise AsyncOperationNotFound("Failed retrieving operation status.")
+
+    status = data["status"]
+    if status == "SUCCEEDED":
+        file_id = data.get("destination", {}).get("file", {}).get("id")
+        if file_id:
+            org_id = _get_org_id_from_cluster_id(client, cluster_id)
+            data, errors = client.get(
+                f"/api/v2/organizations/{org_id}/files/{file_id}/"
+            )
+            file_data: dict = cast(dict, data)
+            if not (file_data and file_data.get("download_url")):
+                print_error("File could not be fetched.")
+            if not save_as:
+                print_success(f"Download URL: {file_data['download_url']}")
+                return
+            HALO.stop()
+            print_info("Downloading file...")
+
+            r = requests.get(
+                file_data["download_url"], stream=True, allow_redirects=True
+            )
+            if r.status_code != 200:
+                r.raise_for_status()
+                print_error(
+                    f"Request to {file_data['download_url']} returned status code "
+                    f"{r.status_code}"
+                )
+            file_size = int(r.headers.get("Content-Length", 0))
+
+            path = pathlib.Path(save_as).expanduser().resolve()
+            path.parent.mkdir(parents=True, exist_ok=True)
+
+            desc = "(Unknown total file size)" if file_size == 0 else ""
+            r.raw.read = functools.partial(r.raw.read, decode_content=True)
+            with tqdm.wrapattr(r.raw, "read", total=file_size, desc=desc) as r_raw:
+                with path.open("wb") as f:
+                    copyfileobj(r_raw, f)
+
+            print_success(f"Successfully downloaded file to {path}")
+
+
+def _get_export_job_operation_status(
+    client: Client, cluster_id: str, request_params: Dict
+):
+    export_job_id = request_params["export_job_id"]
+    data, errors = client.get(
+        f"/api/v2/clusters/{cluster_id}/export-jobs/{export_job_id}/"
+    )
+
+    if not data or not data.get("progress"):
+        raise AsyncOperationNotFound("Failed retrieving export operation status.")
+
+    status = data["status"]
+    feedback_data = {"progress": data["progress"]}
+    msg = data["progress"]["message"]
+
+    return status, msg, feedback_data
+
+
 def _wait_for_completed_operation(
     *,
     client: Client,
@@ -724,6 +889,7 @@ def _wait_for_completed_operation(
     request_params: Dict,
     operation_status_func=_get_operation_status,
     feedback_func=None,
+    post_success_func=None,
 ):
     last_status = None
     last_msg = None
@@ -747,10 +913,14 @@ def _wait_for_completed_operation(
 
         # Call for custom feedback if function available and there is status to report.
         if status in ["IN_PROGRESS", "SUCCEEDED"] and feedback_func:
-            feedback_func(status, feedback)
+            (feedback_func, feedback_args) = feedback_func
+            feedback_func(status, feedback, *feedback_args)
 
         # Final statuses
         if status == "SUCCEEDED":
+            if post_success_func:
+                (func, call_args) = post_success_func
+                func(*call_args)
             print_success("Operation completed.")
             break
         if status == "FAILED":

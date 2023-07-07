@@ -1619,3 +1619,185 @@ def test_import_job_list(mock_request):
         "/api/v2/clusters/123/import-jobs/",
         params=None,
     )
+
+
+@mock.patch.object(
+    Client,
+    "request",
+    return_value=(
+        [
+            {
+                "cluster_id": "12345",
+                "dc": {
+                    "created": "2023-07-04T10:12:29.763000+00:00",
+                    "modified": "2023-07-04T10:12:29.763000+00:00",
+                },
+                "source": {"table": "my_table"},
+                "destination": {"format": "csv", "file": {"id": ""}},
+                "id": "45678",
+                "progress": {
+                    "bytes": 0,
+                    "message": "Failed",
+                    "records": 0,
+                },
+                "status": "FAILED",
+            }
+        ],
+        None,
+    ),
+)
+def test_export_job_list(mock_request):
+    cluster_id = gen_uuid()
+    call_command("croud", "clusters", "export-jobs", "list", "--cluster-id", cluster_id)
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/export-jobs/",
+        params=None,
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_export_job_delete(mock_request):
+    cluster_id = gen_uuid()
+    export_job_id = gen_uuid()
+    call_command(
+        "croud",
+        "clusters",
+        "export-jobs",
+        "delete",
+        "--export-job-id",
+        export_job_id,
+        "--cluster-id",
+        cluster_id,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.DELETE,
+        f"/api/v2/clusters/{cluster_id}/export-jobs/{export_job_id}/",
+    )
+
+
+@pytest.mark.parametrize("save_file", [True, False])
+@mock.patch("croud.clusters.commands.copyfileobj")
+@mock.patch.object(Client, "request")
+def test_export_job_create(mock_client_request, mock_copy, save_file):
+    cluster_id = gen_uuid()
+    project_id = gen_uuid()
+    org_id = gen_uuid()
+    file_id = gen_uuid()
+    export_job_id = gen_uuid()
+    mock_client_request.side_effect = [
+        (
+            {
+                "id": export_job_id,
+                "status": "IN_PROGRESS",
+                "progress": {"message": "Export in progress."},
+            },
+            None,
+        ),
+        (
+            {
+                "id": export_job_id,
+                "status": "SUCCEEDED",
+                "destination": {"file": {"id": file_id}},
+                "progress": {
+                    "message": "Export finished successfully.",
+                    "records": 123,
+                    "bytes": 456,
+                },
+            },
+            None,
+        ),
+        (
+            {
+                "id": export_job_id,
+                "status": "SUCCEEDED",
+                "destination": {"file": {"id": file_id}},
+                "progress": {
+                    "message": "Export finished successfully.",
+                    "records": 123,
+                    "bytes": 456,
+                },
+            },
+            None,
+        ),
+        ({"project_id": project_id}, None),
+        ({"organization_id": org_id}, None),
+        (
+            {"download_url": "https://s3-presigned-url.s3.amazonaws.com/some/bla"},
+            None,
+        ),
+    ]
+
+    cluster_id = gen_uuid()
+
+    mock_response = mock.MagicMock()
+    mock_response.headers = {"Content-Length": 123}
+    mock_response.status_code = 200
+
+    with mock.patch("requests.get", return_value=mock_response):
+        with mock.patch("builtins.open", mock.mock_open(read_data="id,name,path")):
+            cmd = (
+                "croud",
+                "clusters",
+                "export-jobs",
+                "create",
+                "--cluster-id",
+                cluster_id,
+                "--file-format",
+                "csv",
+                "--table",
+                "my-table",
+                "--compression",
+                "gzip",
+            )
+            if save_file:
+                cmd = cmd + (
+                    "--save-as",
+                    "./my_table.csv",
+                )
+            call_command(*cmd)
+
+    body = {
+        "source": {
+            "table": "my-table",
+        },
+        "destination": {"format": "csv"},
+        "compression": "gzip",
+    }
+    assert_rest(
+        mock_client_request,
+        RequestMethod.POST,
+        f"/api/v2/clusters/{cluster_id}/export-jobs/",
+        body=body,
+        any_times=True,
+    )
+    assert_rest(
+        mock_client_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/export-jobs/{export_job_id}/",
+        any_times=True,
+    )
+    assert_rest(
+        mock_client_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/",
+        any_times=True,
+    )
+    assert_rest(
+        mock_client_request,
+        RequestMethod.GET,
+        f"/api/v2/projects/{project_id}/",
+        any_times=True,
+    )
+    assert_rest(
+        mock_client_request,
+        RequestMethod.GET,
+        f"/api/v2/organizations/{org_id}/files/{file_id}/",
+        any_times=True,
+    )
+    if save_file:
+        mock_copy.assert_called_once()
+    else:
+        mock_copy.assert_not_called()

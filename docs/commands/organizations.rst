@@ -234,3 +234,82 @@ Example
        --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
        --user john.doe@example.io
    ==> Success: User removed from organization.
+
+
+``organizations files``
+=======================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations files
+   :nosubcommands:
+
+
+``organizations files list``
+----------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations files list
+
+Example
+.......
+
+.. code-block:: console
+
+   sh$ croud organizations files list \
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209
+   +--------------------------------------+---------------------+----------+
+   | id                                   | name                | status   |
+   |--------------------------------------+---------------------+----------|
+   | 9b5d438f-036c-410f-b6f4-9adfb1feb252 | nyc_taxi            | UPLOADED |
+   +--------------------------------------+---------------------+----------+
+
+
+``organizations files delete``
+------------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations files delete
+
+Example
+.......
+
+.. code-block:: console
+
+   sh$ croud organizations files delete \
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
+       --file-id 327ad0e6-607f-4f99-a4cc-c1e98bf28e4d
+   ==> Success: File upload deleted.
+
+
+``organizations files get``
+------------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations files get
+
+Example
+.......
+
+.. code-block:: console
+
+   sh$ croud organizations files get \
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
+       --file-id 327ad0e6-607f-4f99-a4cc-c1e98bf28e4d
+   +--------------------------------------+----------+----------+-------------+-------------------------------------------------------------+
+   | id                                   | name     | status   | file_size   | download_url                                                |
+   |--------------------------------------+----------+----------+-------------+-------------------------------------------------------------|
+   | 327ad0e6-607f-4f99-a4cc-c1e98bf28e4d | nyc_taxi | UPLOADED | 107.56 MiB  | https://cratedb-file-uploads.s3.amazonaws.com/some/download |
+   +--------------------------------------+----------+----------+-------------+-------------------------------------------------------------+
+

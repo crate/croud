@@ -47,6 +47,9 @@ from croud.clusters.commands import (
     clusters_snapshots_list,
     clusters_snapshots_restore,
     clusters_upgrade,
+    export_jobs_create,
+    export_jobs_delete,
+    export_jobs_list,
     import_jobs_create_from_file,
     import_jobs_create_from_url,
     import_jobs_delete,
@@ -67,6 +70,7 @@ from croud.organizations.auditlogs.commands import auditlogs_list
 from croud.organizations.commands import (
     org_files_create,
     org_files_delete,
+    org_files_get,
     org_files_list,
     organizations_create,
     organizations_delete,
@@ -762,6 +766,78 @@ command_tree = {
                     },
                 },
             },
+            "export-jobs": {
+                "help": "Manage data export jobs.",
+                "commands": {
+                    "delete": {
+                        "help": "Cancels an already running data export job that has "
+                                "not finished yet. "
+                                "If the job has already finished it deletes it from "
+                                "the job history.",
+                        "extra_args": [
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The cluster the job belongs to."
+                            ),
+                            Argument(
+                                "--export-job-id", type=str,
+                                required=True,
+                                help="The ID of the export job."
+                            ),
+                        ],
+                        "resolver": export_jobs_delete,
+                    },
+                    "list": {
+                        "help": "Lists data export jobs that belong to a specific "
+                                "cluster.",
+                        "extra_args": [
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The cluster the export jobs belong to."
+                            ),
+                        ],
+                        "resolver": export_jobs_list,
+                    },
+                    "create": {
+                        "help": "Create a data export job for the specified cluster.",
+                        "extra_args": [
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The cluster the data will be exported from."
+                            ),
+                            Argument(
+                                "--table",
+                                type=str,
+                                required=True,
+                                help="The table the data will be exported from.",
+                            ),
+                            Argument(
+                                "--file-format",
+                                type=str,
+                                required=True,
+                                choices=["csv", "json", "parquet"],
+                                help="The format of the data in the file.",
+                            ),
+                            Argument(
+                                "--compression",
+                                type=str,
+                                required=False,
+                                choices=["gzip"],
+                                help="The compression method of the exported file.",
+                            ),
+                            Argument(
+                                "--save-as",
+                                type=str,
+                                required=False,
+                                help="The file on your local filesystem the data will "
+                                     "be exported to. If not specified, you will "
+                                     "receive the URL to download the file.",
+                            ),
+                        ],
+                        "resolver": export_jobs_create,
+                    },
+                },
+            },
         },
     },
     "products": {
@@ -924,6 +1000,22 @@ command_tree = {
             "files": {
                 "help": "Manage organization's files.",
                 "commands": {
+                    "get": {
+                        "help": (
+                            "Get a file by its ID."
+                        ),
+                        "extra_args": [
+                            Argument(
+                                "--org-id", type=str, required=True,
+                                help="The organization ID to use.",
+                            ),
+                            Argument(
+                                "--file-id", type=str, required=True,
+                                help="The ID of the file.",
+                            ),
+                        ],
+                        "resolver": org_files_get,
+                    },
                     "list": {
                         "help": "List all files uploaded to this organization.",
                         "extra_args": [
