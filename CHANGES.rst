@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Dropped support for Python 3.7.
+
 1.5.0 - 2023/07/27
 ==================
 
