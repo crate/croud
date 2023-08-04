@@ -22,6 +22,7 @@ from argparse import Namespace
 from croud.api import Client
 from croud.config import get_output_format
 from croud.printer import print_response, print_warning
+from croud.util import require_confirmation
 
 
 def transform_roles_list(key):
@@ -49,4 +50,20 @@ def users_list(args: Namespace) -> None:
             "organization_roles": transform_roles_list("organization_id"),
             "project_roles": transform_roles_list("project_id"),
         },
+    )
+
+
+@require_confirmation(
+    "Are you sure you want to delete the user?",
+    cancel_msg="User deletion cancelled.",
+)
+def users_delete(args: Namespace) -> None:
+    client = Client.from_args(args)
+
+    data, errors = client.delete(f"/api/v2/users/{args.user_id}/")
+    print_response(
+        data=data,
+        errors=errors,
+        success_message="User deleted.",
+        output_fmt=get_output_format(args),
     )
