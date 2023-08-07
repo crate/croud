@@ -67,7 +67,7 @@ setup(
             "mypy==0.812",
         ],
     },
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
