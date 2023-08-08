@@ -619,11 +619,19 @@ def clusters_snapshots_restore(args: Namespace) -> None:
         "repository": args.repository,
         "snapshot": args.snapshot,
     }
+    if args.type:
+        body["type"] = args.type
+    else:
+        # fallback for backwards compatibility
+        body["type"] = "tables"
     if args.source_cluster_id:
         body["source_cluster_id"] = args.source_cluster_id
     if args.tables:
         tables = args.tables.strip().split(",")
         body["tables"] = [x.strip() for x in tables]
+    if args.sections:
+        sections = args.sections.strip().split(",")
+        body["sections"] = [s.strip() for s in sections]
 
     client = Client.from_args(args)
     data, errors = client.post(url, body=body)
