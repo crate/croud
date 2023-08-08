@@ -1383,6 +1383,7 @@ def test_cluster_snapshots_restore(_mock_sleep, mock_request):
     body = {
         "snapshot": "the-snapshot-name",
         "repository": "a-repository",
+        "type": "all",
     }
 
     call_command(
@@ -1396,6 +1397,8 @@ def test_cluster_snapshots_restore(_mock_sleep, mock_request):
         body["repository"],
         "--snapshot",
         body["snapshot"],
+        "--type",
+        body["type"],
     )
     assert_rest(
         mock_request,
@@ -1439,6 +1442,7 @@ def test_cluster_snapshots_restore_with_optional_params(_mock_sleep, mock_reques
         "snapshot": "the-snapshot-name",
         "repository": "a-repository",
         "source_cluster_id": "another-cluster-id",
+        "type": "tables",
         "tables": ["table1", "table2"],
     }
 
@@ -1455,6 +1459,8 @@ def test_cluster_snapshots_restore_with_optional_params(_mock_sleep, mock_reques
         body["snapshot"],
         "--source-cluster-id",
         body["source_cluster_id"],
+        "--type",
+        "tables",
         "--tables",
         " table1 , table2 ",  # Ensure the parameter is properly trimmed
     )

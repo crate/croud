@@ -571,7 +571,7 @@ Example
 .. code-block:: console
 
    sh$ ❯ croud clusters snapshots restore --cluster-id 705a7012-3f89-441d-a10e-b3749d05e993 \
-         --repository system_backup_20221002123456 --snapshot 20221210123456
+         --repository system_backup_20221002123456 --snapshot 20221210123456 --type all
    ==> Info: Restoring the snapshot. Depending on the amount of data you have, this might take a very long time.
    ==> Success: Operation completed.
    +------------------------+-------------------------------+-------------------+

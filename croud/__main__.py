@@ -681,9 +681,23 @@ command_tree = {
                                      " cluster will be used as the source.",
                             ),
                             Argument(
+                                "--type", type=str, required=False,
+                                choices=["all", "metadata", "tables", "sections"],
+                                help="The type of data to be restored from the "
+                                     "snapshot.",
+                            ),
+                            Argument(
                                 "--tables", type=str, required=False,
                                 help="The list of tables to restore, comma separated. "
-                                     "If not specified all tables will be restored.",
+                                     "Only valid together with ``--type tables``.",
+                            ),
+                            Argument(
+                                "--sections", type=str, required=False,
+                                help="The list of data sections to restore, comma "
+                                     "separated. Only valid together with ``--type "
+                                     "sections``. Valid sections are ``tables``, "
+                                     "``views``, ``users``, ``privileges``, "
+                                     "``analyzers`` or ``udfs``.",
                             ),
                         ],
                         "resolver": clusters_snapshots_restore,
