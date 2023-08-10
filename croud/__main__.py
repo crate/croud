@@ -106,7 +106,7 @@ from croud.subscriptions.commands import (
     subscriptions_list,
 )
 from croud.tools.spinner import HALO
-from croud.users.commands import users_list
+from croud.users.commands import users_delete, users_list
 from croud.users.roles.commands import roles_list
 
 # Arguments common to all import-job create commands
@@ -1089,6 +1089,18 @@ command_tree = {
                         "resolver": roles_list,
                     },
                 },
+            },
+            "delete": {
+                "help": "Delete the specified user. The command is for "
+                        "superusers only.",
+                "extra_args": [
+                    Argument(
+                        "--user-id", type=str, required=True,
+                        help="The user ID to use.",
+                    ),
+                    Argument("-y", "--yes", action="store_true", default=False)
+                ],
+                "resolver": users_delete,
             },
         },
     },
