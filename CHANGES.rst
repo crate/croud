@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+1.6.0 - 2023/08/24
+==================
+
 - Dropped support for Python 3.7.
 
 - Added support for deleting users.
