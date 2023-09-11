@@ -22,7 +22,7 @@
 from pkg_resources.extern.packaging.version import Version
 from setuptools import find_packages, setup
 
-__version__ = Version("1.6.0")
+__version__ = Version("1.7.0")
 
 try:
     with open("README.rst", "r", encoding="utf-8") as f:
