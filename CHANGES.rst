@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+1.7.0 - 2023/09/11
+==================
+
 - Added support for restoring different types of data from a snapshot.
 
 1.6.0 - 2023/08/24
