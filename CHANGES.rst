@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added support for listing, deleting and creating organization secrets.
+
 1.7.0 - 2023/09/11
 ==================
 

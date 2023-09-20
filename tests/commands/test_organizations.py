@@ -450,3 +450,70 @@ def test_organizations_files_create(mock_request, mock_isfile):
         f"/api/v2/organizations/{org_id}/files/",
         body={"name": file_name},
     )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_secrets_list(mock_request):
+    org_id = gen_uuid()
+
+    call_command("croud", "organizations", "secrets", "list", "--org-id", org_id)
+    assert_rest(
+        mock_request, RequestMethod.GET, f"/api/v2/organizations/{org_id}/secrets/"
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_secrets_create(mock_request):
+    org_id = gen_uuid()
+    name = "my_secret"
+    secret_type = "AWS"
+    access_key = "my_access_key"
+    secret_key = "my_secret_key"
+
+    call_command(
+        "croud",
+        "organizations",
+        "secrets",
+        "create",
+        "--org-id",
+        org_id,
+        "--name",
+        name,
+        "--type",
+        secret_type,
+        "--access-key",
+        access_key,
+        "--secret-key",
+        secret_key,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        f"/api/v2/organizations/{org_id}/secrets/",
+        body={
+            "name": name,
+            "type": secret_type,
+            "data": {"access_key": access_key, "secret_key": secret_key},
+        },
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_secrets_delete(mock_request):
+    org_id = gen_uuid()
+
+    call_command(
+        "croud",
+        "organizations",
+        "secrets",
+        "delete",
+        "--org-id",
+        org_id,
+        "--secret-id",
+        "my_secret_id",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.DELETE,
+        f"/api/v2/organizations/{org_id}/secrets/my_secret_id/",
+    )

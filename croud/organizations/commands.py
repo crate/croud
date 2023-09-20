@@ -157,6 +157,53 @@ def op_upload_file_to_org(
     return data, errors
 
 
+def org_secrets_create(args: Namespace) -> None:
+    client = Client.from_args(args)
+    payload = {
+        "name": args.name,
+        "type": args.type,
+        "data": {
+            "access_key": args.access_key,
+            "secret_key": args.secret_key,
+        },
+    }
+    data, errors = client.post(
+        f"/api/v2/organizations/{args.org_id}/secrets/", body=payload
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "type", "name", "description"],
+        success_message="Secret created.",
+        output_fmt=get_output_format(args),
+    )
+
+
+def org_secrets_list(args: Namespace) -> None:
+    client = Client.from_args(args)
+    data, errors = client.get(f"/api/v2/organizations/{args.org_id}/secrets/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "type", "name", "description"],
+        output_fmt=get_output_format(args),
+    )
+
+
+def org_secrets_delete(args: Namespace) -> None:
+    client = Client.from_args(args)
+    data, errors = client.delete(
+        f"/api/v2/organizations/{args.org_id}/secrets/{args.secret_id}/"
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "type", "name", "description"],
+        success_message="Secret deleted.",
+        output_fmt=get_output_format(args),
+    )
+
+
 def org_files_create(args: Namespace) -> None:
     client = Client.from_args(args)
 
