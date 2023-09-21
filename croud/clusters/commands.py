@@ -186,6 +186,19 @@ def import_jobs_create_from_url(args: Namespace) -> None:
     import_jobs_create(args, extra_payload=extra_body)
 
 
+def import_jobs_create_from_s3(args: Namespace) -> None:
+    extra_body = {
+        "s3": {
+            "bucket": args.bucket,
+            "file_path": args.file_path,
+            "endpoint": args.endpoint,
+            "secret_id": args.secret_id,
+        }
+    }
+    args.type = "S3"
+    import_jobs_create(args, extra_payload=extra_body)
+
+
 def _get_org_id_from_cluster_id(client, cluster_id: str) -> Optional[str]:
     data, errors = client.get(f"/api/v2/clusters/{cluster_id}/")
     if errors or not data:

@@ -51,6 +51,7 @@ from croud.clusters.commands import (
     export_jobs_delete,
     export_jobs_list,
     import_jobs_create_from_file,
+    import_jobs_create_from_s3,
     import_jobs_create_from_url,
     import_jobs_delete,
     import_jobs_list,
@@ -778,6 +779,35 @@ command_tree = {
                                     ),
                                 ] + import_job_create_common_args,
                                 "resolver": import_jobs_create_from_file,
+                            },
+                            "from-s3": {
+                                "help": "Create a data import job on the specified "
+                                        "cluster from an Amazon S3 compatible "
+                                        "location.",
+                                "extra_args": [
+                                    # Type S3 params
+                                    Argument(
+                                        "--bucket", type=str, required=True,
+                                        help="The name of the S3 bucket that contains "
+                                             "the file to be imported."
+                                    ),
+                                    Argument(
+                                        "--file-path", type=str, required=True,
+                                        help="The absolute path in the S3 bucket that "
+                                             "points to the file to be imported."
+                                    ),
+                                    Argument(
+                                        "--secret-id", type=str, required=True,
+                                        help="The secret that contains the access key "
+                                             "and secret key needed to access the file "
+                                             "to be imported."
+                                    ),
+                                    Argument(
+                                        "--endpoint", type=str, required=False,
+                                        help="An Amazon S3 compatible endpoint."
+                                    ),
+                                ] + import_job_create_common_args,
+                                "resolver": import_jobs_create_from_s3,
                             },
                         },
                     },
