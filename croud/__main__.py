@@ -1036,7 +1036,7 @@ command_tree = {
                             ),
                             Argument(
                                 "--name", type=str, required=True,
-                                help="The name the Secret will be known as.",
+                                help="The name the secret will be known as.",
                             ),
                             Argument(
                                 "--type", type=str, required=True, choices=["AWS"],
@@ -1055,7 +1055,8 @@ command_tree = {
                         "resolver": org_secrets_create,
                     },
                     "delete": {
-                        "help": "Lists all the secrets that belong to an organization.",
+                        "help": "Deletes the secret that matches the given ID for the "
+                                "organization specified.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
