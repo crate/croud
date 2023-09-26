@@ -191,11 +191,11 @@ def import_jobs_create_from_s3(args: Namespace) -> None:
         "s3": {
             "bucket": args.bucket,
             "file_path": args.file_path,
-            "endpoint": args.endpoint,
+            "endpoint": args.endpoint or "",
             "secret_id": args.secret_id,
         }
     }
-    args.type = "S3"
+    args.type = "s3"
     import_jobs_create(args, extra_payload=extra_body)
 
 
