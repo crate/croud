@@ -313,3 +313,80 @@ Example
    | 327ad0e6-607f-4f99-a4cc-c1e98bf28e4d | nyc_taxi | UPLOADED | 107.56 MiB  | https://cratedb-file-uploads.s3.amazonaws.com/some/download |
    +--------------------------------------+----------+----------+-------------+-------------------------------------------------------------+
 
+
+
+``organizations secrets``
+=========================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations secrets
+   :nosubcommands:
+
+
+``organizations secrets list``
+------------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations secrets list
+
+Example
+.......
+
+.. code-block:: console
+
+   sh$ croud organizations secrets list \
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209
+   +--------------------------------------+--------+----------+------------------+
+   | id                                   | type   | name     | description      |
+   |--------------------------------------+--------+----------+------------------|
+   | e9068b31-14f5-4629-b585-70b3b8ae73bf | AWS    | mysecret | **********esskey |
+   +--------------------------------------+--------+----------+------------------+
+
+
+``organizations secrets delete``
+--------------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations secrets delete
+
+Example
+.......
+
+.. code-block:: console
+
+   sh$ croud organizations secrets delete \
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
+       --secret-id e9068b31-14f5-4629-b585-70b3b8ae73bf
+   ==> Success: Secret deleted.
+
+
+``organizations secrets create``
+--------------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations secrets create
+
+Example
+.......
+
+.. code-block:: console
+
+   sh$ croud organizations secrests create \
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
+       --name mysecret \
+       --type AWS \
+       --access-key myaccesskey \
+       --secret-key mysecretkey
+      ==> Success: Secret created.
