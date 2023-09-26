@@ -1581,7 +1581,7 @@ def test_import_job_create_from_s3(mock_request):
         "false",
     )
     body = {
-        "type": "S3",
+        "type": "s3",
         "s3": {
             "bucket": bucket,
             "file_path": file_path,
