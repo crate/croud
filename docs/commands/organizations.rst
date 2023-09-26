@@ -387,6 +387,11 @@ Example
        --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
        --name mysecret \
        --type AWS \
-       --access-key myaccesskey \
+       --access-key AKIAUVOXAVYAPIBHQK7I \
        --secret-key mysecretkey
-      ==> Success: Secret created.
+   +--------------------------------------+--------+----------+------------------+
+   | id                                   | type   | name     | description      |
+   |--------------------------------------+--------+----------+------------------|
+   | 71e7c5da-51fa-44f2-b178-d95052cbe620 | AWS    | mysecret | **********BHQK7I |
+   +--------------------------------------+--------+----------+------------------+
+   ==> Success: Secret created.
