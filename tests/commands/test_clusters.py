@@ -1549,6 +1549,61 @@ def test_import_job_create_from_url(mock_request):
 @mock.patch.object(
     Client, "request", return_value=({"id": "1", "status": "SUCCEEDED"}, None)
 )
+def test_import_job_create_from_s3(mock_request):
+    cluster_id = gen_uuid()
+    bucket = "my-bucket-name"
+    file_path = "my-folder/my-file.csv.gz"
+    secret_id = gen_uuid()
+    endpoint = "https://my-s3-compatible-endpoint"
+    call_command(
+        "croud",
+        "clusters",
+        "import-jobs",
+        "create",
+        "from-s3",
+        "--cluster-id",
+        cluster_id,
+        "--bucket",
+        bucket,
+        "--file-path",
+        file_path,
+        "--secret-id",
+        secret_id,
+        "--endpoint",
+        endpoint,
+        "--compression",
+        "gzip",
+        "--file-format",
+        "csv",
+        "--table",
+        "my-table",
+        "--create-table",
+        "false",
+    )
+    body = {
+        "type": "s3",
+        "s3": {
+            "bucket": bucket,
+            "file_path": file_path,
+            "secret_id": secret_id,
+            "endpoint": endpoint,
+        },
+        "format": "csv",
+        "destination": {"table": "my-table", "create_table": False},
+        "compression": "gzip",
+    }
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        f"/api/v2/clusters/{cluster_id}/import-jobs/",
+        body=body,
+        any_times=True,
+    )
+
+
+@mock.patch.object(
+    Client, "request", return_value=({"id": "1", "status": "SUCCEEDED"}, None)
+)
 def test_import_job_create_from_file(mock_request):
     cluster_id = gen_uuid()
     file_uuid = gen_uuid()

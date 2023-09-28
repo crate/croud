@@ -7,6 +7,8 @@ Unreleased
 
 - Added support for listing, deleting and creating organization secrets.
 
+- Added support in import jobs for private S3 files using organization secrets.
+
 1.7.0 - 2023/09/11
 ==================
 
