@@ -672,14 +672,14 @@ Example
    sh$ croud clusters import-jobs create from-s3 --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400 \
        --secret-id 71e7c5da-51fa-44f2-b178-d95052cbe620 --bucket cratedbtestbucket \
        --file-path myfiles/cratedbimporttest.csv --file-format csv --table my_table_name
-+--------------------------------------+--------------------------------------+------------+
-| id                                   | cluster_id                           | status     |
-|--------------------------------------+--------------------------------------+------------|
-| f29fdc02-edd0-4ad9-8839-9616fccf752b | e1e38d92-a650-48f1-8a70-8133f2d5c400 | REGISTERED |
-+--------------------------------------+--------------------------------------+------------+
-==> Info: Status: REGISTERED (Your import job was received and is pending processing.)
-==> Info: Done importing 3 records and 36 Bytes.
-==> Success: Operation completed.
+   +--------------------------------------+--------------------------------------+------------+
+   | id                                   | cluster_id                           | status     |
+   |--------------------------------------+--------------------------------------+------------|
+   | f29fdc02-edd0-4ad9-8839-9616fccf752b | e1e38d92-a650-48f1-8a70-8133f2d5c400 | REGISTERED |
+   +--------------------------------------+--------------------------------------+------------+
+   ==> Info: Status: REGISTERED (Your import job was received and is pending processing.)
+   ==> Info: Done importing 3 records and 36 Bytes.
+   ==> Success: Operation completed.
 
 
 ``clusters import-jobs list``
