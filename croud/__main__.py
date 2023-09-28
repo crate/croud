@@ -72,6 +72,9 @@ from croud.organizations.commands import (
     org_files_delete,
     org_files_get,
     org_files_list,
+    org_secrets_create,
+    org_secrets_delete,
+    org_secrets_list,
     organizations_create,
     organizations_delete,
     organizations_edit,
@@ -1010,6 +1013,63 @@ command_tree = {
                         "resolver": org_users_remove,
                     },
                 },
+            },
+            "secrets": {
+                "help": "Manage organization's secrets.",
+                "commands" : {
+                    "list": {
+                        "help": "Lists all the secrets that belong to an organization.",
+                        "extra_args": [
+                            Argument(
+                                "--org-id", type=str, required=True,
+                                help="The organization ID to use.",
+                            ),
+                        ],
+                        "resolver": org_secrets_list,
+                    },
+                    "create": {
+                        "help": "Creates a new secret for the given organization.",
+                        "extra_args": [
+                            Argument(
+                                "--org-id", type=str, required=True,
+                                help="The organization ID to use.",
+                            ),
+                            Argument(
+                                "--name", type=str, required=True,
+                                help="The name the secret will be known as.",
+                            ),
+                            Argument(
+                                "--type", type=str, required=True, choices=["AWS"],
+                                help="The type of Secret. Currently only AWS type is "
+                                     "supported.",
+                            ),
+                            Argument(
+                                "--access-key", type=str, required=True,
+                                help="For an AWS type secret, the access key ID.",
+                            ),
+                            Argument(
+                                "--secret-key", type=str, required=True,
+                                help="For an AWS type secret, the secret key.",
+                            ),
+                        ],
+                        "resolver": org_secrets_create,
+                    },
+                    "delete": {
+                        "help": "Deletes the secret that matches the given ID for the "
+                                "organization specified.",
+                        "extra_args": [
+                            Argument(
+                                "--org-id", type=str, required=True,
+                                help="The organization ID to use.",
+                            ),
+                            Argument(
+                                "--secret-id", type=str, required=True,
+                                help="The secret ID to use.",
+                            ),
+                        ],
+                        "resolver": org_secrets_delete,
+                    },
+                }
             },
             "files": {
                 "help": "Manage organization's files.",
