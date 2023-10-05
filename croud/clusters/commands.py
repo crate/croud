@@ -308,7 +308,6 @@ def import_jobs_list(args: Namespace) -> None:
         keys=["id", "cluster_id", "status", "type", "destination"],
         output_fmt=get_output_format(args),
         transforms={
-            "source": lambda field: field.get(field.get("type")),
             "destination": lambda field: field.get("table"),
         },
     )
