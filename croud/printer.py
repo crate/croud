@@ -158,14 +158,22 @@ class TableFormatPrinter(FormatPrinter):
         # | bar |   2 |
         # +-----+-----+
 
-        headers = list(map(str, rows[0].keys())) if len(rows) else self.keys
+        all_keys = list(map(str, rows[0].keys())) if len(rows) else self.keys
+        if all_keys:
+            for row in rows:
+                for key in list(map(str, row.keys())):
+                    if key not in all_keys:
+                        all_keys.append(key)
+
+        headers = all_keys if len(rows) else self.keys
+
         if headers is None:
             return ""
 
         values = [
             [
                 self.transforms.get(header, TableFormatPrinter._identity_transform)(
-                    row[header]
+                    row.get(header, "")
                 )
                 for header in headers
             ]

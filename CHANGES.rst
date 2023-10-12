@@ -9,6 +9,10 @@ Unreleased
 
 - Added support in import jobs for private S3 files using organization secrets.
 
+- Added documentation for all import jobs commands.
+
+- Fixed ``import-job create from-url`` throwing an error despite working.
+
 1.7.0 - 2023/09/11
 ==================
 

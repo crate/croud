@@ -586,6 +586,146 @@ Example
     to organization and project admins.
 
 
+``clusters import-jobs``
+========================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters import-jobs
+   :nosubcommands:
+
+
+
+``clusters import-jobs create``
+===============================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters import-jobs create
+   :nosubcommands:
+
+
+``clusters import-jobs create from-url``
+========================================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters import-jobs create from-url
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud clusters import-jobs create from-url --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400 \
+       --file-format csv --table my_table_name --url https://s3.amazonaws.com/my.import.data.gz --compression gzip
+   +--------------------------------------+--------------------------------------+------------+
+   | id                                   | cluster_id                           | status     |
+   |--------------------------------------+--------------------------------------+------------|
+   | dca4986d-f7c8-4121-af81-863cca1dab0f | e1e38d92-a650-48f1-8a70-8133f2d5c400 | REGISTERED |
+   +--------------------------------------+--------------------------------------+------------+
+   ==> Info: Status: REGISTERED (Your import job was received and is pending processing.)
+   ==> Info: Done importing 3 records and 36 Bytes.
+   ==> Success: Operation completed.
+
+
+``clusters import-jobs create from-file``
+=========================================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters import-jobs create from-file
+
+.. code-block:: console
+
+   sh$ croud clusters import-jobs create from-file --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400 \
+       --file-format csv --table my_table_name --file-id 2e71e5a6-a21a-4e99-ae58-705a1f15635c
+   +--------------------------------------+--------------------------------------+------------+
+   | id                                   | cluster_id                           | status     |
+   |--------------------------------------+--------------------------------------+------------|
+   | 9164f886-ae37-4a1b-b3fe-53f9e1897e7d | e1e38d92-a650-48f1-8a70-8133f2d5c400 | REGISTERED |
+   +--------------------------------------+--------------------------------------+------------+
+   ==> Info: Status: REGISTERED (Your import job was received and is pending processing.)
+   ==> Info: Done importing 3 records and 36 Bytes.
+   ==> Success: Operation completed.
+
+
+``clusters import-jobs create from-s3``
+=======================================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters import-jobs create from-s3
+
+.. code-block:: console
+
+   sh$ croud clusters import-jobs create from-s3 --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400 \
+       --secret-id 71e7c5da-51fa-44f2-b178-d95052cbe620 --bucket cratedbtestbucket \
+       --file-path myfiles/cratedbimporttest.csv --file-format csv --table my_table_name
+   +--------------------------------------+--------------------------------------+------------+
+   | id                                   | cluster_id                           | status     |
+   |--------------------------------------+--------------------------------------+------------|
+   | f29fdc02-edd0-4ad9-8839-9616fccf752b | e1e38d92-a650-48f1-8a70-8133f2d5c400 | REGISTERED |
+   +--------------------------------------+--------------------------------------+------------+
+   ==> Info: Status: REGISTERED (Your import job was received and is pending processing.)
+   ==> Info: Done importing 3 records and 36 Bytes.
+   ==> Success: Operation completed.
+
+
+``clusters import-jobs list``
+=============================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters import-jobs list
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ ❯ croud clusters import-jobs list --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400
+   +--------------------------------------+--------------------------------------+-----------+--------+-------------------+
+   | id                                   | cluster_id                           | status    | type   | destination       |
+   |--------------------------------------+--------------------------------------+-----------+--------+-------------------|
+   | dca4986d-f7c8-4121-af81-863cca1dab0f | e1e38d92-a650-48f1-8a70-8133f2d5c400 | SUCCEEDED | url    | my_table_name     |
+   | 00de6048-3af6-41da-bfaa-661199d1c106 | e1e38d92-a650-48f1-8a70-8133f2d5c400 | SUCCEEDED | s3     | my_table_name     |
+   | 035f5ec1-ba9e-4a5c-9ce1-44e9a9cab6c1 | e1e38d92-a650-48f1-8a70-8133f2d5c400 | SUCCEEDED | file   | my_table_name     |
+   +--------------------------------------+--------------------------------------+-----------+--------+-------------------+
+
+
+``clusters import-jobs delete``
+===============================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters import-jobs delete
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ ❯ croud clusters import-jobs delete \
+         --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400 \
+         --import-job-id 00de6048-3af6-41da-bfaa-661199d1c106
+   ==> Success: Success.
+
+
 ``clusters export-jobs``
 ========================
 

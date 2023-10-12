@@ -1667,13 +1667,72 @@ def test_import_job_create_from_file(mock_request):
                 "status": "FAILED",
                 "type": "url",
                 "url": {"url": "https://some"},
-            }
+            },
+            {
+                "cluster_id": "123",
+                "compression": "gzip",
+                "dc": {
+                    "created": "2023-03-14T10:12:29.763000+00:00",
+                    "modified": "2023-03-14T10:12:29.763000+00:00",
+                },
+                "destination": {"create_table": True, "table": "croud-csv-import-two"},
+                "format": "json",
+                "id": "a95e5a20-61f7-415f-b128-1e21ddf17513",
+                "progress": {
+                    "bytes": 0,
+                    "message": "Failed",
+                    "records": 0,
+                },
+                "status": "FAILED",
+                "type": "s3",
+                "s3": {
+                    "endpoint": "https://some",
+                    "file_path": "a-file-path",
+                    "bucket": "bucket-name",
+                    "secret_id": "a95e5a20-61f7-415f-b128-1e21ddf17513",
+                },
+            },
+            {
+                "cluster_id": "123",
+                "compression": "gzip",
+                "dc": {
+                    "created": "2023-03-14T10:12:29.763000+00:00",
+                    "modified": "2023-03-14T10:12:29.763000+00:00",
+                },
+                "destination": {"create_table": True, "table": "croud-csv-import-two"},
+                "format": "json",
+                "id": "a95e5a20-61f7-415f-b128-1e21ddf17513",
+                "progress": {
+                    "bytes": 0,
+                    "message": "Failed",
+                    "records": 0,
+                },
+                "status": "FAILED",
+                "type": "file",
+                "file": {
+                    "upload_url": "https://server.test/folder/myfile.json",
+                    "file_size": 36,
+                    "id": "a95e5a20-61f7-415f-b128-1e21ddf17513",
+                    "name": "my test file",
+                    "status": "UPLOADED",
+                },
+            },
         ],
         None,
     ),
 )
-def test_import_job_list(mock_request):
-    call_command("croud", "clusters", "import-jobs", "list", "--cluster-id", "123")
+@pytest.mark.parametrize("output_format", ["table", "wide"])
+def test_import_job_list(mock_request, output_format):
+    call_command(
+        "croud",
+        "clusters",
+        "import-jobs",
+        "list",
+        "--cluster-id",
+        "123",
+        "-o",
+        output_format,
+    )
     assert_rest(
         mock_request,
         RequestMethod.GET,
