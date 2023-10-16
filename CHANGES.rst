@@ -13,6 +13,8 @@ Unreleased
 
 - Fixed ``import-job create from-url`` throwing an error despite working.
 
+- Added support for showing import job progress.
+
 1.7.0 - 2023/09/11
 ==================
 

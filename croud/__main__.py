@@ -50,6 +50,7 @@ from croud.clusters.commands import (
     export_jobs_create,
     export_jobs_delete,
     export_jobs_list,
+    import_job_progress,
     import_jobs_create_from_file,
     import_jobs_create_from_s3,
     import_jobs_create_from_url,
@@ -810,6 +811,31 @@ command_tree = {
                                 "resolver": import_jobs_create_from_s3,
                             },
                         },
+                    },
+                    "progress": {
+                        "help": "Shows the progress of an import job.",
+                        "extra_args": [
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The cluster the import jobs belong to."
+                            ),
+                            Argument(
+                                "--import-job-id", type=str,
+                                required=True,
+                                help="The ID of the Import Job."
+                            ),
+                            Argument(
+                                "--limit", type=str, required=False,
+                                help="The number of files returned."
+                                     "Use keywork 'ALL' to have no limit applied."
+                            ),
+                            Argument(
+                                "--offset", type=int, required=False,
+                                help="The offset to skip before beginning to "
+                                     "return the files."
+                            ),
+                        ],
+                        "resolver": import_job_progress,
                     },
                 },
             },
