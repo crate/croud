@@ -834,6 +834,11 @@ command_tree = {
                                 help="The offset to skip before beginning to "
                                      "return the files."
                             ),
+                            Argument(
+                                "--summary", type=lambda x: bool(strtobool(str(x))),
+                                required=False,
+                                help="Show only global progress."
+                            ),
                         ],
                         "resolver": import_job_progress,
                     },

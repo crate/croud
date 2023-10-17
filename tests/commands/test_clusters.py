@@ -1742,10 +1742,37 @@ def test_import_job_list(mock_request, output_format):
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
+def test_import_job_progress_summary(mock_request):
+    cluster_id = gen_uuid()
+    import_job_id = gen_uuid()
+
+    args = [
+        "croud",
+        "clusters",
+        "import-jobs",
+        "progress",
+        "--summary",
+        "true",
+        "--cluster-id",
+        cluster_id,
+        "--import-job-id",
+        import_job_id,
+    ]
+
+    call_command(*args)
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/import-jobs/{import_job_id}/progress/",
+        params={},
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
 @pytest.mark.parametrize(
     "params", [{}, {"offset": 2}, {"limit": "2"}, {"limit": "ALL", "offset": 2}]
 )
-def test_import_job_progress(mock_request, params):
+def test_import_job_progress_files(mock_request, params):
     cluster_id = gen_uuid()
     import_job_id = gen_uuid()
 
