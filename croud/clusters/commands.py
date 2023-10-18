@@ -313,6 +313,48 @@ def import_jobs_list(args: Namespace) -> None:
     )
 
 
+def import_job_progress(args: Namespace) -> None:
+    client = Client.from_args(args)
+
+    params = {}
+    if args.limit:
+        params["limit"] = args.limit
+    if args.offset:
+        params["offset"] = args.offset
+
+    url = (
+        f"/api/v2/clusters/{args.cluster_id}/import-jobs/{args.import_job_id}/progress/"
+    )
+    data, errors = client.get(url, params=params)
+
+    if args.summary:
+        print_response(
+            data=data.get("progress", {}) if data else {},
+            errors=errors,
+            keys=[
+                "percent",
+                "records",
+                "failed_records",
+                "total_records",
+                "total_files",
+            ],
+            output_fmt=get_output_format(args),
+        )
+    else:
+        print_response(
+            data=data.get("progress", {}).get("files", []) if data else {},
+            errors=errors,
+            keys=[
+                "name",
+                "percent",
+                "records",
+                "failed_records",
+                "total_records",
+            ],
+            output_fmt=get_output_format(args),
+        )
+
+
 def clusters_upgrade(args: Namespace) -> None:
     body = {"crate_version": args.version}
     client = Client.from_args(args)

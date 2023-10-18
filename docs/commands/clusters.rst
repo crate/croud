@@ -726,6 +726,46 @@ Example
    ==> Success: Success.
 
 
+``clusters import-jobs progress``
+=================================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters import-jobs progress
+
+Examples
+--------
+
+.. code-block:: console
+
+   sh$ ❯ croud clusters import-jobs progress \
+         --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400 \
+         --import-job-id 00de6048-3af6-41da-bfaa-661199d1c106 \
+         --summary true
+   +-----------+-----------+------------------+-----------------+---------------+
+   |   percent |   records |   failed_records |   total_records |   total_files |
+   |-----------+-----------+------------------+-----------------+---------------+
+   |       100 |       891 |                0 |             891 |             2 |
+   +-----------+-----------+------------------+-----------------+---------------+
+
+
+.. code-block:: console
+
+   sh$ ❯ croud clusters import-jobs progress \
+         --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400 \
+         --import-job-id 00de6048-3af6-41da-bfaa-661199d1c106 \
+         --limit ALL
+         --offset 0
+   +-----------+-----------+-----------+------------------+-----------------+
+   | name      |   percent |   records |   failed_records |   total_records |
+   |-----------+-----------+-----------+------------------+-----------------|
+   | file1.csv |       100 |       800 |                0 |             800 |
+   | file2.csv |       100 |        91 |                0 |              91 |
+   +-----------+-----------+-----------+------------------+-----------------+
+
+
 ``clusters export-jobs``
 ========================
 
