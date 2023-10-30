@@ -848,11 +848,6 @@ def _get_import_job_operation_status(
     return status, msg, feedback_data
 
 
-def _get_formatted_size(feedback: dict) -> str:
-    num_bytes = feedback.get("progress", {}).get("bytes")
-    return bitmath.Byte(num_bytes).best_prefix().format("{value:.2f} {unit}")
-
-
 def _get_formatted_records_normalized(feedback: dict) -> str:
     num_records = feedback.get("progress", {}).get("records")
 
@@ -868,13 +863,13 @@ def _get_formatted_records_normalized(feedback: dict) -> str:
 
 def _data_job_feedback_func(status: str, feedback: dict, job_type: str):
     records_normalized = _get_formatted_records_normalized(feedback)
-    size = _get_formatted_size(feedback)
+    percent = "{:.2f}".format(feedback.get("progress", {}).get("percent", 0))
 
     if status == "SUCCEEDED":
-        print_info(f"Done {job_type}ing {records_normalized} records and {size}.")
+        print_info(f"Done {job_type}ing {records_normalized} records")
     else:
         print_info(
-            f"{job_type}ing... {records_normalized} records and {size} {job_type}ed "
+            f"{job_type}ing... {records_normalized} ({percent}%) records {job_type}ed "
             "so far."
         )
 
@@ -978,8 +973,8 @@ def _wait_for_completed_operation(
 
         # Call for custom feedback if function available and there is status to report.
         if status in ["IN_PROGRESS", "SUCCEEDED"] and feedback_func:
-            (feedback_func, feedback_args) = feedback_func
-            feedback_func(status, feedback, *feedback_args)
+            (feedback_f, feedback_args) = feedback_func
+            feedback_f(status, feedback, *feedback_args)
 
         # Final statuses
         if status == "SUCCEEDED":
