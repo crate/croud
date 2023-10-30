@@ -149,6 +149,16 @@ import_job_create_common_args = [
         help="Whether the table should be created automatically"
         " if it does not exist.",
     ),
+    Argument(
+        "--transformations",
+        type=str,
+        required=False,
+        help="The transformations to apply when fetching data. This is the SELECT "
+        "statement from an SQL query that is executed on the internal DuckDB "
+        "database that the data is loaded to before inserting into CrateDB. "
+        "This can be used to apply arbitrary SQL functions on your data before "
+        "inserting into CrateDB, i.e. `UNNEST()`, `SUM()` and similar.",
+    ),
 ]
 
 # fmt: off

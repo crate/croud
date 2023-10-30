@@ -15,6 +15,10 @@ Unreleased
 
 - Added support for showing import job progress.
 
+- Added the ``--transformations`` argument for import jobs.
+
+- Moved import and export jobs into their own section in croud docs.
+
 1.7.0 - 2023/09/11
 ==================
 
