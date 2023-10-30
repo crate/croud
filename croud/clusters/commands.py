@@ -257,6 +257,9 @@ def import_jobs_create(args: Namespace, extra_payload: Dict[str, Any]) -> None:
     if args.create_table is not None:
         body["destination"]["create_table"] = args.create_table
 
+    if args.transformations:
+        body["schema"] = {"select": args.transformations}
+
     if extra_payload:
         body.update(extra_payload)
 

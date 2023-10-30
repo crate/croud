@@ -35,6 +35,7 @@ To get help for a specific command, you can append ``--help``:
    :maxdepth: 1
 
    clusters
+   data-import-export
    config
    authentication
    me
