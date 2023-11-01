@@ -191,10 +191,11 @@ def import_jobs_create_from_s3(args: Namespace) -> None:
         "s3": {
             "bucket": args.bucket,
             "file_path": args.file_path,
-            "endpoint": args.endpoint or "",
             "secret_id": args.secret_id,
         }
     }
+    if args.endpoint:
+        extra_body["s3"]["endpoint"] = args.endpoint
     args.type = "s3"
     import_jobs_create(args, extra_payload=extra_body)
 
@@ -854,22 +855,25 @@ def _get_formatted_records_normalized(feedback: dict) -> str:
     records_normalized = num_records
 
     if num_records > 1_000_000:
-        records_normalized = f"{records_normalized / 1_000_000:.2f} M"
+        records_normalized = f"{records_normalized / 1_000_000:.2f}M"
     elif num_records > 1_000:
-        records_normalized = f"{records_normalized / 1_000:.2f} K"
+        records_normalized = f"{records_normalized / 1_000:.2f}K"
 
     return records_normalized
 
 
 def _data_job_feedback_func(status: str, feedback: dict, job_type: str):
     records_normalized = _get_formatted_records_normalized(feedback)
-    percent = "{:.2f}".format(feedback.get("progress", {}).get("percent", 0))
+    percent = feedback.get("progress", {}).get("percent", 0)
+    percent_str = ""
+    if percent > 0:
+        percent_str = "({:.2f}%) ".format(percent)
 
     if status == "SUCCEEDED":
         print_info(f"Done {job_type}ing {records_normalized} records")
     else:
         print_info(
-            f"{job_type}ing... {records_normalized} ({percent}%) records {job_type}ed "
+            f"{job_type}ing... {records_normalized} records {percent_str}{job_type}ed "
             "so far."
         )
 
