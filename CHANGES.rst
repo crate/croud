@@ -19,6 +19,10 @@ Unreleased
 
 - Moved import and export jobs into their own section in croud docs.
 
+- Fixed a bug preventing s3 imports from working (due to the endpoint).
+
+- Correctly showing percent for import jobs, and not showing for export jobs.
+
 1.7.0 - 2023/09/11
 ==================
 
