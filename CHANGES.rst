@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+1.8.0 - 2023/11/07
+==================
+
 - Added support for listing, deleting and creating organization secrets.
 
 - Added support in import jobs for private S3 files using organization secrets.
