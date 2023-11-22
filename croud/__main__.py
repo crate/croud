@@ -70,6 +70,10 @@ from croud.logout import logout
 from croud.me import me, me_edit
 from croud.organizations.auditlogs.commands import auditlogs_list
 from croud.organizations.commands import (
+    org_credits_create,
+    org_credits_edit,
+    org_credits_expire,
+    org_credits_list,
     org_files_create,
     org_files_delete,
     org_files_get,
@@ -1204,6 +1208,92 @@ command_tree = {
                             ),
                         ],
                         "resolver": org_files_delete,
+                    },
+                }
+            },
+            "credits": {
+                "help": "Manage organization's credits.",
+                "commands" : {
+                    "list": {
+                        "help": "Lists all credits of an organization.",
+                        "extra_args": [
+                            Argument(
+                                "--org-id", type=str, required=True,
+                                help="The organization ID to use.",
+                            ),
+                            Argument(
+                                "--status", type=str, required=False,
+                                help="Filter credits by status, comma separated. Valid "
+                                     "values are ``ACTIVE`` and ``EXPIRED``. By "
+                                     "default only ``ACTIVE`` credits are listed.",
+                            ),
+                        ],
+                        "resolver": org_credits_list,
+                    },
+                    "create": {
+                        "help": "Creates a new credit for the specified organization.",
+                        "extra_args": [
+                            Argument(
+                                "--org-id", type=str, required=True,
+                                help="The organization ID to use.",
+                            ),
+                            Argument(
+                                "--amount", type=float, required=True,
+                                help="The amount to be credited in USD.",
+                            ),
+                            Argument(
+                                "--expiration-date", type=str, required=True,
+                                help="The expiration date of the credit in ISO 8601 "
+                                     "format (i.e. ``2024-01-01T10:00:00Z``).",
+                            ),
+                            Argument(
+                                "--comment", type=str, required=True,
+                                help="The reason for creating this credit.",
+                            ),
+                        ],
+                        "resolver": org_credits_create,
+                    },
+                    "edit": {
+                        "help": "Edits the specified credit.",
+                        "extra_args": [
+                            Argument(
+                                "--org-id", type=str, required=True,
+                                help="The organization ID to use.",
+                            ),
+                            Argument(
+                                "--credit-id", type=str, required=True,
+                                help="The credit ID to use.",
+                            ),
+                            Argument(
+                                "--amount", type=float, required=False,
+                                help="The amount to be credited in USD. It can only be "
+                                     "increased.",
+                            ),
+                            Argument(
+                                "--expiration-date", type=str, required=False,
+                                help="The expiration date of the credit in ISO 8601 "
+                                     "format (i.e. ``2024-01-01T10:00:00Z``).",
+                            ),
+                            Argument(
+                                "--comment", type=str, required=False,
+                                help="The reason for creating this credit.",
+                            ),
+                        ],
+                        "resolver": org_credits_edit,
+                    },
+                    "expire": {
+                        "help": "Expires the specified credit.",
+                        "extra_args": [
+                            Argument(
+                                "--org-id", type=str, required=True,
+                                help="The organization ID to use.",
+                            ),
+                            Argument(
+                                "--credit-id", type=str, required=True,
+                                help="The credit ID to use.",
+                            ),
+                        ],
+                        "resolver": org_credits_expire,
                     },
                 }
             }

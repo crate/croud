@@ -395,3 +395,125 @@ Example
    | 71e7c5da-51fa-44f2-b178-d95052cbe620 | AWS    | mysecret | **********BHQK7I |
    +--------------------------------------+--------+----------+------------------+
    ==> Success: Secret created.
+
+
+``organizations credits``
+=========================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations credits
+   :nosubcommands:
+
+
+``organizations credits list``
+------------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations credits list
+
+Example
+.......
+
+.. code-block:: console
+
+   sh$ croud organizations credits list \
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209
+   +--------------------------------------+-----------------+------------------+---------------------+------------+----------+
+   | id                                   | original_amount | remaining_amount | expiration_date     | comment    | status   |
+   |--------------------------------------+-----------------+------------------+---------------------+------------+----------|
+   | f8207787-8458-4cab-94c1-4ca84a702154 | $300.0          | $300.0           | 2023-12-24T12:34:56 | Free Trial | ACTIVE   |
+   +--------------------------------------+-----------------+------------------+---------------------+------------+----------+
+
+
+``organizations credits create``
+--------------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations credits create
+
+Example
+.......
+
+.. code-block:: console
+
+   sh$ croud organizations credits create \
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
+       --amount 300 \
+       --expiration-date 2023-12-24T12:34:56Z \
+       --comment "Free Trial" \
+       --sudo
+   +--------------------------------------+-----------------+---------------------+------------+----------+
+   | id                                   | original_amount | expiration_date     | comment    | status   |
+   |--------------------------------------+-----------------+---------------------+------------+----------|
+   | f8207787-8458-4cab-94c1-4ca84a702154 | $300.0          | 2023-12-24T12:34:56 | Free Trial | ACTIVE   |
+   +--------------------------------------+-----------------+---------------------+------------+----------+
+   ==> Success: Credit created.
+
+.. note::
+
+   This command is only available for superusers.
+
+
+``organizations credits edit``
+------------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations credits edit
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud organizations credits edit \
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
+       --credit-id f8207787-8458-4cab-94c1-4ca84a702154
+       --amount 500
+       --sudo
+   +--------------------------------------+-----------------+---------------------+------------+----------+
+   | id                                   | original_amount | expiration_date     | comment    | status   |
+   |--------------------------------------+-----------------+---------------------+------------+----------|
+   | f8207787-8458-4cab-94c1-4ca84a702154 | $500.0          | 2023-12-24T12:34:56 | Free Trial | ACTIVE   |
+   +--------------------------------------+-----------------+---------------------+------------+----------+
+   ==> Success: Credit edited.
+
+.. note::
+
+   This command is only available for superusers.
+
+
+``organizations credits expire``
+--------------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations credits expire
+
+Example
+.......
+
+.. code-block:: console
+
+   sh$ croud organizations credits expire \
+       --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
+       --credit-id f8207787-8458-4cab-94c1-4ca84a702154
+       --sudo
+   ==> Success: Credit expired.
+
+.. note::
+
+   This command is only available for superusers.

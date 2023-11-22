@@ -263,3 +263,111 @@ def _transform_file_size(size_bytes):
     if not size_bytes:
         return None
     return bitmath.Byte(size_bytes).best_prefix().format("{value:.2f} {unit}")
+
+
+def org_credits_create(args: Namespace) -> None:
+    client = Client.from_args(args)
+    payload = {
+        "amount": int(args.amount * 100),
+        "expiration_date": args.expiration_date,
+        "comment": args.comment,
+    }
+    data, errors = client.post(
+        f"/api/v2/organizations/{args.org_id}/credits/", body=payload
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        keys=[
+            "id",
+            "original_amount",
+            "expiration_date",
+            "comment",
+            "status",
+        ],
+        success_message="Credit created.",
+        output_fmt=get_output_format(args),
+        transforms={
+            "original_amount": _transform_credits_amount_to_usd,
+        },
+    )
+
+
+def org_credits_edit(args: Namespace) -> None:
+    client = Client.from_args(args)
+    payload = {}
+    if getattr(args, "amount") is not None:
+        payload["amount"] = int(args.amount * 100)
+    if args.expiration_date:
+        payload["expiration_date"] = args.expiration_date
+    if args.comment:
+        payload["comment"] = args.comment
+    if not payload:
+        print_error("No input arguments found.")
+        exit(1)
+
+    data, errors = client.patch(
+        f"/api/v2/organizations/{args.org_id}/credits/{args.credit_id}/", body=payload
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        keys=[
+            "id",
+            "original_amount",
+            "expiration_date",
+            "comment",
+            "status",
+        ],
+        output_fmt=get_output_format(args),
+        success_message="Credit edited.",
+        transforms={
+            "original_amount": _transform_credits_amount_to_usd,
+        },
+    )
+
+
+def org_credits_list(args: Namespace) -> None:
+    client = Client.from_args(args)
+    options = {}
+    if args.status:
+        options["status"] = args.status
+    data, errors = client.get(
+        f"/api/v2/organizations/{args.org_id}/credits/", params=options
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        keys=[
+            "id",
+            "original_amount",
+            "remaining_amount",
+            "expiration_date",
+            "comment",
+            "status",
+        ],
+        output_fmt=get_output_format(args),
+        transforms={
+            "original_amount": _transform_credits_amount_to_usd,
+            "remaining_amount": _transform_credits_amount_to_usd,
+        },
+    )
+
+
+def _transform_credits_amount_to_usd(amount_cents):
+    if not amount_cents:
+        return 0
+    return f"${round(amount_cents / 100, 2)}"
+
+
+def org_credits_expire(args: Namespace) -> None:
+    client = Client.from_args(args)
+    data, errors = client.delete(
+        f"/api/v2/organizations/{args.org_id}/credits/{args.credit_id}/"
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        success_message="Credit expired.",
+        output_fmt=get_output_format(args),
+    )
