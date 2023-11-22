@@ -18,6 +18,7 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import uuid
+from datetime import datetime, timedelta
 from unittest import mock
 
 import pytest
@@ -517,3 +518,190 @@ def test_organizations_secrets_delete(mock_request):
         RequestMethod.DELETE,
         f"/api/v2/organizations/{org_id}/secrets/my_secret_id/",
     )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_credits_list(mock_request):
+    org_id = gen_uuid()
+
+    call_command("croud", "organizations", "credits", "list", "--org-id", org_id)
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/organizations/{org_id}/credits/",
+        params={},
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_credits_list_filter_status(mock_request):
+    org_id = gen_uuid()
+
+    call_command(
+        "croud",
+        "organizations",
+        "credits",
+        "list",
+        "--org-id",
+        org_id,
+        "--status",
+        "ACTIVE,EXPIRED",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/organizations/{org_id}/credits/",
+        params={"status": "ACTIVE,EXPIRED"},
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_credits_create(mock_request):
+    org_id = gen_uuid()
+    amount = 123.45
+    expiration_date = datetime.utcnow() + timedelta(days=30)
+    comment = "Free Trial"
+
+    call_command(
+        "croud",
+        "organizations",
+        "credits",
+        "create",
+        "--org-id",
+        org_id,
+        "--amount",
+        str(amount),
+        "--expiration-date",
+        expiration_date.isoformat(),
+        "--comment",
+        comment,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        f"/api/v2/organizations/{org_id}/credits/",
+        body={
+            "amount": amount * 100,
+            "expiration_date": expiration_date.isoformat(),
+            "comment": comment,
+        },
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_credits_expire(mock_request):
+    org_id = gen_uuid()
+
+    call_command(
+        "croud",
+        "organizations",
+        "credits",
+        "expire",
+        "--org-id",
+        org_id,
+        "--credit-id",
+        "my_credit_id",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.DELETE,
+        f"/api/v2/organizations/{org_id}/credits/my_credit_id/",
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_credits_edit(mock_request):
+    org_id = gen_uuid()
+    expiration_date = datetime.utcnow() + timedelta(days=60)
+    call_command(
+        "croud",
+        "organizations",
+        "credits",
+        "edit",
+        "--org-id",
+        org_id,
+        "--credit-id",
+        "my_credit_id",
+        "--amount",
+        str(234.56),
+        "--expiration-date",
+        expiration_date.isoformat(),
+        "--comment",
+        "Starter Package",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.PATCH,
+        f"/api/v2/organizations/{org_id}/credits/my_credit_id/",
+        body={
+            "amount": 23456,
+            "expiration_date": expiration_date.isoformat(),
+            "comment": "Starter Package",
+        },
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_credits_edit_amount(mock_request):
+    org_id = gen_uuid()
+    call_command(
+        "croud",
+        "organizations",
+        "credits",
+        "edit",
+        "--org-id",
+        org_id,
+        "--credit-id",
+        "my_credit_id",
+        "--amount",
+        str(234.56),
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.PATCH,
+        f"/api/v2/organizations/{org_id}/credits/my_credit_id/",
+        body={"amount": 23456},
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_credits_edit_expiration_date(mock_request):
+    org_id = gen_uuid()
+    expiration_date = datetime.utcnow() + timedelta(days=60)
+    call_command(
+        "croud",
+        "organizations",
+        "credits",
+        "edit",
+        "--org-id",
+        org_id,
+        "--credit-id",
+        "my_credit_id",
+        "--expiration-date",
+        expiration_date.isoformat(),
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.PATCH,
+        f"/api/v2/organizations/{org_id}/credits/my_credit_id/",
+        body={"expiration_date": expiration_date.isoformat()},
+    )
+
+
+@mock.patch.object(Client, "request", return_value=(None, {}))
+def test_organizations_credits_edit_no_arguments(mock_request, capsys):
+    org_id = gen_uuid()
+    with pytest.raises(SystemExit):
+        call_command(
+            "croud",
+            "organizations",
+            "credits",
+            "edit",
+            "--org-id",
+            org_id,
+            "--credit-id",
+            "my_credit_id",
+        )
+
+    _, err = capsys.readouterr()
+    assert "No input arguments found." in err
