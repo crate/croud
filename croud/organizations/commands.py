@@ -162,11 +162,26 @@ def org_secrets_create(args: Namespace) -> None:
     payload = {
         "name": args.name,
         "type": args.type,
-        "data": {
+    }
+
+    if args.type == "AWS":
+        if not args.access_key or not args.secret_key:
+            print_error(
+                "Both access_key and secret_key are required for secret type AWS."
+            )
+            return
+        payload["data"] = {
             "access_key": args.access_key,
             "secret_key": args.secret_key,
-        },
-    }
+        }
+    elif args.type == "azure":
+        if not args.connection_string:
+            print_error("Argument connection-string is required for secret type Azure.")
+            return
+        payload["data"] = {
+            "connection_string": args.connection_string,
+        }
+
     data, errors = client.post(
         f"/api/v2/organizations/{args.org_id}/secrets/", body=payload
     )

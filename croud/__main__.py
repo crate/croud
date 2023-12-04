@@ -1114,17 +1114,24 @@ command_tree = {
                                 help="The name the secret will be known as.",
                             ),
                             Argument(
-                                "--type", type=str, required=True, choices=["AWS"],
-                                help="The type of Secret. Currently only AWS type is "
-                                     "supported.",
+                                "--type", type=str, required=True,
+                                choices=["AWS", "azure"],
+                                help="The type of Secret. Either AWS or Azure.",
                             ),
+                            # AWS arguments
                             Argument(
-                                "--access-key", type=str, required=True,
+                                "--access-key", type=str, required=False,
                                 help="For an AWS type secret, the access key ID.",
                             ),
                             Argument(
-                                "--secret-key", type=str, required=True,
+                                "--secret-key", type=str, required=False,
                                 help="For an AWS type secret, the secret key.",
+                            ),
+                            # Azure arguments
+                            Argument(
+                                "--connection-string", type=str, required=False,
+                                help="For an Azure type secret, the connection string "
+                                     "or URL that grants access to a resource.",
                             ),
                         ],
                         "resolver": org_secrets_create,

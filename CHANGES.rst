@@ -11,6 +11,8 @@ Unreleased
 - Added new resource ``organizations credits`` and subcommands that allow
   superusers to manage credits.
 
+- Added support for organization secrets of type Azure.
+
 1.8.0 - 2023/11/07
 ==================
 
