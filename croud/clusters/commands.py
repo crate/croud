@@ -200,6 +200,18 @@ def import_jobs_create_from_s3(args: Namespace) -> None:
     import_jobs_create(args, extra_payload=extra_body)
 
 
+def import_jobs_create_from_azure_blob_storage(args: Namespace) -> None:
+    extra_body = {
+        "azureblob": {
+            "container_name": args.container_name,
+            "blob_name": args.blob_name,
+            "secret_id": args.secret_id,
+        }
+    }
+    args.type = "azureblob"
+    import_jobs_create(args, extra_payload=extra_body)
+
+
 def _get_org_id_from_cluster_id(client, cluster_id: str) -> Optional[str]:
     data, errors = client.get(f"/api/v2/clusters/{cluster_id}/")
     if errors or not data:

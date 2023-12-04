@@ -13,6 +13,8 @@ Unreleased
 
 - Added support for organization secrets of type Azure.
 
+- Added support for importing jobs from Azure Blob Storage.
+
 1.8.0 - 2023/11/07
 ==================
 
