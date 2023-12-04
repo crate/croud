@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+1.9.0 - 2023/12/04
+==================
+
 - Added new resource ``organizations credits`` and subcommands that allow
   superusers to manage credits.
 
