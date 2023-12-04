@@ -174,12 +174,14 @@ def org_secrets_create(args: Namespace) -> None:
             "access_key": args.access_key,
             "secret_key": args.secret_key,
         }
-    elif args.type == "azure":
+    elif args.type == "AZURE":
         if not args.connection_string:
             print_error("Argument connection-string is required for secret type Azure.")
             return
         payload["data"] = {
-            "connection_string": args.connection_string,
+            "azure_secret": {
+                "connection_string": args.connection_string,
+            }
         }
 
     data, errors = client.post(

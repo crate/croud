@@ -1143,7 +1143,7 @@ command_tree = {
                             ),
                             Argument(
                                 "--type", type=str, required=True,
-                                choices=["AWS", "azure"],
+                                choices=["AWS", "AZURE"],
                                 help="The type of Secret. Either AWS or Azure.",
                             ),
                             # AWS arguments
