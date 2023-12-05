@@ -503,8 +503,8 @@ def test_organizations_secrets_aws_create(mock_request):
 def test_organizations_secrets_azure_create(mock_request):
     org_id = gen_uuid()
     name = "my_secret"
-    secret_type = "azure"
-    connection_string = "my_connection_string"
+    secret_type = "AZURE"
+    connection_string = "https://my-storage-account.blob.core.windows.net/my-container?my-auth-params"  # noqa
 
     call_command(
         "croud",
@@ -527,7 +527,9 @@ def test_organizations_secrets_azure_create(mock_request):
         body={
             "name": name,
             "type": secret_type,
-            "data": {"connection_string": connection_string},
+            "data": {
+                "azure_secret": {"connection_string": connection_string},
+            },
         },
     )
 
