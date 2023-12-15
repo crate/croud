@@ -5,15 +5,15 @@ Changes for croud
 Unreleased
 ==========
 
+- Added support for organization secrets of type Azure.
+
+- Added support for importing jobs from Azure Blob Storage.
+
 1.9.0 - 2023/12/04
 ==================
 
 - Added new resource ``organizations credits`` and subcommands that allow
   superusers to manage credits.
-
-- Added support for organization secrets of type Azure.
-
-- Added support for importing jobs from Azure Blob Storage.
 
 1.8.0 - 2023/11/07
 ==================
