@@ -1645,6 +1645,58 @@ def test_import_job_create_from_file(mock_request):
 
 
 @mock.patch.object(
+    Client, "request", return_value=({"id": "1", "status": "SUCCEEDED"}, None)
+)
+def test_import_job_create_from_azure_blob_storage(mock_request):
+    cluster_id = gen_uuid()
+    secret_id = gen_uuid()
+    container_name = "my-container-name"
+    blob_name = "path/to/my/files/*.csv.gz"
+
+    call_command(
+        "croud",
+        "clusters",
+        "import-jobs",
+        "create",
+        "from-azure-blob-storage",
+        "--cluster-id",
+        cluster_id,
+        "--file-format",
+        "csv",
+        "--compression",
+        "gzip",
+        "--table",
+        "my-table",
+        "--create-table",
+        "false",
+        "--container-name",
+        container_name,
+        "--blob-name",
+        blob_name,
+        "--secret-id",
+        secret_id,
+    )
+    body = {
+        "type": "azureblob",
+        "azureblob": {
+            "container_name": container_name,
+            "blob_name": blob_name,
+            "secret_id": secret_id,
+        },
+        "format": "csv",
+        "destination": {"table": "my-table", "create_table": False},
+        "compression": "gzip",
+    }
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        f"/api/v2/clusters/{cluster_id}/import-jobs/",
+        body=body,
+        any_times=True,
+    )
+
+
+@mock.patch.object(
     Client,
     "request",
     return_value=(

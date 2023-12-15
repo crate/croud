@@ -464,7 +464,7 @@ def test_organizations_secrets_list(mock_request):
 
 
 @mock.patch.object(Client, "request", return_value=({}, None))
-def test_organizations_secrets_create(mock_request):
+def test_organizations_secrets_aws_create(mock_request):
     org_id = gen_uuid()
     name = "my_secret"
     secret_type = "AWS"
@@ -495,6 +495,41 @@ def test_organizations_secrets_create(mock_request):
             "name": name,
             "type": secret_type,
             "data": {"access_key": access_key, "secret_key": secret_key},
+        },
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_secrets_azure_create(mock_request):
+    org_id = gen_uuid()
+    name = "my_secret"
+    secret_type = "AZURE"
+    connection_string = "https://my-storage-account.blob.core.windows.net/my-container?my-auth-params"  # noqa
+
+    call_command(
+        "croud",
+        "organizations",
+        "secrets",
+        "create",
+        "--org-id",
+        org_id,
+        "--name",
+        name,
+        "--type",
+        secret_type,
+        "--connection-string",
+        connection_string,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        f"/api/v2/organizations/{org_id}/secrets/",
+        body={
+            "name": name,
+            "type": secret_type,
+            "data": {
+                "azure_secret": {"connection_string": connection_string},
+            },
         },
     )
 

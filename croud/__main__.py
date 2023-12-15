@@ -51,6 +51,7 @@ from croud.clusters.commands import (
     export_jobs_delete,
     export_jobs_list,
     import_job_progress,
+    import_jobs_create_from_azure_blob_storage,
     import_jobs_create_from_file,
     import_jobs_create_from_s3,
     import_jobs_create_from_url,
@@ -809,7 +810,8 @@ command_tree = {
                                     Argument(
                                         "--file-path", type=str, required=True,
                                         help="The absolute path in the S3 bucket that "
-                                             "points to the file to be imported."
+                                             "points to the file to be imported. "
+                                             "Globbing (use of *) is allowed."
                                     ),
                                     Argument(
                                         "--secret-id", type=str, required=True,
@@ -823,6 +825,32 @@ command_tree = {
                                     ),
                                 ] + import_job_create_common_args,
                                 "resolver": import_jobs_create_from_s3,
+                            },
+                            "from-azure-blob-storage": {
+                                "help": "Create a data import job on the specified "
+                                        "cluster from an Azure blob storage location.",
+                                "extra_args": [
+                                    # Type Azure Blob Storage params
+                                    Argument(
+                                        "--container-name", type=str,
+                                        required=True,
+                                        help="The name of the storage container "
+                                             "where the file to be imported is located."
+                                    ),
+                                    Argument(
+                                        "--blob-name", type=str, required=True,
+                                        help="The absolute path in the storage "
+                                             "container that points to the file to be "
+                                             "imported. Globbing (use of *) is allowed."
+                                    ),
+                                    Argument(
+                                        "--secret-id", type=str, required=True,
+                                        help="The secret that contains the access key "
+                                             "and secret key needed to access the file "
+                                             "to be imported."
+                                    ),
+                                ] + import_job_create_common_args,
+                                "resolver": import_jobs_create_from_azure_blob_storage,
                             },
                         },
                     },
@@ -1114,17 +1142,24 @@ command_tree = {
                                 help="The name the secret will be known as.",
                             ),
                             Argument(
-                                "--type", type=str, required=True, choices=["AWS"],
-                                help="The type of Secret. Currently only AWS type is "
-                                     "supported.",
+                                "--type", type=str, required=True,
+                                choices=["AWS", "AZURE"],
+                                help="The type of Secret. Either AWS or Azure.",
                             ),
+                            # AWS arguments
                             Argument(
-                                "--access-key", type=str, required=True,
+                                "--access-key", type=str, required=False,
                                 help="For an AWS type secret, the access key ID.",
                             ),
                             Argument(
-                                "--secret-key", type=str, required=True,
+                                "--secret-key", type=str, required=False,
                                 help="For an AWS type secret, the secret key.",
+                            ),
+                            # Azure arguments
+                            Argument(
+                                "--connection-string", type=str, required=False,
+                                help="For an Azure type secret, the connection string "
+                                     "or URL that grants access to a resource.",
                             ),
                         ],
                         "resolver": org_secrets_create,
