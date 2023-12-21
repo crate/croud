@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+1.10.0 - 2023/12/21
+===================
+
 - Added support for organization secrets of type Azure.
 
 - Added support for importing jobs from Azure Blob Storage.
