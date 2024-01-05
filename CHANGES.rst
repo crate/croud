@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Import jobs can now optionally add columns to the schema if the `create_table`
+  parameter is set to `true`.
+
 1.10.0 - 2023/12/21
 ===================
 

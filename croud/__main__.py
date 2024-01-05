@@ -152,7 +152,8 @@ import_job_create_common_args = [
         type=lambda x: bool(strtobool(str(x))),  # noqa
         required=False,
         help="Whether the table should be created automatically"
-        " if it does not exist.",
+        " if it does not exist. If true new columns will also be added when the data"
+        " requires them.",
     ),
     Argument(
         "--transformations",
