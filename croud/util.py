@@ -23,8 +23,10 @@ import platform
 import subprocess
 import webbrowser
 from argparse import Namespace
+from datetime import datetime, timezone
 from typing import Tuple
 
+from croud.api import Client
 from croud.config import CONFIG
 from croud.printer import print_error, print_info
 from croud.tools.spinner import HALO
@@ -126,3 +128,31 @@ def org_id_config_fallback(cmd):  # decorator
         cmd(cmd_args)
 
     return _wrapper
+
+
+def grand_central_jwt_token(cmd):
+    @functools.wraps(cmd)
+    def _wrapper(cmd_args: Namespace):
+        if CONFIG.gc_jwt_token:
+            if not CONFIG.gc_cluster_id == cmd_args.cluster_id:
+                _set_gc_jwt(cmd_args)
+            elif (
+                str(datetime.now(tz=timezone.utc).isoformat())
+                > CONFIG.gc_jwt_token_expiry
+            ):
+                _set_gc_jwt(cmd_args)
+        else:
+            _set_gc_jwt(cmd_args)
+
+        cmd(cmd_args)
+
+    return _wrapper
+
+
+def _set_gc_jwt(cmd_args: Namespace) -> None:
+    client = Client.from_args(cmd_args)
+    data, errors = client.get(f"/api/v2/clusters/{cmd_args.cluster_id}/jwt/")
+
+    CONFIG.set_current_gc_jwt_token(data.get("token"))  # type: ignore
+    CONFIG.set_current_gc_cluster_id(cmd_args.cluster_id)  # type: ignore
+    CONFIG.set_current_gc_jwt_token_expiry(data.get("expiry"))  # type: ignore

@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added support for scheduling sql jobs with the ``scheduled-jobs`` commands.
+
 1.10.1 - 2024/01/11
 ===================
 
