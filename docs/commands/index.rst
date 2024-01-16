@@ -46,6 +46,7 @@ To get help for a specific command, you can append ``--help``:
    users
    api-keys
    regions
+   scheduled-jobs
 
 .. note::
 

@@ -16,7 +16,6 @@
 # However, if you have executed another commercial license agreement
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
-
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -108,6 +107,18 @@ class Configuration:
         return self.profile.get("organization-id")  # type: ignore
 
     @property
+    def gc_jwt_token(self) -> Optional[str]:
+        return self.profile.get("gc_jwt_token")
+
+    @property
+    def gc_jwt_token_expiry(self) -> Optional[str]:
+        return self.profile.get("gc_jwt_token_expiry")
+
+    @property
+    def gc_cluster_id(self) -> Optional[str]:
+        return self.profile.get("gc_cluster_id")
+
+    @property
     def profile(self) -> ProfileType:
         return self.profiles[self.name]  # type: ignore
 
@@ -164,6 +175,24 @@ class Configuration:
 
     def set_current_auth_token(self, value: str) -> None:
         self.set_auth_token(self.name, value)
+
+    def set_gc_jwt_token(self, profile: str, value: str) -> None:
+        self._set_profile_option(profile, "gc_jwt_token", value)
+
+    def set_current_gc_jwt_token(self, value: str) -> None:
+        self.set_gc_jwt_token(self.name, value)
+
+    def set_gc_jwt_token_expiry(self, profile: str, value: str) -> None:
+        self._set_profile_option(profile, "gc_jwt_token_expiry", value)
+
+    def set_current_gc_jwt_token_expiry(self, value: str) -> None:
+        self.set_gc_jwt_token_expiry(self.name, value)
+
+    def set_gc_cluster_id(self, profile: str, value: str) -> None:
+        self._set_profile_option(profile, "gc_cluster_id", value)
+
+    def set_current_gc_cluster_id(self, value: str) -> None:
+        self.set_gc_cluster_id(self.name, value)
 
     def set_format(self, profile: str, value: str) -> None:
         self._set_profile_option(profile, "format", value)

@@ -44,6 +44,25 @@ class ProfileSchema(Schema):
         attribute="organization-id", data_key="organization-id", allow_none=True
     )
     region = fields.String(required=False)
+    gc_endpoint = fields.String(required=False)
+    gc_jwt_token = fields.String(
+        attribute="gc_jwt_token",
+        data_key="gc_jwt_token",
+        required=False,
+        allow_none=True,
+    )
+    gc_jwt_token_expiry = fields.String(
+        attribute="gc_jwt_token_expiry",
+        data_key="gc_jwt_token_expiry",
+        required=False,
+        allow_none=True,
+    )
+    gc_cluster_id = fields.String(
+        attribute="gc_cluster_id",
+        data_key="gc_cluster_id",
+        required=False,
+        allow_none=True,
+    )
 
 
 class ConfigSchema(Schema):
