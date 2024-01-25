@@ -112,6 +112,7 @@ from croud.regions.commands import regions_create, regions_delete, regions_list
 from croud.scheduledjobs.commands import (
     create_scheduled_job,
     delete_scheduled_job,
+    edit_scheduled_job,
     get_scheduled_job_log,
     get_scheduled_jobs,
 )
@@ -1496,7 +1497,7 @@ command_tree = {
                         help="The sql statement the job should run."
                     ),
                     Argument(
-                        "--enabled", type=bool, required=True,
+                        "--enabled", type=str, required=True,
                         help="Enable or disable the job."
                     )
                 ],
@@ -1539,6 +1540,36 @@ command_tree = {
                     ),
                 ],
                 "resolver": delete_scheduled_job,
+            },
+            "edit": {
+                "help": "Edit specified scheduled sql job.",
+                "extra_args": [
+                    Argument(
+                        "--job-id", type=str, required=True,
+                        help="The id of the job to edit."
+                    ),
+                    Argument(
+                        "--cluster-id", type=str, required=True,
+                        help="The cluster id where the job was created."
+                    ),
+                    Argument(
+                        "--name", type=str, required=True,
+                        help="The name of the sql job."
+                    ),
+                    Argument(
+                        "--sql", type=str, required=True,
+                        help="The sql statement of the sql job."
+                    ),
+                    Argument(
+                        "--cron", type=str, required=True,
+                        help="Cron schedule of the sql job."
+                    ),
+                    Argument(
+                        "--enabled", type=str, required=True,
+                        help="Enable or disable the sql job."
+                    ),
+                ],
+                "resolver": edit_scheduled_job,
             }
         }
     },

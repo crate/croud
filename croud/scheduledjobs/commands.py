@@ -96,6 +96,29 @@ def delete_scheduled_job(args: Namespace) -> None:
     )
 
 
+@grand_central_jwt_token
+def edit_scheduled_job(args: Namespace) -> None:
+    body = {
+        "name": args.name,
+        "cron": args.cron,
+        "sql": args.sql,
+        "enabled": args.enabled,
+    }
+
+    client = _get_gc_client(args)
+
+    data, errors = client.put(f"/api/scheduled-jobs/{args.job_id}", body=body)
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["name", "id", "sql", "cron", "enabled"],
+        output_fmt=get_output_format(args),
+    )
+
+    if errors or not data:
+        return
+
+
 def _get_gc_client(args: Namespace) -> Client:
     client = Client.from_args(args)
     cluster, _ = client.get(f"/api/v2/clusters/{args.cluster_id}/")
