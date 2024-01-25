@@ -63,7 +63,7 @@ def test_create_job(mock_request):
             "name": "test-job",
             "cron": "1 1 * * *",
             "sql": "CREATE TABLE test (id TEXT)",
-            "enabled": True,
+            "enabled": "True",
         },
         any_times=True,
     )
@@ -211,5 +211,74 @@ def test_delete_scheduled_job(mock_request):
         mock_request,
         RequestMethod.DELETE,
         f"/api/scheduled-jobs/{job_id}",
+        any_times=True,
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_edit_scheduled_job(mock_request):
+    job_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.GET and "/jwt/" in args[1]:
+            return {
+                "token": "xyz",
+                "expiry": "01.02.2024",
+            }, None
+        if args[0] == RequestMethod.GET:
+            return {"fqdn": "my.cluster.cloud", "name": "mycluster"}, None
+        if args[0] == RequestMethod.PUT:
+            return {
+                "name": "test-job-edit",
+                "id": gen_uuid(),
+                "cron": "2 2 * * *",
+                "sql": "CREATE TABLE test (id TEXT)",
+                "enabled": False,
+                "next_run_time": "02.02.2024",
+            }, None
+        return None, None
+
+    mock_request.side_effect = mock_call
+
+    cluster_id = gen_uuid()
+    call_command(
+        "croud",
+        "scheduled-jobs",
+        "edit",
+        "--job-id",
+        job_id,
+        "--cluster-id",
+        cluster_id,
+        "--name",
+        "test-job-edit",
+        "--cron",
+        "2 2 * * *",
+        "--sql",
+        "CREATE TABLE test (id TEXT)",
+        "--enabled",
+        "False",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/jwt/",
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.GET,
+        f"/api/v2/clusters/{cluster_id}/",
+        any_times=True,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.PUT,
+        f"/api/scheduled-jobs/{job_id}",
+        body={
+            "name": "test-job-edit",
+            "cron": "2 2 * * *",
+            "sql": "CREATE TABLE test (id TEXT)",
+            "enabled": "False",
+        },
         any_times=True,
     )
