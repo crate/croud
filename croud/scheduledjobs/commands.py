@@ -126,6 +126,6 @@ def _get_gc_client(args: Namespace) -> Client:
     url_region_cloud = cluster.get("fqdn").split(".", 1)[1][:-1]  # type: ignore
     gc_url = f"https://{cluster.get('name')}.gc.{url_region_cloud}"  # type: ignore
     client.base_url = URL(gc_url)
-    client.session.cookies.set("cratedb_center_session", CONFIG.gc_jwt_token)
+    client.session.cookies.set("grand_central_session", CONFIG.gc_jwt_token)
 
     return client
