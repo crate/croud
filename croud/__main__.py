@@ -47,9 +47,14 @@ from croud.clusters.commands import (
     clusters_snapshots_list,
     clusters_snapshots_restore,
     clusters_upgrade,
+    create_scheduled_job,
+    delete_scheduled_job,
+    edit_scheduled_job,
     export_jobs_create,
     export_jobs_delete,
     export_jobs_list,
+    get_scheduled_job_log,
+    get_scheduled_jobs,
     import_job_progress,
     import_jobs_create_from_azure_blob_storage,
     import_jobs_create_from_file,
@@ -109,13 +114,6 @@ from croud.projects.users.commands import (
     project_users_remove,
 )
 from croud.regions.commands import regions_create, regions_delete, regions_list
-from croud.scheduledjobs.commands import (
-    create_scheduled_job,
-    delete_scheduled_job,
-    edit_scheduled_job,
-    get_scheduled_job_log,
-    get_scheduled_jobs,
-)
 from croud.subscriptions.commands import (
     subscription_delete,
     subscriptions_create,
@@ -966,6 +964,108 @@ command_tree = {
                     },
                 },
             },
+            "scheduled-jobs": {
+                "help": "Manage your scheduled sql jobs.",
+                "commands": {
+                    "create": {
+                        "help": "Create a scheduled sql job to run at "
+                                "specific times.",
+                        "extra_args": [
+                            Argument(
+                                "--name", type=str, required=True,
+                                help="Name of the sql job."
+                            ),
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="Cluster where the job should be run."
+                            ),
+                            Argument(
+                                "--cron", type=str, required=True,
+                                help="Cron schedule of the sql job."
+                            ),
+                            Argument(
+                                "--sql", type=str, required=True,
+                                help="The sql statement the job should run."
+                            ),
+                            Argument(
+                                "--enabled", type=str, required=True,
+                                help="Enable or disable the job."
+                            )
+                        ],
+                        "resolver": create_scheduled_job,
+                    },
+                    "list": {
+                        "help": "Get all scheduled sql jobs.",
+                        "extra_args": [
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The cluster of which jobs should be listed."
+                            )
+                        ],
+                        "resolver": get_scheduled_jobs,
+                    },
+                    "logs": {
+                        "help": "Logs of a scheduled sql job.",
+                        "extra_args": [
+                            Argument(
+                                "--job-id", type=str, required=True,
+                                help="The job id of the job log to be listed."
+                            ),
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The cluster of which the job log "
+                                     "should be listed."
+                            )
+                        ],
+                        "resolver": get_scheduled_job_log,
+                    },
+                    "delete": {
+                        "help": "Delete specified scheduled sql job.",
+                        "extra_args": [
+                            Argument(
+                                "--job-id", type=str, required=True,
+                                help="The job id of the job to be deleted."
+                            ),
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The cluster of which the job "
+                                     "should be deleted."
+                            ),
+                        ],
+                        "resolver": delete_scheduled_job,
+                    },
+                    "edit": {
+                        "help": "Edit specified scheduled sql job.",
+                        "extra_args": [
+                            Argument(
+                                "--job-id", type=str, required=True,
+                                help="The id of the job to edit."
+                            ),
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The cluster id where the job was created."
+                            ),
+                            Argument(
+                                "--name", type=str, required=True,
+                                help="The name of the sql job."
+                            ),
+                            Argument(
+                                "--sql", type=str, required=True,
+                                help="The sql statement of the sql job."
+                            ),
+                            Argument(
+                                "--cron", type=str, required=True,
+                                help="Cron schedule of the sql job."
+                            ),
+                            Argument(
+                                "--enabled", type=str, required=True,
+                                help="Enable or disable the sql job."
+                            ),
+                        ],
+                        "resolver": edit_scheduled_job,
+                    }
+                }
+            },
         },
     },
     "products": {
@@ -1473,104 +1573,6 @@ command_tree = {
                     Argument("-y", "--yes", action="store_true", default=False),
                 ],
             },
-        }
-    },
-    "scheduled-jobs": {
-        "help": "Manage your scheduled sql jobs.",
-        "commands": {
-            "create": {
-                "help": "Create a scheduled sql job to run at specific times.",
-                "extra_args": [
-                    Argument(
-                        "--name", type=str, required=True, help="Name of the sql job."
-                    ),
-                    Argument(
-                        "--cluster-id", type=str, required=True,
-                        help="Cluster where the job should be run."
-                    ),
-                    Argument(
-                        "--cron", type=str, required=True,
-                        help="Cron schedule of the sql job."
-                    ),
-                    Argument(
-                        "--sql", type=str, required=True,
-                        help="The sql statement the job should run."
-                    ),
-                    Argument(
-                        "--enabled", type=str, required=True,
-                        help="Enable or disable the job."
-                    )
-                ],
-                "resolver": create_scheduled_job,
-            },
-            "list": {
-                "help": "Get all scheduled sql jobs.",
-                "extra_args": [
-                    Argument(
-                        "--cluster-id", type=str, required=True,
-                        help="The cluster of which jobs should be listed."
-                    )
-                ],
-                "resolver": get_scheduled_jobs,
-            },
-            "logs": {
-                "help": "Logs of a scheduled sql job.",
-                "extra_args": [
-                    Argument(
-                        "--job-id", type=str, required=True,
-                        help="The job id of the job log to be listed."
-                    ),
-                    Argument(
-                        "--cluster-id", type=str, required=True,
-                        help="The cluster of which the job log should be listed."
-                    )
-                ],
-                "resolver": get_scheduled_job_log,
-            },
-            "delete": {
-                "help": "Delete specified scheduled sql job.",
-                "extra_args": [
-                    Argument(
-                        "--job-id", type=str, required=True,
-                        help="The job id of the job to be deleted."
-                    ),
-                    Argument(
-                        "--cluster-id", type=str, required=True,
-                        help="The cluster of which the job should be deleted."
-                    ),
-                ],
-                "resolver": delete_scheduled_job,
-            },
-            "edit": {
-                "help": "Edit specified scheduled sql job.",
-                "extra_args": [
-                    Argument(
-                        "--job-id", type=str, required=True,
-                        help="The id of the job to edit."
-                    ),
-                    Argument(
-                        "--cluster-id", type=str, required=True,
-                        help="The cluster id where the job was created."
-                    ),
-                    Argument(
-                        "--name", type=str, required=True,
-                        help="The name of the sql job."
-                    ),
-                    Argument(
-                        "--sql", type=str, required=True,
-                        help="The sql statement of the sql job."
-                    ),
-                    Argument(
-                        "--cron", type=str, required=True,
-                        help="Cron schedule of the sql job."
-                    ),
-                    Argument(
-                        "--enabled", type=str, required=True,
-                        help="Enable or disable the sql job."
-                    ),
-                ],
-                "resolver": edit_scheduled_job,
-            }
         }
     },
     "subscriptions": {
