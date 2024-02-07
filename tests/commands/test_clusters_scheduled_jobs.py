@@ -118,7 +118,7 @@ def test_get_scheduled_jobs(mock_request):
     assert_rest(
         mock_request,
         RequestMethod.GET,
-        f"/api/scheduled-jobs/",
+        "/api/scheduled-jobs/",
         any_times=True,
     )
 
