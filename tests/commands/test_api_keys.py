@@ -12,7 +12,7 @@ def test_api_keys_list(mock_request):
     assert_rest(
         mock_request,
         RequestMethod.GET,
-        f"/api/v2/users/me/api-keys/",
+        "/api/v2/users/me/api-keys/",
         params=None,
     )
 
@@ -23,7 +23,7 @@ def test_api_keys_create(mock_request):
     assert_rest(
         mock_request,
         RequestMethod.POST,
-        f"/api/v2/users/me/api-keys/",
+        "/api/v2/users/me/api-keys/",
         params=None,
     )
 
@@ -34,7 +34,7 @@ def test_api_keys_delete(mock_request):
     assert_rest(
         mock_request,
         RequestMethod.DELETE,
-        f"/api/v2/users/me/api-keys/key-to-be-deleted/",
+        "/api/v2/users/me/api-keys/key-to-be-deleted/",
         params=None,
     )
 
@@ -54,6 +54,6 @@ def test_api_keys_edit(mock_request, target_status):
     assert_rest(
         mock_request,
         RequestMethod.PATCH,
-        f"/api/v2/users/me/api-keys/target-key/",
+        "/api/v2/users/me/api-keys/target-key/",
         body={"active": target_status},
     )

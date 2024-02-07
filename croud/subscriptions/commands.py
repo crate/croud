@@ -28,7 +28,7 @@ from croud.util import require_confirmation
 def subscriptions_create(args: Namespace) -> None:
     body = {"type": args.type, "organization_id": args.org_id}
     client = Client.from_args(args)
-    data, errors = client.post(f"/api/v2/subscriptions/", body=body)
+    data, errors = client.post("/api/v2/subscriptions/", body=body)
     print_response(
         data=data,
         errors=errors,
