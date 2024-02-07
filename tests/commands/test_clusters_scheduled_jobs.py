@@ -29,6 +29,7 @@ def test_create_job(mock_request):
     cluster_id = gen_uuid()
     call_command(
         "croud",
+        "clusters",
         "scheduled-jobs",
         "create",
         "--name",
@@ -93,7 +94,14 @@ def test_get_scheduled_jobs(mock_request):
     mock_request.side_effect = mock_call
 
     cluster_id = gen_uuid()
-    call_command("croud", "scheduled-jobs", "list", "--cluster-id", cluster_id)
+    call_command(
+        "croud",
+        "clusters",
+        "scheduled-jobs",
+        "list",
+        "--cluster-id",
+        cluster_id,
+    )
 
     assert_rest(
         mock_request,
@@ -142,6 +150,7 @@ def test_get_scheduled_job_log(mock_request):
     cluster_id = gen_uuid()
     call_command(
         "croud",
+        "clusters",
         "scheduled-jobs",
         "logs",
         "--job-id",
@@ -188,6 +197,7 @@ def test_delete_scheduled_job(mock_request):
     cluster_id = gen_uuid()
     call_command(
         "croud",
+        "clusters",
         "scheduled-jobs",
         "delete",
         "--job-id",
@@ -243,6 +253,7 @@ def test_edit_scheduled_job(mock_request):
     cluster_id = gen_uuid()
     call_command(
         "croud",
+        "clusters",
         "scheduled-jobs",
         "edit",
         "--job-id",
