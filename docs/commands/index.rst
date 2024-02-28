@@ -47,6 +47,7 @@ To get help for a specific command, you can append ``--help``:
    api-keys
    regions
    scheduled-jobs
+   cloud-configurations
 
 .. note::
 

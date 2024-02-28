@@ -9,6 +9,9 @@ Unreleased
 
 - Added support for scheduling sql jobs with the ``scheduled-jobs`` commands.
 
+- Added command ``croud cloud-configurations`` that allows superusers to manage
+  configuration settings of CrateDB Cloud.
+
 1.10.1 - 2024/01/11
 ===================
 
