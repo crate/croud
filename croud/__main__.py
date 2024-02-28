@@ -31,6 +31,11 @@ from croud.apikeys.commands import (
     api_keys_edit,
     api_keys_list,
 )
+from croud.cloud_configurations.commands import (
+    cloud_configurations_get,
+    cloud_configurations_list,
+    cloud_configurations_set,
+)
 from croud.clusters.commands import (
     clusters_delete,
     clusters_deploy,
@@ -1632,6 +1637,64 @@ command_tree = {
             },
         },
     },
+    "cloud-configurations": {
+        "help": "Manage configurations of CrateDB Cloud.",
+        "commands": {
+            "set": {
+                "help": (
+                    "Set a configuration key/value. This command "
+                    "is for superusers only."
+                ),
+                "extra_args": [
+                    Argument(
+                        "--key", type=str, required=True,
+                        help="The configuration key to set.",
+                    ),
+                    Argument(
+                        "--value", type=str, required=True,
+                        help="The configuration value to use.",
+                    ),
+                    Argument(
+                        "--org-id", type=str, required=False,
+                        help="Override the value for a single organization only.",
+                    ),
+                ],
+                "resolver": cloud_configurations_set,
+            },
+            "get": {
+                "help": (
+                    "Get the configuration value by its key. This command "
+                    "is for superusers only."
+                ),
+                "extra_args": [
+                    Argument(
+                        "--key", type=str, required=True,
+                        help="The configuration key to get.",
+                    ),
+                    Argument(
+                        "--org-id", type=str, required=False,
+                        help="Optionally get the value for a certain organization. "
+                             "Defaults to the global configuration value.",
+                    ),
+                ],
+                "resolver": cloud_configurations_get,
+            },
+            "list": {
+                "help": (
+                    "List all cloud configurations. This command "
+                    "is for superusers only."
+                ),
+                "extra_args": [
+                    Argument(
+                        "--org-id", type=str, required=False,
+                        help="Optionally get the values for a certain organization. "
+                             "Defaults to the global configuration values.",
+                    ),
+                ],
+                "resolver": cloud_configurations_list,
+            }
+        },
+    }
 }
 # fmt: on
 
