@@ -61,7 +61,7 @@ setup(
             "pytest-freezegun==0.4.2",
         ],
         "development": [
-            "black==24.2.0",
+            "black==24.3.0",
             "flake8==7.0.0",
             "isort==5.12.0",
             "mypy==0.812",
