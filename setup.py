@@ -52,7 +52,7 @@ setup(
         "tabulate>=0.8,<1.0",
         "yarl==1.9.4",
         "halo==0.0.31",
-        "shtab==1.7.0",
+        "shtab==1.7.1",
         "tqdm==4.66.2",
     ],
     extras_require={
