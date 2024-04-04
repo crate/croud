@@ -284,17 +284,12 @@ Example
    sh$ croud clusters restart-node \
        --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 \
        --ordinal 1
-       --sudo
    +--------+----------+
    |   code | status   |
    |--------+----------|
    |    200 | Success  |
    +--------+----------+
    ==> Success: Node restarted. It may take a few minutes to complete the changes.
-
-.. note::
-
-   This command is only available for superusers.
 
 
 ``clusters set-deletion-protection``
