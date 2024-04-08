@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Update doc for ``clusters restart-node`` because it is not superuser only anymore.
+
 1.11.0 - 2024/03/12
 ===================
 
