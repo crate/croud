@@ -21,7 +21,7 @@ import abc
 import functools
 import json
 import sys
-from typing import Any, Callable, Dict, List, Optional, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Type, Union, cast
 
 import yaml
 from colorama import Fore, Style
@@ -30,9 +30,12 @@ from tabulate import tabulate
 from croud.tools.spinner import HALO
 from croud.typing import JsonDict
 
+RowsType = Union[List[JsonDict], JsonDict]
+ErrorsType = Union[Dict[str, Union[str, RowsType]], None]
+
 
 def print_format(
-    rows: Union[List[JsonDict], JsonDict],
+    rows: RowsType,
     format: str,
     keys: Optional[List[str]] = None,
     transforms: Optional[Dict[str, Callable[[Any], Any]]] = None,
@@ -48,7 +51,7 @@ def print_format(
 
 def print_response(
     data,
-    errors,
+    errors: ErrorsType,
     output_fmt,
     success_message: str = None,
     keys: List[str] = None,
@@ -56,9 +59,9 @@ def print_response(
 ):
     if errors:
         if "message" in errors:
-            print_error(errors["message"])
+            print_error(cast(str, errors["message"]))
             if "errors" in errors:
-                print_format(errors["errors"], "json")
+                print_format(cast(RowsType, errors["errors"]), "json")
         else:
             print_format(errors, "json")
         return

@@ -17,6 +17,8 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+# type: ignore
+
 import pytest
 
 from croud.printer import (

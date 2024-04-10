@@ -57,7 +57,7 @@ class SetTokenHandler(BaseHTTPRequestHandler):
             msg = SetTokenHandler.DUPLICATE_TOKEN_MSG
         else:
             token = query["token"][0]
-            self.server.on_token(token)
+            self.server.on_token(token)  # type: ignore[attr-defined]
             code = 200
             msg = SetTokenHandler.SUCCESS_MSG
         self.send_response(code)
@@ -69,7 +69,7 @@ class SetTokenHandler(BaseHTTPRequestHandler):
         # We cannot use `self.server.shutdown()` here because we're in the same
         # thread as the one who'd be waiting for the shutdown, thus causing a
         # deadlock.
-        self.server._BaseServer__shutdown_request = True
+        self.server._BaseServer__shutdown_request = True  # type: ignore[attr-defined]
 
     def log_request(self, *args, **kwargs):
         # Just don't log anything ...

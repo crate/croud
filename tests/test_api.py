@@ -81,6 +81,7 @@ def test_send_user_agent_header(config):
     client = Client(config.endpoint, region="bregenz.a1", _verify_ssl=False)
     resp_data, errors = client.get("/client-headers")
     expected_ua = f"Croud/{croud.__version__} Python/{python_version()}"
+    assert isinstance(resp_data, dict)
     assert resp_data["User-Agent"] == expected_ua
 
 
@@ -90,6 +91,7 @@ def test_send_user_agent_header(config):
 def test_send_region_header(argument, is_header_present, config):
     client = Client(config.endpoint, region=argument, _verify_ssl=False)
     resp_data, errors = client.get("/client-headers")
+    assert isinstance(resp_data, dict)
     if is_header_present:
         assert resp_data["X-Region"] == argument  # type: ignore
     else:
@@ -116,8 +118,8 @@ def test_error_message_on_connection_error(config):
     )
     client = Client(config.endpoint, _verify_ssl=False)
     resp_data, errors = client.get("/me")
-    print(resp_data, errors)
     assert resp_data is None
+    assert isinstance(errors, dict)
     assert expected_message_re.match(errors["message"]) is not None
     assert errors["success"] is False
 
@@ -127,4 +129,5 @@ def test_auth_with_key_and_secret(config):
         config.endpoint, key="some-key", secret="some-secret", _verify_ssl=False
     )
     resp_data, errors = client.get("/client-headers")
+    assert isinstance(resp_data, dict)
     assert resp_data["Authorization"] == "Basic c29tZS1rZXk6c29tZS1zZWNyZXQ="

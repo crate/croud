@@ -21,7 +21,7 @@ import enum
 import os
 from argparse import Namespace
 from platform import python_version
-from typing import Any, Callable, Dict, Optional, Tuple
+from typing import Any, Callable, Dict, Optional, Tuple, cast
 
 import requests
 from yarl import URL
@@ -108,7 +108,7 @@ class Client:
                 "Only the token will be used."
             )
 
-        self.session.cookies["session"] = self._token
+        self.session.cookies["session"] = cast(str, self._token)
         if _verify_ssl is False:
             self.session.verify = False
         if region:
@@ -156,7 +156,7 @@ class Client:
             response = self.session.request(method.value, url, **kwargs)
         except requests.RequestException as e:
             message = (
-                f"Failed to perform request on '{e.request.url}'. "
+                f"Failed to perform request on '{e.request and e.request.url}'. "
                 f"Original error was: '{e}'"
             )
             return None, {"message": message, "success": False}

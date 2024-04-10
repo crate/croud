@@ -18,5 +18,4 @@ updates:
     - "> 5.6.4"
   - dependency-name: mypy
     versions:
-    - "> 0.812"
-
+    - "< 1.11"
