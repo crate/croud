@@ -1968,7 +1968,7 @@ def test_export_job_create(mock_client_request, mock_copy, save_file):
 
     with mock.patch("requests.get", return_value=mock_response):
         with mock.patch("builtins.open", mock.mock_open(read_data="id,name,path")):
-            cmd = (
+            cmd = [
                 "croud",
                 "clusters",
                 "export-jobs",
@@ -1981,12 +1981,12 @@ def test_export_job_create(mock_client_request, mock_copy, save_file):
                 "my-table",
                 "--compression",
                 "gzip",
-            )
+            ]
             if save_file:
-                cmd = cmd + (
+                cmd += [
                     "--save-as",
                     "./my_table.csv",
-                )
+                ]
             call_command(*cmd)
 
     body = {

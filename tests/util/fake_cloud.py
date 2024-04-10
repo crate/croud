@@ -51,7 +51,7 @@ class FakeCrateDBCloudServer(HTTPServer):
         here = pathlib.Path(__file__)
         self.ssl_cert = here.parent / "server.crt"
         ssl_key = here.parent / "server.key"
-        self.socket = ssl.wrap_socket(
+        self.socket = ssl.wrap_socket(  # type: ignore[attr-defined]
             self.socket,
             keyfile=str(ssl_key),
             certfile=str(self.ssl_cert),
@@ -61,6 +61,8 @@ class FakeCrateDBCloudServer(HTTPServer):
 
 class FakeCrateDBCloudRequestHandler(BaseHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
+        self.body = None
+        self.cookies = {}
         self.routes: Dict[str, Callable[[], Response]] = {
             "/data/data-key": self.data_data_key,
             "/data/no-key": self.data_no_key,

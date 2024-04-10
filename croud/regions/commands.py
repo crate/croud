@@ -138,7 +138,7 @@ def regions_delete(args: Namespace) -> None:
         print_response(
             data=data,
             errors={
-                "message": region_errors.get("message"),
+                "message": region_errors.get("message", "unknown error"),
                 "errors": {"related_resources": region_errors.get("related_resources")},
             },
             output_fmt=get_output_format(args),

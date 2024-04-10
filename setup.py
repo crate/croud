@@ -19,6 +19,8 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
+# type: ignore
+
 from pkg_resources.extern.packaging.version import Version
 from setuptools import find_packages, setup
 
@@ -64,7 +66,7 @@ setup(
             "black==24.4.2",
             "flake8==7.0.0",
             "isort==5.12.0",
-            "mypy==0.812",
+            "mypy<1.11",
         ],
     },
     python_requires=">=3.8",

@@ -1,0 +1,6 @@
+[tool.mypy]
+check_untyped_defs = true
+ignore_missing_imports = true
+implicit_optional = true
+install_types = true
+non_interactive = true
