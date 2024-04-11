@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+1.11.1 - 2024/04/11
+===================
+
 - Update doc for ``clusters restart-node`` because it is not superuser only anymore.
 
 - Upgrade docs build action Python version to 3.11.
