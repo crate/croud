@@ -48,7 +48,7 @@ setup(
         "colorama==0.4.6",
         "marshmallow==3.21.1",
         "pyyaml==6.0.1",
-        "requests==2.31.0",
+        "requests==2.32.0",
         "tabulate>=0.8,<1.0",
         "yarl==1.9.4",
         "halo==0.0.31",
