@@ -16,7 +16,7 @@ keys of CrateDB Cloud.
 ``cloud-configurations list``
 =============================
 
-    Lists all configurations of CrateDB Cloud. Optionally it returns org specific values.
+    Lists all configurations of CrateDB Cloud. Optionally it returns org or user specific values.
 
 .. argparse::
    :module: croud.__main__
@@ -31,13 +31,13 @@ Example
 
    sh$ croud cloud-configurations list \
        --org-id f6c39580-5719-431d-a508-0cee4f9e8209 --sudo
-   +-------------------------------------------------+-------------+--------------------------------------+
-   | key                                             | value       | organization_id                      |
-   |-------------------------------------------------+-------------+--------------------------------------|
-   | CRATEDB_CLOUD_SETTING_ONE                       | 100         |                                      |
-   | CRATEDB_CLOUD_SETTING_ORG_SPECIFIC              | 1024        | f6c39580-5719-431d-a508-0cee4f9e8209 |
-   | CRATEDB_CLOUD_SETTING_THREE                     | 30          |                                      |
-   +-------------------------------------------------+-------------+--------------------------------------+
+   +-------------------------------------------------+-------------+--------------------------------------+-----------+
+   | key                                             | value       | organization_id                      | user_id   |
+   |-------------------------------------------------+-------------+--------------------------------------|-----------|
+   | CRATEDB_CLOUD_SETTING_ONE                       | 100         |                                      |           |
+   | CRATEDB_CLOUD_SETTING_ORG_SPECIFIC              | 1024        | f6c39580-5719-431d-a508-0cee4f9e8209 |           |
+   | CRATEDB_CLOUD_SETTING_THREE                     | 30          |                                      |           |
+   +-------------------------------------------------+-------------+--------------------------------------+-----------+
 
 .. note::
 
@@ -47,7 +47,7 @@ Example
 ``cloud-configurations get``
 ============================
 
-    Get a single configuration value of CrateDB Cloud. Optionally it returns the org specific value.
+    Get a single configuration value of CrateDB Cloud. Optionally it returns the org or user specific value.
 
 .. argparse::
    :module: croud.__main__
@@ -62,11 +62,11 @@ Example
        --key CRATEDB_CLOUD_SETTING_ORG_SPECIFIC \
        --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
        --sudo
-   +-------------------------------------------------+-------------+--------------------------------------+
-   | key                                             | value       | organization_id                      |
-   |-------------------------------------------------+-------------+--------------------------------------|
-   | CRATEDB_CLOUD_SETTING_ORG_SPECIFIC              | 1024        | f6c39580-5719-431d-a508-0cee4f9e8209 |
-   +-------------------------------------------------+-------------+--------------------------------------+
+   +-------------------------------------------------+-------------+--------------------------------------+-----------+
+   | key                                             | value       | organization_id                      | user_id   |
+   |-------------------------------------------------+-------------+--------------------------------------|-----------|
+   | CRATEDB_CLOUD_SETTING_ORG_SPECIFIC              | 1024        | f6c39580-5719-431d-a508-0cee4f9e8209 |           |
+   +-------------------------------------------------+-------------+--------------------------------------+-----------+
 
 .. note::
 
@@ -76,7 +76,7 @@ Example
 ``cloud-configurations set``
 ============================
 
-    Set a configuration value of CrateDB Cloud either globally or for a single organization only.
+    Set a configuration value of CrateDB Cloud either globally or for a single organization or user only.
 
 .. argparse::
    :module: croud.__main__
@@ -92,11 +92,11 @@ Example
        --value 2048 \
        --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
        --sudo
-   +-------------------------------------------------+-------------+--------------------------------------+
-   | key                                             | value       | organization_id                      |
-   |-------------------------------------------------+-------------+--------------------------------------|
-   | CRATEDB_CLOUD_SETTING_ORG_SPECIFIC              | 2048        | f6c39580-5719-431d-a508-0cee4f9e8209 |
-   +-------------------------------------------------+-------------+--------------------------------------+
+   +-------------------------------------------------+-------------+--------------------------------------+-----------+
+   | key                                             | value       | organization_id                      | user_id   |
+   |-------------------------------------------------+-------------+--------------------------------------|-----------|
+   | CRATEDB_CLOUD_SETTING_ORG_SPECIFIC              | 2048        | f6c39580-5719-431d-a508-0cee4f9e8209 |           |
+   +-------------------------------------------------+-------------+--------------------------------------+-----------+
    ==> Success: Configuration updated.
 
 .. note::

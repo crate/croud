@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Added support for overriding cloud-configurations per user.
+
 1.11.1 - 2024/04/11
 ===================
 

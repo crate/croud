@@ -1658,6 +1658,10 @@ command_tree = {
                         "--org-id", type=str, required=False,
                         help="Override the value for a single organization only.",
                     ),
+                    Argument(
+                        "--user-id", type=str, required=False,
+                        help="Override the value for a single user only.",
+                    ),
                 ],
                 "resolver": cloud_configurations_set,
             },
@@ -1676,6 +1680,11 @@ command_tree = {
                         help="Optionally get the value for a certain organization. "
                              "Defaults to the global configuration value.",
                     ),
+                    Argument(
+                        "--user-id", type=str, required=False,
+                        help="Optionally get the value for a certain user. "
+                             "Defaults to the global configuration value.",
+                    ),
                 ],
                 "resolver": cloud_configurations_get,
             },
@@ -1688,6 +1697,11 @@ command_tree = {
                     Argument(
                         "--org-id", type=str, required=False,
                         help="Optionally get the values for a certain organization. "
+                             "Defaults to the global configuration values.",
+                    ),
+                    Argument(
+                        "--user-id", type=str, required=False,
+                        help="Optionally get the values for a certain user. "
                              "Defaults to the global configuration values.",
                     ),
                 ],
