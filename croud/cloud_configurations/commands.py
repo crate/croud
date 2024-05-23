@@ -24,7 +24,7 @@ from croud.config import get_output_format
 from croud.printer import print_response
 
 
-def _org_id_transform(field):
+def _override_id_transform(field):
     return field or ""
 
 
@@ -32,16 +32,21 @@ def cloud_configurations_set(args: Namespace) -> None:
     body = {"value": args.value}
     if args.org_id:
         body["organization_id"] = args.org_id
+    elif args.user_id:
+        body["user_id"] = args.user_id
 
     client = Client.from_args(args)
     data, errors = client.put(f"/api/v2/configurations/{args.key}/", body=body)
     print_response(
         data=data,
         errors=errors,
-        keys=["key", "value", "organization_id"],
+        keys=["key", "value", "organization_id", "user_id"],
         success_message="Configuration updated.",
         output_fmt=get_output_format(args),
-        transforms={"organization_id": _org_id_transform},
+        transforms={
+            "organization_id": _override_id_transform,
+            "user_id": _override_id_transform,
+        },
     )
 
 
@@ -50,13 +55,18 @@ def cloud_configurations_get(args: Namespace) -> None:
     params = {}
     if args.org_id:
         params["organization_id"] = args.org_id
+    elif args.user_id:
+        params["user_id"] = args.user_id
     data, errors = client.get(f"/api/v2/configurations/{args.key}/", params=params)
     print_response(
         data=data,
         errors=errors,
-        keys=["key", "value", "organization_id"],
+        keys=["key", "value", "organization_id", "user_id"],
         output_fmt=get_output_format(args),
-        transforms={"organization_id": _org_id_transform},
+        transforms={
+            "organization_id": _override_id_transform,
+            "user_id": _override_id_transform,
+        },
     )
 
 
@@ -65,11 +75,16 @@ def cloud_configurations_list(args: Namespace) -> None:
     params = {}
     if args.org_id:
         params["organization_id"] = args.org_id
+    elif args.user_id:
+        params["user_id"] = args.user_id
     data, errors = client.get("/api/v2/configurations/", params=params)
     print_response(
         data=data,
         errors=errors,
-        keys=["key", "value", "organization_id"],
+        keys=["key", "value", "organization_id", "user_id"],
         output_fmt=get_output_format(args),
-        transforms={"organization_id": _org_id_transform},
+        transforms={
+            "organization_id": _override_id_transform,
+            "user_id": _override_id_transform,
+        },
     )
