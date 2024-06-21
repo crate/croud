@@ -85,6 +85,8 @@ from croud.organizations.commands import (
     org_credits_edit,
     org_credits_expire,
     org_credits_list,
+    org_customer_edit,
+    org_customer_get,
     org_files_create,
     org_files_delete,
     org_files_get,
@@ -1444,6 +1446,71 @@ command_tree = {
                         ],
                         "resolver": org_credits_expire,
                     },
+                }
+            },
+            "customer": {
+                "help": "Manage organization's billing info.",
+                "commands" : {
+                    "get": {
+                        "help": "Gets the organization's customer info",
+                        "extra_args": [
+                            Argument(
+                                "--org-id", type=str, required=True,
+                                help="The organization ID to use.",
+                            )
+                        ],
+                        "resolver": org_customer_get,
+                    },
+                    "edit": {
+                        "help": "Edits the organization's customer info.",
+                        "extra_args": [
+                            Argument(
+                                "--org-id", type=str, required=True,
+                                help="The organization ID to use.",
+                            ),
+                            Argument(
+                                "--name", type=str, required=True,
+                                help="The organization name.",
+                            ),
+                            Argument(
+                                "--email", type=str, required=True,
+                                help="The customer's email.",
+                            ),
+                            Argument(
+                                "--phone", type=str, required=True,
+                                help="The customer's phone number.",
+                            ),
+                            Argument(
+                                "--country", type=str, required=True,
+                                help="Billing address: country.",
+                            ),
+                            Argument(
+                                "--city", type=str, required=True,
+                                help="Billing address: city.",
+                            ),
+                            Argument(
+                                "--line1", type=str, required=True,
+                                help="Billing address: line 1.",
+                            ),
+                            Argument(
+                                "--line2", type=str, required=False,
+                                help="Billing address: line 2.",
+                            ),
+                            Argument(
+                                "--postal-code", type=str, required=True,
+                                help="Billing address: postal code.",
+                            ),
+                            Argument(
+                                "--tax-id", type=str, required=False,
+                                help="The customer's tax ID.",
+                            ),
+                            Argument(
+                                "--tax-id-type", type=str, required=False,
+                                help="The customer's tax ID type, e.g. 'vat_eu'.",
+                            )
+                        ],
+                        "resolver": org_customer_edit,
+                    }
                 }
             }
         },

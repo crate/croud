@@ -740,3 +740,63 @@ def test_organizations_credits_edit_no_arguments(mock_request, capsys):
 
     _, err = capsys.readouterr()
     assert "No input arguments found." in err
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_customer_get(mock_request):
+    org_id = gen_uuid()
+
+    call_command("croud", "organizations", "customer", "get", "--org-id", org_id)
+    assert_rest(
+        mock_request, RequestMethod.GET, f"/api/v2/organizations/{org_id}/customer/"
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_customer_edit(mock_request):
+    org_id = gen_uuid()
+    call_command(
+        "croud",
+        "organizations",
+        "customer",
+        "edit",
+        "--org-id",
+        org_id,
+        "--name",
+        "name",
+        "--email",
+        "test@crate.io",
+        "--phone",
+        "+330123456789",
+        "--country",
+        "FR",
+        "--city",
+        "Paris",
+        "--line1",
+        "street",
+        "--line2",
+        "street",
+        "--postal-code",
+        "75000",
+        "--tax-id",
+        "FRAB123456789",
+        "--tax-id-type",
+        "eu_vat",
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.PUT,
+        f"/api/v2/organizations/{org_id}/customer/",
+        body={
+            "name": "name",
+            "email": "test@crate.io",
+            "phone": "+330123456789",
+            "country": "FR",
+            "city": "Paris",
+            "line1": "street",
+            "line2": "street",
+            "postal_code": "75000",
+            "tax_id": "FRAB123456789",
+            "tax_id_type": "eu_vat",
+        },
+    )
