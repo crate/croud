@@ -130,6 +130,11 @@ Example
        --channel nightly
        --unit 0
 
+.. note::
+
+   Free clusters can be deployed without a paid subscription. Therefore you can use
+   ``--subscription-id free_tier --product-name crfree``.
+
 
 ``clusters scale``
 ==================

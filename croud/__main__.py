@@ -493,7 +493,8 @@ command_tree = {
                     ),
                     Argument(
                         "--subscription-id", type=str, required=True,
-                        help="The subscription to use for billing of this cluster.",
+                        help="The subscription to use for billing of this cluster. Use "
+                             "``free_tier`` to deploy a free cluster.",
                     ),
                     Argument(
                         "--channel", type=str, default="stable", required=False,
