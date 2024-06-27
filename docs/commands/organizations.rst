@@ -517,3 +517,70 @@ Example
 .. note::
 
    This command is only available for superusers.
+
+
+``organizations customer``
+==========================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations customer
+   :nosubcommands:
+
+``organizations customer get``
+------------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations customer get
+
+Example
+.......
+
+.. code-block:: console
+
+   sh$ croud organizations customer get \
+       --org-id 89dfe980-ea1c-4108-9fa1-2161d2ac6785
+   +---------+--------------+---------------+----------------------------------------------------------------------------------------------+----------------------+
+   | name    |        phone | email         | address                                                                                      | tax                  |
+   |---------+--------------+---------------+----------------------------------------------------------------------------------------------+----------------------|
+   | Company | +33123456789 | test@crate.io | {"city": "Vienna", "country": "AT", "line1": "street", "line2": null, "postal_code": "1010"} | ATU12345678 (eu_vat) |
+   +---------+--------------+---------------+----------------------------------------------------------------------------------------------+----------------------+
+
+
+``organizations customer edit``
+-------------------------------
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations customer edit
+
+Example
+.......
+
+.. code-block:: console
+
+   sh$ croud organizations customer edit \
+       --org-id 89dfe980-ea1c-4108-9fa1-2161d2ac6785 \
+       --name Company \
+       --email test@crate.io \
+       --phone +33123456789 \
+       --country FR \
+       --city Paris \
+       --line1 street \
+       --line2 street \
+       --postal-code 75000 \
+       --tax-id FRAB123456789 \
+       --tax-id-type eu_vat
+   +---------+--------------+---------------+--------------------------------------------------------------------------------------------------+------------------------+
+   | name    |        phone | email         | address                                                                                          | tax                    |
+   |---------+--------------+---------------+--------------------------------------------------------------------------------------------------+------------------------|
+   | Company | +33123456789 | test@crate.io | {"city": "Paris", "country": "FR", "line1": "street", "line2": "street", "postal_code": "75000"} | FRAB123456789 (eu_vat) |
+   +---------+--------------+---------------+--------------------------------------------------------------------------------------------------+------------------------+
+   ==> Success: Organization's customer info edited.

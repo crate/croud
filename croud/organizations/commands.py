@@ -388,3 +388,59 @@ def org_credits_expire(args: Namespace) -> None:
         success_message="Credit expired.",
         output_fmt=get_output_format(args),
     )
+
+
+def org_customer_edit(args: Namespace) -> None:
+    client = Client.from_args(args)
+    body = {
+        "name": args.name,
+        "email": args.email,
+        "phone": args.phone,
+        "country": args.country,
+        "city": args.city,
+        "line1": args.line1,
+        "postal_code": args.postal_code,
+    }
+    if args.line2:
+        body["line2"] = args.line2
+    if args.tax_id:
+        body["tax_id"] = args.tax_id
+    if args.tax_id_type:
+        body["tax_id_type"] = args.tax_id_type
+
+    data, errors = client.put(
+        f"/api/v2/organizations/{args.org_id}/customer/", body=body
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        success_message="Organization's customer info edited.",
+        keys=["name", "email", "phone", "address", "tax"],
+        output_fmt=get_output_format(args),
+        transforms={
+            "tax": _transform_customer_tax,
+        },
+    )
+
+
+def org_customer_get(args: Namespace) -> None:
+    client = Client.from_args(args)
+    data, errors = client.get(f"/api/v2/organizations/{args.org_id}/customer/")
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["name", "email", "phone", "address", "tax"],
+        output_fmt=get_output_format(args),
+        transforms={
+            "tax": _transform_customer_tax,
+        },
+    )
+
+
+def _transform_customer_tax(tax):
+    if not tax:
+        return ""
+    text = tax["tax_id"] if tax["tax_id"] else ""
+    if tax["tax_id_type"]:
+        text = f"{text} ({tax['tax_id_type']})"
+    return text

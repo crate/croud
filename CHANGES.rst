@@ -7,6 +7,9 @@ Unreleased
 
 - Added support for overriding cloud-configurations per user.
 
+- Added new resource ``organizations customer`` and subcommands that allow
+  users to manage organization's billing info.
+
 1.11.1 - 2024/04/11
 ===================
 
