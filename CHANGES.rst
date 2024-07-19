@@ -10,6 +10,8 @@ Unreleased
 - Added new resource ``organizations customer`` and subcommands that allow
   users to manage organization's billing info.
 
+- Replaced ``pkg_resources.extern`` with ``packaging``
+
 1.11.1 - 2024/04/11
 ===================
 

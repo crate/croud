@@ -21,7 +21,7 @@
 
 # type: ignore
 
-from pkg_resources.extern.packaging.version import Version
+from packaging.version import Version
 from setuptools import find_packages, setup
 
 __version__ = Version("1.11.1")
