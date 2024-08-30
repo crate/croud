@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+1.12.0 - 2024/08/30
+===================
+
 - Added support for overriding cloud-configurations per user.
 
 - Added new resource ``organizations customer`` and subcommands that allow

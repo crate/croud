@@ -24,7 +24,7 @@
 from packaging.version import Version
 from setuptools import find_packages, setup
 
-__version__ = Version("1.11.1")
+__version__ = Version("1.12.0")
 
 try:
     with open("README.rst", "r", encoding="utf-8") as f:
