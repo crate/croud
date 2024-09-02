@@ -49,25 +49,20 @@ Help
 
 .. |ci| image:: https://github.com/crate/croud/actions/workflows/docs.yml/badge.svg
     :alt: CI status
-    :scale: 100%
     :target: https://github.com/crate/croud/actions/workflows/docs.yml
 
 .. |coverage| image:: https://codecov.io/gh/crate/croud/branch/master/graph/badge.svg
     :alt: Code coverage
-    :scale: 100%
     :target: https://codecov.io/gh/crate/croud
 
 .. |rtd| image:: https://readthedocs.org/projects/croud/badge/?version=latest
     :alt: Read The Docs status
-    :scale: 100%
     :target: https://croud.readthedocs.io/en/latest/
 
 .. |pypi-version| image:: https://badge.fury.io/py/croud.svg
     :alt: Most recent version on PyPI
-    :scale: 100%
     :target: https://pypi.org/project/croud/
 
 .. |python-versions| image:: https://img.shields.io/pypi/pyversions/croud.svg
     :alt: Supported Python versions
-    :scale: 100%
     :target: https://pypi.org/project/croud/

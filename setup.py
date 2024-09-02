@@ -39,6 +39,7 @@ setup(
     author_email="office@crate.io",
     url="https://github.com/crate/croud",
     description="A command line interface for CrateDB Cloud",
+    long_description_content_type="text/x-rst",
     long_description=readme,
     version=str(__version__),
     entry_points={"console_scripts": ["croud = croud.__main__:main"]},
