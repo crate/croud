@@ -55,7 +55,7 @@ setup(
         "yarl==1.9.7",
         "halo==0.0.31",
         "shtab==1.7.1",
-        "tqdm==4.66.4",
+        "tqdm==4.66.5",
     ],
     extras_require={
         "testing": [
