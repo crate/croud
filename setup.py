@@ -48,7 +48,7 @@ setup(
         "bitmath==1.3.3.1",
         "certifi",
         "colorama==0.4.6",
-        "marshmallow==3.21.3",
+        "marshmallow==3.22.0",
         "pyyaml==6.0.1",
         "requests==2.32.3",
         "tabulate>=0.8,<1.0",
