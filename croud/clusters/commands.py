@@ -1037,7 +1037,7 @@ def _download_exported_file(
             path.parent.mkdir(parents=True, exist_ok=True)
 
             desc = "(Unknown total file size)" if file_size == 0 else ""
-            r.raw.read = functools.partial(r.raw.read, decode_content=True)
+            r.raw.read = functools.partial(r.raw.read, decode_content=True)  # type: ignore  # noqa
             with tqdm.wrapattr(r.raw, "read", total=file_size, desc=desc) as r_raw:
                 with path.open("wb") as f:
                     copyfileobj(r_raw, f)
