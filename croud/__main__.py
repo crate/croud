@@ -20,7 +20,6 @@
 # software solely pursuant to the terms of the relevant commercial agreement.
 
 import sys
-from distutils.util import strtobool
 
 import colorama
 import shtab
@@ -130,6 +129,7 @@ from croud.subscriptions.commands import (
 from croud.tools.spinner import HALO
 from croud.users.commands import users_delete, users_list
 from croud.users.roles.commands import roles_list
+from croud.util import asbool
 
 # Arguments common to all import-job create commands
 import_job_create_common_args = [
@@ -161,7 +161,7 @@ import_job_create_common_args = [
     ),
     Argument(
         "--create-table",
-        type=lambda x: bool(strtobool(str(x))),  # noqa
+        type=lambda x: asbool(x),  # noqa
         required=False,
         help="Whether the table should be created automatically"
         " if it does not exist. If true new columns will also be added when the data"
@@ -592,7 +592,7 @@ command_tree = {
                         help="The CrateDB cluster ID to use.",
                     ),
                     Argument(
-                        "--value", type=lambda x: bool(strtobool(str(x))),
+                        "--value", type=lambda x: asbool(x),
                         required=True, help="The deletion protection status",
                     ),
                 ],
@@ -636,7 +636,7 @@ command_tree = {
                         help="The CrateDB cluster ID to use.",
                     ),
                     Argument(
-                        "--value", type=lambda x: bool(strtobool(str(x))),
+                        "--value", type=lambda x: asbool(x),
                         required=True, help="The suspended status.",
                     ),
                 ],
@@ -891,7 +891,7 @@ command_tree = {
                                      "return the files."
                             ),
                             Argument(
-                                "--summary", type=lambda x: bool(strtobool(str(x))),
+                                "--summary", type=lambda x: asbool(x),
                                 required=False,
                                 help="Show only global progress."
                             ),

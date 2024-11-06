@@ -49,6 +49,7 @@ setup(
         "bitmath==1.3.3.1",
         "certifi",
         "colorama==0.4.6",
+        "importlib-metadata; python_version < '3.8'",
         "marshmallow==3.22.0",
         "pyyaml==6.0.2",
         "requests==2.32.3",
@@ -60,8 +61,11 @@ setup(
     ],
     extras_require={
         "testing": [
-            "tox==3.14.2",
-            "pytest-freezegun==0.4.2",
+            "pytest<9",
+            "pytest-cov<7",
+            "pytest-freezer<0.5",
+            "pytest-random-order<2",
+            "tox<4",
         ],
         "development": [
             "black==24.8.0",
