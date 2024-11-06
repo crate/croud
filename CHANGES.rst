@@ -5,7 +5,7 @@ Changes for croud
 Unreleased
 ==========
 
-- Added support for Python 3.12
+- Added support for Python 3.12 and 3.13
 
 1.12.0 - 2024/08/30
 ===================
