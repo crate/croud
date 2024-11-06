@@ -25,6 +25,9 @@ from threading import Thread
 from typing import Callable, Dict
 from urllib import parse
 
+__ssl = __import__("ssl")
+_original_sslcontext = __ssl.SSLContext
+
 
 class Response:
     __slots__ = ("bytes", "status", "headers")
@@ -51,11 +54,48 @@ class FakeCrateDBCloudServer(HTTPServer):
         here = pathlib.Path(__file__)
         self.ssl_cert = here.parent / "server.crt"
         ssl_key = here.parent / "server.key"
-        self.socket = ssl.wrap_socket(  # type: ignore[attr-defined]
+
+        self.socket = self._wrap_socket(
             self.socket,
             keyfile=str(ssl_key),
             certfile=str(self.ssl_cert),
             server_side=True,
+        )
+
+    @staticmethod
+    def _wrap_socket(
+        sock,
+        keyfile,
+        certfile,
+        server_side=False,
+        cert_reqs=ssl.CERT_REQUIRED,
+        ssl_version=ssl.PROTOCOL_TLS_SERVER,
+        ca_certs=None,
+        do_handshake_on_connect=True,
+        ciphers=None,
+    ):
+        """
+        Instances of SSLSocket must be created using the
+        `SSLContext.wrap_socket()` method.
+
+        https://docs.python.org/3.12/library/ssl.html#socket-creation
+        """
+        context = _original_sslcontext(protocol=ssl_version)
+        context.options |= cert_reqs
+        if certfile or keyfile:
+            context.load_cert_chain(
+                certfile=certfile,
+                keyfile=keyfile,
+            )
+        if ca_certs:
+            context.load_verify_locations(ca_certs)
+        if ciphers:
+            context.set_ciphers(ciphers)
+
+        return context.wrap_socket(
+            sock=sock,
+            server_side=server_side,
+            do_handshake_on_connect=do_handshake_on_connect,
         )
 
 
