@@ -1,9 +1,9 @@
 name: docs
 on:
-  pull_request: ~
   push:
     branches:
       - master
+  pull_request:
 
 concurrency:
   cancel-in-progress: true
@@ -23,7 +23,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       - name: Build docs
         run: |
           cd docs && make check
