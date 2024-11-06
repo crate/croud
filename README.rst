@@ -2,7 +2,7 @@
 Croud
 =====
 
-|ci| |coverage| |rtd| |pypi-version|
+|ci| |coverage| |rtd| |pypi-version| |python-versions|
 
 |
 
