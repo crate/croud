@@ -68,7 +68,7 @@ setup(
             "tox<4",
         ],
         "development": [
-            "black==24.8.0",
+            "black==24.10.0",
             "flake8==7.0.0",
             "isort==5.12.0",
             "mypy<1.14",
