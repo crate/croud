@@ -54,7 +54,7 @@ setup(
         "pyyaml==6.0.2",
         "requests==2.32.3",
         "tabulate>=0.8,<1.0",
-        "yarl==1.14.0",
+        "yarl==1.17.1",
         "halo==0.0.31",
         "shtab==1.7.1",
         "tqdm==4.66.6",
