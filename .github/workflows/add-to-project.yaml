@@ -1,0 +1,23 @@
+# Please note that this adds issues to a private project which is maintained by Crate.io.
+# This allows us to triage and promptly come back to the creators.
+name: Add new issues to the right project
+
+on:
+  issues:
+    types:
+      - opened
+      - reopened
+
+jobs:
+  add-to-project:
+    name: Add issue to project with Triage label
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/orgs/crate/projects/40
+          github-token: ${{ secrets.JENKINS_USER_TOKEN }}
+
+      - uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: triage
