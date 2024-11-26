@@ -1,10 +1,12 @@
----
+
 pull_request_rules:
-  - actions:
+  - name: default
+    conditions: []
+    actions:
       queue:
-        method: merge
-        name: default
-    conditions:
+queue_rules:
+  - name: default
+    queue_conditions:
       - label=ready-to-merge
       - '#approved-reviews-by>=1'
       - status-success~=Code style checks and static analysis with Python
@@ -12,13 +14,10 @@ pull_request_rules:
       - status-success~=Build docs on ubuntu-latest
       - status-success~=Build docs on macos-latest
       - status-success~=docs/readthedocs.org
-    name: default
-
-queue_rules:
-  - conditions:
+    merge_conditions:
       - status-success~=Code style checks and static analysis with Python
       - status-success~=Tests with Python
       - status-success~=Build docs on ubuntu-latest
       - status-success~=Build docs on macos-latest
       - status-success~=docs/readthedocs.org
-    name: default
+    merge_method: merge
