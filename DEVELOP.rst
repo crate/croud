@@ -10,7 +10,7 @@ Setup
 Pip
 ---
 
-Python >= 3.6 is required. Run ``croud`` within a virtual python environment::
+Python >= 3.9 is required. Run ``croud`` within a virtual python environment::
 
     python -m venv env
     source env/bin/activate
@@ -32,7 +32,7 @@ Alternatively, you can clone this repository, install it into a virtualenv and
 add the executable to your PATH environment variable::
 
     git clone git@github.com:crate/croud.git && cd croud/
-    python3.6 -m venv env
+    python3.12 -m venv env
     env/bin/pip install -e .
     export PATH=$PATH:$(pwd)/env/bin/croud
 
@@ -52,9 +52,9 @@ versions run::
     tox
 
 Alongside ``--`` it's possible to pass ``pytest`` args e.g. to run only a
-fraction of tests with python3.6::
+fraction of tests with python3.12::
 
-    tox -e py36 -- -k test_rest
+    tox -e py312 -- -k test_rest
 
 The test setup uses `pytest-random-order`_ to ensure better test separation.
 By default, the order will be random on the Python module level. That means,
@@ -64,12 +64,12 @@ When running tests using ``tox`` or ``py.test``, `pytest-random-order`_ will
 emit a seed value at the beginning which can be used to rerun tests with the
 specific order::
 
-    $ tox -e py37
+    $ tox -e py312
     ...
-    py37 run-test-pre: PYTHONHASHSEED='2789788418'
-    py37 run-test: commands[0] | pytest
+    py312 run-test-pre: PYTHONHASHSEED='2789788418'
+    py312 run-test: commands[0] | pytest
     ======================== test session starts =========================
-    platform linux -- Python 3.7.3, pytest-3.10.1, py-1.8.0, pluggy-0.12.0
+    platform linux -- Python 3.12.8, pytest-8.3.4, pluggy-1.5.0
     Using --random-order-bucket=module
     Using --random-order-seed=240261
     ...
@@ -77,7 +77,7 @@ specific order::
 One can rerun a random test setup by passing ``--random-order-seed=<seed>`` to
 py.test::
 
-    $ tox -e py37 -- --random-order-seed=240261
+    $ tox -e py312 -- --random-order-seed=240261
 
 
 Debugging API calls
@@ -160,7 +160,7 @@ The documentation is written using `Sphinx`_ and `ReStructuredText`_.
 Working on the documentation
 ----------------------------
 
-Python 3.7 is required.
+Python 3.9 or higher is required.
 
 Change into the ``docs`` directory:
 
