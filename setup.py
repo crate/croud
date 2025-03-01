@@ -50,7 +50,7 @@ setup(
         "certifi",
         "colorama==0.4.6",
         "importlib-metadata; python_version < '3.8'",
-        "marshmallow==3.26.0",
+        "marshmallow==3.26.1",
         "pyyaml==6.0.2",
         "requests==2.32.3",
         "tabulate>=0.8,<1.0",
