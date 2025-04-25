@@ -16,7 +16,7 @@
 # However, if you have executed another commercial license agreement
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
-
+import os
 import pathlib
 from unittest import mock
 
@@ -213,3 +213,26 @@ def test_default_format(config):
     config.use_profile(profile)
     assert "format" not in config.profile
     assert config.format == config.config["default-format"]
+
+
+def test_config_default(mocker, tmp_path):
+    """
+    A vanilla / non-existing croud.yaml file should not cause any errors.
+    """
+    config = Configuration("croud.yaml", tmp_path)
+    assert config.endpoint == "https://console.cratedb.cloud"
+    assert config.organization is None
+    assert config.token is None
+    assert config.key is None
+    assert config.secret is None
+
+
+def test_config_from_environment(mocker, tmp_path):
+    """
+    Verify headless authentication via environment variables.
+    """
+    mocker.patch.dict(os.environ, {"CRATEDB_CLOUD_API_KEY": "api_key"})
+    mocker.patch.dict(os.environ, {"CRATEDB_CLOUD_API_SECRET": "api_secret"})
+    config = Configuration("croud.yaml", tmp_path)
+    assert config.key == "api_key"
+    assert config.secret == "api_secret"

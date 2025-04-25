@@ -9,6 +9,9 @@ Unreleased
 - Client: Accounted for edge-case when login token is an empty string
 - Fixed ``exit()`` vs. ``sys.exit()`` invocations to improve library use
 - Fixed duplicate JSON output in ``croud clusters deploy``
+- Headless mode: Started accepting environment variables ``CRATEDB_CLOUD_API_KEY``
+  and ``CRATEDB_CLOUD_API_SECRET`` to authenticate with API keys when no ``croud.yaml``
+  configuration file exists.
 
 1.13.0 - 2025/01/07
 ===================

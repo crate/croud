@@ -64,6 +64,7 @@ setup(
             "pytest<9",
             "pytest-cov<7",
             "pytest-freezer<0.5",
+            "pytest-mock<4",
             "pytest-random-order<2",
             "tox<4",
         ],

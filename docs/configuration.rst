@@ -90,6 +90,14 @@ Please refer to the :doc:`commands/config` command reference for further
 details.
 
 
+Headless authentication
+=======================
+
+If no ``croud.yaml`` configuration file exists, the program also accepts the
+``CRATEDB_CLOUD_API_KEY`` and ``CRATEDB_CLOUD_API_SECRET`` environment variables
+to support headless authentication per `CrateDB Cloud API keys`_.
+
+
 Incompatible versions
 =====================
 
@@ -109,5 +117,7 @@ following message upon execution of a command with the new version of
 You can either delete the old configuration file, or manually edit the content
 by pasting the default configuration stated above.
 
+
 .. _appdirs: https://pypi.org/project/appdirs/
+.. _CrateDB Cloud API keys: https://cratedb.com/docs/cloud/en/latest/organization/api.html
 .. _YAML: https://yaml.org

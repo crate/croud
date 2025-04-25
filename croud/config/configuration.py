@@ -16,6 +16,7 @@
 # However, if you have executed another commercial license agreement
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
+import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -129,6 +130,12 @@ class Configuration:
     def load(self) -> ConfigurationType:
         if not self._file_path.exists():
             data = yaml.safe_load(DEFAULT_CONFIGURATION)
+            data["profiles"]["cratedb.cloud"]["key"] = os.getenv(
+                "CRATEDB_CLOUD_API_KEY"
+            )
+            data["profiles"]["cratedb.cloud"]["secret"] = os.getenv(
+                "CRATEDB_CLOUD_API_SECRET"
+            )
         else:
             with open(self._file_path, "r") as fp:
                 data = yaml.safe_load(fp)
