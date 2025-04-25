@@ -16,7 +16,7 @@
 # However, if you have executed another commercial license agreement
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
-
+import os
 import secrets
 from unittest import mock
 
@@ -29,6 +29,14 @@ from croud.config.configuration import Configuration
 from tests.util.fake_cloud import FakeCrateDBCloud
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
+@pytest.fixture(autouse=True)
+def reset_environment():
+    """Prevent environment variables from leaking into tests."""
+    for key in os.environ.keys():
+        if key.startswith("CRATEDB"):
+            os.environ.pop(key)
 
 
 @pytest.fixture(scope="session")
