@@ -114,14 +114,13 @@ def clusters_deploy(args: Namespace) -> None:
         return
 
     data, errors = client.post(f"/api/v2/organizations/{org_id}/clusters/", body=body)
-    print_response(
-        data=data,
-        errors=errors,
-        keys=["id", "name", "fqdn", "url"],
-        output_fmt=get_output_format(args),
-    )
-
     if errors or not data:
+        print_response(
+            data=data,
+            errors=errors,
+            keys=["id", "name", "fqdn", "url"],
+            output_fmt=get_output_format(args),
+        )
         return
 
     print_info("Cluster creation initiated. It may take a few minutes to complete.")
