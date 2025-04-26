@@ -19,6 +19,7 @@
 
 import enum
 import os
+import sys
 from argparse import Namespace
 from platform import python_version
 from typing import Any, Callable, Dict, Optional, Tuple, cast
@@ -170,7 +171,7 @@ class Client:
                 print_info("Use `croud login` to login to CrateDB Cloud.")
             else:
                 print_error("Oops. Something unexpected happened.")
-            exit(1)
+            sys.exit(1)
 
         # Refresh a previously provided token because it has timed out
         response_token = response.cookies.get("session")

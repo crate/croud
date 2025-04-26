@@ -44,7 +44,7 @@ def print_format(
         Printer = PRINTERS[format]
     except KeyError:
         print_error("This print method is not supported.")
-        exit(1)
+        sys.exit(1)
     printer = Printer(keys, transforms)
     printer.print_rows(rows)
 

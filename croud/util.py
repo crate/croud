@@ -21,6 +21,7 @@ import functools
 import os
 import platform
 import subprocess
+import sys
 import webbrowser
 from argparse import Namespace
 from datetime import datetime, timezone
@@ -118,12 +119,12 @@ def org_id_config_fallback(cmd):  # decorator
     def _wrapper(cmd_args: Namespace):  # decorator logic
         if cmd_args.sudo and not cmd_args.org_id:
             print_error("An organization ID is required. Please pass --org-id.")
-            exit(1)
+            sys.exit(1)
 
         cmd_args.org_id = cmd_args.org_id or CONFIG.organization
         if not cmd_args.org_id:
             print_error("An organization ID is required. Please pass --org-id.")
-            exit(1)
+            sys.exit(1)
 
         cmd(cmd_args)
 
