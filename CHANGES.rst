@@ -6,6 +6,7 @@ Unreleased
 ==========
 
 - Dropped support for Python 3.8.
+- Client: Accounted for edge-case when login token is an empty string
 
 1.13.0 - 2025/01/07
 ===================
