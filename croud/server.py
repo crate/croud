@@ -49,7 +49,7 @@ class SetTokenHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         query_string = parse.urlparse(self.path).query
         query = parse.parse_qs(query_string)
-        if "token" not in query:
+        if "token" not in query or not query["token"] or not query["token"][0]:
             code = 400
             msg = SetTokenHandler.MISSING_TOKEN_MSG
         elif len(query["token"]) != 1:
