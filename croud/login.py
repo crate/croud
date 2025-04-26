@@ -16,7 +16,7 @@
 # However, if you have executed another commercial license agreement
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
-
+import sys
 from argparse import Namespace
 from typing import Optional
 
@@ -47,7 +47,7 @@ def login(args: Namespace) -> None:
 
     if not can_launch_browser():
         print_error("Login only works with a valid browser installed.")
-        exit(1)
+        sys.exit(1)
 
     if CONFIG.key and CONFIG.secret:
         print_warning(

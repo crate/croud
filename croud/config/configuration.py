@@ -140,7 +140,6 @@ class Configuration:
             raise InvalidConfiguration(
                 f"{self._file_path} is not a valid configuration."
             ) from None
-            exit(1)
 
     def is_valid(self):
         try:

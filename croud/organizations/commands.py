@@ -17,6 +17,7 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 import os
+import sys
 from argparse import Namespace
 from typing import Any, Tuple
 
@@ -59,7 +60,7 @@ def organizations_edit(args: Namespace) -> None:
         body["name"] = args.name
     if not body:
         print_error("No input arguments found.")
-        exit(1)
+        sys.exit(1)
 
     data, errors = client.put(f"/api/v2/organizations/{args.org_id}/", body=body)
     print_response(
@@ -321,7 +322,7 @@ def org_credits_edit(args: Namespace) -> None:
         payload["comment"] = args.comment
     if not payload:
         print_error("No input arguments found.")
-        exit(1)
+        sys.exit(1)
 
     data, errors = client.patch(
         f"/api/v2/organizations/{args.org_id}/credits/{args.credit_id}/", body=payload
