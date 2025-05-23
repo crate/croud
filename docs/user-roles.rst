@@ -12,11 +12,6 @@ the purposes of the Croud CLI.
    The ``users roles list`` command provides a list of fully qualified role
    names.
 
-.. rubric:: Table of Contents
-
-.. contents::
-   :local:
-
 .. _organization-roles:
 
 Organization roles
