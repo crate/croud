@@ -4,15 +4,10 @@
 Getting Started
 ===============
 
-Croud CLI is available as a `pip`_ package.
-
-.. rubric:: Table of Contents
-
-.. contents::
-   :local:
-
 Installation
 ============
+
+Croud CLI is available as a `pip`_ package.
 
 To install, run:
 
