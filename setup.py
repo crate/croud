@@ -45,12 +45,12 @@ setup(
     entry_points={"console_scripts": ["croud = croud.__main__:main"]},
     packages=find_packages(),
     install_requires=[
-        "appdirs>=1,<2",
         "bitmath>=1,<2",
         "certifi",
         "colorama>=0.3,<1",
         "importlib-metadata; python_version < '3.8'",
         "marshmallow>=3,<4",
+        "platformdirs>=4,<5",
         "pyyaml>=6.0.2,<7",
         "requests>=2,<3",
         "tabulate>=0.8,<1.0",
