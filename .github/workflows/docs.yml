@@ -16,7 +16,7 @@ on:
 # Cancel in-progress jobs when pushing to the same branch.
 concurrency:
   cancel-in-progress: true
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref_name }}
 
 jobs:
   documentation:
