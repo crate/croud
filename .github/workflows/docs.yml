@@ -1,29 +1,34 @@
 name: docs
+
 on:
+  pull_request:
   push:
     branches:
       - master
-  pull_request:
 
+  # Allow job to be triggered manually.
+  workflow_dispatch:
+
+  # Run job as nightly recurrent job.
+  schedule:
+    - cron: '0 2 * * *'
+
+# Cancel in-progress jobs when pushing to the same branch.
 concurrency:
   cancel-in-progress: true
   group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   documentation:
-    name: Build docs on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
+    name: Run link checker
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: 3.13
       - name: Build docs
         run: |
           cd docs && make check
