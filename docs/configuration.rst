@@ -9,7 +9,7 @@ would be the following path::
 
    $HOME/.config/Crate/croud.yaml
 
-To determine the location of the config files ``croud`` uses the `appdirs`_
+To determine the location of the config files ``croud`` uses the `platformdirs`_
 package. Please refer to package documentation for further details.
 
 Configuration file formatting
@@ -113,6 +113,6 @@ You can either delete the old configuration file, or manually edit the content
 by pasting the default configuration stated above.
 
 
-.. _appdirs: https://pypi.org/project/appdirs/
+.. _platformdirs: https://pypi.org/project/platformdirs/
 .. _CrateDB Cloud API keys: https://cratedb.com/docs/cloud/en/latest/organization/api.html
 .. _YAML: https://yaml.org

@@ -21,8 +21,8 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import yaml
-from appdirs import user_config_dir
 from marshmallow import ValidationError
+from platformdirs import user_config_dir
 
 from croud.config.exceptions import InvalidConfiguration, InvalidProfile
 from croud.config.schemas import ConfigSchema, ProfileSchema
