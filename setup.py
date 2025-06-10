@@ -52,7 +52,7 @@ setup(
         "importlib-metadata; python_version < '3.8'",
         "marshmallow==3.26.1",
         "pyyaml==6.0.2",
-        "requests==2.32.3",
+        "requests==2.32.4",
         "tabulate>=0.8,<1.0",
         "yarl==1.20.0",
         "halo==0.0.31",
