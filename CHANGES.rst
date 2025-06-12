@@ -12,6 +12,8 @@ Unreleased
 - Headless mode: Started accepting environment variables ``CRATEDB_CLOUD_API_KEY``
   and ``CRATEDB_CLOUD_API_SECRET`` to authenticate with API keys when no ``croud.yaml``
   configuration file exists.
+- Dependencies: Relaxed version pinning to make package compatible with others
+- Dependencies: Migrated from ``appdirs`` to ``platformdirs``
 
 1.13.0 - 2025/01/07
 ===================
