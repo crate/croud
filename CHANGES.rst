@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+1.14.0 - 2025/06/12
+===================
+
 - Dropped support for Python 3.8.
 - Client: Accounted for edge-case when login token is an empty string
 - Fixed ``exit()`` vs. ``sys.exit()`` invocations to improve library use
