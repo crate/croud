@@ -72,7 +72,7 @@ setup(
             "black<26",
             "flake8<7.3",
             "isort<6",
-            "mypy<1.17",
+            "mypy<1.18",
         ],
     },
     python_requires=">=3.9",
