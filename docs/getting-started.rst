@@ -19,7 +19,7 @@ To update to the latest version, run:
 
 .. code-block:: console
 
-   sh$ pip install -U croud
+    sh$ pip install -U croud
 
 Running Croud
 =============

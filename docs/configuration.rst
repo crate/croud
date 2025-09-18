@@ -13,7 +13,7 @@ On Linux, for example, the path is:
 
 .. code-block:: console
    
-   $HOME/.config/Crate/croud.yaml
+   sh$ $HOME/.config/Crate/croud.yaml
 
 Croud uses the `platformdirs`_ Python package to determine the correct config directory for your operating system.
 
@@ -53,9 +53,9 @@ Top-Level Keys
 
     Default output format if a profile doesn't define one. Valid values:
 
-    * table – (default) most relevant fields
+    * table -- (default) most relevant fields
 
-    * wide – all fields in table format
+    * wide -- all fields in table format
 
     * json
 
@@ -94,8 +94,8 @@ You can manage your configuration and profiles using the following commands:
 
 .. code-block:: console
 
-    croud config show
-    croud config profiles
+    sh$ croud config show
+    sh$ croud config profiles
 
 Refer to the :doc:`commands/config` command reference for more details.
 
@@ -112,8 +112,8 @@ you can authenticate using environment variables:
 
 .. code-block:: console
 
-    export CRATEDB_CLOUD_API_KEY=your-api-key
-    export CRATEDB_CLOUD_API_SECRET=your-secret 
+    sh$ export CRATEDB_CLOUD_API_KEY=your-api-key
+    sh$ export CRATEDB_CLOUD_API_SECRET=your-secret 
 
 Check `CrateDB Cloud API keys`_ for the instructions on how to generate a key and secret.
 
@@ -126,7 +126,7 @@ If you are in that scenario, you will get the following error message:
 
 .. code-block:: console
 
-   $ croud me
+   sh$ croud me
    ==> Error: Your configuration file is incompatible with the current version of croud.
    ==> Info: Please delete the file '/home/<user>/.config/Crate/croud.yaml' or update it manually.
 
