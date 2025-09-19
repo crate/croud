@@ -4,62 +4,69 @@
 User Roles
 ==========
 
-This is an overview of the user roles in `CrateDB Cloud`_ for
-the purposes of the Croud CLI.
+This page provides an overview of the user roles available in `CrateDB Cloud`_, 
+specifically in the context of using the Croud CLI.
 
 .. tip::
 
-   The ``users roles list`` command provides a list of fully qualified role
-   names.
+   To view all available role names, run:
+   
+   .. code-block:: console
+    
+    sh$ croud users roles list 
 
 .. _organization-roles:
 
-Organization roles
+Organization Roles
 ==================
 
 .. _org-admin:
 
-Organization admin
+Organization Admin
 ------------------
 
-The admin of an organization has the following privileges:
+An **Organization Admin** has the highest level of privileges within the organization:
 
-* Organization admin has access to all projects in the organization, even if
-  added to a project with a non-admin role.
-* Privileges to manage organization settings.
-* Privileges to add and remove users to and from an organization.
-* Privileges of all the other roles combined.
+* Full access to all projects within the organization, regardless of project-specific roles.
+* Ability to manage organization settings.
+* Can add or remove users from the organization.
+* Inherits all permissions from other roles.
+
 
 .. _org-member:
 
-Organization member
+Organization Member
 -------------------
 
-* Organization member has read-only access to the organization (settings, users).
+An **Organization Member** has limited, read-only access:
+
+* Can view organization settings and user lists.
+* Cannot make any modifications.
 
 .. _project-roles:
 
-Project roles
+Project Roles
 =============
 
 .. _project-admin:
 
-Project admin
+Project Admin
 -------------
 
-The admin of a project has the following privileges:
+A **Project Admin** has full control over a specific project:
 
-* Privileges to manage project settings.
-* Privileges to add and remove users to and from a project. (The user has to
-  be part of the organization)
-* Privileges to administer clusters.
+* Can manage project settings.
+* Can add or remove users from the project (as long as the user is already part of the organization).
+* Full cluster administration rights within the project.
 
 .. _project-member:
 
-Project member
+Project Member
 --------------
 
-* Project member has read-only access to the project (settings, products,
-  users).
+A **Project Member** has view-only access within a project:
+
+* Can view project settings, clusters, users, and deployed products.
+* Cannot perform administrative tasks.
 
 .. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/

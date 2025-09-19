@@ -1,3 +1,5 @@
+.. _subscriptions:
+
 =================
 ``subscriptions``
 =================

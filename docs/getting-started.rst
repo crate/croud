@@ -7,48 +7,48 @@ Getting Started
 Installation
 ============
 
-Croud CLI is available as a `pip`_ package.
+The Croud CLI is available as a Python package on `PyPI`_.
 
-To install, run:
+To install it, run:
 
 .. code-block:: console
 
     sh$ pip install croud
 
-To update, run:
+To update to the latest version, run:
 
 .. code-block:: console
 
-   sh$ pip install -U croud
+    sh$ pip install -U croud
 
-Run
-===
+Running Croud
+=============
 
-Verify your installation, like so:
+After installation, verify it by checking the version:
 
 .. code-block:: console
 
     sh$ croud --version
 
-When using Croud, you must supply a *command*.
-
-For example:
+You must authenticate before using most commands. To log in:
 
 .. code-block:: console
 
     sh$ croud login
 
-Here, ``login`` is supplied as a command. The will open a browser window for
-you to authenticate with `CrateDB Cloud`_. You will need to do this before
-issuing any further commands.
+This will open a browser window to authenticate with your CrateDB Cloud account.
 
-Alternatively, use the ``CRATEDB_CLOUD_API_KEY`` and ``CRATEDB_CLOUD_API_SECRET``
-environment variables for headless authentication without a configuration file.
+.. TIP::
 
-From here, you can go on to use :ref:`commands <commands>` to manage your
-configuration values, projects, clusters, organizations, and users.
+    For headless environments (e.g., CI/CD pipelines), you can authenticate by setting the following environment variables instead of running ``croud login``:
+    
+    * ``CRATEDB_CLOUD_API_KEY``
 
-Command-line options
+    * ``CRATEDB_CLOUD_API_SECRET``
+
+Once logged in, you can begin using Croud to manage your projects, clusters, organizations, users, and more.
+
+Command-line Options
 ====================
 
 Croud supports the following command-line options:
@@ -56,27 +56,38 @@ Croud supports the following command-line options:
 +------------------------+--------------------------------------------------+
 | Argument               | Description                                      |
 +------------------------+--------------------------------------------------+
-| ``-h``,                | Print the help message, then exits.              |
+| ``-h``                 |                                                  |
+|                        | Show the help message, then exits                |
 | ``--help``             |                                                  |
 +------------------------+--------------------------------------------------+
-| ``-v``,                | Prints the program's version number, then exits. |
+| ``-v``                 |                                                  |
+|                        | Display the current version, then exits          |
 | ``--version``          |                                                  |
 +------------------------+--------------------------------------------------+
 
-.. TIP::
+Some Croud :ref:`commands <commands>` support additional subcommands and flags. Use --help after any command for more information:
 
-    Some Croud :ref:`commands <commands>` take additional options.
+.. code-block:: console
 
-Shell auto-complete
-===================
+    sh$ croud clusters --help
 
-Croud supports shell auto-completions for ``bash``, ``zsh`` and ``tcsh``:
+Shell Auto-Completion
+=====================
+Croud offers tab-completion support for the following shells:
+
+* ``bash``
+
+* ``zsh``
+
+* ``tcsh``
+
+To print the appropriate completion script, run:
 
 .. code-block:: console
 
     sh$ croud --print-completion {bash,zsh,tcsh}
 
-Refer to the documentation of your specific shell for installation instructions.
+Refer to your shell’s documentation for instructions on how to install the completion script.
 
 .. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/
-.. _pip: https://pypi.org/project/pip/
+.. _PyPI: https://pypi.org/project/croud/
