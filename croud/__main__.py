@@ -50,6 +50,7 @@ from croud.clusters.commands import (
     clusters_set_suspended,
     clusters_snapshots_list,
     clusters_snapshots_restore,
+    clusters_subscription_update,
     clusters_upgrade,
     create_scheduled_job,
     delete_scheduled_job,
@@ -735,6 +736,30 @@ command_tree = {
                             ),
                         ],
                         "resolver": clusters_snapshots_restore,
+                    },
+                },
+            },
+            "subscription": {
+                "help": "Manage subscription of a CrateDB cluster.",
+                "commands": {
+                    "update": {
+                        "help": "Transfer a CrateDB cluster between subscriptions.",
+                        "extra_args": [
+                            Argument(
+                                "--cluster-id", type=str, required=True,
+                                help="The CrateDB cluster ID to use.",
+                            ),
+                            Argument(
+                                "--old-subscription-id", type=str, required=True,
+                                help="The current subscription ID.",
+                            ),
+                            Argument(
+                                "--new-subscription-id", type=str, required=True,
+                                help="The ID of the subscription the cluster should be "
+                                     "transferred to.",
+                            ),
+                        ],
+                        "resolver": clusters_subscription_update,
                     },
                 },
             },

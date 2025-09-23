@@ -5,17 +5,26 @@ Changes for croud
 Unreleased
 ==========
 
+- Added new resource ``clusters subscription`` and subcommand that allows
+  users to transfer clusters between subscriptions.
+
 1.14.0 - 2025/06/12
 ===================
 
 - Dropped support for Python 3.8.
+
 - Client: Accounted for edge-case when login token is an empty string
+
 - Fixed ``exit()`` vs. ``sys.exit()`` invocations to improve library use
+
 - Fixed duplicate JSON output in ``croud clusters deploy``
+
 - Headless mode: Started accepting environment variables ``CRATEDB_CLOUD_API_KEY``
   and ``CRATEDB_CLOUD_API_SECRET`` to authenticate with API keys when no ``croud.yaml``
   configuration file exists.
+
 - Dependencies: Relaxed version pinning to make package compatible with others
+
 - Dependencies: Migrated from ``appdirs`` to ``platformdirs``
 
 1.13.0 - 2025/01/07

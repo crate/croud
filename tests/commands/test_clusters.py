@@ -2031,3 +2031,32 @@ def test_export_job_create(mock_client_request, mock_copy, save_file):
         mock_copy.assert_called_once()
     else:
         mock_copy.assert_not_called()
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_clusters_subscription_update(mock_request):
+    cluster_id = gen_uuid()
+    old_subscription_id = gen_uuid()
+    new_subscription_id = gen_uuid()
+
+    call_command(
+        "croud",
+        "clusters",
+        "subscription",
+        "update",
+        "--cluster-id",
+        cluster_id,
+        "--old-subscription-id",
+        old_subscription_id,
+        "--new-subscription-id",
+        new_subscription_id,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        f"/api/v2/clusters/{cluster_id}/transfer-subscription/",
+        body={
+            "old_subscription_id": old_subscription_id,
+            "new_subscription_id": new_subscription_id,
+        },
+    )

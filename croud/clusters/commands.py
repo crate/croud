@@ -730,6 +730,24 @@ def clusters_snapshots_restore(args: Namespace) -> None:
     )
 
 
+def clusters_subscription_update(args: Namespace) -> None:
+    body = {
+        "old_subscription_id": args.old_subscription_id,
+        "new_subscription_id": args.new_subscription_id,
+    }
+    client = Client.from_args(args)
+    data, errors = client.post(
+        f"/api/v2/clusters/{args.cluster_id}/transfer-subscription/", body=body
+    )
+    print_response(
+        data=data,
+        errors=errors,
+        keys=["id", "name", "subscription_id"],
+        success_message=("Cluster subscription_id successfully updated"),
+        output_fmt=get_output_format(args),
+    )
+
+
 def export_jobs_create(args: Namespace) -> None:
     body = {
         "source": {

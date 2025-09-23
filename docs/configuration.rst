@@ -2,17 +2,17 @@
 Configuration
 =============
 
-Croud stores user-specific data (such as authentication tokens, profiles, and settings) in a configuration 
+Croud stores user-specific data (such as authentication tokens, profiles, and settings) in a configuration
 file on disk to persist across sessions.
 
 Config File Location
 ====================
 
-The configuration file is located inside your system's user-specific config directory. 
+The configuration file is located inside your system's user-specific config directory.
 On Linux, for example, the path is:
 
 .. code-block:: console
-   
+
    sh$ $HOME/.config/Crate/croud.yaml
 
 Croud uses the `platformdirs`_ Python package to determine the correct config directory for your operating system.
@@ -63,8 +63,8 @@ Top-Level Keys
 
 :``profiles``:
 
-    There is just one profile configured in the default configuration file. 
-    You would only need different profiles if you want to authenticate as 
+    There is just one profile configured in the default configuration file.
+    You would only need different profiles if you want to authenticate as
     different users or use different default organizations.
 
     Each profile includes the following settings:
@@ -83,7 +83,7 @@ Top-Level Keys
 
 .. TIP::
 
-   If both ``auth-token`` and ``key`` / ``secret`` are present, ``auth-token`` takes precedence. 
+   If both ``auth-token`` and ``key`` / ``secret`` are present, ``auth-token`` takes precedence.
    If you face unexpected authorization errors, try to force key-based auth, explicitly set ``auth-token: NULL``.
 
 
@@ -107,13 +107,13 @@ If no ``croud.yaml`` configuration file exists, the program also accepts the
 ``CRATEDB_CLOUD_API_KEY`` and ``CRATEDB_CLOUD_API_SECRET`` environment variables
 to support headless authentication per `CrateDB Cloud API keys`_.
 
-In environments where no ``croud.yaml`` exists (e.g., CI pipelines), 
+In environments where no ``croud.yaml`` exists (e.g., CI pipelines),
 you can authenticate using environment variables:
 
 .. code-block:: console
 
     sh$ export CRATEDB_CLOUD_API_KEY=your-api-key
-    sh$ export CRATEDB_CLOUD_API_SECRET=your-secret 
+    sh$ export CRATEDB_CLOUD_API_SECRET=your-secret
 
 Check `CrateDB Cloud API keys`_ for the instructions on how to generate a key and secret.
 
