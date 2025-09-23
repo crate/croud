@@ -97,7 +97,7 @@ Region Support
 * If the ``--region`` flag is omitted, Croud defaults to the region specified in the current profile's API endpoint.
 
 .. code-block:: console
-    
+
     sh$ croud config profiles current
 
 * The special region ``_any_`` allows listing resources across all regions, regardless of where they were deployed.

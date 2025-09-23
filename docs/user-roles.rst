@@ -4,16 +4,16 @@
 User Roles
 ==========
 
-This page provides an overview of the user roles available in `CrateDB Cloud`_, 
+This page provides an overview of the user roles available in `CrateDB Cloud`_,
 specifically in the context of using the Croud CLI.
 
 .. tip::
 
    To view all available role names, run:
-   
+
    .. code-block:: console
-    
-    sh$ croud users roles list 
+
+    sh$ croud users roles list
 
 .. _organization-roles:
 

@@ -41,7 +41,7 @@ This will open a browser window to authenticate with your CrateDB Cloud account.
 .. TIP::
 
     For headless environments (e.g., CI/CD pipelines), you can authenticate by setting the following environment variables instead of running ``croud login``:
-    
+
     * ``CRATEDB_CLOUD_API_KEY``
 
     * ``CRATEDB_CLOUD_API_SECRET``
