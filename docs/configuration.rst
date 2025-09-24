@@ -63,7 +63,7 @@ Top-Level Keys
 
 :``profiles``:
 
-    There is just one profile configured in thedefault configuration file. 
+    There is just one profile configured in the default configuration file. 
     You would only need different profiles if you want to authenticate as 
     different users or use different default organizations.
 
@@ -120,7 +120,7 @@ Check `CrateDB Cloud API keys`_ for the instructions on how to generate a key an
 Incompatible versions
 =====================
 
-Versions prior to ``0.23.0`` are incompatible with the current Config file format.
+Versions prior to ``0.23.0`` are incompatible with the current configuration file format.
 
 If you are in that scenario, you will get the following error message:
 
