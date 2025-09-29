@@ -122,16 +122,14 @@ Incompatible versions
 
 Versions prior to ``0.23.0`` are incompatible with the current configuration file format.
 
-If you are in that scenario, you will get the following error message:
+If you are in that scenario, you will get the following error message, with the instructions
+to solve it:
 
 .. code-block:: console
 
    sh$ croud me
    ==> Error: Your configuration file is incompatible with the current version of croud.
    ==> Info: Please delete the file '/home/<user>/.config/Crate/croud.yaml' or update it manually.
-
-To solve it, either delete the old configuration file, or manually edit the content
-by pasting the default configuration stated above.
 
 
 .. _platformdirs: https://pypi.org/project/platformdirs/
