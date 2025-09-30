@@ -2,21 +2,25 @@
 Configuration
 =============
 
-``croud`` uses a configuration to store user specific data, such as profiles
-or authentication tokens, to disk so they can be persisted. The configuration
-file is located inside the user's config directory, e.g. on a Linux system it
-would be the following path::
+Croud stores user-specific data (such as authentication tokens, profiles, and settings) in a configuration 
+file on disk to persist across sessions.
 
-   $HOME/.config/Crate/croud.yaml
+Config File Location
+====================
 
-To determine the location of the config files ``croud`` uses the `platformdirs`_
-package. Please refer to package documentation for further details.
+The configuration file is located inside your system's user-specific config directory. 
+On Linux, for example, the path is:
 
-Configuration file formatting
-=============================
+.. code-block:: console
+   
+   sh$ $HOME/.config/Crate/croud.yaml
 
-The contents of the configuration file of a fresh ``croud`` installation are
-`YAML`_ formatted and look like this:
+Croud uses the `platformdirs`_ Python package to determine the correct config directory for your operating system.
+
+Config File Format
+==================
+
+The configuration file is in YAML format. A default configuration might look like this:
 
 .. code-block:: yaml
 
@@ -31,10 +35,14 @@ The contents of the configuration file of a fresh ``croud`` installation are
        region: _any_
 
 
-Configuration file keys
+Config File Keys
 =======================
 
-The keys have the following meaning:
+Here's what each key means:
+
+
+Top-Level Keys
+^^^^^^^^^^^^^^
 
 :``current-profile``:
 
@@ -43,46 +51,53 @@ The keys have the following meaning:
 
 :``default-format``:
 
-    The default output format for API requests. This can be either ``table``
-    (default, displays the most important fields), ``wide`` (a table format
-    displaying all fields), ``json``, or ``yaml``. This value is only used if
-    the current profile does not specify a ``format``.
+    Default output format if a profile doesn't define one. Valid values:
+
+    * table -- (default) most relevant fields
+
+    * wide -- all fields in table format
+
+    * json
+
+    * yaml
 
 :``profiles``:
 
-    A dictionary of available profiles. There is just one profile configured in the
-    default configuration file. You would only need different profiles if you want to
-    authenticate as different users or use different default organizations.
+    There is just one profile configured in the default configuration file. 
+    You would only need different profiles if you want to authenticate as 
+    different users or use different default organizations.
 
-    Each profile consists of an ``auth-token``, ``key``, ``secret``, ``endpoint``,
-    ``region``, and ``format``.
+    Each profile includes the following settings:
 
-    ``auth-token`` is populated with the API token upon login.
+    * ``auth-token`` Set automatically on login. Takes precedence over ``key``/ ``secret``.
 
-    ``key`` is optional and can be used when authenticating to the API using an API key.
+    * ``key`` Optional. API key for headless authentication.
 
-    ``secret`` is the secret that goes with the API key above.
+    * ``secret`` Secret corresponding to the API key.
 
-    ``endpoint`` is the full URL of the API endpoint that is used for requests.
+    * ``endpoint`` full URL of the API endpoint that is used for requests.
 
-    ``region`` is the specific region within which CrateDB Cloud resources are accessed.
+    * ``region`` The CrateDB Cloud region to use (e.g. ``westeurope.azure``).
 
-    ``format`` is the output format for this profile. This key is optional and
-    if it is missing, the output format will fall back on ``default-format``.
+    * ``format`` Optional. Output format for this profile (overrides ``default-format``).
 
-    If both ``auth-token`` and ``key/secret`` are specified, the ``auth-token`` will
-    take precedence. Keep this in mind if you get unexpected authorization errors -
-    you might need to explicitly set the ``auth-token`` to NULL.
+.. TIP::
+
+   If both ``auth-token`` and ``key`` / ``secret`` are present, ``auth-token`` takes precedence. 
+   If you face unexpected authorization errors, try to force key-based auth, explicitly set ``auth-token: NULL``.
 
 
-Manage configuration via CLI
+Manage Configuration via CLI
 ============================
 
-``croud`` offers the possibility to manage its configuration and profiles using
-the ``croud config {show | profiles}`` commands.
+You can manage your configuration and profiles using the following commands:
 
-Please refer to the :doc:`commands/config` command reference for further
-details.
+.. code-block:: console
+
+    sh$ croud config show
+    sh$ croud config profiles
+
+Refer to the :doc:`commands/config` command reference for more details.
 
 
 Headless authentication
@@ -92,26 +107,15 @@ If no ``croud.yaml`` configuration file exists, the program also accepts the
 ``CRATEDB_CLOUD_API_KEY`` and ``CRATEDB_CLOUD_API_SECRET`` environment variables
 to support headless authentication per `CrateDB Cloud API keys`_.
 
-
-Incompatible versions
-=====================
-
-The configuration file format changed in version ``0.23.0`` when profiles were
-introduced.
-
-If you have an older version of ``croud`` installed already, you will get the
-following message upon execution of a command with the new version of
-``croud``:
+In environments where no ``croud.yaml`` exists (e.g., CI pipelines), 
+you can authenticate using environment variables:
 
 .. code-block:: console
 
-   $ croud me
-   ==> Error: Your configuration file is incompatible with the current version of croud.
-   ==> Info: Please delete the file '/home/<user>/.config/Crate/croud.yaml' or update it manually.
+    sh$ export CRATEDB_CLOUD_API_KEY=your-api-key
+    sh$ export CRATEDB_CLOUD_API_SECRET=your-secret 
 
-You can either delete the old configuration file, or manually edit the content
-by pasting the default configuration stated above.
-
+Check `CrateDB Cloud API keys`_ for the instructions on how to generate a key and secret.
 
 .. _platformdirs: https://pypi.org/project/platformdirs/
 .. _CrateDB Cloud API keys: https://cratedb.com/docs/cloud/en/latest/organization/api.html
