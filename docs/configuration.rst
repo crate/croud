@@ -117,21 +117,6 @@ you can authenticate using environment variables:
 
 Check `CrateDB Cloud API keys`_ for the instructions on how to generate a key and secret.
 
-Incompatible versions
-=====================
-
-Versions prior to ``0.23.0`` are incompatible with the current configuration file format.
-
-If you are in that scenario, you will get the following error message, with the instructions
-to solve it:
-
-.. code-block:: console
-
-   sh$ croud me
-   ==> Error: Your configuration file is incompatible with the current version of croud.
-   ==> Info: Please delete the file '/home/<user>/.config/Crate/croud.yaml' or update it manually.
-
-
 .. _platformdirs: https://pypi.org/project/platformdirs/
 .. _CrateDB Cloud API keys: https://cratedb.com/docs/cloud/en/latest/organization/api.html
 .. _YAML: https://yaml.org
