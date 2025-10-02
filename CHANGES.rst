@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+1.15.0 - 2025/10/02
+===================
+
 - Added new resource ``clusters subscription`` and subcommand that allows
   users to transfer clusters between subscriptions.
 
