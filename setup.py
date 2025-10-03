@@ -62,7 +62,7 @@ setup(
     extras_require={
         "testing": [
             "pytest<9",
-            "pytest-cov<7",
+            "pytest-cov<8",
             "pytest-freezer<0.5",
             "pytest-mock<4",
             "pytest-random-order<2",
