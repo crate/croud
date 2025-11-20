@@ -49,7 +49,7 @@ setup(
         "certifi",
         "colorama>=0.3,<1",
         "importlib-metadata; python_version < '3.8'",
-        "marshmallow>=3,<4",
+        "marshmallow>=3,<5",
         "platformdirs>=4,<5",
         "pyyaml>=6.0.2,<7",
         "requests>=2,<3",
