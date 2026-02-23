@@ -1,7 +1,7 @@
 .. _api-keys:
 
 ============
-``API keys``
+``api-keys``
 ============
 
 The ``api-keys`` command allows you to view, edit and delete user API keys.
@@ -19,7 +19,7 @@ permissions than the user they belong to.
 ``api-keys list``
 =================
 
-    Lists the API keys that belong to the currently logged in user.
+Lists the API keys that belong to the currently logged in user.
 
 .. argparse::
    :module: croud.__main__
@@ -44,7 +44,7 @@ Example
 ``api-keys create``
 ===================
 
-    Creates a new API key for the current user. It displays its secret.
+Creates a new API key for the current user. It displays its secret.
 
 .. argparse::
    :module: croud.__main__
@@ -52,6 +52,9 @@ Example
    :prog: croud
    :path: api-keys create
    :nosubcommands:
+
+Example
+-------
 
 .. code-block:: console
 
@@ -76,16 +79,19 @@ Example
    :path: api-keys delete
    :nosubcommands:
 
+Example
+-------
+
 .. code-block:: console
 
    sh$ croud api-keys delete --api-key my-first-key
-   API key deleted.
+   ==> Success: API key deleted.
 
 
 ``api-keys edit``
 =================
 
-    Allows activating or deactivating an existing API key.
+Allows activating or deactivating an existing API key.
 
 .. argparse::
    :module: croud.__main__
@@ -93,6 +99,9 @@ Example
    :prog: croud
    :path: api-keys edit
    :nosubcommands:
+
+Example
+-------
 
 .. code-block:: console
 
