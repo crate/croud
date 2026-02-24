@@ -4,23 +4,13 @@
 ``clusters``
 ============
 
-The ``clusters`` command lets you manage cluster products.
+The ``clusters`` command lets you manage your CrateDB clusters.
 
-.. tip::
+.. note::
 
-   The minimum accepted length of password is 24 characters.
-
-   Be careful when specifying passwords on the command line. Some
-   non-alphanumeric characters may be interpreted in an unexpected way by your
-   shell. Use `string delimitation`_ and escape characters as needed.
-
-.. WARNING::
-
-    Some ``clusters`` commands are only available for CrateDB Cloud sysadmins
-    (superusers). A warning will indicate at the bottom of the documentation
-    for each command when this is the case. They are listed here solely to
-    clarify their function. You can also get information on any command by
-    appending ``--help``.
+   The clusters rely on an internal resource called ``project``. If you want to deploy
+   a cluster, a default project will be created for you. You can also create projects
+   yourself with the :ref:`projects` command.
 
 .. argparse::
    :module: croud.__main__
@@ -32,6 +22,8 @@ The ``clusters`` command lets you manage cluster products.
 
 ``clusters list``
 =================
+
+Lists all clusters you have access to.
 
 .. argparse::
    :module: croud.__main__
@@ -45,15 +37,30 @@ Example
 .. code-block:: console
 
    sh$ croud clusters list
-   +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
-   | id                                   | name                   | numNodes | crateVersion | projectId                            | username    | fqdn                                             |
-   |--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------|
-   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        1 | 4.5.1        | 952cd102-91c1-4837-962a-12ecb71a6ba8 | default     | my-first-crate-cluster.eastus.azure.cratedb.net. |
-   +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
+   +--------------------------------------+------------------------+-----------+---------------+---------------------------------------+-------------+-----------+--------------------------------------------------+---------+
+   | id                                   | name                   | num_nodes | crate_version | project_id                            | username    | suspended | fqdn                                             | channel |
+   |--------------------------------------+------------------------+-----------+---------------+---------------------------------------+-------------+-----------+--------------------------------------------------|---------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |         1 | 4.5.1         | 952cd102-91c1-4837-962a-12ecb71a6ba8  | default     | FALSE     | my-first-crate-cluster.eastus.azure.cratedb.net. | stable  |
+   +--------------------------------------+------------------------+-----------+---------------+---------------------------------------+-------------+-----------+--------------------------------------------------+---------+
 
 
 ``clusters deploy``
 ===================
+
+Deploys a new cluster.
+
+.. tip::
+
+   The minimum accepted length of password is 24 characters.
+
+   Be careful when specifying passwords on the command line. Some
+   non-alphanumeric characters may be interpreted in an unexpected way by your
+   shell. Use `string delimitation`_ and escape characters as needed.
+
+.. note::
+
+   Free clusters can be deployed without a paid subscription. Therefore you can use
+   ``--subscription-id free_tier --product-name crfree``.
 
 .. argparse::
    :module: croud.__main__
@@ -72,7 +79,7 @@ Example
        --cluster-name my-first-crate-cluster \
        --org-id 952cd102-91c1-4837-962a-12ecb71a6ba8 \
        --region aks1.westeurope.azure \
-       --version 5.3.2 \
+       --version 6.2.1 \
        --username admin \
        --password "8Hed#kd$8^9i4Q#65fT4GKQI" \
        --subscription-id 782dfc00-7b25-4f48-8381-b1b096dd1619
@@ -80,14 +87,14 @@ Example
    ==> Info: Status: REGISTERED (Your creation request was received and is pending processing.)
    ==> Info: Status: IN_PROGRESS (Cluster creation started. Waiting for the node(s) to be created and creating other required resources.)
    ==> Success: Operation completed.
-   +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
-   | id                                   | name                   | numNodes | crateVersion | projectId                            | username    | fqdn                                             |
-   |--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------|
-   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |        1 | 5.3.2        | 952cd102-91c1-4837-962a-12ecb71a6ba8 | admin       | my-first-crate-cluster.eastus.azure.cratedb.net. |
-   +--------------------------------------+------------------------+----------+--------------+--------------------------------------+-------------+--------------------------------------------------+
+   +--------------------------------------+------------------------+-----------------------------------------------------------+-----------------------------------------------------------------------+
+   | id                                   | name                   | fqdn                                                      | url                                                                   |
+   |--------------------------------------+------------------------+-----------------------------------------------------------+-----------------------------------------------------------------------|
+   | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | my-first-crate-cluster.aks1.westeurope.azure.cratedb.net. | https://my-first-crate-cluster.aks1.westeurope.azure.cratedb.net:4200 |
+   +--------------------------------------+------------------------+-----------------------------------------------------------+-----------------------------------------------------------------------+
 
 Deployment of testing/nightly versions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------------
 
 For the users that want to get their hands on new features early, it is
 possible to deploy versions from our ``testing`` and ``nightly`` channels.
@@ -111,7 +118,7 @@ We want to emphasize the following about ``testing`` and ``nightly`` channels:
   or from ``testing`` to ``stable``.
 
 Example
-^^^^^^^
+~~~~~~~
 
 .. code-block:: console
 
@@ -127,14 +134,19 @@ Example
        --channel nightly
        --unit 0
 
-.. note::
-
-   Free clusters can be deployed without a paid subscription. Therefore you can use
-   ``--subscription-id free_tier --product-name crfree``.
-
-
 ``clusters scale``
 ==================
+
+Scale an existing cluster up or down by changing the number of nodes.
+
+.. note::
+
+   The ``--unit`` argument specifies the total number of nodes desired, rather than
+   adding to the existing count. For example, if your cluster has three nodes and you
+   run the ``croud clusters scale --unit 1`` command, the cluster will be scaled
+   down to two nodes, not up to four.
+
+   This command will wait for the cluster scaling to finish or fail.
 
 .. argparse::
    :module: croud.__main__
@@ -150,39 +162,30 @@ Example
    sh$ croud clusters scale \
        --cluster-id 34813eb4-0a91-443e-af77-33fb91a0b04c \
        --unit 1
-   +--------------------------------------+------------------------+----------+
-   | id                                   | name                   | numNodes |
-   |--------------------------------------+------------------------+----------|
-   | 34813eb4-0a91-443e-af77-33fb91a0b04c | emerald-taun-we        |        1 |
-   +--------------------------------------+------------------------+----------+
+   +--------------------------------------+------------------------+-----------+
+   | id                                   | name                   | num_nodes |
+   |--------------------------------------+------------------------+-----------|
+   | 34813eb4-0a91-443e-af77-33fb91a0b04c | emerald-taun-we        |         1 |
+   +--------------------------------------+------------------------+-----------+
    ==> Info: Cluster scaling initiated. It may take a few minutes to complete
    the changes.
    ==> Info: Status: SENT (Your scaling request was sent to the region.)
    ==> Info: Status: IN_PROGRESS (Scaling up from 1 to 2 nodes. Waiting for new node(s) to be present.)
    ==> Success: Operation completed.
-   +--------------------------------------+------------------------+----------+
-   | id                                   | name                   | numNodes |
-   |--------------------------------------+------------------------+----------|
-   | 34813eb4-0a91-443e-af77-33fb91a0b04c | emerald-taun-we        |        2 |
-   +--------------------------------------+------------------------+----------+
-
-.. note::
-
-   The ``unit`` argument designates the predefined number of nodes, it does
-   not work in an additive manner. E.g., if you have a cluster with two nodes
-   and use the ``croud clusters scale`` command with the ``--unit 1`` argument,
-   it does not mean that one additional node will be added to the cluster.
-   Instead, your cluster will be scaled down to two nodes.
-
-   | ``--unit 0`` means one node,
-   | ``--unit 1`` means two nodes,
-   | ``--unit 2`` means three nodes, etc.
-
-   This command will wait for the cluster scaling to finish or fail.
-
+   +--------------------------------------+------------------------+-----------+
+   | id                                   | name                   | num_nodes |
+   |--------------------------------------+------------------------+-----------|
+   | 34813eb4-0a91-443e-af77-33fb91a0b04c | emerald-taun-we        |         2 |
+   +--------------------------------------+------------------------+-----------+
 
 ``clusters upgrade``
 ====================
+
+Upgrade the CrateDB version of an existing cluster.
+
+.. note::
+
+   This command will wait for the cluster upgrade to finish or fail.
 
 .. argparse::
    :module: croud.__main__
@@ -214,13 +217,16 @@ Example
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster |         4.6.7 |
    +--------------------------------------+------------------------+---------------+
 
-.. note::
-
-   This command will wait for the cluster upgrade to finish or fail.
-
-
 ``clusters delete``
 ===================
+
+Deletes an existing cluster.
+
+.. note::
+
+   After deleting a cluster, all backups are removed as well, however, you can reach
+   out to our support_ to have them restore a backup for you within 14 days since
+   the last time a backup was made.
 
 .. argparse::
    :module: croud.__main__
@@ -238,39 +244,13 @@ Example
    Are you sure you want to delete the cluster? [yN] y
    ==> Success: Cluster deleted.
 
-.. note::
-
-   After deleting a cluster, existing backups will remain for 30 days since the
-   last time a backup was made. While you won't be able to restore these
-   backups yourself, you can reach out to our support_ to have them restore a
-   backup for you.
-
-   If you want a more recent backup, there are several options:
-
-   - :ref:`Create an AWS S3 repository <crate-reference:sql-create-repository>`
-     with a ``base_path`` of ``/<project_id>/<cluster_id>/<name>``.
-     ``<project_id>`` and ``<cluster_id>`` refer to the "dashed" form of the
-     corresponding ID (``XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX``). ``<name>``
-     can be any alphanumeric string. Afterwards, :ref:`create a snapshot
-     <crate-reference:sql-create-snapshot>` in your repository.
-
-   - Alternatively, you can create a backup as documented in the
-     CrateDB documentation about :ref:`snapshots <crate-reference:snapshot-restore>`
-     on repositories and snapshots by e.g. providing your own AWS S3 bucket and
-     credentials.
-
-   - Lastly, the :ref:`COPY TO SQL statement <crate-reference:sql-copy-to>` can
-     be used to export a table to an AWS S3 bucket as well.
-
-.. important::
-
-   When you provide your own external storage, please ensure that the location
-   is not world readable or writable to prevent unauthorized access to your
-   data!
-
-
 ``clusters restart-node``
 =========================
+
+Restarts a node in the cluster.
+
+Please wait for the node to be restarted before
+restarting another one. Restarting a node might cause downtime on single-node clusters.
 
 .. argparse::
    :module: croud.__main__
@@ -297,6 +277,15 @@ Example
 ``clusters set-deletion-protection``
 ====================================
 
+Changes the deletion protection status of a cluster.
+
+When deletion protection is enabled, the cluster cannot be deleted until the
+protection is removed. This can help prevent accidental deletions of clusters.
+
+.. note::
+
+   This command is only available for organization admins and superusers.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -318,17 +307,20 @@ Example
    +--------------------------------------+------------------------+----------------------+
    ==> Success: Cluster deletion protection status successfully updated
 
+``clusters set-ip-whitelist``
+=============================
+
+Changes the IP Network whitelist of a cluster.
+
+The whitelist is a list of CIDR blocks that are allowed to access the cluster.
+
+When you set a new whitelist, it will overwrite the existing one. If you want to add
+or remove CIDR blocks from the existing whitelist, you can first get the current
+whitelist with ``cloud clusters get <cluster_id>`` command.
+
 .. note::
 
-   This command is only available for superusers and organization admins.
-
-.. _support: support@crate.io
-.. _string delimitation: https://en.wikipedia.org/wiki/Delimiter
-.. _CrateDB Cloud Console: https://console.cratedb.cloud
-
-
-``clusters set-ip-whitelist``
-====================================
+   This command will wait for the operation to finish or fail.
 
 .. argparse::
    :module: croud.__main__
@@ -360,13 +352,19 @@ Example
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | [{"cidr": "10.1.2.0/24", "description": null}, {"cidr": "192.168.1.0/24", "description": null}] |
    +--------------------------------------+------------------------+-------------------------------------------------------------------------------------------------+
 
-.. note::
-
-   This command will wait for the operation to finish or fail.
-
-
 ``clusters expand-storage``
 ===========================
+
+Expands the storage of an existing cluster.
+
+.. NOTE::
+
+    This command will wait for the operation to finish or fail.
+
+    It is only available for organization admins and superusers.
+
+    Note that for clusters in Azure regions, any storage increase exceeding a given
+    increment (32, 64, etc.) will be priced at the level of the next increment.
 
 .. argparse::
    :module: croud.__main__
@@ -399,16 +397,18 @@ Example
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | Disk size: 512.0 GiB               |
    +--------------------------------------+------------------------+------------------------------------+
 
-.. NOTE::
-
-    This command will wait for the operation to finish or fail. It is only
-    available for superusers and organization admins. Note that for Azure
-    users, any storage increase exceeding a given increment (32, 64, etc.) will
-    be priced at the level of the next increment.
-
-
 ``clusters set-suspended-state``
-====================================
+================================
+
+Suspends or resumes an existing cluster.
+
+When a cluster is suspended, it is not running and cannot be accessed, however storage
+is still retained. This can help save costs when you don't need to use the cluster
+for a while. When you want to use the cluster again, you can resume it.
+
+.. note::
+
+   This command will wait for the operation to finish or fail.
 
 .. argparse::
    :module: croud.__main__
@@ -439,13 +439,17 @@ Example
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | TRUE           |
    +--------------------------------------+------------------------+----------------+
 
-.. note::
-
-   This command will wait for the operation to finish or fail.
-
-
 ``clusters set-product``
 ========================
+
+Sets a new product for an existing cluster, which can be used to change the
+compute (vCPU and RAM) of the cluster.
+
+.. NOTE::
+
+    This command will wait for the operation to finish or fail.
+
+    It is only available to organization and project admins and superusers.
 
 .. argparse::
    :module: croud.__main__
@@ -478,14 +482,19 @@ Example
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | cr2            |
    +--------------------------------------+------------------------+----------------+
 
-.. NOTE::
-
-    This command will wait for the operation to finish or fail. It is only available
-    to organization and project admins.
-
-
 ``clusters set-backup-schedule``
 ================================
+
+Sets a new backup schedule for an existing cluster.
+
+More information about the backup schedule can be found in
+the `backup documentation`_.
+
+.. NOTE::
+
+    This command will wait for the operation to finish or fail.
+
+    It is only available to organization and project admins and superusers.
 
 .. argparse::
    :module: croud.__main__
@@ -513,14 +522,14 @@ Example
    | 705a7012-3f89-441d-a10e-b3749d05e993 | my-cratedb-cluster     | 55 2,4,6 * * *    |
    +--------------------------------------+------------------------+-------------------+
 
-.. NOTE::
-
-    This command will wait for the operation to finish or fail. It is only available
-    to organization and project admins.
-
-
 ``clusters snapshots``
 ======================
+
+When a backup is created, a snapshot of the cluster is created in the backup repository.
+The ``clusters snapshots`` command allows you to list and restore these snapshots.
+
+Snapshots are rotated. More information about backups can be found in
+the `backup documentation`_.
 
 .. argparse::
    :module: croud.__main__
@@ -531,7 +540,9 @@ Example
 
 
 ``clusters snapshots list``
-===========================
+---------------------------
+
+Lists all snapshots of a cluster.
 
 .. argparse::
    :module: croud.__main__
@@ -540,7 +551,7 @@ Example
    :path: clusters snapshots list
 
 Example
--------
+~~~~~~~
 
 .. code-block:: console
 
@@ -554,7 +565,24 @@ Example
 
 
 ``clusters snapshots restore``
-==============================
+------------------------------
+
+Restores a snapshot of a cluster.
+
+It is possible to partially restore the snapshot by specifying the type of data
+to restore. For example, you can choose to only restore the data and not the metadata,
+or just a table.
+
+.. note::
+
+    This command will wait for the operation to finish or fail.
+
+    It is only available to organization and project admins and superusers.
+
+.. tip::
+
+   It is possible to restore a snapshot from a cluster into another cluster.
+   The source and target clusters must be in the same organization and region.
 
 .. argparse::
    :module: croud.__main__
@@ -563,7 +591,7 @@ Example
    :path: clusters snapshots restore
 
 Example
--------
+~~~~~~~
 
 .. code-block:: console
 
@@ -577,10 +605,8 @@ Example
    | 2022-12-10 12:34:56    | system_backup_20221002123456  | 20221210123456    |
    +------------------------+-------------------------------+-------------------+
 
-.. NOTE::
-
-    This command will wait for the operation to finish or fail. It is only available
-    to organization and project admins.
-
-
 .. _here: https://hub.docker.com/r/crate/crate/tags
+.. _support: https://support.cratedb.com
+.. _string delimitation: https://en.wikipedia.org/wiki/Delimiter
+.. _CrateDB Cloud Console: https://console.cratedb.cloud
+.. _backup documentation: https://cratedb.com/docs/cloud/en/latest/cluster/backups.html

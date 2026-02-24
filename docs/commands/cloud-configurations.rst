@@ -6,10 +6,9 @@
 
 .. warning::
 
-    The commands listed in this section are for internal use by CrateDB
-    and CrateDB Cloud staff only. They are listed here only to
-    clarify their function, since they appear in the full commands list
-    available under ``--help``.
+    The commands listed in this section are for internal use by CrateDB Cloud sysadmins
+    (superusers) only. They are listed here only to clarify their function, since they
+    appear in the full commands list available under ``--help``.
 
 The ``cloud-configurations`` command allows you to list, get and set configuration
 keys of CrateDB Cloud.

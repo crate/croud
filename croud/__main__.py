@@ -458,15 +458,22 @@ command_tree = {
                 "extra_args": [
                     Argument(
                         "--product-name", type=str, required=True,
-                        help="The product name to use.",
+                        help="The product name to use. "
+                             "Run ``croud products list --kind cluster`` to get "
+                             "the list of available products.",
                     ),
                     Argument(
                         "--tier", type=str, required=True,
-                        help="The product tier to use.",
+                        help="The product tier to use. "
+                             "Run ``croud products list --kind cluster`` to get "
+                             "the products tier.",
                     ),
                     Argument(
                         "--unit", type=int, required=False,
-                        help="The product scale unit to use.",
+                        help="The product scale unit to use (0 means 1 node, "
+                             "1 means 2 nodes, etc). "
+                             "Run ``croud products list --kind cluster`` to get the "
+                             "products available scale units.",
                     ),
                     Argument(
                         "-p", "--project-id", type=str,
@@ -476,11 +483,13 @@ command_tree = {
                     Argument(
                         "--org-id", type=str,
                         required=False,
-                        help="The organization ID to use.",
+                        help="The organization ID to use. "
+                             "Defaults to the global configuration values.",
                     ),
                     Argument(
                         "--cluster-name", type=str, required=True,
-                        help="The CrateDB cluster name to use.",
+                        help="The CrateDB cluster name to use. It must be a URL-safe "
+                             "string.",
                     ),
                     Argument(
                         "--version", type=str, required=True,
@@ -497,7 +506,9 @@ command_tree = {
                     Argument(
                         "--subscription-id", type=str, required=True,
                         help="The subscription to use for billing of this cluster. Use "
-                             "``free_tier`` to deploy a free cluster.",
+                             "``free_tier`` to deploy a free cluster. "
+                             "Run ``croud subscriptions list`` to get the "
+                             "available subscriptions.",
                     ),
                     Argument(
                         "--channel", type=str, default="stable", required=False,
@@ -541,7 +552,10 @@ command_tree = {
                     ),
                     Argument(
                         "--unit", type=int, required=True,
-                        help="The product scale unit to use.",
+                        help="The product scale unit to use (0 means 1 node, "
+                             "1 means 2 nodes, etc). "
+                             "Run ``croud products list --kind cluster`` to get the "
+                             "products available scale units.",
                     ),
                 ],
                 "resolver": clusters_scale,
@@ -595,6 +609,7 @@ command_tree = {
                     Argument(
                         "--value", type=lambda x: asbool(x),
                         required=True, help="The deletion protection status",
+                        choices=["true", "false"],
                     ),
                 ],
                 "resolver": clusters_set_deletion_protection,
@@ -639,6 +654,7 @@ command_tree = {
                     Argument(
                         "--value", type=lambda x: asbool(x),
                         required=True, help="The suspended status.",
+                        choices=["true", "false"],
                     ),
                 ],
                 "resolver": clusters_set_suspended,
@@ -652,8 +668,10 @@ command_tree = {
                     ),
                     Argument(
                         "--product-name", type=str, required=True,
-                        help="The new product name to use."
-                    )
+                        help="The new product name to use. "
+                             "Run ``croud products list --kind cluster`` to get "
+                             "the list of available products.",
+                    ),
                 ],
                 "resolver": clusters_set_product,
             },
@@ -709,11 +727,11 @@ command_tree = {
                             ),
                             Argument(
                                 "--source-cluster-id", type=str, required=False,
-                                help="The CrateDB cluster ID of the snapshot to be "
-                                     "used belongs to. Must belong to the same "
-                                     "organization as the target cluster. "
-                                     "If not specified the ``--cluster-id`` CrateDB"
-                                     " cluster will be used as the source.",
+                                help="The CrateDB cluster where the snapshot was "
+                                     "created. It must belong to the same organization "
+                                     "and region as the target cluster. If not "
+                                     "specified, the ``--cluster-id`` will be used as "
+                                     "both the source and the target.",
                             ),
                             Argument(
                                 "--type", type=str, required=False,
