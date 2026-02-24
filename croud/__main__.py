@@ -164,6 +164,7 @@ import_job_create_common_args = [
         "--create-table",
         type=lambda x: asbool(x),  # noqa
         required=False,
+        choices=["true", "false"],
         help="Whether the table should be created automatically"
         " if it does not exist. If true new columns will also be added when the data"
         " requires them.",
@@ -173,8 +174,8 @@ import_job_create_common_args = [
         type=str,
         required=False,
         help="The transformations to apply when fetching data. This is the SELECT "
-        "statement from an SQL query that is executed on the internal DuckDB "
-        "database that the data is loaded to before inserting into CrateDB. "
+        "statement from an SQL query that is executed on the loaded data before "
+        "inserting into CrateDB. "
         "This can be used to apply arbitrary SQL functions on your data before "
         "inserting into CrateDB, i.e. `UNNEST()`, `SUM()` and similar.",
     ),
@@ -837,8 +838,8 @@ command_tree = {
                                     Argument(
                                         "--file-id", type=str, required=False,
                                         help="The file ID that will be used for the "
-                                             "import. If not specified then --file-path"
-                                             " must be specified. "
+                                             "import. If not specified then "
+                                             "``--file-path`` must be specified. "
                                              "Please refer to `croud organizations "
                                              "files` for more info."
                                     ),
@@ -846,7 +847,7 @@ command_tree = {
                                         "--file-path", type=str, required=False,
                                         help="The file in your local filesystem that "
                                              "will be used. If not specified then "
-                                             "--file-id must be specified. "
+                                             "``--file-id`` must be specified. "
                                              "Please note the file will become visible "
                                              "under `croud organizations files list`."
                                     ),

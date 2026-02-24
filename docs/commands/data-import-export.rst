@@ -7,13 +7,19 @@
 The ``clusters import-jobs`` and ``clusters export jobs`` commands let you manage,
 respectively, the import and export jobs in your CrateDB Cloud cluster.
 
+More information about importing files and ingesting data can be found in
+the `import data documentation`_.
+
+More information about exporting data can be found in the `export data documentation`_.
+
+.. note::
+
+   Most JSON, CSV and Parquet files are supported.
+
 .. tip::
 
    Import jobs are the easiest way to get data into CrateDB Cloud. Use them to import
    from a local file, an arbitrary URL, or from an AWS S3-compatible service.
-
-   Most JSON, CSV and Parquet files are supported.
-
 
 ``clusters import-jobs``
 ========================
@@ -28,7 +34,7 @@ respectively, the import and export jobs in your CrateDB Cloud cluster.
 
 
 ``clusters import-jobs create``
-===============================
+-------------------------------
 
 .. argparse::
    :module: croud.__main__
@@ -39,7 +45,13 @@ respectively, the import and export jobs in your CrateDB Cloud cluster.
 
 
 ``clusters import-jobs create from-url``
-========================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Imports data from an arbitrary URL.
+
+.. note::
+
+   This command will wait for the operation to finish or fail.
 
 .. argparse::
    :module: croud.__main__
@@ -48,7 +60,7 @@ respectively, the import and export jobs in your CrateDB Cloud cluster.
    :path: clusters import-jobs create from-url
 
 Example
--------
+^^^^^^^
 
 .. code-block:: console
 
@@ -65,13 +77,25 @@ Example
 
 
 ``clusters import-jobs create from-file``
-=========================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Imports data from a local file.
+
+The file can be uploaded beforehand using the ``croud organizations files`` command,
+or you can specify a local file path.
+
+.. note::
+
+   This command will wait for the operation to finish or fail.
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: clusters import-jobs create from-file
+
+Example
+^^^^^^^
 
 .. code-block:: console
 
@@ -88,13 +112,22 @@ Example
 
 
 ``clusters import-jobs create from-s3``
-=======================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Imports data from an AWS S3-compatible service.
+
+.. note::
+
+   This command will wait for the operation to finish or fail.
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: clusters import-jobs create from-s3
+
+Example
+^^^^^^^
 
 .. code-block:: console
 
@@ -110,9 +143,43 @@ Example
    ==> Info: Done importing 3 records and 36 Bytes.
    ==> Success: Operation completed.
 
+``clusters import-jobs create from-azure-blob-storage``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Imports data from Azure Blob Storage.
+
+.. note::
+
+   This command will wait for the operation to finish or fail.
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters import-jobs create from-azure-blob-storage
+
+Example
+^^^^^^^
+
+.. code-block:: console
+
+   sh$ croud clusters import-jobs create from-azure-blob-storage --secret-id c1ff327d-ee9f-4903-b7f2-8ea9c5be898c \
+      --container-name my-container --blob-name "my/blob.csv" --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400 \
+      --file-format csv --table my_table
+   +--------------------------------------+--------------------------------------+------------+
+   | id                                   | cluster_id                           | status     |
+   |--------------------------------------+--------------------------------------+------------|
+   | f1f9906b-d038-466b-ac48-e6a041d1076a | e1e38d92-a650-48f1-8a70-8133f2d5c400 | REGISTERED |
+   +--------------------------------------+--------------------------------------+------------+
+   ==> Info: Status: REGISTERED (Your import job was received and is pending processing.)
+   ==> Info: Status: SENT (Your creation request was sent to the region.)
+   ==> Info: Done importing 14.73K records
+   ==> Success: Operation completed.
 
 ``clusters import-jobs list``
-=============================
+-----------------------------
+
+Lists all import jobs for a cluster.
 
 .. argparse::
    :module: croud.__main__
@@ -121,11 +188,11 @@ Example
    :path: clusters import-jobs list
 
 Example
--------
+~~~~~~~
 
 .. code-block:: console
 
-   sh$ ❯ croud clusters import-jobs list --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400
+   sh$ croud clusters import-jobs list --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400
    +--------------------------------------+--------------------------------------+-----------+--------+-------------------+
    | id                                   | cluster_id                           | status    | type   | destination       |
    |--------------------------------------+--------------------------------------+-----------+--------+-------------------|
@@ -136,7 +203,9 @@ Example
 
 
 ``clusters import-jobs delete``
-===============================
+-------------------------------
+
+Deletes an import job.
 
 .. argparse::
    :module: croud.__main__
@@ -145,55 +214,14 @@ Example
    :path: clusters import-jobs delete
 
 Example
--------
+^^^^^^^
 
 .. code-block:: console
 
-   sh$ ❯ croud clusters import-jobs delete \
+   sh$  croud clusters import-jobs delete \
          --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400 \
          --import-job-id 00de6048-3af6-41da-bfaa-661199d1c106
    ==> Success: Success.
-
-
-``clusters import-jobs progress``
-=================================
-
-.. argparse::
-   :module: croud.__main__
-   :func: get_parser
-   :prog: croud
-   :path: clusters import-jobs progress
-
-Examples
---------
-
-.. code-block:: console
-
-   sh$ ❯ croud clusters import-jobs progress \
-         --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400 \
-         --import-job-id 00de6048-3af6-41da-bfaa-661199d1c106 \
-         --summary true
-   +-----------+-----------+------------------+-----------------+---------------+
-   |   percent |   records |   failed_records |   total_records |   total_files |
-   |-----------+-----------+------------------+-----------------+---------------+
-   |       100 |       891 |                0 |             891 |             2 |
-   +-----------+-----------+------------------+-----------------+---------------+
-
-
-.. code-block:: console
-
-   sh$ ❯ croud clusters import-jobs progress \
-         --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400 \
-         --import-job-id 00de6048-3af6-41da-bfaa-661199d1c106 \
-         --limit ALL
-         --offset 0
-   +-----------+-----------+-----------+------------------+-----------------+
-   | name      |   percent |   records |   failed_records |   total_records |
-   |-----------+-----------+-----------+------------------+-----------------|
-   | file1.csv |       100 |       800 |                0 |             800 |
-   | file2.csv |       100 |        91 |                0 |              91 |
-   +-----------+-----------+-----------+------------------+-----------------+
-
 
 ``clusters export-jobs``
 ========================
@@ -207,7 +235,16 @@ Examples
 
 
 ``clusters export-jobs create``
-===============================
+-------------------------------
+
+Exports data from a CrateDB cluster to an external location. The exported data can be downloaded
+from a URL once the export job is completed or saved on your local filesystem.
+
+.. note::
+
+    This command will wait for the operation to finish or fail.
+
+    It is only available to organization admins.
 
 .. argparse::
    :module: croud.__main__
@@ -216,11 +253,11 @@ Examples
    :path: clusters export-jobs create
 
 Example
--------
+~~~~~~~
 
 .. code-block:: console
 
-   sh$ ❯ croud clusters export-jobs create --cluster-id f6c39580-5719-431d-a508-0cee4f9e8209 \
+   sh$ croud clusters export-jobs create --cluster-id f6c39580-5719-431d-a508-0cee4f9e8209 \
          --table nyc_taxi --file-format csv
    +--------------------------------------+--------------------------------------+------------+
    | id                                   | cluster_id                           | status     |
@@ -235,15 +272,10 @@ Example
    ==> Success: Download URL: https://cratedb-file-uploads.s3.amazonaws.com/some/download
    ==> Success: Operation completed.
 
-
-.. NOTE::
-
-    This command will wait for the operation to finish or fail. It is only available
-    to organization admins.
-
-
 ``clusters export-jobs list``
-=============================
+-----------------------------
+
+Lists all export jobs for a cluster.
 
 .. argparse::
    :module: croud.__main__
@@ -252,7 +284,7 @@ Example
    :path: clusters export-jobs list
 
 Example
--------
+~~~~~~~
 
 .. code-block:: console
 
@@ -267,7 +299,9 @@ Example
 
 
 ``clusters export-jobs delete``
-===============================
+-------------------------------
+
+Deletes an export job.
 
 .. argparse::
    :module: croud.__main__
@@ -276,13 +310,14 @@ Example
    :path: clusters export-jobs delete
 
 Example
--------
+~~~~~~~
 
 .. code-block:: console
 
-   sh$ ❯ croud clusters export-jobs delete \
+   sh$ croud clusters export-jobs delete \
          --cluster-id f6c39580-5719-431d-a508-0cee4f9e8209 \
          --export-job-id 3b311ba9d-9cb4-404a-b58d-c442ae251dbf
    ==> Success: Success.
 
-.. _here: https://hub.docker.com/r/crate/crate/tags
+.. _import data documentation: https://cratedb.com/docs/cloud/en/latest/cluster/import.html
+.. _export data documentation: https://cratedb.com/docs/cloud/en/latest/cluster/export.html

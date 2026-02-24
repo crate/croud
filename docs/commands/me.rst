@@ -11,9 +11,10 @@ Print the username and email address of the currently authenticated user:
    :func: get_parser
    :prog: croud
    :path: me
+   :nosubcommands:
 
 Example
-=======
+-------
 
 .. code-block:: console
 
@@ -37,7 +38,7 @@ Change your own email address:
    :path: me edit
 
 Example
-=======
+-------
 
 .. code-block:: console
 

@@ -608,5 +608,4 @@ Example
 .. _here: https://hub.docker.com/r/crate/crate/tags
 .. _support: https://support.cratedb.com
 .. _string delimitation: https://en.wikipedia.org/wiki/Delimiter
-.. _CrateDB Cloud Console: https://console.cratedb.cloud
 .. _backup documentation: https://cratedb.com/docs/cloud/en/latest/cluster/backups.html

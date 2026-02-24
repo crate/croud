@@ -7,6 +7,9 @@
 The command ``croud config`` offers multiple subcommands to manage its
 configuration.
 
+There is just one profile configured in the default configuration file. You would only
+need different profiles if you want to authenticate as different users or use different default organizations.
+
 
 ``config show``
 ===============
@@ -35,9 +38,9 @@ Example
        format: table
        region: _any_
 
-Note, that the values of ``auth-token`` are masked.
+.. note::
 
-.. _cmd-config-profiles-current:
+   Note, that the values of ``auth-token`` are masked.
 
 ``config profiles current``
 ===========================
@@ -74,7 +77,6 @@ You can switch to a different profile, like so:
    :prog: croud
    :path: config profiles use
 
-
 Example
 -------
 
@@ -82,3 +84,41 @@ Example
 
    sh$ croud config profiles use some.other
    ==> Info: Switched to profile 'some.other'.
+
+``config profiles add``
+=======================
+
+Add a new profile to your configuration, like so:
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: config profiles add
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud config profiles add my-profile --endpoint https://console.cratedb.cloud
+   ==> Info: Added profile 'my-profile'.
+
+``config profiles remove``
+==========================
+
+Remove a profile from your configuration, like so:
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: config profiles remove
+
+Example
+-------
+
+.. code-block:: console
+
+   sh$ croud config profiles remove my-profile
+   ==> Info: Removed profile 'my-profile'.
