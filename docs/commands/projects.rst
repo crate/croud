@@ -7,6 +7,10 @@
 The ``projects`` command allows you to create, modify and view
 projects.
 
+Projects are internal resources that contains the clusters.
+They are automatically created when you create a cluster, but you can also
+create them manually and assign clusters to them.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -16,6 +20,8 @@ projects.
 
 ``projects create``
 ===================
+
+Creates a project in an organization.
 
 .. argparse::
    :module: croud.__main__
@@ -40,6 +46,8 @@ Example
 ``projects delete``
 ===================
 
+Deletes a project.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -57,6 +65,8 @@ Example
 
 ``projects edit``
 =================
+
+Edits a project.
 
 .. argparse::
    :module: croud.__main__
@@ -80,6 +90,8 @@ Example
 ``projects list``
 =================
 
+Lists the projects you have access to.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -92,11 +104,11 @@ Example
 .. code-block:: console
 
    sh$ croud projects list
-   +--------------------------------------+------------+--------------+--------------------------------------+
-   | id                                   | name       | region       | organizationId                       |
-   |--------------------------------------+------------+--------------+--------------------------------------|
-   | 035f1161-402e-44b4-9073-0749586091e0 | my-project | eastus.azure | a0df2925-cc73-4365-8a10-7ef847632b81 |
-   +--------------------------------------+------------+--------------+--------------------------------------+
+   +--------------------------------------+-----------------+--------------------+--------------------------------------+-------------------+
+   | id                                   | name            | region             | organization_id                      | backup_location   |
+   |--------------------------------------+-----------------+--------------------+--------------------------------------+-------------------|
+   | 035f1161-402e-44b4-9073-0749586091e0 | my-project      | aks1.eastus.azure  | a0df2925-cc73-4365-8a10-7ef847632b81 | default           |
+   +--------------------------------------+-----------------+--------------------+--------------------------------------+-------------------+
 
 
 ``projects users``
@@ -113,6 +125,10 @@ Example
 ``projects users add``
 ----------------------
 
+Adds a user to a project.
+
+It allows the user to access the project and its clusters with the specified role.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -120,7 +136,7 @@ Example
    :path: projects users add
 
 Example
--------
+~~~~~~~
 
 .. code-block:: console
 
@@ -139,6 +155,8 @@ Example
 ``projects users list``
 -----------------------
 
+Lists the users that have access to a project.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -146,21 +164,23 @@ Example
    :path: projects users list
 
 Example
-.......
+~~~~~~~
 
 .. code-block:: console
 
    sh$ croud projects users list \
        --project-id 035f1161-402e-44b4-9073-0749586091e0
-   +----------------------+----------------+----------+--------------------------------------+
-   | email                | project_roles  | username | uid                                  |
-   |----------------------+----------------+----------+--------------------------------------|
-   | john.doe@example.com | project_member | john.doe | 6ac0f500-f9f8-4c12-82e2-3ad6192525d4 |
-   +----------------------+----------------+----------+--------------------------------------+
+   +--------------------------------------+----------------------+----------+----------------+
+   | uid                                  | email                | username | project_roles  |
+   |--------------------------------------+----------------------+----------+----------------|
+   | 6ac0f500-f9f8-4c12-82e2-3ad6192525d4 | john.doe@example.com | john.doe | project_admin  |
+   +--------------------------------------+----------------------+----------+----------------+
 
 
 ``projects users remove``
 -------------------------
+
+Removes a user from a project.
 
 .. argparse::
    :module: croud.__main__
@@ -169,7 +189,7 @@ Example
    :path: projects users remove
 
 Example
--------
+~~~~~~~
 
 .. code-block:: console
 

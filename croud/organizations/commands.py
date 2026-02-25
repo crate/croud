@@ -172,8 +172,10 @@ def org_secrets_create(args: Namespace) -> None:
             )
             return
         payload["data"] = {
-            "access_key": args.access_key,
-            "secret_key": args.secret_key,
+            "aws_secret": {
+                "access_key": args.access_key,
+                "secret_key": args.secret_key,
+            }
         }
     elif args.type == "AZURE":
         if not args.connection_string:
@@ -184,6 +186,34 @@ def org_secrets_create(args: Namespace) -> None:
                 "connection_string": args.connection_string,
             }
         }
+    elif args.type == "MONGODB":
+        if not args.connection_string:
+            print_error(
+                "Argument connection-string is required for secret type MongoDB."
+            )
+            return
+        if not ((args.username and args.password) or args.certificate):
+            print_error(
+                "Both 'username' and 'password' or 'certificate' are "
+                "required for secret type MongoDB."
+            )
+            return
+        if args.certificate and (args.username or args.password):
+            print_error(
+                "'Username' and 'password' must not be provided if 'certificate' "
+                "is specified."
+            )
+            return
+        payload["data"] = {
+            "mongodb_secret": {
+                "connection_string": args.connection_string,
+            }
+        }
+        if args.username and args.password:
+            payload["data"]["mongodb_secret"]["username"] = args.username
+            payload["data"]["mongodb_secret"]["password"] = args.password
+        if args.certificate:
+            payload["data"]["mongodb_secret"]["certificate"] = args.certificate
 
     data, errors = client.post(
         f"/api/v2/organizations/{args.org_id}/secrets/", body=payload

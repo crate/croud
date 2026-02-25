@@ -390,8 +390,8 @@ command_tree = {
                             Argument(
                                 "--role", type=str, required=True,
                                 help=(
-                                    "The role FQN to use. Run `croud users roles list` "
-                                    "for a list of available roles."
+                                    "The role FQN to use. Run ``croud users roles "
+                                    "list`` for a list of available roles."
                                 ),
                             ),
                         ],
@@ -1303,8 +1303,9 @@ command_tree = {
                             ),
                             Argument(
                                 "--type", type=str, required=True,
-                                choices=["AWS", "AZURE"],
-                                help="The type of Secret. Either AWS or Azure.",
+                                choices=["AWS", "AZURE", "MONGODB"],
+                                help="The type of Secret. Either AWS, Azure, or "
+                                     "MongoDB.",
                             ),
                             # AWS arguments
                             Argument(
@@ -1315,11 +1316,31 @@ command_tree = {
                                 "--secret-key", type=str, required=False,
                                 help="For an AWS type secret, the secret key.",
                             ),
-                            # Azure arguments
+                            # Azure/MongoDB arguments
                             Argument(
                                 "--connection-string", type=str, required=False,
-                                help="For an Azure type secret, the connection string "
-                                     "or URL that grants access to a resource.",
+                                help="For an Azure or MongoDB type secret, the "
+                                     "connection string or URL that grants access to "
+                                     "a resource.",
+                            ),
+                            # MongoDB arguments
+                            Argument(
+                                "--username", type=str, required=False,
+                                help="For a MongoDB type secret, the username. It "
+                                     "requires the password as well and it cannot be "
+                                     "set if the certificate is provided.",
+                            ),
+                            Argument(
+                                "--password", type=str, required=False,
+                                help="For a MongoDB type secret, the password. It "
+                                     "requires the username as well and it cannot be "
+                                     "set if the certificate is provided.",
+                            ),
+                            Argument(
+                                "--certificate", type=str, required=False,
+                                help="For a MongoDB type secret, the certificate. It "
+                                     "cannot be set if the username and password are "
+                                     "provided.",
                             ),
                         ],
                         "resolver": org_secrets_create,
