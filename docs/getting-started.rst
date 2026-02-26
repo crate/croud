@@ -38,6 +38,12 @@ You must authenticate before using most commands. To log in:
 
 This will open a browser window to authenticate with your CrateDB Cloud account.
 
+.. note::
+
+    You might want to use the ``--idp`` (Identity Provider) argument to specify
+    a different authentication method, like ``azuread``, ``github`` or ``google``.
+    By default, username and password authentication is used.
+
 .. TIP::
 
     For headless environments (e.g., CI/CD pipelines), you can authenticate by setting the following environment variables instead of running ``croud login``:
@@ -65,7 +71,7 @@ Croud supports the following command-line options:
 | ``--version``          |                                                  |
 +------------------------+--------------------------------------------------+
 
-Some Croud :ref:`commands <commands>` support additional subcommands and flags. Use --help after any command for more information:
+Croud :ref:`commands <commands>` support additional subcommands and flags. Use --help after any command for more information:
 
 .. code-block:: console
 

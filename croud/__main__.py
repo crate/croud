@@ -295,30 +295,30 @@ command_tree = {
                         choices=["s3"],
                         type=str,
                         required=False,
-                        help="The type of the custom backup location to use. "
+                        help="CrateDB Edge regions only. "
+                             "The type of the custom backup location to use. "
                              "Only 's3' currently supported. "
-                             "CrateDB Edge regions only."
                     ),
                     Argument(
                         "--backup-location", type=str, required=False,
-                        help="The location of where backups are to be stored, "
+                        help="CrateDB Edge regions only. "
+                             "The location of where backups are to be stored, "
                              "i.e. name of s3 bucket for s3 locations. "
-                             "CrateDB Edge regions only."
                     ),
                     Argument(
                         "--backup-location-access-key-id", type=str, required=False,
-                        help="The AWS access key id for the given s3 bucket. "
-                             "CrateDB Edge regions only."
+                        help="CrateDB Edge regions only. "
+                             "The AWS access key id for the given s3 bucket. "
                     ),
                     Argument(
                         "--backup-location-endpoint-url", type=str, required=False,
-                        help="The URL to a S3 compatible endpoint. "
-                             "CrateDB Edge regions only."
+                        help="CrateDB Edge regions only. "
+                             "The URL to a S3 compatible endpoint. "
                     ),
                     Argument(
                         "--backup-location-secret-access-key", type=str, required=False,
-                        help="The AWS secret access key for the given s3 bucket. "
-                             "CrateDB Edge regions only."
+                        help="CrateDB Edge regions only. "
+                             "The AWS secret access key for the given s3 bucket. "
                     ),
                 ],
                 "resolver": project_create,
@@ -445,7 +445,8 @@ command_tree = {
                 "extra_args": [
                     Argument(
                         "-p", "--project-id", type=str, required=False,
-                        help="The project ID to use.",
+                        help="The project ID to use. We recommend using the org-id "
+                             "instead",
                     ),
                     Argument(
                         "--org-id", type=str, required=False,
@@ -479,13 +480,14 @@ command_tree = {
                     Argument(
                         "-p", "--project-id", type=str,
                         required=False,
-                        help="The project ID to use.",
+                        help="The project ID to use. We recommend using the org-id "
+                             "instead",
                     ),
                     Argument(
                         "--org-id", type=str,
                         required=False,
                         help="The organization ID to use. "
-                             "Defaults to the global configuration values.",
+                             "Defaults to the global configuration value.",
                     ),
                     Argument(
                         "--cluster-name", type=str, required=True,
@@ -518,13 +520,12 @@ command_tree = {
                     ),
                     Argument(
                         "--cpus", type=float, required=False,
-                        help="Number of CPU cores to allocate. Can be fractional. "
-                             "CrateDB Edge regions only.",
+                        help="CrateDB Edge regions only. "
+                             "Number of CPU cores to allocate. Can be fractional.",
                     ),
                     Argument(
                         "--disks", type=int, required=False,
-                        help="Number of disks to attach. "
-                             "CrateDB Edge regions only.",
+                        help="CrateDB Edge regions only. Number of disks to attach.",
                     ),
                     Argument(
                         "--disk-size-gb", type=int, required=False,
@@ -533,13 +534,12 @@ command_tree = {
                     Argument(
                         "--disk-type", type=str, required=False,
                         choices=["standard", "premium"],
-                        help="Type of disks to use. "
-                             "CrateDB Edge regions only.",
+                        help="CrateDB Edge regions only. Type of disks to use.",
                     ),
                     Argument(
                         "--memory-size-mb", type=int, required=False,
-                        help="Amount of memory to allocate (in MiB). "
-                             "CrateDB Edge regions only.",
+                        help="CrateDB Edge regions only. "
+                             "Amount of memory to allocate (in MiB).",
                     ),
                 ],
                 "resolver": clusters_deploy,
@@ -1127,7 +1127,8 @@ command_tree = {
                 "help": "List all available products in the current region.",
                 "extra_args": [
                     Argument(
-                        "--kind", type=str, required=False, help="The product kind."
+                        "--kind", type=str, required=False, help="The product kind.",
+                        choices=["cluster", "storage"]
                     ),
                 ],
                 "resolver": products_list,
@@ -1571,7 +1572,7 @@ command_tree = {
                             ),
                             Argument(
                                 "--tax-id-type", type=str, required=False,
-                                help="The customer's tax ID type, e.g. 'vat_eu'.",
+                                help="The customer's tax ID type, e.g. 'eu_vat'.",
                             )
                         ],
                         "resolver": org_customer_edit,

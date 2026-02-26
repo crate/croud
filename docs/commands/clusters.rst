@@ -62,6 +62,12 @@ Deploys a new cluster.
    Free clusters can be deployed without a paid subscription. Therefore you can use
    ``--subscription-id free_tier --product-name crfree``.
 
+.. warning::
+
+   Some optional arguments and for Edge regions only. An Edge region allows you to
+   host CrateDB instances in your own infrastructure however this feature is not
+   maintained anymore. It is not recommended to use it.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser

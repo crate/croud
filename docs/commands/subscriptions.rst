@@ -4,8 +4,16 @@
 ``subscriptions``
 =================
 
+Subscriptions are the configured payment methods for an organization.
+
 ``subscriptions create``
 ========================
+
+Creates a new contract subscription in an organization.
+
+.. note::
+
+   This command is only available for superusers.
 
 .. argparse::
    :module: croud.__main__
@@ -26,14 +34,10 @@ Example
    +--------------------------------------+-------------------+---------+------------+
    ==> Success: Subscription created.
 
-.. note::
-
-   This command is only available for superusers.
-
 ``subscriptions list``
 ======================
 
-Print the subscriptions in a user's organization:
+Prints the subscriptions in a user's organization:
 
 .. argparse::
    :module: croud.__main__
@@ -42,23 +46,27 @@ Print the subscriptions in a user's organization:
    :path: subscriptions list
 
 Example
-=======
+-------
 
 .. code-block:: console
 
    sh$ croud subscriptions list
-   +--------------------------------------+---------------------------------------+--------+----------+
-   | id                                   | name                                  | state  | provider |
-   |--------------------------------------+---------------------------------------+--------+----------|
-   | 56149db0-ea40-4616-88d1-885f6a491989 | my-azure-subscription                 | active | azure    |
-   | b01b93e0-fd18-4896-ba88-288efe759bf0 | x43z8qxk9nh7l7mq7nxd3907z-zWG1GEiPuM4 | active | aws      |
-   +--------------------------------------+---------------------------------------+--------+----------+
+   +--------------------------------------+---------------------------------------+--------------------------------------+---------+----------+
+   | id                                   | name                                  | organization_id                      | state   | provider |
+   |--------------------------------------+---------------------------------------+--------------------------------------+---------+----------|
+   | 56149db0-ea40-4616-88d1-885f6a491989 | my-azure-subscription                 | a0df2925-cc73-4365-8a10-7ef847632b81 | active  | azure    |
+   | 99f26f04-5cef-4c82-b7bb-4a7d14b4b3c1 | contract-KFXfYlOX                     | a0df2925-cc73-4365-8a10-7ef847632b81 | active  | contract |
+   +--------------------------------------+---------------------------------------+--------------------------------------+---------+----------+
 
 ``subscriptions delete``
 ========================
 
-Cancel a Stripe or contract subscription in a user's organisation. Please note that this will delete
-any clusters running in this subscription, so use carefully:
+Cancel a Stripe or contract subscription in a user's organisation.
+
+.. warning::
+
+   Please note that this will delete any clusters running in this subscription,
+   so use carefully.
 
 .. argparse::
    :module: croud.__main__
