@@ -17,11 +17,12 @@ create them manually and assign clusters to them.
    :prog: croud
    :path: projects
    :nosubcommands:
+   :nodescription:
 
 ``projects create``
 ===================
 
-Creates a project in an organization.
+Create a project in the specified organization and region.
 
 .. warning::
 
@@ -34,6 +35,7 @@ Creates a project in an organization.
    :func: get_parser
    :prog: croud
    :path: projects create
+   :nodescription:
 
 Example
 -------
@@ -52,8 +54,6 @@ Example
 ``projects delete``
 ===================
 
-Deletes a project.
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -71,8 +71,6 @@ Example
 
 ``projects edit``
 =================
-
-Edits a project.
 
 .. argparse::
    :module: croud.__main__
@@ -95,8 +93,6 @@ Example
 
 ``projects list``
 =================
-
-Lists the projects you have access to.
 
 .. argparse::
    :module: croud.__main__
@@ -131,10 +127,6 @@ Example
 ``projects users add``
 ----------------------
 
-Adds a user to a project.
-
-It allows the user to access the project and its clusters with the specified role.
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -161,8 +153,6 @@ Example
 ``projects users list``
 -----------------------
 
-Lists the users that have access to a project.
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -185,8 +175,6 @@ Example
 
 ``projects users remove``
 -------------------------
-
-Removes a user from a project.
 
 .. argparse::
    :module: croud.__main__

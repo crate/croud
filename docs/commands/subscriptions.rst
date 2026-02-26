@@ -9,17 +9,18 @@ Subscriptions are the configured payment methods for an organization.
 ``subscriptions create``
 ========================
 
-Creates a new contract subscription in an organization.
-
 .. note::
 
    This command is only available for superusers.
+
+Create a new contract subscription in an organization.
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: subscriptions create
+   :nodescription:
 
 Example
 -------
@@ -36,8 +37,6 @@ Example
 
 ``subscriptions list``
 ======================
-
-Prints the subscriptions in a user's organization:
 
 .. argparse::
    :module: croud.__main__
@@ -61,18 +60,19 @@ Example
 ``subscriptions delete``
 ========================
 
-Cancel a Stripe or contract subscription in a user's organisation.
-
 .. warning::
 
    Please note that this will delete any clusters running in this subscription,
    so use carefully.
+
+Cancel a Stripe or contract subscription in an organisation.
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: subscriptions delete
+   :nodescription:
 
 Example
 -------

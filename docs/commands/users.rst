@@ -12,6 +12,7 @@ The ``users`` command allows you to view user resources.
    :prog: croud
    :path: users
    :nosubcommands:
+   :nodescription:
 
 ``users roles``
 ===============
@@ -22,6 +23,7 @@ The ``users`` command allows you to view user resources.
    :prog: croud
    :path: users roles
    :nosubcommands:
+   :nodescription:
 
 .. tip::
 
@@ -30,8 +32,6 @@ The ``users`` command allows you to view user resources.
 
 ``users roles list``
 --------------------
-
-Lists all available roles.
 
 .. argparse::
    :module: croud.__main__
@@ -57,17 +57,18 @@ Example
 ``users list``
 ==============
 
-Lists all users in an organization.
-
 .. note::
 
    This command is only available for superusers.
+
+Lists all users in an organization.
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: users list
+   :nodescription:
 
 Example
 -------

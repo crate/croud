@@ -15,12 +15,11 @@ that you can choose from when creating a cluster.
    :prog: croud
    :path: products
    :nosubcommands:
+   :nodescription:
 
 
 ``products list``
 =================
-
-Lists the available products for a region.
 
 .. argparse::
    :module: croud.__main__

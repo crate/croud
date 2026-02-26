@@ -187,7 +187,7 @@ command_tree = {
         "resolver": me,
         "commands": {
             "edit": {
-                "help": "Edit your user data.",
+                "help": "Edit your own email address.",
                 "extra_args": [
                     Argument(
                         "--email", type=str, required=True,
@@ -199,7 +199,7 @@ command_tree = {
         }
     },
     "login": {
-        "help": "Log in to CrateDB Cloud.",
+        "help": "Log in to your CrateDB Cloud account.",
         "resolver": login,
         "extra_args": [
             Argument(
@@ -209,7 +209,7 @@ command_tree = {
             ),
         ],
     },
-    "logout": {"help": "Log out of CrateDB Cloud.", "resolver": logout},
+    "logout": {"help": "Log out of your CrateDB Cloud account.", "resolver": logout},
     "config": {
         "help": "Manage croud configuration.",
         "commands": {
@@ -227,7 +227,7 @@ command_tree = {
                         "omit": {"sudo", "region"},
                     },
                     "use": {
-                        "help": "Set the current profile.",
+                        "help": "Switch to a different profile.",
                         "resolver": config_set_profile,
                         "omit": {"sudo", "region"},
                         "extra_args": [
@@ -238,7 +238,7 @@ command_tree = {
                         ],
                     },
                     "add": {
-                        "help": "Add a new profile.",
+                        "help": "Add a new profile to your configuration.",
                         "resolver": config_add_profile,
                         "omit": {"sudo", "region", "format"},
                         "extra_args": [
@@ -261,7 +261,7 @@ command_tree = {
                         ],
                     },
                     "remove": {
-                        "help": "Remove an existing profile.",
+                        "help": "Remove a profile from your configuration.",
                         "resolver": config_remove_profile,
                         "omit": {"sudo", "region", "format"},
                         "extra_args": [
@@ -376,7 +376,8 @@ command_tree = {
                 "help": "Manage users in projects.",
                 "commands": {
                     "add": {
-                        "help": "Add the selected user to a project.",
+                        "help": "Add a user to a project. It allows the user to access "
+                                "the project and its clusters with the specified role.",
                         "extra_args": [
                             Argument(
                                 "-p", "--project-id", type=str, required=True,
@@ -397,7 +398,7 @@ command_tree = {
                         "resolver": project_users_add,
                     },
                     "list": {
-                        "help": "List all users within a project.",
+                        "help": "List the users who have access to a project.",
                         "extra_args": [
                             Argument(
                                 "-p", "--project-id", type=str, required=True,
@@ -407,7 +408,7 @@ command_tree = {
                         "resolver": project_users_list,
                     },
                     "remove": {
-                        "help": "Remove the selected user from a project.",
+                        "help": "Remove a user from a project.",
                         "extra_args": [
                             Argument(
                                 "-p", "--project-id", type=str, required=True,
@@ -544,7 +545,8 @@ command_tree = {
                 "resolver": clusters_deploy,
             },
             "scale": {
-                "help": "Scale an existing CrateDB cluster.",
+                "help": "Scale an existing cluster up or down by changing the "
+                        "number of nodes.",
                 "extra_args": [
                     Argument(
                         "--cluster-id", type=str, required=True,
@@ -600,7 +602,7 @@ command_tree = {
                 "resolver": clusters_restart_node,
             },
             "set-deletion-protection": {
-                "help": "Set the deletion protection status of a CrateDB cluster.",
+                "help": "Change the deletion protection status of a cluster.",
                 "extra_args": [
                     Argument(
                         "--cluster-id", type=str, required=True,
@@ -696,7 +698,7 @@ command_tree = {
                 "help": "View and restore snapshots (backups)",
                 "commands": {
                     "list": {
-                        "help": "List the cluster snapshots available.",
+                        "help": "List all snapshots of a cluster.",
                         "extra_args": [
                             Argument(
                                 "--cluster-id", type=str, required=True,
@@ -711,7 +713,7 @@ command_tree = {
                         "resolver": clusters_snapshots_list,
                     },
                     "restore": {
-                        "help": "Restore the specified snapshot.",
+                        "help": "Restore a snapshot of a cluster.",
                         "extra_args": [
                             Argument(
                                 "--cluster-id", type=str, required=True,
@@ -804,8 +806,7 @@ command_tree = {
                         "resolver": import_jobs_delete,
                     },
                     "list": {
-                        "help": "Lists data import jobs that belong to a specific "
-                                "cluster.",
+                        "help": "List all import jobs for a cluster.",
                         "extra_args": [
                             Argument(
                                 "--cluster-id", type=str, required=True,
@@ -815,7 +816,7 @@ command_tree = {
                         "resolver": import_jobs_list,
                     },
                     "create": {
-                        "help": "Create a data import job for the specified cluster.",
+                        "help": "Import data from a file.",
                         "commands" : {
                             "from-url": {
                                 "help": "Create a data import job on the specified "
@@ -831,8 +832,8 @@ command_tree = {
                                 "resolver": import_jobs_create_from_url,
                             },
                             "from-file": {
-                                "help": "Create a data import job on the specified "
-                                        "cluster from a file.",
+                                "help": "Create a data import job from a local or "
+                                        "uploaded file.",
                                 "extra_args": [
                                     # Type file params
                                     Argument(
@@ -935,8 +936,7 @@ command_tree = {
                         "resolver": export_jobs_delete,
                     },
                     "list": {
-                        "help": "Lists data export jobs that belong to a specific "
-                                "cluster.",
+                        "help": "Lists all export jobs for a cluster.",
                         "extra_args": [
                             Argument(
                                 "--cluster-id", type=str, required=True,
@@ -946,7 +946,10 @@ command_tree = {
                         "resolver": export_jobs_list,
                     },
                     "create": {
-                        "help": "Create a data export job for the specified cluster.",
+                        "help": "Export data from a CrateDB cluster to a file. The "
+                                "exported data can be downloaded from a URL once the "
+                                "export job is completed or saved on your local "
+                                "filesystem.",
                         "extra_args": [
                             Argument(
                                 "--cluster-id", type=str, required=True,
@@ -1016,7 +1019,7 @@ command_tree = {
                         "resolver": create_scheduled_job,
                     },
                     "list": {
-                        "help": "Get all scheduled sql jobs.",
+                        "help": "List the scheduled sql jobs for a cluster.",
                         "extra_args": [
                             Argument(
                                 "--cluster-id", type=str, required=True,
@@ -1095,7 +1098,7 @@ command_tree = {
                 "creating a cluster.",
         "commands": {
             "list": {
-                "help": "List all available products in the current region.",
+                "help": "List the available products for a region.",
                 "extra_args": [
                     Argument(
                         "--kind", type=str, required=False, help="The product kind.",
@@ -1204,7 +1207,7 @@ command_tree = {
                 "help": "Manage users in an organization.",
                 "commands": {
                     "add": {
-                        "help": "Add the selected user to an organization.",
+                        "help": "Add a user to an organization.",
                         "extra_args": [
                             Argument(
                                 "--user", type=str, required=True,
@@ -1225,7 +1228,8 @@ command_tree = {
                         "resolver": org_users_add,
                     },
                     "list": {
-                        "help": "List all users within an organization.",
+                        "help": "List all users that are admins or members of an "
+                                "organization.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=False,
@@ -1235,7 +1239,7 @@ command_tree = {
                         "resolver": org_users_list,
                     },
                     "remove": {
-                        "help": "Remove the selected user from an organization.",
+                        "help": "Remove a user from an organization.",
                         "extra_args": [
                             Argument(
                                 "--user", type=str, required=True,
@@ -1319,8 +1323,7 @@ command_tree = {
                         "resolver": org_secrets_create,
                     },
                     "delete": {
-                        "help": "Deletes the secret that matches the given ID for the "
-                                "organization specified.",
+                        "help": "Delete a secret from an organization.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
@@ -1340,9 +1343,9 @@ command_tree = {
                         "used as data sources for data import jobs.",
                 "commands": {
                     "get": {
-                        "help": (
-                            "Get a file by its ID."
-                        ),
+                        "help": "Get the details of a file uploaded to an "
+                                "organization, including a pre-signed URL for "
+                                "downloading the file.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
@@ -1366,7 +1369,7 @@ command_tree = {
                         "resolver": org_files_list,
                     },
                     "create": {
-                        "help": "Uploads a new file to the organization.",
+                        "help": "Upload a new file to the organization.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
@@ -1386,7 +1389,7 @@ command_tree = {
                         "resolver": org_files_create,
                     },
                     "delete": {
-                        "help": "Deletes a previously uploaded file.",
+                        "help": "Delete a file uploaded to an organization.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
@@ -1405,7 +1408,7 @@ command_tree = {
                 "help": "Manage organization's credits.",
                 "commands" : {
                     "list": {
-                        "help": "Lists all credits of an organization.",
+                        "help": "List all credits of an organization.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
@@ -1421,7 +1424,7 @@ command_tree = {
                         "resolver": org_credits_list,
                     },
                     "create": {
-                        "help": "Creates a new credit for the specified organization.",
+                        "help": "Create a new credit for an organization.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
@@ -1444,7 +1447,7 @@ command_tree = {
                         "resolver": org_credits_create,
                     },
                     "edit": {
-                        "help": "Edits the specified credit.",
+                        "help": "Edit the specified credit.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
@@ -1472,7 +1475,8 @@ command_tree = {
                         "resolver": org_credits_edit,
                     },
                     "expire": {
-                        "help": "Expires the specified credit.",
+                        "help": "Expire a credit, making it unusable for paying for "
+                                "CrateDB Cloud resources.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
@@ -1488,10 +1492,13 @@ command_tree = {
                 }
             },
             "customer": {
-                "help": "Manage organization's billing info.",
+                "help": "Manage organization's customer information."
+                        "This includes the billing informations",
                 "commands" : {
                     "get": {
-                        "help": "Gets the organization's billing info",
+                        "help": "Get the customer information for an organization."
+                                "This includes the billing informations"
+                                ".",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
@@ -1501,7 +1508,7 @@ command_tree = {
                         "resolver": org_customer_get,
                     },
                     "edit": {
-                        "help": "Edits the organization's billing info.",
+                        "help": "Edits the organization's customer information.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
@@ -1598,7 +1605,7 @@ command_tree = {
         "help": "Manage your own API keys.",
         "commands": {
             "list": {
-                "help": "List all the API keys that belong to you.",
+                "help": "List all the API keys that belong to the current user.",
                 "resolver": api_keys_list,
             },
             "create": {
@@ -1607,7 +1614,7 @@ command_tree = {
                 "resolver": api_keys_create,
             },
             "delete": {
-                "help": "Deletes the API key specified that belongs to your user.",
+                "help": "Delete the API key specified that belongs to your user.",
                 "resolver": api_keys_delete,
                 "extra_args": [
                     Argument(
@@ -1618,8 +1625,7 @@ command_tree = {
                 ]
             },
             "edit": {
-                "help": "Edit the API key specified that belongs to your user, "
-                        "allowing you to activate or deactivate it.",
+                "help": "Allow activating or deactivating an existing API key",
                 "resolver": api_keys_edit,
                 "extra_args": [
                     Argument(
@@ -1752,8 +1758,8 @@ command_tree = {
         "commands": {
             "set": {
                 "help": (
-                    "Set a configuration key/value. This command "
-                    "is for superusers only."
+                    "Set a configuration value either globally or for a single "
+                    "organization or user only. This command is for superusers only."
                 ),
                 "extra_args": [
                     Argument(
@@ -1777,8 +1783,8 @@ command_tree = {
             },
             "get": {
                 "help": (
-                    "Get the configuration value by its key. This command "
-                    "is for superusers only."
+                    "Get a single configuration value by its key. "
+                    "This command is for superusers only."
                 ),
                 "extra_args": [
                     Argument(
@@ -1800,7 +1806,7 @@ command_tree = {
             },
             "list": {
                 "help": (
-                    "List all cloud configurations. This command "
+                    "List all CrateDB Cloud configurations. This command "
                     "is for superusers only."
                 ),
                 "extra_args": [

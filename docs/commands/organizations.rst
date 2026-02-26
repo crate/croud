@@ -13,6 +13,7 @@ organization resources.
    :prog: croud
    :path: organizations
    :nosubcommands:
+   :nodescription:
 
 .. note::
 
@@ -23,9 +24,10 @@ organization resources.
 ``organizations create``
 ========================
 
-Creates a new organization.
+.. note::
 
-The user that creates the organization will be assigned the ``org_admin`` role for the organization.
+   The user that creates the organization will be assigned the ``org_admin``
+   role for the organization.
 
 .. argparse::
    :module: croud.__main__
@@ -49,8 +51,6 @@ Example
 ``organizations list``
 ======================
 
-Lists all organizations the user is a member of.
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -72,8 +72,6 @@ Example
 
 ``organizations edit``
 ======================
-
-Edits an existing organization.
 
 .. argparse::
    :module: croud.__main__
@@ -97,8 +95,6 @@ Example
 
 ``organizations delete``
 ========================
-
-Deletes an existing organization.
 
 .. argparse::
    :module: croud.__main__
@@ -126,25 +122,18 @@ Example
    :prog: croud
    :path: organizations auditlogs
    :nosubcommands:
+   :nodescription:
 
 
 ``organizations auditlogs list``
 --------------------------------
-
-Lists all auditlog events for a given organization.
 
 .. note::
 
    This command is only available for organization admins and superusers.
 
    The full context for each auditlog event is available through the JSON
-   output format:
-
-   .. code-block:: console
-
-      sh$ croud organizations auditlogs list \
-          --org-id f6c39580-5719-431d-a508-0cee4f9e8209 \
-          --output-fmt json
+   output format: ``--output-fmt json``.
 
 .. argparse::
    :module: croud.__main__
@@ -153,7 +142,7 @@ Lists all auditlog events for a given organization.
    :path: organizations auditlogs list
 
 Example
-.......
+~~~~~~~
 
 .. code-block:: console
 
@@ -178,12 +167,10 @@ Example
    :prog: croud
    :path: organizations users
    :nosubcommands:
-
+   :nodescription:
 
 ``organizations users add``
 ---------------------------
-
-Adds a user to an organization.
 
 .. note::
 
@@ -215,8 +202,6 @@ Example
 ``organizations users list``
 ----------------------------
 
-Lists all users that are admins or members of an organization.
-
 .. note::
 
    This command is only available for organization admins and superusers.
@@ -228,7 +213,7 @@ Lists all users that are admins or members of an organization.
    :path: organizations users list
 
 Example
-.......
+~~~~~~~
 
 .. code-block:: console
 
@@ -243,8 +228,6 @@ Example
 
 ``organizations users remove``
 ------------------------------
-
-Removes a user from an organization.
 
 .. note::
 
@@ -276,23 +259,25 @@ Example
    :prog: croud
    :path: organizations files
    :nosubcommands:
+   :nodescription:
 
 
 ``organizations files list``
 ----------------------------
 
-Lists all files uploaded to an organization. The files can then be used as
-data sources for data import with the ``croud clusters import-jobs create from-file`` command.
-
 .. note::
 
    This command is only available for organization admins and superusers.
+
+Lists all files uploaded to an organization. The files can then be used as
+data sources for data import with the ``croud clusters import-jobs create from-file`` command.
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: organizations files list
+   :nodescription:
 
 Example
 ~~~~~~~
@@ -307,11 +292,22 @@ Example
    | 9b5d438f-036c-410f-b6f4-9adfb1feb252 | nyc_taxi            | UPLOADED |
    +--------------------------------------+---------------------+----------+
 
+``organizations files create``
+------------------------------
+
+.. note::
+
+   This command is only available for organization admins and superusers.
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: organizations files create
+
 
 ``organizations files delete``
 ------------------------------
-
-Deletes a file uploaded to an organization.
 
 .. note::
 
@@ -337,8 +333,6 @@ Example
 ``organizations files get``
 ------------------------------
 
-Gets the details of a file uploaded to an organization, including a pre-signed URL for downloading the file.
-
 .. note::
 
    This command is only available for organization admins and superusers.
@@ -363,8 +357,6 @@ Example
    | 327ad0e6-607f-4f99-a4cc-c1e98bf28e4d | nyc_taxi | UPLOADED | 107.56 MiB  | https://cratedb-file-uploads.s3.amazonaws.com/some/download |
    +--------------------------------------+----------+----------+-------------+-------------------------------------------------------------+
 
-
-
 ``organizations secrets``
 =========================
 
@@ -374,12 +366,11 @@ Example
    :prog: croud
    :path: organizations secrets
    :nosubcommands:
+   :nodescription:
 
 
 ``organizations secrets list``
 ------------------------------
-
-Lists all secrets for a given organization.
 
 .. note::
 
@@ -408,8 +399,6 @@ Example
 ``organizations secrets delete``
 --------------------------------
 
-Deletes a secret from an organization.
-
 .. note::
 
    This command is only available for organization admins and superusers.
@@ -433,8 +422,6 @@ Example
 
 ``organizations secrets create``
 --------------------------------
-
-Creates a new secret for an organization.
 
 .. note::
 
@@ -468,22 +455,20 @@ Example
 ``organizations credits``
 =========================
 
+Credits represent a pre-paid amount of money that can be used to pay for CrateDB Cloud
+resources. They can be created by superusers and applied to any organization, and are
+typically used for free trials or promotional credits.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: organizations credits
    :nosubcommands:
-
+   :nodescription:
 
 ``organizations credits list``
 ------------------------------
-
-Lists all credits for a given organization.
-
-Credits represent a pre-paid amount of money that can be used to pay for CrateDB Cloud
-resources. They can be created by superusers and applied to any organization, and are
-typically used for free trials or promotional credits.
 
 .. note::
 
@@ -508,11 +493,8 @@ Example
    | f8207787-8458-4cab-94c1-4ca84a702154 | $300.0          | $300.0           | 2023-12-24T12:34:56 | Free Trial | ACTIVE   |
    +--------------------------------------+-----------------+------------------+---------------------+------------+----------+
 
-
 ``organizations credits create``
 --------------------------------
-
-Creates a new credit for an organization.
 
 .. note::
 
@@ -545,8 +527,6 @@ Example
 ``organizations credits edit``
 ------------------------------
 
-Edits an existing credit for an organization.
-
 .. note::
 
    This command is only available for superusers.
@@ -558,7 +538,7 @@ Edits an existing credit for an organization.
    :path: organizations credits edit
 
 Example
--------
+~~~~~~~
 
 .. code-block:: console
 
@@ -576,8 +556,6 @@ Example
 
 ``organizations credits expire``
 --------------------------------
-
-Expires a credit for an organization, making it unusable for paying for CrateDB Cloud resources.
 
 .. note::
 
@@ -609,11 +587,10 @@ Example
    :prog: croud
    :path: organizations customer
    :nosubcommands:
+   :nodescription:
 
 ``organizations customer get``
 ------------------------------
-
-Gets the customer information for an organization. This includes the billing informations.
 
 .. note::
 
@@ -641,8 +618,6 @@ Example
 
 ``organizations customer edit``
 -------------------------------
-
-Edits the customer information for an organization.
 
 .. note::
 

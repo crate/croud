@@ -14,12 +14,10 @@ permissions than the user they belong to.
    :prog: croud
    :path: api-keys
    :nosubcommands:
-
+   :nodescription:
 
 ``api-keys list``
 =================
-
-Lists the API keys that belong to the currently logged in user.
 
 .. argparse::
    :module: croud.__main__
@@ -44,7 +42,9 @@ Example
 ``api-keys create``
 ===================
 
-Creates a new API key for the current user. It displays its secret.
+.. tip::
+
+   Make sure to store the secret of the API key, as it will not be shown again after the creation.
 
 .. argparse::
    :module: croud.__main__
@@ -70,8 +70,6 @@ Example
 ``api-keys delete``
 ===================
 
-    Deletes the API key specified that belongs to the current user.
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -90,8 +88,6 @@ Example
 
 ``api-keys edit``
 =================
-
-Allows activating or deactivating an existing API key.
 
 .. argparse::
    :module: croud.__main__

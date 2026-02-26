@@ -18,12 +18,11 @@ The ``clusters`` command lets you manage your CrateDB clusters.
    :prog: croud
    :path: clusters
    :nosubcommands:
+   :nodescription:
 
 
 ``clusters list``
 =================
-
-Lists all clusters you have access to.
 
 .. argparse::
    :module: croud.__main__
@@ -46,8 +45,6 @@ Example
 
 ``clusters deploy``
 ===================
-
-Deploys a new cluster.
 
 .. tip::
 
@@ -143,8 +140,6 @@ Example
 ``clusters scale``
 ==================
 
-Scale an existing cluster up or down by changing the number of nodes.
-
 .. note::
 
    The ``--unit`` argument specifies the total number of nodes desired, rather than
@@ -187,8 +182,6 @@ Example
 ``clusters upgrade``
 ====================
 
-Upgrade the CrateDB version of an existing cluster.
-
 .. note::
 
    This command will wait for the cluster upgrade to finish or fail.
@@ -226,8 +219,6 @@ Example
 ``clusters delete``
 ===================
 
-Deletes an existing cluster.
-
 .. note::
 
    After deleting a cluster, all backups are removed as well, however, you can reach
@@ -253,7 +244,7 @@ Example
 ``clusters restart-node``
 =========================
 
-Restarts a node in the cluster.
+Restart a node in a CrateDB cluster.
 
 Please wait for the node to be restarted before
 restarting another one. Restarting a node might cause downtime on single-node clusters.
@@ -263,6 +254,7 @@ restarting another one. Restarting a node might cause downtime on single-node cl
    :func: get_parser
    :prog: croud
    :path: clusters restart-node
+   :nodescription:
 
 Example
 -------
@@ -283,20 +275,21 @@ Example
 ``clusters set-deletion-protection``
 ====================================
 
-Changes the deletion protection status of a cluster.
-
-When deletion protection is enabled, the cluster cannot be deleted until the
-protection is removed. This can help prevent accidental deletions of clusters.
-
 .. note::
 
    This command is only available for organization admins and superusers.
+
+Change the deletion protection status of a cluster.
+
+When deletion protection is enabled, the cluster cannot be deleted until the
+protection is removed. This can help prevent accidental deletions of clusters.
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: clusters set-deletion-protection
+   :nodescription:
 
 Example
 -------
@@ -316,6 +309,10 @@ Example
 ``clusters set-ip-whitelist``
 =============================
 
+.. note::
+
+   This command will wait for the operation to finish or fail.
+
 Changes the IP Network whitelist of a cluster.
 
 The whitelist is a list of CIDR blocks that are allowed to access the cluster.
@@ -324,15 +321,12 @@ When you set a new whitelist, it will overwrite the existing one. If you want to
 or remove CIDR blocks from the existing whitelist, you can first get the current
 whitelist with ``cloud clusters get <cluster_id>`` command.
 
-.. note::
-
-   This command will wait for the operation to finish or fail.
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: clusters set-ip-whitelist
+   :nodescription:
 
 Example
 -------
@@ -361,9 +355,7 @@ Example
 ``clusters expand-storage``
 ===========================
 
-Expands the storage of an existing cluster.
-
-.. NOTE::
+.. note::
 
     This command will wait for the operation to finish or fail.
 
@@ -406,21 +398,22 @@ Example
 ``clusters set-suspended-state``
 ================================
 
-Suspends or resumes an existing cluster.
+.. note::
+
+   This command will wait for the operation to finish or fail.
+
+Suspend or resume a CrateDB cluster.
 
 When a cluster is suspended, it is not running and cannot be accessed, however storage
 is still retained. This can help save costs when you don't need to use the cluster
 for a while. When you want to use the cluster again, you can resume it.
-
-.. note::
-
-   This command will wait for the operation to finish or fail.
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: clusters set-suspended-state
+   :nodescription:
 
 Example
 -------
@@ -448,10 +441,7 @@ Example
 ``clusters set-product``
 ========================
 
-Sets a new product for an existing cluster, which can be used to change the
-compute (vCPU and RAM) of the cluster.
-
-.. NOTE::
+.. note::
 
     This command will wait for the operation to finish or fail.
 
@@ -491,22 +481,23 @@ Example
 ``clusters set-backup-schedule``
 ================================
 
-Sets a new backup schedule for an existing cluster.
-
-More information about the backup schedule can be found in
-the `backup documentation`_.
-
-.. NOTE::
+.. note::
 
     This command will wait for the operation to finish or fail.
 
     It is only available to organization and project admins and superusers.
+
+Change the cluster’s backup schedule.
+
+More information about the backup schedule can be found in
+the `backup documentation`_.
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: clusters set-backup-schedule
+   :nodescription:
 
 Example
 -------
@@ -543,12 +534,13 @@ the `backup documentation`_.
    :prog: croud
    :path: clusters snapshots
    :nosubcommands:
+   :nodescription:
 
 
 ``clusters snapshots list``
 ---------------------------
 
-Lists all snapshots of a cluster.
+List all snapshots of a cluster.
 
 .. argparse::
    :module: croud.__main__
@@ -573,12 +565,6 @@ Example
 ``clusters snapshots restore``
 ------------------------------
 
-Restores a snapshot of a cluster.
-
-It is possible to partially restore the snapshot by specifying the type of data
-to restore. For example, you can choose to only restore the data and not the metadata,
-or just a table.
-
 .. note::
 
     This command will wait for the operation to finish or fail.
@@ -590,11 +576,18 @@ or just a table.
    It is possible to restore a snapshot from a cluster into another cluster.
    The source and target clusters must be in the same organization and region.
 
+Restore a snapshot of a cluster.
+
+It is possible to partially restore the snapshot by specifying the type of data
+to restore. For example, you can choose to only restore the data and not the metadata,
+or just a table.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: clusters snapshots restore
+   :nodescription:
 
 Example
 ~~~~~~~
@@ -623,8 +616,6 @@ Example
 
 ``clusters subscription update``
 --------------------------------
-
-Transfers a cluster between subscriptions.
 
 .. note::
 

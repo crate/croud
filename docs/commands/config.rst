@@ -14,8 +14,6 @@ need different profiles if you want to authenticate as different users or use di
 ``config show``
 ===============
 
-You can show your full configuration, like so:
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -45,8 +43,6 @@ Example
 ``config profiles current``
 ===========================
 
-You can list your current profile, like so:
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -69,8 +65,6 @@ Example
 ``config profiles use``
 =======================
 
-You can switch to a different profile, like so:
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -88,8 +82,6 @@ Example
 ``config profiles add``
 =======================
 
-Add a new profile to your configuration, like so:
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -106,8 +98,6 @@ Example
 
 ``config profiles remove``
 ==========================
-
-Remove a profile from your configuration, like so:
 
 .. argparse::
    :module: croud.__main__

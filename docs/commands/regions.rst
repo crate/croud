@@ -7,8 +7,6 @@
 ``regions list``
 ================
 
-Prints the available regions to the user.
-
 .. note::
 
    The region is specified for each profile in the :doc:`../configuration` file.
@@ -39,8 +37,6 @@ Example
 ``regions create``
 ==================
 
-Creates a new Edge region.
-
 .. warning::
 
    An Edge region allows you to host CrateDB instances in your own infrastructure
@@ -50,11 +46,14 @@ Creates a new Edge region.
 
    Organization admins can create Edge regions that belong to an organization.
 
+Create a new Edge region.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: regions create
+   :nodescription:
 
 Example
 -------
@@ -77,8 +76,6 @@ Example
 ``regions delete``
 ==================
 
-Deletes an existing Edge region.
-
 .. warning::
 
    Edge regions allow you to host CrateDB instances in your own infrastructure however
@@ -90,11 +87,14 @@ Deletes an existing Edge region.
     Deleting a region does not imply that all the Kubernetes resources will be automatically deleted.
     This command only unregisters the region from Crate Cloud.
 
+Delete an existing Edge region.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: regions delete
+   :nodescription:
 
 Example
 -------

@@ -4,8 +4,6 @@
 ``me``
 ======
 
-Print the username and email address of the currently authenticated user:
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -28,8 +26,6 @@ Example
 
 ``me edit``
 ===========
-
-Change your own email address:
 
 .. argparse::
    :module: croud.__main__

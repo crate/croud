@@ -28,6 +28,7 @@ authentication is used, but the login provider can be changed using the
    :func: get_parser
    :prog: croud
    :path: login
+   :nodescription:
 
 .. note::
 
@@ -49,5 +50,6 @@ before interacting with your account or its resources.
    :func: get_parser
    :prog: croud
    :path: logout
+   :nodescription:
 
 .. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/

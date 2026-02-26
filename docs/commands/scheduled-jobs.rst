@@ -19,12 +19,11 @@ More information about automation can be found in the `CrateDB documentation`_.
    :prog: croud
    :path: clusters scheduled-jobs
    :nosubcommands:
+   :nodescription:
 
 
 ``clusters scheduled-jobs create``
 ==================================
-
-Creates a scheduled sql job for a cluster.
 
 .. argparse::
    :module: croud.__main__
@@ -52,8 +51,6 @@ Example
 ``clusters scheduled-jobs list``
 ================================
 
-Lists the scheduled sql jobs for a cluster.
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -75,8 +72,6 @@ Example
 
 ``clusters scheduled-jobs logs``
 ================================
-
-Lists the past executions of a scheduled sql job.
 
 .. argparse::
    :module: croud.__main__
@@ -100,8 +95,6 @@ Example
 
 ``clusters scheduled-jobs edit``
 ================================
-
-Edits a scheduled sql job for a cluster.
 
 .. argparse::
    :module: croud.__main__
@@ -129,8 +122,6 @@ Example
 
 ``clusters scheduled-jobs delete``
 ==================================
-
-Deletes a scheduled sql job for a cluster.
 
 .. argparse::
    :module: croud.__main__

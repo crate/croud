@@ -30,6 +30,7 @@ More information about exporting data can be found in the `export data documenta
    :prog: croud
    :path: clusters import-jobs
    :nosubcommands:
+   :nodescription:
 
 
 
@@ -46,8 +47,6 @@ More information about exporting data can be found in the `export data documenta
 
 ``clusters import-jobs create from-url``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Imports data from an arbitrary URL.
 
 .. note::
 
@@ -79,20 +78,21 @@ Example
 ``clusters import-jobs create from-file``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Imports data from a local file.
-
-The file can be uploaded beforehand using the ``croud organizations files`` command,
-or you can specify a local file path.
-
 .. note::
 
    This command will wait for the operation to finish or fail.
+
+Create a data import job on the specified cluster from a file.
+
+The file can be uploaded beforehand using the ``croud organizations files`` command,
+or you can specify a local file path.
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: clusters import-jobs create from-file
+   :nodescription:
 
 Example
 ^^^^^^^
@@ -113,8 +113,6 @@ Example
 
 ``clusters import-jobs create from-s3``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Imports data from an AWS S3-compatible service.
 
 .. note::
 
@@ -145,8 +143,6 @@ Example
 
 ``clusters import-jobs create from-azure-blob-storage``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Imports data from Azure Blob Storage.
 
 .. note::
 
@@ -179,8 +175,6 @@ Example
 ``clusters import-jobs list``
 -----------------------------
 
-Lists all import jobs for a cluster.
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -205,8 +199,6 @@ Example
 ``clusters import-jobs delete``
 -------------------------------
 
-Deletes an import job.
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -214,7 +206,7 @@ Deletes an import job.
    :path: clusters import-jobs delete
 
 Example
-^^^^^^^
+~~~~~~~
 
 .. code-block:: console
 
@@ -236,9 +228,6 @@ Example
 
 ``clusters export-jobs create``
 -------------------------------
-
-Exports data from a CrateDB cluster to an external location. The exported data can be downloaded
-from a URL once the export job is completed or saved on your local filesystem.
 
 .. note::
 
@@ -275,8 +264,6 @@ Example
 ``clusters export-jobs list``
 -----------------------------
 
-Lists all export jobs for a cluster.
-
 .. argparse::
    :module: croud.__main__
    :func: get_parser
@@ -300,8 +287,6 @@ Example
 
 ``clusters export-jobs delete``
 -------------------------------
-
-Deletes an export job.
 
 .. argparse::
    :module: croud.__main__
