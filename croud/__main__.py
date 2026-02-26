@@ -161,9 +161,9 @@ import_job_create_common_args = [
     ),
     Argument(
         "--create-table",
-        type=lambda x: asbool(x),  # noqa
+        type=lambda x: asbool(x),
         required=False,
-        choices=["true", "false"],
+        choices=[True, False],
         help="Whether the table should be created automatically"
         " if it does not exist. If true new columns will also be added when the data"
         " requires them.",
@@ -611,7 +611,7 @@ command_tree = {
                     Argument(
                         "--value", type=lambda x: asbool(x),
                         required=True, help="The deletion protection status",
-                        choices=["true", "false"],
+                        choices=[True, False],
                     ),
                 ],
                 "resolver": clusters_set_deletion_protection,
@@ -656,7 +656,7 @@ command_tree = {
                     Argument(
                         "--value", type=lambda x: asbool(x),
                         required=True, help="The suspended status.",
-                        choices=["true", "false"],
+                        choices=[True, False],
                     ),
                 ],
                 "resolver": clusters_set_suspended,
