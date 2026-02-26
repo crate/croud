@@ -175,7 +175,9 @@ def add_subparser(parser, tree, name="__root__"):
         parser.set_defaults(resolver=help_print_factory(parser))
         subparsers = parser.add_subparsers()
         for _cmd, _tree in tree["commands"].items():
-            sub = subparsers.add_parser(_cmd, help=_tree.get("help"))
+            sub = subparsers.add_parser(
+                _cmd, help=_tree.get("help"), description=_tree.get("help")
+            )
             add_subparser(sub, _tree, sub.prog)
     if "resolver" in tree:
         add_default_args(parser, omit=tree.get("omit", set([])))

@@ -34,15 +34,14 @@ You must authenticate before using most commands. To log in:
 
 .. code-block:: console
 
-    sh$ croud login
+    sh$ croud login --idp cognito
 
 This will open a browser window to authenticate with your CrateDB Cloud account.
 
 .. note::
 
-    You might want to use the ``--idp`` (Identity Provider) argument to specify
+    You might want to use an other ``--idp`` (Identity Provider) argument to specify
     a different authentication method, like ``azuread``, ``github`` or ``google``.
-    By default, username and password authentication is used.
 
 .. TIP::
 

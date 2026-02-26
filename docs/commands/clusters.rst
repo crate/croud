@@ -611,6 +611,34 @@ Example
    | 2022-12-10 12:34:56    | system_backup_20221002123456  | 20221210123456    |
    +------------------------+-------------------------------+-------------------+
 
+``clusters subscription``
+=========================
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters subscription
+   :nosubcommands:
+
+``clusters subscription update``
+--------------------------------
+
+Transfers a cluster between subscriptions.
+
+.. note::
+
+   This command is only available for superusers.
+
+   Not all subscriptions are eligible to have clusters transferred to them.
+   Please refer to internal documentation for more details.
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters subscription update
+
 .. _here: https://hub.docker.com/r/crate/crate/tags
 .. _support: https://support.cratedb.com
 .. _string delimitation: https://en.wikipedia.org/wiki/Delimiter

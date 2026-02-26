@@ -60,7 +60,6 @@ from croud.clusters.commands import (
     export_jobs_list,
     get_scheduled_job_log,
     get_scheduled_jobs,
-    import_job_progress,
     import_jobs_create_from_azure_blob_storage,
     import_jobs_create_from_file,
     import_jobs_create_from_s3,
@@ -277,7 +276,7 @@ command_tree = {
         },
     },
     "projects": {
-        "help": "Manage projects.",
+        "help": "Manage projects. It's an internal resource that contains clusters.",
         "commands": {
             "create": {
                 "help": "Create a project in the specified organization and region.",
@@ -335,7 +334,7 @@ command_tree = {
                 "resolver": project_delete,
             },
             "edit": {
-                "help": "Edit the specified project.",
+                "help": "Rename the specified project.",
                 "extra_args": [
                     Argument(
                         "-p", "--project-id", type=str, required=True,
@@ -363,7 +362,7 @@ command_tree = {
             "list": {
                 "help": (
                     "List all projects the current user has access to in "
-                    "the specified region."
+                    "the specified organization."
                 ),
                 "extra_args": [
                     Argument(
@@ -426,7 +425,7 @@ command_tree = {
         },
     },
     "clusters": {
-        "help": "Manage clusters.",
+        "help": "Manage CrateDB clusters.",
         "commands": {
             "get": {
                 "help": (
@@ -661,7 +660,8 @@ command_tree = {
                 "resolver": clusters_set_suspended,
             },
             "set-product": {
-                "help": "Change the cluster's product.",
+                "help": "Change the cluster's product, which can be used to "
+                        "change the compute (vCPU and RAM) of the cluster.",
                 "extra_args": [
                     Argument(
                         "--cluster-id", type=str, required=True,
@@ -693,7 +693,7 @@ command_tree = {
                 "resolver": clusters_set_backup_schedule,
             },
             "snapshots": {
-                "help": "View and restore snapshots",
+                "help": "View and restore snapshots (backups)",
                 "commands": {
                     "list": {
                         "help": "List the cluster snapshots available.",
@@ -704,7 +704,8 @@ command_tree = {
                             ),
                             Argument(
                                 "--days-ago", type=int, required=False, default=2,
-                                help="Number of days to look back.",
+                                help="Number of days to look back. "
+                                     "(default: %(default)s)",
                             ),
                         ],
                         "resolver": clusters_snapshots_list,
@@ -783,13 +784,12 @@ command_tree = {
                 },
             },
             "import-jobs": {
-                "help": "Manage data import jobs.",
+                "help": "Manage data import into your CrateDB cluster.",
                 "commands": {
                     "delete": {
-                        "help": "Cancels an already running data import job that has "
-                                "not finished yet. "
-                                "If the job has already finished it deletes it from "
-                                "the job history.",
+                        "help": "Delete a data import job from the job history if it "
+                                "has already finished. Otherwise, cancel the running "
+                                "import job.",
                         "extra_args": [
                             Argument(
                                 "--cluster-id", type=str, required=True,
@@ -798,7 +798,7 @@ command_tree = {
                             Argument(
                                 "--import-job-id", type=str,
                                 required=True,
-                                help="The ID of the Import Job."
+                                help="The ID of the import job."
                             ),
                         ],
                         "resolver": import_jobs_delete,
@@ -849,7 +849,7 @@ command_tree = {
                                              "will be used. If not specified then "
                                              "``--file-id`` must be specified. "
                                              "Please note the file will become visible "
-                                             "under `croud organizations files list`."
+                                             "under ``croud organizations files list``."
                                     ),
                                 ] + import_job_create_common_args,
                                 "resolver": import_jobs_create_from_file,
@@ -912,46 +912,15 @@ command_tree = {
                             },
                         },
                     },
-                    "progress": {
-                        "help": "Shows the progress of an import job.",
-                        "extra_args": [
-                            Argument(
-                                "--cluster-id", type=str, required=True,
-                                help="The cluster the import jobs belong to."
-                            ),
-                            Argument(
-                                "--import-job-id", type=str,
-                                required=True,
-                                help="The ID of the Import Job."
-                            ),
-                            Argument(
-                                "--limit", type=str, required=False,
-                                help="The number of files returned."
-                                     "Use keywork 'ALL' to have no limit applied."
-                            ),
-                            Argument(
-                                "--offset", type=int, required=False,
-                                help="The offset to skip before beginning to "
-                                     "return the files."
-                            ),
-                            Argument(
-                                "--summary", type=lambda x: asbool(x),
-                                required=False,
-                                help="Show only global progress."
-                            ),
-                        ],
-                        "resolver": import_job_progress,
-                    },
                 },
             },
             "export-jobs": {
-                "help": "Manage data export jobs.",
+                "help": "Manage data export from your CrateDB cluster into a file.",
                 "commands": {
                     "delete": {
-                        "help": "Cancels an already running data export job that has "
-                                "not finished yet. "
-                                "If the job has already finished it deletes it from "
-                                "the job history.",
+                        "help": "Delete a data export job from the job history if it "
+                                "has already finished. Otherwise, cancel the running "
+                                "export job.",
                         "extra_args": [
                             Argument(
                                 "--cluster-id", type=str, required=True,
@@ -1057,7 +1026,7 @@ command_tree = {
                         "resolver": get_scheduled_jobs,
                     },
                     "logs": {
-                        "help": "Logs of a scheduled sql job.",
+                        "help": "List the past executions of a scheduled sql job.",
                         "extra_args": [
                             Argument(
                                 "--job-id", type=str, required=True,
@@ -1121,7 +1090,9 @@ command_tree = {
         },
     },
     "products": {
-        "help": "Manage Products.",
+        "help": "Manage products. They represent the compute configuration and "
+                "the scale and storage options that you can choose from when "
+                "creating a cluster.",
         "commands": {
             "list": {
                 "help": "List all available products in the current region.",
@@ -1180,7 +1151,8 @@ command_tree = {
                     Argument(
                         "--plan-type", type=int, required=False,
                         choices=[1, 2, 3, 4, 5, 6],
-                        help="The new support plan to use for the organization.",
+                        help="The new support plan to use for the organization. "
+                             "Argument is for superusers only.",
                     ),
                     Argument(
                         "--org-id", type=str, required=False,
@@ -1364,7 +1336,8 @@ command_tree = {
                 }
             },
             "files": {
-                "help": "Manage organization's files.",
+                "help": "Manage organization's uploaded files. The files can then be "
+                        "used as data sources for data import jobs.",
                 "commands": {
                     "get": {
                         "help": (
@@ -1518,7 +1491,7 @@ command_tree = {
                 "help": "Manage organization's billing info.",
                 "commands" : {
                     "get": {
-                        "help": "Gets the organization's customer info",
+                        "help": "Gets the organization's billing info",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
@@ -1528,7 +1501,7 @@ command_tree = {
                         "resolver": org_customer_get,
                     },
                     "edit": {
-                        "help": "Edits the organization's customer info.",
+                        "help": "Edits the organization's billing info.",
                         "extra_args": [
                             Argument(
                                 "--org-id", type=str, required=True,
@@ -1585,7 +1558,7 @@ command_tree = {
         "help": "Manage users.",
         "commands": {
             "list": {
-                "help": "List all users.",
+                "help": "List all users. The command is for superusers only.",
                 "extra_args": [
                     Argument(
                         "--no-roles", action="store_true",
@@ -1678,7 +1651,8 @@ command_tree = {
                 "resolver": regions_list,
             },
             "create": {
-                "help": "Create a new region.",
+                "help": "Create a new Edge region. The feature is not maintained "
+                        "and we don't recommend using it.",
                 "resolver": regions_create,
                 "extra_args": [
                     Argument(
@@ -1702,7 +1676,8 @@ command_tree = {
                 ],
             },
             "delete": {
-                "help": "Delete an existing edge region.",
+                "help": "Delete an existing Edge region. The feature is not maintained "
+                        "and we don't recommend using it.",
                 "resolver": regions_delete,
                 "extra_args": [
                     Argument(
@@ -1715,7 +1690,8 @@ command_tree = {
         }
     },
     "subscriptions": {
-        "help": "Manage subscriptions.",
+        "help": "Manage subscriptions. Subscriptions are the configured payment "
+                "methods for an organization.",
         "commands": {
             "create": {
                 "help": ("Create a subscription in the specified organization. Command "
@@ -1746,8 +1722,7 @@ command_tree = {
                 "resolver": subscriptions_get,
             },
             "delete": {
-                "help": "For Stripe or contract subscriptions only. Cancels the "
-                        "specified subscription. "
+                "help": "Cancel a Stripe or contract subscription. "
                         "CAVEAT EMPTOR! "
                         "This will delete any clusters running in this subscription.",
                 "extra_args": [
@@ -1772,7 +1747,8 @@ command_tree = {
         },
     },
     "cloud-configurations": {
-        "help": "Manage configurations of CrateDB Cloud.",
+        "help": "Manage configurations of CrateDB Cloud. This command is for "
+                "superusers only.",
         "commands": {
             "set": {
                 "help": (
@@ -1849,7 +1825,9 @@ command_tree = {
 
 def get_parser():
     tree = {
-        "help": "A command line interface for CrateDB Cloud.",
+        "help": "A command line interface for CrateDB Cloud. More information about "
+        "CrateDB Cloud CLI can be found at "
+        "https://cratedb.com/docs/cloud/cli/en/latest/.",
         "commands": command_tree,
     }
     return create_parser(tree)
