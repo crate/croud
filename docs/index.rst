@@ -11,7 +11,7 @@ Croud allows you to manage various CrateDB Cloud resources, such as clusters,
 projects, organizations, users, and more:
 
 - **Organizations** are the top-level entities in CrateDB Cloud. They can contain multiple
-  CrateDB clusters. It is where the organization admins can manage users, billing,  etc.
+  CrateDB clusters. It is where the organization admins can manage users, billing, etc.
 - **Clusters** are the main resources in CrateDB Cloud. They represent the actual CrateDB
   instances that you can deploy, manage, scale and monitor.
 - **Projects** are internal resources that contain clusters. They are automatically

@@ -7,7 +7,7 @@
 The ``projects`` command allows you to create, modify and view
 projects.
 
-Projects are internal resources that contains the clusters.
+Projects are internal resources that contain the clusters.
 They are automatically created when you create a cluster, but you can also
 create them manually and assign clusters to them.
 
@@ -26,7 +26,7 @@ Create a project in the specified organization and region.
 
 .. warning::
 
-   Some optional arguments and for Edge regions only. An Edge region allows you to
+   Some optional arguments are for Edge regions only. An Edge region allows you to
    host CrateDB instances in your own infrastructure however this feature is not
    maintained anymore. It is not recommended to use it.
 
