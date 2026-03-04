@@ -1493,11 +1493,11 @@ command_tree = {
             },
             "customer": {
                 "help": "Manage organization's customer information."
-                        "This includes the billing informations",
+                        "This includes the billing information",
                 "commands" : {
                     "get": {
                         "help": "Get the customer information for an organization."
-                                "This includes the billing informations"
+                                "This includes the billing information"
                                 ".",
                         "extra_args": [
                             Argument(

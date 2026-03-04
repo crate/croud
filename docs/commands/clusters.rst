@@ -61,7 +61,7 @@ Example
 
 .. warning::
 
-   Some optional arguments and for Edge regions only. An Edge region allows you to
+   Some optional arguments are for Edge regions only. An Edge region allows you to
    host CrateDB instances in your own infrastructure however this feature is not
    maintained anymore. It is not recommended to use it.
 

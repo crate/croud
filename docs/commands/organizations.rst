@@ -457,7 +457,7 @@ Example
 
 Credits represent a pre-paid amount of money that can be used to pay for CrateDB Cloud
 resources. They can be created by superusers and applied to any organization, and are
-typically used for free trials or promotional credits.
+typically used for promotional credits or free trials.
 
 .. argparse::
    :module: croud.__main__

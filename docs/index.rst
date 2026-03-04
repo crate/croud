@@ -16,7 +16,7 @@ projects, organizations, users, and more:
   instances that you can deploy, manage, scale and monitor.
 - **Projects** are internal resources that contain clusters. They are automatically
   created when you create a cluster, but you can also create them manually and assign
-  clusters to them. A project can contain many clusters but we recommand using one
+  clusters to them. A project can contain many clusters but we recommend using one
   project per cluster for better organization. You can assign user permissions on the
   project level to manage access to clusters.
 - **Users** are the individual accounts that can access CrateDB Cloud. They can have
@@ -25,7 +25,7 @@ projects, organizations, users, and more:
 - **Subscriptions** represent the billing plans for your CrateDB Cloud resources. They
   can be free (e.g., free clusters) or paid (e.g., Stripe, Marketplace or contract
   subscriptions).
-- **Regions** represent the geographical locations where you can deploy your CrateDB
+- **Regions** represent the geographic locations where you can deploy your CrateDB
   clusters. They can be public (managed by CrateDB Cloud) or private (hosted in your
   own infrastructure, also known as Edge regions. Please note that this feature is not
   maintained anymore and we don't recommend to use it).
@@ -33,7 +33,7 @@ projects, organizations, users, and more:
   headless environments.
 - **File import** (import/export jobs) allows you to import data into your CrateDB
   clusters from various file formats, such as CSV or JSON.
-- **Automation** (scheduled jobs) allows you schedule regular SQL queries execution
+- **Automation** (scheduled jobs) allows you to schedule regular SQL query execution
   in your CrateDB clusters.
 - **Products** represent the different offerings available in CrateDB Cloud.
 
