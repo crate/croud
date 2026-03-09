@@ -61,6 +61,7 @@ from croud.clusters.commands import (
     get_scheduled_job_log,
     get_scheduled_jobs,
     import_jobs_create_from_azure_blob_storage,
+    import_jobs_create_from_dynamodb,
     import_jobs_create_from_file,
     import_jobs_create_from_s3,
     import_jobs_create_from_url,
@@ -140,20 +141,6 @@ import_job_create_common_args = [
         help="The cluster the data will be imported into.",
     ),
     Argument(
-        "--file-format",
-        type=str,
-        required=True,
-        choices=["csv", "json", "parquet"],
-        help="The format of the structured data in the file.",
-    ),
-    Argument(
-        "--compression",
-        type=str,
-        required=False,
-        choices=["gzip"],
-        help="The compression method the file uses.",
-    ),
-    Argument(
         "--table",
         type=str,
         required=True,
@@ -167,6 +154,23 @@ import_job_create_common_args = [
         help="Whether the table should be created automatically"
         " if it does not exist. If true new columns will also be added when the data"
         " requires them.",
+    ),
+]
+
+import_job_create_common_file_args = [
+    Argument(
+        "--file-format",
+        type=str,
+        required=True,
+        choices=["csv", "json", "parquet"],
+        help="The format of the structured data in the file.",
+    ),
+    Argument(
+        "--compression",
+        type=str,
+        required=False,
+        choices=["gzip"],
+        help="The compression method the file uses.",
     ),
     Argument(
         "--transformations",
@@ -828,7 +832,8 @@ command_tree = {
                                         help="The URL the import file will be read "
                                              "from."
                                     ),
-                                ] + import_job_create_common_args,
+                                ] + import_job_create_common_args
+                                  + import_job_create_common_file_args,
                                 "resolver": import_jobs_create_from_url,
                             },
                             "from-file": {
@@ -852,7 +857,8 @@ command_tree = {
                                              "Please note the file will become visible "
                                              "under ``croud organizations files list``."
                                     ),
-                                ] + import_job_create_common_args,
+                                ] + import_job_create_common_args
+                                  + import_job_create_common_file_args,
                                 "resolver": import_jobs_create_from_file,
                             },
                             "from-s3": {
@@ -882,8 +888,60 @@ command_tree = {
                                         "--endpoint", type=str, required=False,
                                         help="An Amazon S3 compatible endpoint."
                                     ),
-                                ] + import_job_create_common_args,
+                                ] + import_job_create_common_args
+                                  + import_job_create_common_file_args,
                                 "resolver": import_jobs_create_from_s3,
+                            },
+                            "from-dynamodb": {
+                                "help": "Create a data import job on the specified "
+                                        "cluster from an Amazon DynamoDB compatible "
+                                        "location.",
+                                "extra_args": [
+                                    # Type S3 params
+                                    Argument(
+                                        "--ingestion-type", type=str,
+                                        choices=[
+                                            "IMPORT_ONLY",
+                                            "IMPORT_AND_CDC",
+                                            "CDC_ONLY"
+                                        ],
+                                        required=True,
+                                        help="Determines how to ingest the data. "
+                                             "IMPORT_ONLY will just ingest the data "
+                                             "and finish. CDC_ONLY will continuously "
+                                             "read CDC (Change Data Capture) events. "
+                                             "IMPORT_AND_CDC will first import the "
+                                             "data and then start listening for CDC "
+                                             "events."
+                                    ),
+                                    Argument(
+                                        "--aws-region", type=str, required=True,
+                                        help="The name of the AWS region where the "
+                                             "DynamoDB table is located."
+                                    ),
+                                    Argument(
+                                        "--dynamodb-table", type=str, required=True,
+                                        help="The name of the DynamoDB table."
+                                    ),
+                                    Argument(
+                                        "--kinesis-stream-name", type=str,
+                                        required=False,
+                                        help="The name of the Kinesis Stream that will "
+                                             "be used to read CDC events from. Only for"
+                                             " CDC mode."
+                                    ),
+                                    Argument(
+                                        "--secret-id", type=str, required=True,
+                                        help="The secret that contains the access key "
+                                             "and secret key needed to access the "
+                                             "table to be imported."
+                                    ),
+                                    Argument(
+                                        "--endpoint", type=str, required=False,
+                                        help="An AWS DynamoDB compatible endpoint."
+                                    ),
+                                ] + import_job_create_common_args,
+                                "resolver": import_jobs_create_from_dynamodb,
                             },
                             "from-azure-blob-storage": {
                                 "help": "Create a data import job on the specified "
@@ -908,7 +966,8 @@ command_tree = {
                                              "and secret key needed to access the file "
                                              "to be imported."
                                     ),
-                                ] + import_job_create_common_args,
+                                ] + import_job_create_common_args
+                                  + import_job_create_common_file_args,
                                 "resolver": import_jobs_create_from_azure_blob_storage,
                             },
                         },
@@ -972,7 +1031,7 @@ command_tree = {
                                 "--compression",
                                 type=str,
                                 required=False,
-                                choices=["gzip"],
+                                choices=["gzip", "none"],
                                 help="The compression method of the exported file.",
                             ),
                             Argument(

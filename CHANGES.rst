@@ -7,6 +7,8 @@ Unreleased
 
 - Updated documentation.
 
+- Added support for DynamoDB data jobs.
+
 1.15.0 - 2025/10/02
 ===================
 

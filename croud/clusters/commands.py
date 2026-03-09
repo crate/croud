@@ -200,6 +200,28 @@ def import_jobs_create_from_s3(args: Namespace) -> None:
     import_jobs_create(args, extra_payload=extra_body)
 
 
+def import_jobs_create_from_dynamodb(args: Namespace) -> None:
+    args.type = "dynamodb"
+    args.file_format = "dynamodb"
+    args.compression = "none"
+
+    extra_body = {
+        "dynamodb": {
+            "region": args.aws_region,
+            "table_name": args.dynamodb_table,
+            "secret_id": args.secret_id,
+        },
+    }
+    if args.endpoint:
+        extra_body["dynamodb"]["endpoint"] = args.endpoint
+    if args.kinesis_stream_name:
+        extra_body["dynamodb"]["kinesis_stream_name"] = args.kinesis_stream_name
+    if args.ingestion_type:
+        extra_body["ingestion_type"] = args.ingestion_type
+
+    import_jobs_create(args, extra_payload=extra_body)
+
+
 def import_jobs_create_from_azure_blob_storage(args: Namespace) -> None:
     extra_body = {
         "azureblob": {
@@ -269,9 +291,6 @@ def import_jobs_create(args: Namespace, extra_payload: Dict[str, Any]) -> None:
 
     if args.create_table is not None:
         body["destination"]["create_table"] = args.create_table
-
-    if args.transformations:
-        body["schema"] = {"select": args.transformations}
 
     if extra_payload:
         body.update(extra_payload)
