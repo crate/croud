@@ -59,6 +59,10 @@ A **Project Admin** has full control over a specific project:
 * Can add or remove users from the project (as long as the user is already part of the organization).
 * Full cluster administration rights within the project.
 
+.. note::
+
+    An Organization Admin is automatically a Project Admin in all projects within the organization.
+
 .. _project-member:
 
 Project Member
@@ -66,7 +70,11 @@ Project Member
 
 A **Project Member** has view-only access within a project:
 
-* Can view project settings, clusters, users, and deployed products.
-* Cannot perform administrative tasks.
+* Can view clusters within the project.
+* Cannot perform any administrative tasks.
+
+.. note::
+
+    An Organization Member is automatically a Project Member in all projects within the organization.
 
 .. _CrateDB Cloud: https://crate.io/products/cratedb-cloud/

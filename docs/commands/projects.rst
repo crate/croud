@@ -7,21 +7,35 @@
 The ``projects`` command allows you to create, modify and view
 projects.
 
+Projects are internal resources that contain the clusters.
+They are automatically created when you create a cluster, but you can also
+create them manually and assign clusters to them.
+
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: projects
    :nosubcommands:
+   :nodescription:
 
 ``projects create``
 ===================
+
+Create a project in the specified organization and region.
+
+.. warning::
+
+   Some optional arguments are for Edge regions only. An Edge region allows you to
+   host CrateDB instances in your own infrastructure however this feature is not
+   maintained anymore. It is not recommended to use it.
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: projects create
+   :nodescription:
 
 Example
 -------
@@ -92,11 +106,11 @@ Example
 .. code-block:: console
 
    sh$ croud projects list
-   +--------------------------------------+------------+--------------+--------------------------------------+
-   | id                                   | name       | region       | organizationId                       |
-   |--------------------------------------+------------+--------------+--------------------------------------|
-   | 035f1161-402e-44b4-9073-0749586091e0 | my-project | eastus.azure | a0df2925-cc73-4365-8a10-7ef847632b81 |
-   +--------------------------------------+------------+--------------+--------------------------------------+
+   +--------------------------------------+-----------------+--------------------+--------------------------------------+-------------------+
+   | id                                   | name            | region             | organization_id                      | backup_location   |
+   |--------------------------------------+-----------------+--------------------+--------------------------------------+-------------------|
+   | 035f1161-402e-44b4-9073-0749586091e0 | my-project      | aks1.eastus.azure  | a0df2925-cc73-4365-8a10-7ef847632b81 | default           |
+   +--------------------------------------+-----------------+--------------------+--------------------------------------+-------------------+
 
 
 ``projects users``
@@ -120,7 +134,7 @@ Example
    :path: projects users add
 
 Example
--------
+~~~~~~~
 
 .. code-block:: console
 
@@ -146,17 +160,17 @@ Example
    :path: projects users list
 
 Example
-.......
+~~~~~~~
 
 .. code-block:: console
 
    sh$ croud projects users list \
        --project-id 035f1161-402e-44b4-9073-0749586091e0
-   +----------------------+----------------+----------+--------------------------------------+
-   | email                | project_roles  | username | uid                                  |
-   |----------------------+----------------+----------+--------------------------------------|
-   | john.doe@example.com | project_member | john.doe | 6ac0f500-f9f8-4c12-82e2-3ad6192525d4 |
-   +----------------------+----------------+----------+--------------------------------------+
+   +--------------------------------------+----------------------+----------+----------------+
+   | uid                                  | email                | username | project_roles  |
+   |--------------------------------------+----------------------+----------+----------------|
+   | 6ac0f500-f9f8-4c12-82e2-3ad6192525d4 | john.doe@example.com | john.doe | project_admin  |
+   +--------------------------------------+----------------------+----------+----------------+
 
 
 ``projects users remove``
@@ -169,7 +183,7 @@ Example
    :path: projects users remove
 
 Example
--------
+~~~~~~~
 
 .. code-block:: console
 

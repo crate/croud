@@ -5,6 +5,8 @@ Changes for croud
 Unreleased
 ==========
 
+- Updated documentation.
+
 1.15.0 - 2025/10/02
 ===================
 

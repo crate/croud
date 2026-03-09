@@ -494,7 +494,9 @@ def test_organizations_secrets_aws_create(mock_request):
         body={
             "name": name,
             "type": secret_type,
-            "data": {"access_key": access_key, "secret_key": secret_key},
+            "data": {
+                "aws_secret": {"access_key": access_key, "secret_key": secret_key}
+            },
         },
     )
 
@@ -529,6 +531,46 @@ def test_organizations_secrets_azure_create(mock_request):
             "type": secret_type,
             "data": {
                 "azure_secret": {"connection_string": connection_string},
+            },
+        },
+    )
+
+
+@mock.patch.object(Client, "request", return_value=({}, None))
+def test_organizations_secrets_mongodb_create(mock_request):
+    org_id = gen_uuid()
+    name = "my_secret"
+    secret_type = "MONGODB"
+    connection_string = "mongodb://my-mongodb-uri"
+    certificate = "my_certificate_content"
+    call_command(
+        "croud",
+        "organizations",
+        "secrets",
+        "create",
+        "--org-id",
+        org_id,
+        "--name",
+        name,
+        "--type",
+        secret_type,
+        "--connection-string",
+        connection_string,
+        "--certificate",
+        certificate,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        f"/api/v2/organizations/{org_id}/secrets/",
+        body={
+            "name": name,
+            "type": secret_type,
+            "data": {
+                "mongodb_secret": {
+                    "connection_string": connection_string,
+                    "certificate": certificate,
+                },
             },
         },
     )

@@ -6,6 +6,8 @@
 
 The ``scheduled-jobs`` command lets you manage scheduled sql jobs for your cluster.
 
+More information about automation can be found in the `CrateDB documentation`_.
+
 .. tip::
 
    Scheduled sql jobs are an easy way to setup sql statements that need
@@ -17,6 +19,7 @@ The ``scheduled-jobs`` command lets you manage scheduled sql jobs for your clust
    :prog: croud
    :path: clusters scheduled-jobs
    :nosubcommands:
+   :nodescription:
 
 
 ``clusters scheduled-jobs create``
@@ -135,3 +138,5 @@ Example
        --job-id 0EW7SX3ND87DY
        --cluster-id 8d6a7c3c-61d5-11e9-a639-34e12d2331a1
    ==> Success: Scheduled job deleted.
+
+.. _CrateDB documentation: https://cratedb.com/docs/cloud/en/latest/cluster/automation.html

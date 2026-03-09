@@ -4,6 +4,12 @@
 ``cloud-configurations``
 ========================
 
+.. warning::
+
+    The commands listed in this section are for internal use by CrateDB Cloud sysadmins
+    (superusers) only. They are listed here only to clarify their function, since they
+    appear in the full commands list available under ``--help``.
+
 The ``cloud-configurations`` command allows you to list, get and set configuration
 keys of CrateDB Cloud.
 
@@ -13,18 +19,25 @@ keys of CrateDB Cloud.
    :prog: croud
    :path: cloud-configurations
    :nosubcommands:
+   :nodescription:
 
 
 ``cloud-configurations list``
 =============================
 
-    Lists all configurations of CrateDB Cloud. Optionally it returns org or user specific values.
+.. note::
+
+   This command is only available for superusers.
+
+List all configurations of CrateDB Cloud. Optionally it returns organization or
+user specific values.
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: cloud-configurations list
+   :nodescription:
 
 Example
 -------
@@ -41,22 +54,24 @@ Example
    | CRATEDB_CLOUD_SETTING_THREE                     | 30          |                                      |           |
    +-------------------------------------------------+-------------+--------------------------------------+-----------+
 
+``cloud-configurations get``
+============================
+
 .. note::
 
    This command is only available for superusers.
 
-
-``cloud-configurations get``
-============================
-
-    Get a single configuration value of CrateDB Cloud. Optionally it returns the org or user specific value.
+Get a single configuration value. Optionally it returns the organization or user specific value.
 
 .. argparse::
    :module: croud.__main__
    :func: get_parser
    :prog: croud
    :path: cloud-configurations get
-   :nosubcommands:
+   :nodescription:
+
+Example
+-------
 
 .. code-block:: console
 
@@ -70,15 +85,14 @@ Example
    | CRATEDB_CLOUD_SETTING_ORG_SPECIFIC              | 1024        | f6c39580-5719-431d-a508-0cee4f9e8209 |           |
    +-------------------------------------------------+-------------+--------------------------------------+-----------+
 
+``cloud-configurations set``
+============================
+
 .. note::
 
    This command is only available for superusers.
 
-
-``cloud-configurations set``
-============================
-
-    Set a configuration value of CrateDB Cloud either globally or for a single organization or user only.
+Set a configuration value of CrateDB Cloud either globally or for a single organization or user only.
 
 .. argparse::
    :module: croud.__main__
@@ -86,6 +100,10 @@ Example
    :prog: croud
    :path: cloud-configurations set
    :nosubcommands:
+   :nodescription:
+
+Example
+-------
 
 .. code-block:: console
 
@@ -101,6 +119,4 @@ Example
    +-------------------------------------------------+-------------+--------------------------------------+-----------+
    ==> Success: Configuration updated.
 
-.. note::
 
-   This command is only available for superusers.

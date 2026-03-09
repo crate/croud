@@ -34,9 +34,14 @@ You must authenticate before using most commands. To log in:
 
 .. code-block:: console
 
-    sh$ croud login
+    sh$ croud login --idp cognito
 
 This will open a browser window to authenticate with your CrateDB Cloud account.
+
+.. note::
+
+    You might want to use an other ``--idp`` (Identity Provider) argument to specify
+    a different authentication method, like ``azuread``, ``github`` or ``google``.
 
 .. TIP::
 
@@ -65,7 +70,7 @@ Croud supports the following command-line options:
 | ``--version``          |                                                  |
 +------------------------+--------------------------------------------------+
 
-Some Croud :ref:`commands <commands>` support additional subcommands and flags. Use --help after any command for more information:
+Croud :ref:`commands <commands>` support additional subcommands and flags. Use --help after any command for more information:
 
 .. code-block:: console
 

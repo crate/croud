@@ -24,7 +24,7 @@ The configuration file is in YAML format. A default configuration might look lik
 
 .. code-block:: yaml
 
-   current-profile: aks1.westeurope.azure
+   current-profile: cratedb.cloud
    default-format: table
    profiles:
      cratedb.cloud:

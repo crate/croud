@@ -35,6 +35,12 @@ To view help and usage details for a specific command, append ``--help`` to it:
 
     sh$ croud login --help
 
+.. warning::
+
+    Some commands are for internal use by CrateDB and CrateDB Cloud staff only.
+    They are listed here only to clarify their function, since
+    they appear in the full commands list available under ``--help``.
+
 Available commands
 ==================
 
