@@ -214,10 +214,14 @@ def import_jobs_create_from_dynamodb(args: Namespace) -> None:
     }
     if args.endpoint:
         extra_body["dynamodb"]["endpoint"] = args.endpoint
-    if args.kinesis_stream_name:
-        extra_body["dynamodb"]["kinesis_stream_name"] = args.kinesis_stream_name
     if args.ingestion_type:
         extra_body["ingestion_type"] = args.ingestion_type
+    if "CDC" in extra_body.get("ingestion_type", ""):
+        if not args.kinesis_stream_name:
+            raise Exception(
+                "When ingestion type is CDC, kinesis-stream-name must be set."
+            )
+        extra_body["dynamodb"]["kinesis_stream_name"] = args.kinesis_stream_name
 
     import_jobs_create(args, extra_payload=extra_body)
 
