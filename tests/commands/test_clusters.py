@@ -1608,7 +1608,7 @@ def test_import_job_create_from_s3(mock_request):
         {
             "id": "1",
             "status": "SUCCEEDED",
-            "progress": {"records": 27, bytes: 4096, "message": "success"},
+            "progress": {"records": 27, "bytes": 4096, "message": "success"},
         },
         None,
     ),
