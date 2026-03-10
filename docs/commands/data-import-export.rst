@@ -173,7 +173,7 @@ Example
    ==> Success: Operation completed.
 
 ``clusters import-jobs create from-dynamodb``
-=======================================
+=============================================
 
 .. argparse::
    :module: croud.__main__
