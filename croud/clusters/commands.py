@@ -33,6 +33,7 @@ from croud.api import Client
 from croud.clusters.exceptions import AsyncOperationNotFound
 from croud.config import CONFIG, get_output_format
 from croud.organizations.commands import op_upload_file_to_org
+from croud.parser import CroudCliArgumentParser
 from croud.printer import print_error, print_info, print_response, print_success
 from croud.tools.spinner import HALO
 from croud.util import grand_central_jwt_token, require_confirmation
@@ -217,11 +218,20 @@ def import_jobs_create_from_dynamodb(args: Namespace) -> None:
     if args.ingestion_type:
         extra_body["ingestion_type"] = args.ingestion_type
     if "CDC" in extra_body.get("ingestion_type", ""):
-        if not args.kinesis_stream_name:
-            raise Exception(
-                "When ingestion type is CDC, kinesis-stream-name must be set."
+        if args.kinesis_stream_name:
+            extra_body["dynamodb"]["kinesis_stream_name"] = args.kinesis_stream_name
+        else:
+            parser = CroudCliArgumentParser()
+            parser.error(
+                "\nError: --kinesis-stream-name must be set when using CDC ingestion "
+                "types."
             )
-        extra_body["dynamodb"]["kinesis_stream_name"] = args.kinesis_stream_name
+    elif args.kinesis_stream_name:
+        parser = CroudCliArgumentParser()
+        parser.error(
+            "\nError: --kinesis-stream-name must not be set when using IMPORT "
+            "ingestion type."
+        )
 
     import_jobs_create(args, extra_payload=extra_body)
 
