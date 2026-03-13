@@ -173,7 +173,14 @@ Example
    ==> Success: Operation completed.
 
 ``clusters import-jobs create from-dynamodb``
-=============================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. note::
+
+   For IMPORT_ONLY, this command will wait for the operation to finish or fail.
+   When --ingestion-type is set to CDC_ONLY or IMPORT_AND_CDC, the command will not finish
+   and even when the last CDC event is processed, it will remain waiting for new CDC events to come.
 
 .. argparse::
    :module: croud.__main__
