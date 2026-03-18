@@ -169,7 +169,7 @@ import_job_create_common_file_args = [
         "--compression",
         type=str,
         required=False,
-        choices=["gzip"],
+        choices=["gzip", "none"],
         help="The compression method the file uses.",
     ),
     Argument(
