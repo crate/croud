@@ -1602,6 +1602,74 @@ def test_import_job_create_from_s3(mock_request):
 
 
 @mock.patch.object(
+    Client,
+    "request",
+    return_value=(
+        {
+            "id": "1",
+            "status": "SUCCEEDED",
+            "progress": {"records": 27, "bytes": 4096, "message": "success"},
+        },
+        None,
+    ),
+)
+def test_import_job_create_from_dynamodb(mock_request):
+    cluster_id = gen_uuid()
+    region = "us-east-1"
+    table_name = "my_dynamodb_table"
+    kinesis_stream_name = "my_kinesis_stream_name"
+    secret_id = gen_uuid()
+    endpoint = "https://my-dynamodb-compatible-endpoint"
+    ingestion_type = "IMPORT_AND_CDC"
+    call_command(
+        "croud",
+        "clusters",
+        "import-jobs",
+        "create",
+        "from-dynamodb",
+        "--cluster-id",
+        cluster_id,
+        "--ingestion-type",
+        ingestion_type,
+        "--aws-region",
+        region,
+        "--dynamodb-table",
+        table_name,
+        "--kinesis-stream-name",
+        kinesis_stream_name,
+        "--secret-id",
+        secret_id,
+        "--endpoint",
+        endpoint,
+        "--table",
+        "my-table",
+        "--create-table",
+        "false",
+    )
+    body = {
+        "type": "dynamodb",
+        "dynamodb": {
+            "region": region,
+            "table_name": table_name,
+            "kinesis_stream_name": kinesis_stream_name,
+            "secret_id": secret_id,
+            "endpoint": endpoint,
+        },
+        "format": "dynamodb",
+        "destination": {"table": "my-table", "create_table": False},
+        "compression": "none",
+        "ingestion_type": ingestion_type,
+    }
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        f"/api/v2/clusters/{cluster_id}/import-jobs/",
+        body=body,
+        any_times=True,
+    )
+
+
+@mock.patch.object(
     Client, "request", return_value=({"id": "1", "status": "SUCCEEDED"}, None)
 )
 def test_import_job_create_from_file(mock_request):

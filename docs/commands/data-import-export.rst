@@ -172,6 +172,36 @@ Example
    ==> Info: Done importing 14.73K records
    ==> Success: Operation completed.
 
+``clusters import-jobs create from-dynamodb``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+.. note::
+
+   For IMPORT_ONLY, this command will wait for the operation to finish or fail.
+   When --ingestion-type is set to CDC_ONLY or IMPORT_AND_CDC, the command will not finish
+   and even when the last CDC event is processed, it will remain waiting for new CDC events to come.
+
+.. argparse::
+   :module: croud.__main__
+   :func: get_parser
+   :prog: croud
+   :path: clusters import-jobs create from-dynamodb
+
+.. code-block:: console
+
+   sh$ croud clusters import-jobs create from-dynamodb --cluster-id e1e38d92-a650-48f1-8a70-8133f2d5c400 \
+       --secret-id 71e7c5da-51fa-44f2-b178-d95052cbe620 --aws-region eu-west-1 \
+       --dynamodb-table my_dynamodb_table_name --kinesis-stream-name my_kinesis_stream_name \
+       --table my_table_name --ingestion-type IMPORT_AND_CDC
+   +--------------------------------------+--------------------------------------+------------+
+   | id                                   | cluster_id                           | status     |
+   |--------------------------------------+--------------------------------------+------------|
+   | f29fdc02-edd0-4ad9-8839-9616fccf752b | e1e38d92-a650-48f1-8a70-8133f2d5c400 | REGISTERED |
+   +--------------------------------------+--------------------------------------+------------+
+   ==> Info: Status: REGISTERED (Your import job was received and is pending processing.)
+
+
 ``clusters import-jobs list``
 -----------------------------
 

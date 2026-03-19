@@ -33,6 +33,7 @@ from croud.api import Client
 from croud.clusters.exceptions import AsyncOperationNotFound
 from croud.config import CONFIG, get_output_format
 from croud.organizations.commands import op_upload_file_to_org
+from croud.parser import CroudCliArgumentParser
 from croud.printer import print_error, print_info, print_response, print_success
 from croud.tools.spinner import HALO
 from croud.util import grand_central_jwt_token, require_confirmation
@@ -200,6 +201,41 @@ def import_jobs_create_from_s3(args: Namespace) -> None:
     import_jobs_create(args, extra_payload=extra_body)
 
 
+def import_jobs_create_from_dynamodb(args: Namespace) -> None:
+    args.type = "dynamodb"
+    args.file_format = "dynamodb"
+    args.compression = "none"
+
+    extra_body = {
+        "dynamodb": {
+            "region": args.aws_region,
+            "table_name": args.dynamodb_table,
+            "secret_id": args.secret_id,
+        },
+    }
+    if args.endpoint:
+        extra_body["dynamodb"]["endpoint"] = args.endpoint
+    if args.ingestion_type:
+        extra_body["ingestion_type"] = args.ingestion_type
+    if "CDC" in extra_body.get("ingestion_type", ""):
+        if args.kinesis_stream_name:
+            extra_body["dynamodb"]["kinesis_stream_name"] = args.kinesis_stream_name
+        else:
+            parser = CroudCliArgumentParser()
+            parser.error(
+                "\nError: --kinesis-stream-name must be set when using CDC ingestion "
+                "types."
+            )
+    elif args.kinesis_stream_name:
+        parser = CroudCliArgumentParser()
+        parser.error(
+            "\nError: --kinesis-stream-name must not be set when using IMPORT "
+            "ingestion type."
+        )
+
+    import_jobs_create(args, extra_payload=extra_body)
+
+
 def import_jobs_create_from_azure_blob_storage(args: Namespace) -> None:
     extra_body = {
         "azureblob": {
@@ -269,9 +305,6 @@ def import_jobs_create(args: Namespace, extra_payload: Dict[str, Any]) -> None:
 
     if args.create_table is not None:
         body["destination"]["create_table"] = args.create_table
-
-    if args.transformations:
-        body["schema"] = {"select": args.transformations}
 
     if extra_payload:
         body.update(extra_payload)
