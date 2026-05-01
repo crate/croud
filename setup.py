@@ -45,7 +45,7 @@ setup(
     entry_points={"console_scripts": ["croud = croud.__main__:main"]},
     packages=find_packages(),
     install_requires=[
-        "bitmath>=1,<2",
+        "bitmath>=1,<3",
         "certifi",
         "colorama>=0.3,<1",
         "importlib-metadata; python_version < '3.8'",
