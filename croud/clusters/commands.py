@@ -104,6 +104,8 @@ def clusters_deploy(args: Namespace) -> None:
 
     if args.unit:
         body["cluster"]["product_unit"] = args.unit
+    if args.master_product_name:
+        body["cluster"]["master_product_name"] = args.master_product_name
     _handle_edge_params(body["cluster"], args)
 
     client = Client.from_args(args)

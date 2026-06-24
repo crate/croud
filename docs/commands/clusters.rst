@@ -96,6 +96,11 @@ Example
    | 8d6a7c3c-61d5-11e9-a639-34e12d2331a1 | my-first-crate-cluster | my-first-crate-cluster.aks1.westeurope.azure.cratedb.net. | https://my-first-crate-cluster.aks1.westeurope.azure.cratedb.net:4200 |
    +--------------------------------------+------------------------+-----------------------------------------------------------+-----------------------------------------------------------------------+
 
+.. note::
+
+   To attach dedicated master nodes, add ``--master-product-name master_cr2``.
+   This is only valid for products that offer dedicated masters (CR3/CR4/CR5).
+
 Deployment of testing/nightly versions
 --------------------------------------
 
