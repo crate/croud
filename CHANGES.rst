@@ -5,6 +5,9 @@ Changes for croud
 Unreleased
 ==========
 
+- Added ``--master-product-name`` option to ``clusters deploy`` for attaching
+  dedicated master nodes (e.g. ``master_cr2``) to a cluster at deploy time.
+
 - Updated documentation.
 
 - Added support for DynamoDB data jobs.

@@ -69,6 +69,68 @@ def test_clusters_list_with_organization_id(mock_request):
     )
 
 
+@mock.patch.object(Client, "request", return_value=({}, None))
+@mock.patch("time.sleep")
+def test_clusters_deploy_with_master(_mock_sleep, mock_request):
+    project_id = gen_uuid()
+    cluster_id = gen_uuid()
+    subscription_id = gen_uuid()
+
+    def mock_call(*args, **kwargs):
+        if args[0] == RequestMethod.POST:
+            return {"id": cluster_id}, None
+        if args[0] == RequestMethod.GET and "/projects/" in args[1]:
+            return {"organization_id": "123"}, None
+        if args[0] == RequestMethod.GET and "/operations/" in args[1]:
+            return {"operations": [{"status": "SUCCEEDED"}]}, None
+        return None, None
+
+    mock_request.side_effect = mock_call
+    call_command(
+        "croud",
+        "clusters",
+        "deploy",
+        "--product-name",
+        "cr3",
+        "--tier",
+        "default",
+        "--master-product-name",
+        "master_cr2",
+        "--project-id",
+        project_id,
+        "--cluster-name",
+        "crate_cluster",
+        "--version",
+        "6.2.1",
+        "--username",
+        "foobar",
+        "--password",
+        "s3cr3t!s3cr3t!s3cr3t!s3cr3t!",
+        "--subscription-id",
+        subscription_id,
+    )
+    assert_rest(
+        mock_request,
+        RequestMethod.POST,
+        "/api/v2/organizations/123/clusters/",
+        body={
+            "cluster": {
+                "crate_version": "6.2.1",
+                "name": "crate_cluster",
+                "password": "s3cr3t!s3cr3t!s3cr3t!s3cr3t!",
+                "product_name": "cr3",
+                "product_tier": "default",
+                "master_product_name": "master_cr2",
+                "username": "foobar",
+                "channel": "stable",
+            },
+            "project_id": project_id,
+            "subscription_id": subscription_id,
+        },
+        any_times=True,
+    )
+
+
 @pytest.mark.parametrize("status", ["SUCCEEDED", "FAILED", None])
 @mock.patch.object(Client, "request", return_value=({}, None))
 @mock.patch("time.sleep")

@@ -482,6 +482,13 @@ command_tree = {
                              "products available scale units.",
                     ),
                     Argument(
+                        "--master-product-name", type=str, required=False,
+                        help="Optional dedicated master-node product (e.g. "
+                             "'master_cr2'). Only valid for products that offer "
+                             "dedicated masters (CR3/CR4/CR5). Omit for a cluster "
+                             "without dedicated master nodes.",
+                    ),
+                    Argument(
                         "-p", "--project-id", type=str,
                         required=False,
                         help="The project ID to use. We recommend using the org-id "
