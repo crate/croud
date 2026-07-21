@@ -113,12 +113,10 @@ def test_load_invalid_configuration(tmp_path):
         "croud.config.configuration.user_config_dir", return_value=str(tmp_path)
     ):
         with open(tmp_path / "test.yaml", "w") as fp:
-            fp.write(
-                """\
+            fp.write("""\
 current-profile: foo
 default-format: table
-"""
-            )
+""")
         config = Configuration("test.yaml")
         with pytest.raises(InvalidConfiguration, match="is not a valid configuration"):
             _ = config.config
@@ -129,8 +127,7 @@ def test_load_with_api_keys(tmp_path):
         "croud.config.configuration.user_config_dir", return_value=str(tmp_path)
     ):
         with open(tmp_path / "test.yaml", "w") as fp:
-            fp.write(
-                """
+            fp.write("""
 default-format: table
 current-profile: cratedb.cloud
 profiles:
@@ -140,8 +137,7 @@ profiles:
     secret: my-secret
     endpoint: https://console.cratedb.cloud
     region: _any_
-"""
-            )
+""")
         config = Configuration("test.yaml")
         assert config.key == "my-key"
         assert config.secret == "my-secret"

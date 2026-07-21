@@ -1104,13 +1104,13 @@ def _wait_for_completed_operation(
 
         # Call for custom feedback if function available and there is status to report.
         if status in ["IN_PROGRESS", "SUCCEEDED"] and feedback_func:
-            (feedback_f, feedback_args) = feedback_func
+            feedback_f, feedback_args = feedback_func
             feedback_f(status, feedback, *feedback_args)
 
         # Final statuses
         if status == "SUCCEEDED":
             if post_success_func:
-                (func, call_args) = post_success_func
+                func, call_args = post_success_func
                 func(*call_args)
             print_success("Operation completed.")
             break

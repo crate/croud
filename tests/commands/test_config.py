@@ -143,8 +143,7 @@ def test_config_show(config, capsys):
 def test_invalid_config(capsys, tmp_path):
     with open(tmp_path / "invalid.yaml", "w") as fp:
         # Write a legacy format config
-        fp.write(
-            """\
+        fp.write("""\
 auth:
   contexts:
     dev:
@@ -159,8 +158,7 @@ auth:
   current_context: prod
 output_fmt: table
 region: bregenz.a1
-"""
-        )
+""")
 
     invalid_config = Configuration("invalid.yaml", tmp_path)
 
