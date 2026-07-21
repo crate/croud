@@ -1682,7 +1682,7 @@ def test_import_job_create_from_dynamodb(mock_request):
     kinesis_stream_name = "my_kinesis_stream_name"
     secret_id = gen_uuid()
     endpoint = "https://my-dynamodb-compatible-endpoint"
-    ingestion_type = "IMPORT_AND_CDC"
+    ingestion_type = "import-and-cdc"
     call_command(
         "croud",
         "clusters",

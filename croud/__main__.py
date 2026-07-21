@@ -908,16 +908,16 @@ command_tree = {
                                     Argument(
                                         "--ingestion-type", type=str,
                                         choices=[
-                                            "IMPORT_ONLY",
-                                            "IMPORT_AND_CDC",
-                                            "CDC_ONLY"
+                                            "import-only",
+                                            "import-and-cdc",
+                                            "cdc-only"
                                         ],
                                         required=True,
                                         help="Determines how to ingest the data. "
-                                             "IMPORT_ONLY will just ingest the data "
-                                             "and finish. CDC_ONLY will continuously "
+                                             "import-only will just ingest the data "
+                                             "and finish. cdc-only will continuously "
                                              "read CDC (Change Data Capture) events. "
-                                             "IMPORT_AND_CDC will first import the "
+                                             "import-and-cdc will first import the "
                                              "data and then start listening for CDC "
                                              "events."
                                     ),
